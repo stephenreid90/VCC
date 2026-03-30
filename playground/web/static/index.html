@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VCC Valuations Playground</title>
+  <link rel="stylesheet" href="/playground/valuations/static/styles.css"/>
+</head>
+<body>
+  <div id="app">
+    <h1>🏦 VCC Valuations Playground</h1>
+    <p>Financial valuation engine — DCF, comps, and 3-statement models.</p>
+    <div id="dcf-form">
+      <h2>DCF Quick Calc</h2>
+      <label>Base FCF (USD bn): <input id="fcf_base" type="number" value="110" /></label><br/>
+      <label>FCF Growth (%): <input id="fcf_growth" type="number" value="5" /></label><br/>
+      <label>WACC (%): <input id="wacc" type="number" value="7.65" step="0.01" /></label><br/>
+      <label>Terminal Growth (%): <input id="tg" type="number" value="2.5" step="0.1" /></label><br/>
+      <label>Net Debt (USD bn): <input id="net_debt" type="number" value="-50" /></label><br/>
+      <label>Shares (mn): <input id="shares" type="number" value="15500" /></label><br/>
+      <button onclick="runDCF()">Calculate ▶</button>
+      <pre id="result"></pre>
+    </div>
+  </div>
+  <script src="/playground/valuations/static/app.js"></script>
+</body>
+</html>
