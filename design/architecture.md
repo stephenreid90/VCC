@@ -28,9 +28,9 @@ The target user base is intentionally left undetermined at this stage. Internal 
 
 ## 2. Scope Decisions — Locked
 
-1. **Technology stack.** Python engine (pandas, numpy, pydantic) with a web interface delivered as a **FastAPI backend** (exposing the engine as a JSON API) plus a **Vue frontend** (consuming that API). This is more initial engineering effort than a Streamlit-only approach but gives full UX flexibility for the eventual interactive assumption-inspection and modification features (§1), cleaner separation between engine and UI, and a clean path to later deploying the engine as a service (e.g., for a future client-facing tool).
+1. **Technology stack.** Python engine (pandas, numpy, pydantic) exposing a JSON API. The user interface is **embedded in the existing VCC dashboard** — the engine returns rich structured `AssumptionSet` JSON, the dashboard's existing module loader (`v2.html` shell + `static/js/v2/` modules) renders it as a Valuations tab on each per-company VCC. This avoids building a second frontend, gives single UX / single auth / single ops surface, and aligns with the platform principle "server returns rich structured output; UI is one renderer, agent is another." (Earlier draft locked FastAPI + Vue as a standalone module; that decision was revisited following platform-side review and the VCC-dashboard-embed approach adopted instead.)
 2. **Scenario count.** Three to six named, qualitatively distinct scenarios. Scenarios must differ on *multiple dimensions* — not simply severity dials on a single axis. Exact count within the 3–6 range to emerge from the scenarios workshop.
-3. **Scenario-to-driver linkage.** Explicit impact matrix of the form `scenario × industry archetype × driver → directional impact and magnitude bucket`, with company-level analyst overrides permitted and documented with reason codes. Two structural nuances are recognised: (a) a company may span multiple industry archetypes (e.g., IPL across industrial explosives and nitrogen fertilisers), in which case each business segment references its own archetype matrix and contributes a weighted share to the company-level assumption set; and (b) an industry archetype may have few peers in practice (e.g., specialty plasma therapeutics, where CSL is effectively the dominant player), in which case the archetype matrix may closely track the subject company. The layer structure is retained in the thin-archetype case because writing down the industry-reference view remains analytically useful and preserves the override mechanism for future peers.
+3. **Scenario-to-driver linkage.** Explicit impact matrix of the form `scenario × industry archetype × driver → directional impact and magnitude bucket`, with company-level analyst overrides permitted and documented with reason codes. Two structural nuances are recognised: (a) a company may span multiple industry archetypes, in which case each business segment references its own archetype matrix and contributes a weighted share to the company-level assumption set; and (b) an industry archetype may have few peers in practice (e.g., specialty plasma therapeutics, where CSL is effectively the dominant player), in which case the archetype matrix may closely track the subject company. The layer structure is retained in the thin-archetype case because writing down the industry-reference view remains analytically useful and preserves the override mechanism for future peers. (IPL formerly spanned two distinct archetypes — industrial explosives and nitrogen fertilisers — and was the original illustrative case for multi-segment treatment. Following the demerger of the fertilisers business, IPL trades as a single-segment industrial-explosives company. The multi-segment treatment in the schema remains relevant for CSL and any future test company spanning multiple archetypes; the corporate-action overlay (§8) handles the demerger / acquisition / divestment case generally.)
 4. **Test companies.** Incitec Pivot Limited (IPL), CSL Limited (CSL), Westpac Banking Corporation (WBC). All ASX-listed, spanning three genuinely different archetypes: industrial chemicals / mid-stream commodity exposure; defensive global healthcare; regulated domestic financial.
 5. **Forecast horizon.** Parametric per company-scenario combination. Schema supports both 5 explicit years + terminal and 10 explicit years + terminal. Default selection deferred until scenarios are specified, on the basis that some scenarios may have multi-stage arcs that only make sense over 10 years, while others may resolve within 5.
 6. **Data as data; logic as code.** Scenarios, industries, and companies are represented as YAML (easy for domain experts to edit); linkage, translation, DCF, and UI are Python (easy for engineers to refactor).
@@ -41,7 +41,7 @@ The target user base is intentionally left undetermined at this stage. Internal 
 
 1. Scenario themes — to be developed in a dedicated scenarios workshop before any engine code is written.
 2. Default horizon per company — to be fixed once scenarios are specified.
-3. Scenario probability weighting — whether to require explicit probabilities producing a blended expected-value output, or treat scenarios as a pure comparative framework. Both approaches have strong proponents and the choice materially affects how results are communicated. Tara to consult one or more economists before resolving. In the interim the schema supports both approaches; the MVP does not require probability assignment.
+3. Scenario probability weighting — *narrowed*. The §6.2 commitment to scenarios as boundary cases (chosen to span plausible variation, not to be exhaustive or mutually exclusive) is incompatible with a probability-weighted blended expected-value output mode (which would require exhaustive, weakly mutually exclusive coverage). Comparative output is therefore canonical. The remaining open question is narrower: whether to allow analysts to compute their own indicative blended scalar as a side-calculation using optional per-scenario probabilities. The schema supports the optional probability field; whether the engine surfaces a blended scalar as a presented output (rather than analyst-computed) is the call to make. Tara still to consult economists if useful, but mode (a) blended expected value is *not* a supported canonical output mode.
 4. Stochastic overlay — deferred. Framework is deterministic by design, but schema should not preclude later addition of parameter uncertainty within scenarios.
 
 ---
@@ -75,47 +75,71 @@ vcc-valuations/
     scenarios_workshop.md        TBD — output of scenarios workshop
     frameworks/                  analytical frameworks (methodology, not data)
       five_forces_questions.md   TBD — Porter's Five Forces question bank
-                                 (industry-level + company-level)
-  engine/
-    scenarios/                   scenario loading and validation
-    industry/                    industry-structure framework
-    company/                     positioning analysis utilities
-    linkage/                     impact-matrix application, override handling
-    assumptions/                 driver → forecast-input translation
-    dcf/                         phase-2 valuation engine
-    utils/
+      payor_and_regulator.md     TBD — complementary framework for banks /
+                                 financial-services / regulated industries
+                                 (see §7.X)
+  src/
+    vcc_valuations/              installable Python package (pip install -e .)
+      scenarios/                 scenario loading and validation
+      industry/                  industry-structure framework
+      company/                   positioning analysis utilities
+      linkage/                   impact-matrix application, override handling
+      assumptions/               driver → forecast-input translation
+                                 (incl. time_profiles.py and consistency_rules.py)
+      dcf/                       phase-2 valuation engine
+      api/                       JSON API exposing engine to VCC dashboard
+      cli/                       vcc-valuation subcommand entry points
+      utils/
   data/
-    scenarios.yaml               named scenarios with macro variables
-    industries/
-      fertilisers_explosives.yaml
+    scenarios/                   one file per scenario
+      orderly_convergence.yaml
+      stagflation_persists.yaml
+      # ...
+    industries/                  one file per archetype
+      industrial_explosives.yaml
+      nitrogen_fertilisers.yaml
       specialty_biologics.yaml
       major_banks_au.yaml
     companies/
       ipl.yaml
       csl.yaml
       wbc.yaml
+    financials/                  curated base-year snapshots only
+      ipl.yaml                   # small, engine-consumable; raw data lives
+                                 # in market-ingest's Postgres, curated into
+                                 # this file by Ben's data workstream
+      csl.yaml
+      wbc.yaml
+    translation_rules/           direction × magnitude → numeric band mappings
     impact_matrix/
       by_industry/               one matrix file per industry archetype
-  api/                           phase-3 FastAPI backend (JSON API over the engine)
-  frontend/                      phase-3 Vue frontend (consumes the API)
+  output/                        cached layer outputs (audit + reproducibility)
+    driver_movements/            one file per company × scenario
+    assumption_sets/             one file per company × scenario
   tests/
   notebooks/                     exploratory analysis, calibration checks
   README.md
   pyproject.toml
 ```
 
-Philosophy: scenarios, industries, and companies are **data** (YAML). Linkage, assumption translation, DCF, and interface are **code**. Domain experts can update scenarios or industry analyses without touching Python; engineers can refactor logic without re-entering domain content.
+Philosophy: scenarios, industries, and companies are **data** (YAML). Linkage, assumption translation, DCF, and API are **code**. Domain experts can update scenarios or industry analyses without touching Python; engineers can refactor logic without re-entering domain content. The UI layer sits in the broader VCC platform, not in this repository — see §13.
 
-### 5.1 Review items (open — to be reviewed against Ben's data-sourcing workstream)
+### 5.1 Review items
 
-The following challenges were surfaced during Section 5 review but have not yet been resolved. They are flagged here for later review (including by Ben's Bot) to ensure the repository structure aligns with the data-sourcing workstream.
+Items 1–6 below were surfaced during the original Section 5 review and have all been *resolved* in the tree above following Ben's-bot platform-side review (5 May 2026). They are retained here as a record. Remaining open items (numbered 7+) are still active.
 
-1. **Industry archetype files need splitting.** Current tree shows `fertilisers_explosives.yaml` as a single file, but §7.3 now treats industrial explosives and nitrogen fertilisers as two separate archetypes. Tree should split into `industrial_explosives.yaml` and `nitrogen_fertilisers.yaml`.
-2. **Scenario file layout — one file vs many.** `scenarios.yaml` holds all scenarios in a single file, asymmetric with industries and companies (one file each). Given each scenario is a substantial object, one file per scenario (e.g. `data/scenarios/orderly_convergence.yaml`) would mirror the other patterns and make version-control diffs cleaner.
-3. **Home for base-year financial snapshots.** Layer 6 (§11) requires company base-year financials (revenue, EBIT, capex, net debt, working capital etc.) at translation time. Options: (a) embedded in `data/companies/<co>.yaml` alongside positioning; (b) separate `data/financials/<co>.yaml`; (c) raw-source data under `data/source_data/` curated by Ben's workstream and hydrated at runtime. Tentative preference: (b). Needs alignment with Ben on how his data workstream ingests and updates these snapshots.
-4. **Translation rules as data.** §11.5 open item 1 may push translation rules (direction × magnitude → bps/percentage deltas) into YAML. If resolved that way, add `data/translation_rules/` — organised by driver, by industry, or global (TBD).
-5. **Outputs storage.** Current tree has no location for Layer 5 and Layer 6 outputs (`DriverMovementSet`, `AssumptionSet`). Decide whether these are computed on demand only, or cached to a top-level `output/` folder (e.g. `output/driver_movements/{company}_{scenario}.yaml`, `output/assumption_sets/{company}_{scenario}.yaml`). Caching would support audit and reproducibility and would make Layer 8 (interface) faster.
-6. **Python packaging layout.** Engine folders are currently shown as flat directories. Best practice would be a `src/vcc_valuations/` package layout for cleaner imports, clean installability via `pip install -e .`, and to keep test code clearly separated from package code.
+1. **Industry archetype files split into single-archetype files.** Resolved: `industrial_explosives.yaml`, `nitrogen_fertilisers.yaml` (separate); `specialty_biologics.yaml`; `major_banks_au.yaml`.
+2. **Scenario file layout — one file per scenario.** Resolved: `data/scenarios/<scenario_id>.yaml`. Mirrors industries and companies; cleaner version-control diffs.
+3. **Home for base-year financial snapshots — option (c) adopted.** Raw source data ingested by Ben's data workstream into `market-ingest`'s Postgres (which already ingests EODHD fundamentals with revenue / EBIT / capex / net debt / working-capital lines). A thin `data/financials/<co>.yaml` carries only the curated base-year snapshot the engine consumes. The engine never reaches into raw data; it consumes the curated snapshot. Keeps the engine deterministic against committed YAML while letting the data layer evolve.
+4. **Translation rules as data.** Resolved: `data/translation_rules/` (per §11.2).
+5. **Outputs storage.** Resolved: `output/{driver_movements,assumption_sets}/` cached for audit and reproducibility, and to make the dashboard renderer instant.
+6. **Python packaging layout.** Resolved: `src/vcc_valuations/` package layout.
+
+**Active items:**
+
+7. **Data-sourcing workstream contract.** The valuation module's `data/financials/<co>.yaml` schema and the contract by which Ben's `market-ingest` workstream populates it need to be written down explicitly and version-pinned. Specifically: what fields, in what units, from what source records, with what update cadence. Sits at the boundary between this spec and the data workstream's own.
+8. **Industry archetype location — strategic decision parked.** Industry archetypes (`major_banks_au`, `specialty_biologics` etc.) are currently colocated with the valuation module. Once other consumers of archetypes appear in the platform — additional bank VCCs (NAB / ANZ / CBA), the structurer, etc. — these may be better hosted as a platform-level artefact (sibling `vcc-reference-data/` repo, or under `vcc-platform/data/reference/`). The same applies to scenarios. Decision deferred until at least one additional consumer materialises; revisit at that point. For v0.1 they live in `vcc-valuations`.
+9. **Tree-vs-imports drift.** With the `src/vcc_valuations/` move, the imports-style references in the rest of the document (e.g. "engine/assumptions/time_profiles.py") will need a sweep to match the new package paths. Defer the path-renaming sweep to a follow-up editorial pass once §13 and §14 are settled.
 
 ---
 
@@ -267,6 +291,12 @@ industry_archetype:
     new_entrants: {rating: low|moderate|high, rationale: string}
     substitutes: {rating: low|moderate|high, rationale: string}
     rivalry: {rating: low|moderate|high, rationale: string}
+  complementary_framework:                    # optional secondary frame (see §7.5.1)
+    type: payor_and_regulator | network_effect | resource_lifecycle | none
+    details: object                           # shape determined by type;
+                                              # schema co-located with the relevant
+                                              # framework definition under
+                                              # design/frameworks/<type>.md
   lifecycle_stage: emerging | growth | mature | declining
   lifecycle_rationale: string                 # returns-vs-CoC framing per §7.3
   concentration:
@@ -343,27 +373,51 @@ The Five Forces ratings captured in the §7.4 schema are not standalone descript
 
 A standardised **Five Forces question bank** — used to interview each industry archetype and each company within it — is a planned deliverable. The question bank will live at `design/frameworks/five_forces_questions.md` and will hold two parallel question sets per force: an industry-level set (assess the force in this archetype) and a company-level set (assess the subject company's position vis-à-vis the force). Sub-questions within each force draw on Porter's determinants (e.g. for buyer power: concentration, switching costs, price sensitivity, backward-integration credibility, information transparency). Question bank to be developed and refined as we work through the IPL / CSL / WBC archetypes; see §7.7 review items.
 
+#### 7.5.1 Complementary frameworks for archetypes Porter does not fully serve
+
+Porter's Five Forces is the dominant frame, but it strains in two recognisable cases:
+
+1. **Heavily regulated archetypes** (banks, insurers, utilities, parts of healthcare) where the binding constraint on returns is a prudential regulator or payor regime, not the five competitive forces. APRA, Basel III, the deposit-insurance regime, and the four-pillars policy aren't *forces* in Porter's sense — they're an external structural overlay that constrains every metric on the bank archetype: CET1 floor sets RWA intensity; deposit-insurance fee structure shapes funding mix; four-pillars policy effectively eliminates new-entrants threat. Stuffing this into "regulatory pressure" inside Five Forces under-states its analytical weight.
+2. **Platform / network industries** (digital marketplaces, embedded-finance platforms) where network-effect strength and multi-homing cost capture dimensions Porter does not. Not in the v0.1 test set but worth not painting into a corner.
+
+To handle these without abandoning Five Forces, each archetype carries an optional `complementary_framework` field. The field is **enum-typed**, not free-form: each value points at a defined schema co-located with the framework's methodology document (parallel to the Five Forces question bank).
+
+Initial enum:
+
+1. **`payor_and_regulator`** — for banks, insurers, utilities, regulated healthcare. Captures: primary payors / regulators by name; binding capital or solvency constraint; regulatory regime (e.g. Basel tier, deposit-insurance scheme, four-pillars or equivalent policy); known step-change events on the regulatory horizon. Schema lives at `design/frameworks/payor_and_regulator.md`. Required for the banking archetype (WBC) in v0.1.
+2. **`network_effect`** — for tech platforms (when they enter the test set). Captures: network strength, multi-homing cost, side-balance, take-rate sustainability. Schema TBD when first used.
+3. **`resource_lifecycle`** — for primary-resource industries (mining, oil-and-gas, rare earths). Captures: reserve life, replacement rate, jurisdictional risk, stranded-asset trajectory. Schema TBD when first used.
+4. **`none`** — explicit declaration that Porter alone is sufficient for this archetype.
+
+Adding a new framework type requires defining its schema first. This is a feature: it forces the analyst to write down what comparability across instances of that framework type means, before any archetype claims to use it. Without defined schemas, the field becomes a comment block with delusions of structure — two banks would populate differently-shaped payor-and-prudential blocks, and the comparability discipline that makes Five Forces useful does not carry over.
+
+The complementary framework feeds the same downstream consumers as Five Forces (default driver ranges, scenario sensitivity, disruption surfacing, company positioning). For an archetype using both, the two frames are complementary, not redundant — Five Forces captures the competitive dynamics that exist within the regulatory envelope; the complementary framework captures the envelope itself.
+
+The defined-enum-vs-open-ended question is marked open-to-revisit (§7.7) and should be re-examined after the first non-Porter archetype (banking) is populated, to confirm the discipline is paying for its cost.
+
 ### 7.6 Archetypes needed for our test companies
 
-1. **Industrial explosives & ground-support services** — IPL's Dyno Nobel segment. Multi-geographic (Australia, North America, rest-of-world); industry dynamics dominated by mining-customer capex cycles, technology differentiation (electronic initiation systems), and scale in manufacturing/distribution.
-2. **Nitrogen fertilisers** — IPL's Fertilisers Australia segment (until the planned demerger closes). National geography; distinct dynamics from explosives: driven by global urea/ammonia cycles, domestic gas input cost, agricultural commodity prices, and seasonal demand.
-3. **Specialty biologics — plasma-derived therapies & vaccines** — CSL. Multi-geographic (US, EU, Asia); may be further sub-divided into Behring (plasma) and Seqirus (vaccines) if their scenario sensitivities diverge materially; to be tested when we populate.
-4. **Major Australian banks — retail, business and institutional banking** — WBC. National geography.
+1. **Industrial explosives & ground-support services** — IPL (post-demerger; single-segment industrial explosives). Multi-geographic (Australia, North America, rest-of-world); industry dynamics dominated by mining-customer capex cycles, technology differentiation (electronic initiation systems), and scale in manufacturing / distribution.
+2. **Specialty biologics — plasma-derived therapies & vaccines** — CSL. Multi-geographic (US, EU, Asia); may be further sub-divided into Behring (plasma) and Seqirus (vaccines) if their scenario sensitivities diverge materially; to be tested when we populate.
+3. **Major Australian banks — retail, business and institutional banking** — WBC. National geography. Uses `complementary_framework: payor_and_regulator` per §7.5.1.
+4. **Nitrogen fertilisers** — *kept defined* but no longer required for any v0.1 test company. IPL formerly held this segment; following the demerger, the demerged fertilisers entity is not in the v0.1 test set. Archetype retained because (i) it's a clean illustrative example for the spec, and (ii) it remains available if a fertiliser-segment company is added later.
 
-**On multi-industry companies.** IPL spans two distinct archetypes with genuinely different industry structures, not merely two segments of one industry. The schema treats each segment as referencing its own archetype; the company-level assumption set is a weighted aggregate across segments, with weights from segment revenue and EBIT shares at the base year. The weights themselves may evolve across the forecast horizon under a given scenario (e.g. a demerger scenario would zero out one segment's weight after the effective date).
+**On multi-industry companies.** IPL formerly spanned industrial explosives and nitrogen fertilisers as two distinct archetypes with genuinely different industry structures, not merely two segments of one industry. Following the demerger, IPL is single-segment. The multi-segment treatment in the schema remains the right design — CSL is a current case (Behring + Seqirus + Vifor candidate), and any future test company spanning multiple archetypes will use the same mechanism. The corporate-action overlay (§8.4) handles discrete events (demerger / acquisition / divestment) that reshape segment weights at a defined effective year.
 
 **On thin archetypes.** CSL's archetype (specialty plasma therapeutics) has very few peers of comparable scale and positioning. The industry-level matrix may therefore track CSL closely in practice. We retain the industry layer nonetheless for three reasons: (i) writing down the industry-reference view forces explicit articulation of "what a generic specialty-biologics firm would experience in this scenario," which is analytically useful even when only one subject consumes it; (ii) the override mechanism remains available if peers are added later; and (iii) architectural consistency across the three test companies simplifies the engine.
 
 ### 7.7 Review items
 
-1. **Scenario-sensitivity attribute list.** The block above is comprehensive but may need pruning or additions as we populate actual archetypes. Ben's data-sourcing workstream needs to confirm data availability for each attribute; attributes that cannot be reliably sourced should either be dropped or marked analyst-judgment-only.
+1. **Scenario-sensitivity attribute list.** The block above is comprehensive but may need pruning or additions as we populate actual archetypes. Ben's data-sourcing workstream needs to confirm data availability for each attribute (cross-checked against what `market-ingest` and external sources can populate); attributes that cannot be reliably sourced should either be dropped or marked analyst-judgment-only so the engine does not treat unset as "low".
 2. **Multi-segment handling for CSL.** Whether Behring and Seqirus are one archetype with internal segmentation or two distinct archetypes. To be tested when populating.
 3. **Treatment of CSL Vifor.** Separate segment or rolled into Behring; depends on the post-acquisition reporting structure Ben can source.
-4. **`imported_input_share` appears in both `cost_structure` and `scenario_sensitivity.trade_and_supply_chain`.** Intentional (static picture vs responsiveness picture per §7.4 note) but worth confirming this doesn't cause confusion in data entry. Option: rename one to make the distinction obvious.
+4. **`imported_input_share` rename to disambiguate.** The field currently appears in both `cost_structure` and `scenario_sensitivity.trade_and_supply_chain`. Resolved direction: rename to `cost_structure.imported_input_share_static` and `scenario_sensitivity.trade_and_supply_chain.imported_input_share_responsiveness` (or a shorter pair with the same disambiguation intent). Pin during the next editorial pass.
 5. **Submarket granularity and data availability.** Where multiple regions are captured, depth of regional analysis is constrained by what Ben's workstream can reliably source per region. Needs alignment.
 6. **Lifecycle_rationale field is narrative.** Over time we may want to standardise the way lifecycle is evidenced (e.g. require reference to a peer-group ROIC vs WACC comparison).
 7. **Five Forces question bank to be developed.** Build out `design/frameworks/five_forces_questions.md` with two parallel question sets per force (industry-level and company-level). Sub-questions per force based on Porter's determinants. Iterate as we apply it to IPL / CSL / WBC; first cut to be drafted before populating the first archetype so the analysis is structured from the start.
 8. **Default driver ranges to be calibrated against Five Forces.** When Layer 4 default ranges are populated for each archetype, cross-check that the ranges (margins, pricing power, capital intensity) are consistent with the Five Forces profile per §7.5 link 2. Inconsistency should trigger a re-examination of either the ranges or the force ratings.
+9. **Complementary framework approach (defined enum vs open-ended) — open to revisit.** §7.5.1 commits to a defined-enum approach with per-framework schemas (payor_and_regulator, network_effect, resource_lifecycle). This is the right discipline in principle but untested. After the banking archetype (WBC) is populated using `payor_and_regulator`, revisit: is the discipline paying for its cost, or is it forcing analysts into rigid fields they want to extend? If the latter, consider a hybrid (defined core + extension fields).
+10. **Payor-and-regulator framework schema.** `design/frameworks/payor_and_regulator.md` needs to be drafted before WBC is populated. Initial schema: primary_payors / regulators by name; binding capital or solvency constraint; regulatory regime details (Basel tier, deposit-insurance scheme, four-pillars or equivalent); known step-change events on the regulatory horizon.
 
 ---
 
@@ -371,7 +425,7 @@ A standardised **Five Forces question bank** — used to interview each industry
 
 ### 8.1 Purpose
 
-Captures where the subject company sits within its industry archetype(s). This is what determines whether a given industry-level impact hits the company harder, softer, or differently than the industry average. Positioning blocks are held primarily at the segment level, because companies frequently span multiple industries with different competitive dynamics (e.g. IPL's Dyno Nobel explosives vs Fertilisers Australia). Single-segment companies carry a single segment that holds the positioning.
+Captures where the subject company sits within its industry archetype(s). This is what determines whether a given industry-level impact hits the company harder, softer, or differently than the industry average. Positioning blocks are held primarily at the segment level, because companies frequently span multiple industries with different competitive dynamics (CSL's Behring / Seqirus / Vifor structure is the v0.1 example; IPL formerly held a distinct fertilisers segment which has since been demerged). Single-segment companies carry a single segment that holds the positioning. Discrete corporate events that reshape segment composition over the forecast horizon (demergers, acquisitions, divestments) are handled by the corporate-action overlay in §8.4.
 
 ### 8.2 Schema (draft)
 
@@ -497,19 +551,51 @@ Initial archetype-specific schemas to draft alongside the IPL / CSL / WBC archet
 3. **Fertilisers** — ammonia / urea cost competitiveness, gas-input cost exposure, transport / logistics advantage, nitrogen-use efficiency technology.
 4. **Plasma therapeutics** — collection-centre count, donor pool size, fractionation capacity, pipeline-to-portfolio ratio.
 
-### 8.4 Deliverables
+### 8.4 Corporate-action overlay (segment-weight events)
+
+Segment weights (`revenue_share`, `ebit_share`) are scalars in the §8.2 schema. To handle a discrete corporate event that reshapes those weights at a defined point in the forecast horizon — a demerger, acquisition, or divestment — the company carries a `corporate_actions` overlay rather than time-keying segment weights directly:
+
+```yaml
+company_position:
+  # ... fields per §8.2 ...
+  corporate_actions:                            # optional list; empty means no
+                                                # discrete events in the horizon
+    - id: string                                # e.g. "ipl_fertilisers_demerger_2024"
+      kind: demerger | acquisition | divestment | spin_off
+      effective_year: int                       # year in the forecast horizon
+                                                # (1 = first forecast year)
+      scenario_id: string | "all"               # event applies under this scenario,
+                                                # or under all scenarios
+      affected_segments: list                   # segment ids reshaped by the event
+      post_event_weights:                       # new revenue / EBIT shares
+        - segment: string
+          revenue_share: float
+          ebit_share: float
+      rationale: string
+      evidence_refs: list
+```
+
+The Layer 6 translator handles the weight transition deterministically: pre-event years use the base-case segment weights from §8.2; post-event years use `post_event_weights`. The transition itself can be modelled as a step at `effective_year` or smoothed using a time profile from §11.3 (`step` for a clean cut-over, `regime_shift` for a phased separation).
+
+This mechanism handles both the historical IPL demerger case (kept as a worked illustration even though IPL itself is now post-demerger) and the generic M&A case. Treating the demerger / acquisition / divestment cases as variants of one design problem — discrete corporate events reshaping segment weights at an `effective_year` — is the substantive merge of the older §8 multi-segment-time-evolution discussion and the older §9.7 M&A overlay item.
+
+For acquisitions where the acquirer takes on a wholly new archetype (rather than expanding an existing segment), the schema also requires a new segment to be appended with its own archetype FK and positioning blocks; the corporate action declares the new segment in `post_event_weights`.
+
+### 8.5 Deliverables
 
 1. A populated `company_position.yaml` for IPL, CSL, and WBC.
 2. For each segment, cross-reference to the applicable industry archetype.
 3. Reasoning notes captured in-line (YAML comments or `evidence` fields) so positioning is defensible and auditable.
 4. Historical financials kept in a separate `financials.yaml` per company, not in this layer.
 
-### 8.5 Review items
+### 8.6 Review items
 
 1. Archetype-specific schemas for banking, mining, fertilisers, and plasma therapeutics need to be drafted as part of populating the IPL / CSL / WBC archetypes.
 2. CSL Vifor: confirm whether reported as a separate operating segment in CSL disclosures. Default treatment is a separate segment within CSL.
 3. Innovation-position requirement should be tagged at the industry-archetype level (Layer 2), so the engine can flag missing pipeline data for innovation-driven archetypes.
 4. Need to confirm whether `risk_exposures.fx` belongs at parent level (consolidated FX exposure) or per segment, or both. Currently omitted pending decision.
+5. IPL post-demerger segment structure to be confirmed by Ben's data-sourcing workstream when populating `data/companies/ipl.yaml`. Default working assumption is single-segment industrial explosives; this should be verified against IPL's most recent segment disclosures (residual stakes, pending divestments, ongoing inter-company arrangements with the demerged entity).
+6. Corporate-action overlay (§8.4) needs a worked example once the first event is encountered (e.g. a CSL acquisition or, as illustration, IPL's historical demerger encoded retrospectively).
 
 ---
 
@@ -543,10 +629,17 @@ driver:
   applicable_archetypes: list | "all"
   valuation_model: list                # fcf | ddm | residual_income (one or more)
   dcf_line_item: string                # where it lands in the model
-  role: primary | derived
+  role: primary | derived              # primary: written by impact matrix (Layer 5).
+                                       # derived: computed by Layer 6 from dependencies;
+                                       # NOT writable by Layer 5.
   dependencies: list                   # other driver ids (required where role: derived)
+  derivation_formula: string           # required where role: derived. Plain-language
+                                       # or expression form, e.g.
+                                       # "wacc = (E/V) * cost_of_equity +
+                                       #         (D/V) * cost_of_debt_pretax * (1 - tax_rate)"
   scope: company | segment             # at what level the driver is populated
   scenario_sensitive: bool             # whether the impact matrix may move it
+                                       # (must be false where role: derived)
   base_definition: string              # how the base-year value is anchored — used by
                                        # Layer 6 §11.2. Values: latest_reported_fy |
                                        # ttm | three_year_avg | ntm_consensus
@@ -619,12 +712,54 @@ Terminal-state assumptions must respect the cost-of-capital convergence principl
 
 Some archetypes are not adequately modelled by the core drivers above. Each such archetype declares its own driver set, co-located with the Layer 2 archetype YAML and the Layer 3 archetype-specific positioning fields (§8.3).
 
-Initial archetype-specific driver sets to draft:
+#### 9.4.1 Banking (DDM / residual income, not FCF)
 
-1. **Banking (DDM / residual income, not FCF).** Net interest margin (bps), loan book growth, cost-to-income ratio, credit loss charge / average loans, CET1 ratio target, risk-weighted-asset intensity, return on equity target, dividend payout ratio, deposit-funding share. The bank model is a parallel valuation engine (DDM or residual income); traditional FCF is not meaningful for deposit-funded institutions. To be specified in the DCF Engine layer (§12).
-2. **Plasma therapeutics / life sciences.** Pipeline NPV contribution, probability-weighted pipeline revenue ramp by therapy, R&D productivity (revenue per R&D dollar, defined window), patent-cliff exposure profile.
-3. **Mining / commodity industrials.** Cost-curve placement-driven margin trajectory, reserve life, by-product credits.
-4. Other archetypes (insurers, REITs, utilities) added as scope expands.
+Banks consume an entirely different driver set from FCF-modelled archetypes. Most core FCF drivers (volume / price, gross / EBIT margin, capex intensity, working capital days) are `not_applicable: true` for banks. The bank driver set is:
+
+**Income-statement drivers (segment / business-line scope where bank is multi-line)**
+
+1. Loan book growth (primary, scenario-sensitive)
+2. Net interest margin (NIM, bps) (primary, scenario-sensitive)
+3. Non-interest income growth (primary)
+4. Cost-to-income ratio (primary)
+5. Credit loss charge / average loans (primary, scenario-sensitive — heavily so under recession scenarios)
+6. Effective tax rate (primary)
+7. Net income (derived from above)
+8. Return on equity (derived)
+9. Return on tangible equity (derived)
+
+**Balance-sheet and capital drivers (company-scope)**
+
+1. CET1 ratio target (primary)
+2. Risk-weighted-asset intensity (RWA / total assets) (primary)
+3. RWA growth (derived from loan book growth × RWA intensity)
+4. Required equity (derived from CET1 target × RWA)
+5. Asset mix (mortgage / business / institutional / other shares) (primary)
+
+**Funding drivers (company-scope)**
+
+1. Deposit-funding share (deposits / total funding) (primary)
+2. Wholesale-funding share (primary, scenario-sensitive — funding stress under banking-sector scenarios)
+3. Liquidity coverage ratio (LCR) target (primary)
+4. Net stable funding ratio (NSFR) target (primary)
+5. Deposit franchise stickiness (primary)
+
+**Distribution and terminal drivers (company-scope)**
+
+1. Dividend payout ratio (primary)
+2. Buyback posture (primary)
+3. Terminal cost of equity (primary)
+4. Terminal ROE (primary; subject to convergence principle — terminal ROE ≈ cost of equity unless defended)
+5. Terminal RWA growth (primary)
+6. Fade period length and profile (primary)
+
+The bank valuation flow is conceptually: rates / scenario → NIM and loan growth → net income → ROE → equity value (via DDM or residual income), with capital ratios and funding mix as binding constraints rather than free variables. The full DDM / residual-income mechanics are specified in the DCF Engine layer (§12).
+
+#### 9.4.2 Other archetype-specific driver sets to draft
+
+1. **Plasma therapeutics / life sciences.** Pipeline NPV contribution, probability-weighted pipeline revenue ramp by therapy, R&D productivity (revenue per R&D dollar, defined window), patent-cliff exposure profile.
+2. **Mining / commodity industrials.** Cost-curve placement-driven margin trajectory, reserve life, by-product credits, jurisdictional risk index.
+3. Other archetypes (insurers, REITs, utilities) added as scope expands.
 
 ### 9.5 Deliverables
 
@@ -639,12 +774,14 @@ Initial archetype-specific driver sets to draft:
 
 ### 9.7 Review items
 
-1. Archetype-specific driver sets for banking, plasma therapeutics, mining, and fertilisers need to be drafted alongside their Layer 2 archetype definitions and Layer 3 archetype-specific positioning fields.
-2. M&A overlay design (§9.3 capital drivers note): how to specify acquisition / divestment overlays cleanly, including timing, deal economics, and integration assumptions, kept outside the base organic DCF.
+1. Archetype-specific driver sets for plasma therapeutics, mining, and fertilisers need to be drafted alongside their Layer 2 archetype definitions and Layer 3 archetype-specific positioning fields. Banking is now drafted in §9.4.1.
+2. **M&A overlay merged with §8.4 corporate-action overlay.** The earlier separate "M&A overlay" item is folded into the §8.4 corporate-action overlay — the demerger / acquisition / divestment / spin-off cases are one design problem (a discrete corporate event reshaping segment weights at an `effective_year`). Acquisition deal economics (price, integration cost, synergies, financing) sit in this overlay, not in the base organic driver list.
 3. Innovation-position driver requirement: where Layer 2 flags an archetype as innovation-driven, the corresponding archetype-specific driver set must include pipeline-value drivers; the engine should warn if missing.
 4. WACC scenario behaviour to be revisited at §12 (DCF Engine) per §9.6 open item.
 5. Default-range calibration loop: when default ranges are populated, cross-check consistency with the archetype's Five Forces profile (per §7.5 / §7.7 item 8). Inconsistency triggers re-examination of the ranges or the force ratings.
-6. Driver-ID stability: once IDs are baked into the impact matrix, renaming becomes a breaking change. Worth a short style guide (naming convention, group prefixes) before the catalogue is populated.
+6. **Driver-ID style guide to be drafted before populating the catalogue.** Once IDs are baked into the impact matrix, renaming is a breaking change discovered exactly when the matrix is most painful to migrate. Initial style-guide topics: naming convention (snake_case), group prefixes (e.g. `rev_`, `mgn_`, `cap_`, `fin_`, `term_`, `bank_`), avoidance of vendor-specific terminology, stability guarantees once published.
+7. **Derived-driver derivation formulas need to be populated** under the new §9.2 `derivation_formula` field. For each driver tagged `role: derived` (cost of equity, WACC, EBIT margin, EBITDA margin, asset turnover, operating leverage coefficient, effective tax rate, return on equity, RWA growth, required equity), write the formula plain-language or expression form. Layer 6 consumers depend on these being explicit.
+8. **Driver default-range completeness check.** Validator: for each (archetype × driver), confirm `default_range` is populated. Driver missing a default range under an archetype that uses it (i.e. driver is in `applicable_archetypes` for that archetype) should fail validation.
 
 ---
 
@@ -722,7 +859,7 @@ overrides:
     reason_category: contract                 # cost_advantage | scale | regulation
                                               # | contract | management | product_mix
                                               # | diversification | franchise_asset
-                                              # | other
+                                              # | data_workstream | other
     reason: >
       IPL's long-term gas supply contracts (signed 2024) insulate its cost
       base through 2031, allowing it to capture pricing upside that
@@ -735,11 +872,24 @@ overrides:
         location: "slide 14"
         date_accessed: "2026-04-12"
     governance:
-      created_by: string
+      created_by: string                      # named human, the analyst writing
       created_at: datetime
-      approved_by: string
+      approved_by: string                     # named human, the peer reviewer
       approved_at: datetime
       last_reviewed_at: datetime
+      review_dialogue:                        # optional but recommended for sign-flip
+                                              # or beyond-scale overrides — captures the
+                                              # reviewer-vs-author challenge / response
+        - challenge: string                   # what the reviewer pushed back on
+          challenger: string                  # named human
+          response: string                    # why the analyst persisted (or revised)
+          challenge_at: datetime
+      half_life:                              # tied to scenario refresh cadence (§6.5)
+        scenario_version_at_creation: string
+        review_required_at_scenario_version: string  # next refresh
+        stale: bool                           # true once that version is current
+        requires_re_review: bool              # set true when scenario_version bumps;
+                                              # rationale was scenario-version-specific
 ```
 
 **Override semantics:**
@@ -747,6 +897,10 @@ overrides:
 1. **Partial override.** Either `override_direction` or `override_magnitude` (or just `quantified_override`) may be supplied; absent fields inherit from the industry default.
 2. **Sign-flip override.** Permitted when override direction opposes industry direction; the validator must flag `sign_flip: true` and require `evidence_refs` of at least two items.
 3. **Beyond-scale override.** When the analyst's view would push beyond the ordinal scale (e.g. industry already `positive / large`), the override must carry a `quantified_override` band; ordinal fields then describe the *closest* representative ordinal and `beyond_scale: true` is set.
+
+**`reason_category: data_workstream`** — added explicitly so overrides driven by data-source-induced views (e.g. "overriding because EODHD's revenue segmentation differs from the company's primary disclosure") are auditably distinct from analyst-judgment overrides. Keeps the data-vs-judgment line clean for governance.
+
+**Override density discipline.** Overrides should be a small fraction of cells. If more than a defined threshold of a company's matrix is overridden (target: ≤20% of cells per company; archetype-tunable), the industry archetype is mis-specified or the overrides are over-fitted. The validator emits a warning at the threshold; investigation should consider revising the archetype rather than continuing to add overrides. Otherwise the "data as data, logic as code" principle is undermined by override creep — the matrix becomes a per-company library and the archetype layer ceases to do useful work.
 
 ### 10.5 Driver movement output schema
 
@@ -793,24 +947,36 @@ driver_movement_set:
         # same field set as segment-level movements
 ```
 
-### 10.6 Consistency rules
+### 10.6 Consistency rules and what the matrix is permitted to write
 
-The impact matrix is the analytical core; entries must respect cross-layer constraints. The engine should validate (warn or block) the following:
+The impact matrix is the analytical core; entries must respect cross-layer constraints. Two distinctions matter:
+
+**Layer 5 only writes primary drivers.** Drivers tagged `role: derived` in §9.2 (cost of equity, WACC, EBIT margin, EBITDA margin, asset turnover, operating leverage coefficient, effective tax rate, return on equity, RWA growth, required equity, etc.) are computed by Layer 6 from their dependencies via the formula declared in §9.2 `derivation_formula`. The impact matrix must not write to derived drivers. This rule replaces the earlier "consistency rules" treatment of tax aggregation, capex → D&A, and WACC computation: those are deterministic derivations performed in Layer 6, not coherence checks at all. Removing redundant derived-driver cells from the matrix also reduces analyst population effort meaningfully.
+
+**Genuine consistency rules applied to the matrix.** The engine should validate (warn or block) the following:
 
 1. **Scenario-sensitivity consistency (cross-check with §7.4).** Matrix entries should be consistent with the industry archetype's `scenario_sensitivity` block. Example: if `scenario_sensitivity.labour.wage_pass_through` is `low`, an entry under a wage-shock scenario showing `input_cost_pass_through: positive / large` must carry explicit defence in `rationale`.
-2. **Cost-of-capital convergence (cross-check with §1 and §9.3).** Matrix entries on terminal-state drivers (terminal ROIC, terminal growth, terminal margin) must respect the convergence principle — in steady state, terminal ROIC should approximate WACC. Entries that imply persistent excess returns require explicit defence in `rationale`.
-3. **Driver interactions are NOT enforced at this layer.** Cross-driver coherence (e.g. revenue × margin × operating leverage; tax × geography mix) is enforced in Layer 6 (assumption translation). The impact matrix carries each driver's movement independently.
-4. **Freshness.** Entries carry `scenario_version`. The engine should warn when an entry references a scenario version older than the current scenario library; entries flagged stale are candidates for re-review at the next 6-month refresh.
-5. **Sign-flip evidence.** `sign_flip: true` overrides require `evidence_refs` of at least two items.
+2. **Cost-of-capital convergence with defended-exception criteria (cross-check with §1 and §9.3).** Matrix entries on terminal-state drivers (terminal ROIC, terminal growth, terminal margin, fade period) must respect the convergence principle — in steady state, terminal ROIC should approximate WACC (or, for banks, terminal ROE should approximate cost of equity). Entries that imply persistent excess returns are permitted only when the entry carries a **defended exception** with all four of the following:
+   (a) **Moat source** named explicitly from §8.2 `moat.sources` enum.
+   (b) **Decay / half-life** specifying when the moat fully erodes under the scenario in question, in years. "Perpetual" is not permitted without an explicit external benchmark.
+   (c) **Named competitive threat** that *would* erode the moat. If the analyst cannot name what would compress the excess return, the moat is lazy and the entry is treated as undefended.
+   (d) **Sensitivity test** — a paired scenario value showing how the valuation moves if the moat is accepted for half the stated duration.
+   Entries lacking any of (a)–(d) are treated as undefended; the validator applies convergence anyway and flags the entry. This is what makes "defended" earn its keep.
+3. **Freshness.** Entries carry `scenario_version`. The engine should warn when an entry references a scenario version older than the current scenario library; entries flagged stale are candidates for re-review at the next 6-month refresh.
+4. **Sign-flip evidence.** `sign_flip: true` overrides require `evidence_refs` of at least two items.
+
+Driver interactions of the cross-driver-coherence kind (e.g. directional consistency between revenue and margin movements; mix-shift sanity at company aggregation) are enforced in Layer 6 (§11.4), not here. The matrix carries each primary-driver movement independently.
 
 ### 10.7 Review items
 
 1. **Default direction-magnitude → numeric-band mapping per driver.** Lives in Layer 4 (driver schema). Needs to be populated per archetype as part of populating the driver catalogue. Without this mapping the hybrid encoding cannot translate to numbers in Layer 6.
-2. **Validator implementation.** Consistency rules in §10.6 must be implemented as engine validation, not only stated. Build alongside Layer 5 code.
-3. **Reason category enum stability.** Initial enum is `cost_advantage | scale | regulation | contract | management | product_mix | diversification | franchise_asset | other`. To be revisited after first pass populating IPL / CSL / WBC overrides; new categories added if patterns demand.
-4. **Governance roles.** Definitions of `created_by` and `approved_by` — single analyst, peer review, or formal governance committee — to be settled with Ben's data workstream.
+2. **Validator implementation.** Consistency rules in §10.6 must be implemented as engine validation, not only stated. Includes: derived-driver write-protection, scenario-sensitivity consistency, defended-exception criteria check, freshness warning, sign-flip evidence count, and the override-density threshold from §10.4. Build alongside Layer 5 code.
+3. **Reason category enum stability.** Initial enum is `cost_advantage | scale | regulation | contract | management | product_mix | diversification | franchise_asset | data_workstream | other`. To be revisited after first pass populating IPL / CSL / WBC overrides; new categories added if patterns demand.
+4. **Governance roles.** `created_by` = analyst writing the override; `approved_by` = named peer reviewer (one named human, not a committee, until volume requires otherwise). The audit-trail value comes from named humans more than formal governance structure.
 5. **Beyond-scale override convention** (`beyond_scale: true` plus quantified band) needs a worked example once we hit a real case in populating IPL / CSL / WBC.
 6. **High-importance driver completeness check.** Convention is sparse, but a validator should warn when a driver flagged "high importance" for an archetype has no matrix entry under any scenario. Mechanism for flagging "high importance" to be defined alongside the driver catalogue.
+7. **Override density threshold per archetype.** §10.4 sets a default threshold of ≤20% of cells overridden per company. Threshold should be archetype-tunable — thin-archetype cases (CSL) may legitimately sit higher. Calibrate after first pass populating.
+8. **Half-life staleness propagation logic.** When a scenario YAML bumps version, the engine should mark every override referencing the old `scenario_version_at_creation` with `requires_re_review: true`, on the basis that the override's rationale was scenario-version-specific. The override itself is preserved (not deleted); reviewer chooses whether to refresh, replace, or retire it at the next 6-month cycle.
 
 ---
 
@@ -845,15 +1011,34 @@ A small named library; each driver in Layer 4 declares a default profile, overri
 
 Library lives as code in `engine/assumptions/time_profiles.py`. Per-driver defaults and per-scenario overrides live as data.
 
-### 11.4 Consistency rules
+### 11.4 Derivations and consistency checks
 
-After per-driver translation, the engine applies a sequence of structural-identity rules to reconcile cross-driver coherence. Each rule writes to the reasoning trace so the reconciliation is auditable. Rules live as code (structural identities, not calibration).
+This section was previously a single list of "consistency rules." Following platform-side review the items have been split into two categories: **derivations** (deterministic identities computed once primary drivers are translated) and **consistency checks** (genuine cross-driver coherence checks that warn or reconcile). The split matters because derivations have an answer; consistency checks have a range.
 
-1. **Operating leverage check.** Revenue movement combined with the archetype's fixed-cost share (from §7.4 `cost_structure`) implies an EBIT-margin range. If independent translation produces a margin movement outside that range, the rule reconciles (cap to leverage-implied range or warn).
-2. **Tax aggregation.** Statutory-rate movements per geography roll up to a company-level effective rate via revenue / EBIT mix.
-3. **Capex → D&A.** Capex deltas feed D&A trajectories using the archetype's typical asset life.
-4. **WACC computation.** Movements in components (risk-free rate, ERP, beta, cost of debt, target leverage, tax rate) compute through to cost of equity and WACC.
-5. **Terminal-state convergence.** Enforce terminal ROIC ≈ WACC unless an explicit defence is recorded in the matrix entry (cross-check with §1 and §9.3).
+#### 11.4.1 Derivations (deterministic — Layer 6 computes; Layer 5 does not write)
+
+Each driver tagged `role: derived` in §9.2 carries a `derivation_formula`. Layer 6 evaluates these formulas after primary drivers are translated. Each derivation writes to the reasoning trace.
+
+1. **Effective tax rate.** Statutory rate per geography × revenue / EBIT mix → company-level effective rate. Identity, not coherence.
+2. **Capex → D&A.** Asset-life-weighted depreciation roll-forward from the capex stream and base-year depreciable-asset balances. Identity.
+3. **Cost of equity.** `rfr + ERP × β + country_premium + small_cap_premium` (or equivalent CAPM-with-premia form). Identity.
+4. **WACC.** `(E/V) × cost_of_equity + (D/V) × cost_of_debt_pretax × (1 − tax_rate)`. Identity.
+5. **EBIT margin / EBITDA margin.** Computed from gross margin and below-the-line drivers per the archetype's cost structure. Identity-with-noise; tolerance comes from cost-structure granularity rather than from disagreement between layers.
+6. **Return on equity (banks).** Net income / average equity, with required equity backing out from CET1 target × RWA. Identity.
+7. **RWA growth (banks).** Loan book growth × RWA intensity. Identity.
+
+These were previously framed as "consistency rules" in §11.4 rules 2–4. They are not checks. The matrix should not write to these drivers; Layer 6 computes them.
+
+#### 11.4.2 Consistency checks (genuine cross-driver coherence)
+
+After derivations, the engine applies the following genuine consistency checks. Each writes to the reasoning trace.
+
+1. **Operating-leverage directional check.** Reframed from the earlier magnitude-based rule. The earlier formulation ("revenue × fixed-cost share implies an EBIT-margin range") assumes static cost structure, smooth operating leverage, and no segment mix shift — which is too strong in practice (costs are step-function, not continuous; operating leverage interacts with capacity utilisation; mix shift between segments can reverse the implied margin sign). The check is therefore **directional only**: if revenue moves `negative / large`, EBIT margin should not move `positive / large`; if revenue moves `positive / large`, margin should not move `negative / large` without rationale. The analyst can override the directional check with an explicit rationale recorded against the consistency-check trace entry. Avoids the rule itself becoming a source of artefact.
+2. **Terminal-state convergence (cross-check with §10.6 rule 2).** Enforced at translation time. Terminal ROIC ≈ WACC (or terminal ROE ≈ cost of equity for banks) unless the matrix entry carries a §10.6-compliant defended exception (moat source named, decay horizon stated, named threat, sensitivity test). Layer 6 reapplies the convergence rule using the full set of translation outputs, in case derivations have shifted WACC since the matrix was populated.
+3. **Mix-shift check at company aggregation.** When per-segment movements are aggregated to company level via the §11.2 step 5 `aggregation_method`, the rule warns when revenue mix shifts materially across segments and the implied company-level margin movement diverges from a naive segment-weighted average by more than a defined threshold. Surfaces accidentally inconsistent assumptions where the analyst forgot the mix effect.
+4. **Terminal-share reasonableness.** Once Layer 7 produces an EV / equity value (via §14 Phase 3.5 smoke-test or full §12 engine), if terminal value contributes more than 70% of EV the engine forces a sensitivity pass on terminal assumptions. Prevents the dominant DCF failure mode of a terminal assumption silently driving the result.
+
+Consistency checks live as code (they're structural in form; the thresholds are calibratable).
 
 ### 11.5 Assumption set output schema
 
@@ -942,43 +1127,108 @@ The `reasoning_trace` is what makes the module different from "pick a number and
 
 1. **Translation rules calibration.** Initial `(direction, magnitude)` → bps mappings need to be set per archetype. Sensible starting point: cross-reference against historical scenario shocks (GFC, COVID, post-2022 inflation) to ensure the bands make sense in context.
 2. **Time-profile parameter defaults.** Each canonical profile needs sensible default parameters per driver type (e.g. `regime_shift(phase_in_years=3)` for margin shifts; `regime_shift(phase_in_years=5)` for capital-structure shifts). To be set when the library is implemented.
-3. **Consistency-rule priority and ordering.** When multiple rules touch the same driver (e.g. operating-leverage check AND terminal convergence both touching terminal margin), priority order must be defined. Default proposal: convergence rules before reconciliation rules.
-4. **Bank DDM consolidated shape.** The `consolidated_assumptions_ddm` driver list needs to be defined and co-located with the banking archetype (per §9.4).
-5. **Reasoning-trace storage.** Currently inline in the `AssumptionSet`. May balloon for many-scenario / many-company runs. Worth deciding whether to keep inline (single source of truth) or split to a side-car audit log per company-scenario.
+3. **Consistency-check priority and ordering.** When multiple checks touch the same driver (e.g. operating-leverage directional check AND terminal convergence both touching terminal margin), priority order must be defined. Default proposal: derivations first (§11.4.1), then convergence checks, then reconciliation checks.
+4. **Bank DDM consolidated shape.** The `consolidated_assumptions_ddm` driver list is now drafted in §9.4.1; needs to be co-located with the banking archetype YAML when populated.
+5. **Reasoning-trace storage.** Inline in the `AssumptionSet` is the v0.1 default — single source of truth, no synchronisation problem. If file size becomes an issue with many-scenario × many-company runs, split to a side-car `audit/{company}_{scenario}.yaml` with a stable hash linking back to the `AssumptionSet`. Don't pre-optimise.
 6. **Parametric horizon source.** §2 says horizon is parametric per company-scenario; needs an explicit field in the scenario object (or scenario-company application) declaring the horizon for each combination.
-7. **Layer 4 driver-schema additions required.** Translation logic depends on three new fields per driver in Layer 4: `base_definition`, `default_time_profile`, `aggregation_method`. These need to be added to §9.2 schema and populated per driver.
+7. **Driver-schema fields populated per driver.** §9.2 already includes `base_definition`, `default_time_profile`, `aggregation_method`. The remaining work is to populate these fields per driver, not to add them to the schema. (Earlier draft of this review item was stale — closed.)
+8. **Confidence-band convention for macro time series (cross-link to §6.7 item 4).** Macro variable time series carry `confidence_band: {min, mid, max}`. Convention adopted: bands are *analyst subjective range conditional on the scenario playing out as defined*. Empirical historical-conditional bands imply the scenario already happened; consensus bands import other forecasters' priors. Subjective-conditional is honest about what's being claimed.
 
 ---
 
 ## 12. Layer 7 — DCF Engine *(deferred, brief)*
 
-Consumes an `AssumptionSet` object, returns enterprise value, equity value, and per-share value plus sensitivity tables. Distinct DCF implementation required for WBC (residual income / DDM) vs IPL and CSL (traditional unlevered FCF). To be specified in a separate document once layers 1–5 are built.
+Consumes an `AssumptionSet` object, returns enterprise value, equity value, and per-share value plus sensitivity tables. Distinct implementations required: traditional unlevered FCF DCF for IPL and CSL; residual income / DDM for WBC and any other archetype tagged `valuation_model: ddm | residual_income`. To be specified in a separate document once Layers 1–6 are built and a Phase 3.5 smoke-test (§14) has run end-to-end through one IPL × one scenario.
+
+**Relationship to `vcc-pricing-engine`.** The platform's separate `vcc-pricing-engine` (NoCodeQL containerised; bond / swap / curve pricing via QuantLib) handles current valuations of structured products. This valuations module handles forward-looking equity DCFs under scenarios. Two complementary services on the platform: pricing is point-in-time, mark-to-market structured-product valuation; valuations is scenario-conditional forward equity valuation. They share the **scenario library at the macro layer** — interest-rate / FX / commodity scenarios feed both — which is part of the case in §5.1 item 8 for hosting the scenario library platform-side rather than valuation-internal.
 
 ---
 
 ## 13. Layer 8 — Interactive Interface *(deferred, brief)*
 
-Web application delivered as a **FastAPI backend** (exposing the engine as a JSON API) plus a **Vue frontend** (consuming that API). Per-layer navigation: browse/edit scenarios, browse/edit industry archetypes, view company positioning, view driver movements (layer 5 output), view and modify assumption sets (layer 6 output), compare scenarios side-by-side for one company, compare companies under one scenario. Sensitivity and tornado charts once the DCF engine (layer 7) is live. The user-facing assumption-inspection and modification capability foreshadowed in §1 lives here. To be specified in its own design document once the engine is working.
+Per §2.1, the user interface is **embedded in the existing VCC dashboard**, not built as a separate frontend. The valuation module exposes a JSON API; the dashboard's existing module loader (`v2.html` shell + `static/js/v2/` modules) renders the API output as a **Valuations tab on each per-company VCC** (CSL VCC, IPL VCC, WBC VCC). Single UX, single auth, single ops surface; the Vue frontend originally sketched here is no longer being built.
+
+**Per-company tab capabilities:**
+
+1. View `AssumptionSet` for the selected company × scenario, with the §11.6 reasoning trace inline and expandable per-driver.
+2. Compare scenarios side-by-side for one company (default view — discourage reading any single scenario as "the answer"; per §3.3 and the §6.2 boundary-cases commitment, comparison is canonical).
+3. View driver movements (Layer 5 output) and the underlying scenario × industry × override chain.
+4. View / propose modifications to assumptions (the user-facing assumption-inspection and modification capability foreshadowed in §1).
+5. Sensitivity and tornado charts once the DCF engine (Layer 7) is live.
+
+**Cross-company:**
+
+6. Compare companies under one scenario, rendered as a multi-VCC view in the dashboard.
+
+**Reasoning-trace API surface.** The `reasoning_trace` is queryable per `(company, scenario, driver)` tuple, not only as a full-`AssumptionSet` download. This is what supports the per-company VCC chat persona (e.g. "specialty plasma equity analyst" for CSL): when a user asks *"what's your view of CSL under Scenario 3?"*, the VCC chat surface pulls the relevant trace slice and answers with the chain — scenario narrative → industry impact → company position → driver movement → assumption value → DCF output. The schema in §11.5 supports this; the API surface needs explicit per-driver retrieval endpoints.
+
+**Default view discipline.** The headline view defaults to a multi-scenario fan chart with scenarios visually distinguished — *not* a single mid-scenario number. This is a behavioural-design choice consistent with §3.3 / §6.2: scenarios are boundary cases, and comparison is the natural action the UI should support.
+
+**Deferred details.** The CLI and per-tab UI specs themselves live in their own design documents once the engine is working. CLI commands `vcc valuation regenerate <company> <scenario>` and `vcc valuation diff <company> <scenario_old> <scenario_new>` are scoped in §14.
 
 ---
 
 ## 14. Phasing Plan
 
 1. **Phase 0 — Design (now).** This document + scenarios workshop. No engine code yet.
-2. **Phase 1 — Schema & data layer.** Formalise YAML schemas; populate industry archetypes, company positions, and one or two scenarios as worked examples.
-3. **Phase 2 — Impact matrix population.** Populate the matrix across all scenarios × all three industries. Document reasoning. This is the intellectually heavy phase.
+2. **Phase 1 — Schema & data layer.** Formalise YAML schemas; populate industry archetypes, company positions, and one or two scenarios as worked examples. Draft the Five Forces question bank (§7.7 item 7) and the `payor_and_regulator` framework schema (§7.7 item 10) before the relevant archetypes are populated.
+3. **Phase 2 — Impact matrix population.** Populate the matrix across all scenarios × all three industries. Document reasoning. This is the intellectually heavy phase. See §14.1 below for population approach (starter templates, minimum-viable matrix, time budget).
 4. **Phase 3 — Assumption translator.** Code the translator that turns driver movements + base-year snapshot into `AssumptionSet` objects. First end-to-end run: IPL × base case.
-5. **Phase 4 — Expand and calibrate.** Run all three companies across all scenarios. Compare IPL outputs to the strategist-friend benchmark. Iterate on matrix and overrides.
-6. **Phase 5 — DCF engine.** Plug in traditional and bank DCF implementations.
-7. **Phase 6 — Interface.** FastAPI backend + Vue frontend.
+5. **Phase 3.5 — Smoke-test DCF.** Insert a minimal end-to-end run before Phase 4 expands across all scenarios. Even a 50-line traditional FCF DCF and a 50-line two-stage DDM. Run one IPL × one scenario through the full pipeline (Layers 1–7) before populating across all scenarios. Cheap insurance against schema rework — surfaces any assumption-set shape problems while the schema is still cheap to revise. Likely findings: terminal-state convergence forcing inexpressible reinvestment rates; FCF cycles requiring debt-financing assumptions Layer 6 hadn't generated; banking residual-income shape revealing a missing bank-specific driver. A few days of work; saves weeks if the cascade has to be re-run.
+6. **Phase 4 — Expand and calibrate.** Run all three companies across all scenarios. Compare IPL outputs to the strategist-friend benchmark per §15. Iterate on matrix and overrides. This is also where the trace-comparison tooling for the strategist benchmark gets built (§15).
+7. **Phase 5 — DCF engine.** Productionise the traditional FCF DCF and the bank DDM / residual-income engine; replace the Phase 3.5 smoke-test stubs with full implementations.
+8. **Phase 6 — Interface integration.** Embed valuation output as a Valuations tab in the existing VCC dashboard per §13. Build CLI commands (§14.2). No standalone frontend.
+
+### 14.1 Phase 2 / Phase 4 population approach
+
+Populating the impact matrix is the intellectually heaviest part of the work and the single largest call on analyst time. To make the work tractable:
+
+1. **Starter templates with pre-populated expected cells.** Under each scenario, pre-populate the cells where the direction is essentially given by the scenario narrative (e.g. revenue growth in a recession scenario is almost always negative for non-defensive industries; rates in a tightening scenario are positive for bank NIM). The analyst confirms / adjusts rather than writing from blank. Templates live alongside scenarios in `data/translation_rules/` and are versioned.
+2. **Minimum-viable matrix per archetype.** Identify 5–10 *load-bearing* drivers per scenario per archetype — the ones that materially drive the headline assumption (revenue growth, EBIT margin, capex intensity, terminal margin for FCF; NIM, loan growth, credit-loss charge for banks). Populate these first. The long tail of drivers (asset turnover, working capital days, country premium, etc.) is populated only if the headline doesn't tell the full story or the strategist-friend comparison surfaces a gap.
+3. **Five Forces question bank as the structuring tool.** The §7.7 question bank should be drafted in Phase 1 and applied as the analyst works through each archetype, so the analysis is structured rather than ad-hoc.
+4. **Override discipline target.** Per §10.4, override density should sit ≤20% of cells per company. If population starts heading higher, pause and revisit the archetype.
+5. **Analyst time budget — provisional 3 weeks per archetype-company pair.** Working anchor for planning purposes only. Acknowledged drivers of variation: archetype novelty (banking and other non-Porter archetypes likely sit higher; subsequent applications of an established pattern compress); data-source maturity for the archetype; segment count (multi-segment companies take longer); calibration loops with the strategist friend (IPL specifically). Budget to be **calibrated against actuals** as IPL / CSL / WBC are populated; first revisit after IPL completes. Marked open-to-revisit (§14.3).
+
+### 14.2 Tooling for analyst workflow (Phase 4 onward)
+
+Add to the existing platform `vcc` CLI:
+
+1. **`vcc valuation regenerate <company> <scenario>`** — re-runs Layers 1–6 for one combination; useful when a scenario YAML or company override changes. Writes the regenerated `DriverMovementSet` and `AssumptionSet` to `output/`.
+2. **`vcc valuation diff <company> <scenario_old> <scenario_new>`** — shows which `AssumptionSet` fields changed and why, by cross-referencing the `reasoning_trace`. Most useful when calibrating overrides or when Ben's data workstream updates a base-year snapshot.
+3. Both sit alongside the existing `vcc fundamentals` / `vcc news` commands; no new CLI framework needed.
+
+### 14.3 Review items
+
+1. **Analyst time budget per archetype-company pair — open to revisit.** Initial planning anchor of 3 weeks per pair is provisional. Calibrate against actuals; first revisit after IPL completes. Track actuals broken into research / schema population / override population / calibration / review so the empirical anchor is granular enough to be useful. Reported in Phase 4 retrospective.
+2. **Phase 3.5 smoke-test scope.** What counts as "good enough" for the smoke-test FCF and DDM stubs needs nailing down so the work is bounded. Proposed minimum: explicit-period free cash flow projection through the parametric horizon; Gordon-growth terminal; nominal WACC discounting; no fancy mid-period or stub-period adjustments. Same shape applies to a two-stage DDM for the bank.
+3. **Starter-template authoring** — who drafts the pre-populated expected cells, and against what reference set. Likely: Tara drafts initial set as part of the scenarios workshop output; Ben's data workstream confirms data feasibility.
 
 ---
 
 ## 15. Calibration & Validation
 
-1. **External benchmark.** IPL has an independent scenario-valuation exercise already completed by a strategist. Treat this as a calibration target: if our framework produces materially different conclusions, we must be able to explain why (either we disagree on positioning, we disagree on scenario impacts, or we disagree on translation to assumptions — the reasoning trace should localise the source of divergence).
-2. **Internal consistency checks.** Macro variables inside a scenario must be logically consistent; impact-matrix entries should not contradict the scenario narrative; company overrides must have reason codes.
-3. **Out-of-sample application.** Once the framework is stable, applying it to a company not in the test set (e.g., BHP) is the simplest test of generalisability.
+### 15.1 Calibration angles
+
+1. **External benchmark — strategist-friend on IPL.** IPL has an independent scenario-valuation exercise already completed by a strategist friend. Treat this as the most important single calibration input — not because the strategist is necessarily right, but because divergence between framework output and strategist output **is the diagnostic**:
+   (a) If both agree on conclusion but for different reasons → framework and strategist intuition are converging, good signal.
+   (b) If both agree on conclusion for the same reasons → unsurprising, weak signal.
+   (c) If both disagree on conclusion → the reasoning trace localises *where* the disagreement sits (positioning vs scenario impact vs translation), which is more valuable than either being individually right.
+   Build the **trace-comparison tooling early** (Phase 4): compare side-by-side the two reasoning chains, not just the headline numbers.
+2. **Internal consistency checks.** Macro variables inside a scenario must be logically consistent; impact-matrix entries should not contradict the scenario narrative; company overrides must have reason codes; derived drivers must be writable only by Layer 6, not by Layer 5; defended exceptions to terminal convergence must satisfy the four §10.6 criteria.
+3. **Out-of-sample application.** Once the framework is stable, applying it to a company not in the test set (e.g. BHP) is the simplest test of generalisability.
+
+### 15.2 Calibration techniques (within each angle)
+
+The structure of three angles is settled; the techniques inside each are:
+
+1. **Historical scenario backtest.** Take a real past scenario shock (GFC 2008–09; COVID 2020; post-2022 inflation). Apply the framework retroactively: encode IPL's 2007 positioning, run the framework's "GFC scenario" against the 2008 base year, generate the framework's predicted margin / capex path, compare to what actually happened. If the framework systematically under- or over-estimates the magnitude of the shock, the translation rules are mis-calibrated. Cheap diagnostic for the bps mappings in `data/translation_rules/` because we know the answer.
+2. **Framework-internal sensitivity analysis.** Decompose total variance in the headline output across the layers: how much is driven by scenario macro variables (Layer 1), industry archetype attributes (Layer 2), company positioning (Layer 3), driver default ranges (Layer 4), impact matrix entries (Layer 5), translation rules (Layer 6)? Whichever layer dominates is the load-bearing beam, and deserves disproportionate scrutiny. A common finding in scenario-DCF frameworks: translation rules end up dominating; if so, those bps mappings are not just plumbing — they're the framework's load-bearing beam.
+3. **Terminal-share reasonableness check.** Terminal value share of total EV is a known place where DCFs go wrong (terminal often 60–90% of EV, so terminal assumption changes dominate). Validator (also referenced in §11.4.2 rule 4): if terminal contributes >70% of EV under any scenario, force a sensitivity pass on terminal assumptions and require explicit defence in the reasoning trace.
+
+### 15.3 Review items
+
+1. **Backtest design.** Which historical episodes, which scenario mappings, which companies (IPL is the obvious candidate; CSL through COVID is potentially informative; banks through GFC). To be planned alongside Phase 4.
+2. **Sensitivity-analysis methodology.** Per-layer variance decomposition needs a defined methodology — either Sobol indices (rigorous but expensive) or one-factor-at-a-time perturbation (cheaper, less precise). Decision deferred to Phase 4 implementation.
 
 ---
 
