@@ -232,7 +232,8 @@
         <div class="step-name">Scenarios workshop</div>
         <div class="deliverables">
           <span class="arrow">&rarr;</span><code>design/scenarios_workshop.md</code> (themes, decisions)<br>
-          <span class="arrow">&rarr;</span><code>data/scenarios/&lt;id&gt;.yaml</code> &times; 3&ndash;6 files
+          <span class="arrow">&rarr;</span><code>data/scenarios/&lt;id&gt;.yaml</code> &times; 3&ndash;6 files (structured)<br>
+          <span class="arrow">&rarr;</span><code>data/scenarios/&lt;id&gt;.md</code> &times; 3&ndash;6 files (narrative)
         </div>
       </td>
       <td class="col-time">60&ndash;120<span class="time-tail">+ workshop</span></td>
@@ -264,14 +265,17 @@
       <td class="col-step">
         <div class="step-name">Populate first archetype (IPL)</div>
         <div class="deliverables">
-          <span class="arrow">&rarr;</span><code>data/industries/industrial_explosives.yaml</code><br>
-          <span class="arrow">&rarr;</span><code>data/companies/ipl.yaml</code><br>
+          <span class="arrow">&rarr;</span><code>data/industries/industrial_explosives.{yaml,md}</code> (structured + narrative)<br>
+          <span class="arrow">&rarr;</span><code>data/companies/ipl.{yaml,md}</code> (structured + narrative)<br>
           <span class="arrow">&rarr;</span><code>data/financials/ipl.yaml</code> (curated, from market-ingest)<br>
           <span class="arrow">&rarr;</span><code>data/impact_matrix/by_industry/industrial_explosives.yaml</code><br>
+          <span class="arrow">&rarr;</span><code>analyses/ipl/scenarios/&lt;each&gt;.md</code> (per-scenario impact narrative)<br>
+          <span class="arrow">&rarr;</span><code>analyses/ipl/valuations/&lt;each&gt;.md</code> (per-scenario valuation note)<br>
+          <span class="arrow">&rarr;</span><code>analyses/ipl/thesis.md</code> (cross-scenario rollup)<br>
           <span class="arrow">&rarr;</span>Research notes in <code>notebooks/research/</code>
         </div>
       </td>
-      <td class="col-time">240&ndash;600</td>
+      <td class="col-time">320&ndash;800<span class="time-tail">narrative-heavy</span></td>
       <td class="col-done"><span class="checkbox"></span></td>
       <td class="col-notes"></td>
     </tr>
@@ -329,13 +333,14 @@
       <td class="col-step">
         <div class="step-name">Expand to CSL and WBC</div>
         <div class="deliverables">
-          <span class="arrow">&rarr;</span><code>data/industries/{specialty_biologics,major_banks_au}.yaml</code><br>
-          <span class="arrow">&rarr;</span><code>data/companies/{csl,wbc}.yaml</code> + <code>data/financials/{csl,wbc}.yaml</code><br>
+          <span class="arrow">&rarr;</span><code>data/industries/{specialty_biologics,major_banks_au}.{yaml,md}</code><br>
+          <span class="arrow">&rarr;</span><code>data/companies/{csl,wbc}.{yaml,md}</code> + <code>data/financials/{csl,wbc}.yaml</code><br>
           <span class="arrow">&rarr;</span><code>data/impact_matrix/by_industry/&hellip;.yaml</code><br>
+          <span class="arrow">&rarr;</span><code>analyses/{csl,wbc}/{scenarios,valuations}/&lt;each&gt;.md</code> + <code>thesis.md</code><br>
           <span class="arrow">&rarr;</span>Banking driver set + WBC's <code>complementary_framework: payor_and_regulator</code>
         </div>
       </td>
-      <td class="col-time">240&ndash;480 each</td>
+      <td class="col-time">320&ndash;640 each</td>
       <td class="col-done"><span class="checkbox"></span></td>
       <td class="col-notes"></td>
     </tr>
@@ -394,7 +399,7 @@
 
 <footer>
   <span>Estimates are chat-minutes only. Offline analytical work, scenarios workshop, Ben's data workstream, and platform-side integration are not counted. Steps 5 and 6 are the least reliable estimates. <code>output/</code> files regenerate continuously and are not one-time deliverables.</span>
-  <span>v2 &middot; 7 May 2026</span>
+  <span>v3 &middot; 7 May 2026 (narrative deliverables added)</span>
 </footer>
 
 </div>

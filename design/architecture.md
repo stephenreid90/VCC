@@ -227,6 +227,7 @@ The scenario library is refreshed on a **six-month cadence** to reflect evolving
 1. Three to six populated scenarios (themes to be developed in dedicated scenarios workshop; see §3 open items).
 2. Narrative (in the structured form above) plus quantified macro trajectories where feasible; regime-based encoding where a variable is structurally qualitative.
 3. Internal consistency check — macro variables and regime values should move in logically consistent ways within each scenario (e.g. "stagflation persists" cannot have sticky inflation *and* falling policy rates).
+4. **Narrative deliverable** (per §16.1 item 1): `data/scenarios/<scenario_id>.md` per scenario — prose write-up describing the future-world. Produced in the scenarios workshop alongside the structured YAML.
 
 ### 6.7 Review items
 
@@ -405,6 +406,8 @@ The defined-enum-vs-open-ended question is marked open-to-revisit (§7.7) and sh
 **On multi-industry companies.** IPL formerly spanned industrial explosives and nitrogen fertilisers as two distinct archetypes with genuinely different industry structures, not merely two segments of one industry. Following the demerger, IPL is single-segment. The multi-segment treatment in the schema remains the right design — CSL is a current case (Behring + Seqirus + Vifor candidate), and any future test company spanning multiple archetypes will use the same mechanism. The corporate-action overlay (§8.4) handles discrete events (demerger / acquisition / divestment) that reshape segment weights at a defined effective year.
 
 **On thin archetypes.** CSL's archetype (specialty plasma therapeutics) has very few peers of comparable scale and positioning. The industry-level matrix may therefore track CSL closely in practice. We retain the industry layer nonetheless for three reasons: (i) writing down the industry-reference view forces explicit articulation of "what a generic specialty-biologics firm would experience in this scenario," which is analytically useful even when only one subject consumes it; (ii) the override mechanism remains available if peers are added later; and (iii) architectural consistency across the three test companies simplifies the engine.
+
+**Narrative deliverable** (per §16.1 item 2): `data/industries/<archetype_id>.md` per archetype — prose Five Forces analysis plus lifecycle / ROIC durability framing plus complementary framework where used. Reused across all companies in the archetype. Produced during archetype population.
 
 ### 7.7 Review items
 
@@ -587,6 +590,7 @@ For acquisitions where the acquirer takes on a wholly new archetype (rather than
 2. For each segment, cross-reference to the applicable industry archetype.
 3. Reasoning notes captured in-line (YAML comments or `evidence` fields) so positioning is defensible and auditable.
 4. Historical financials kept in a separate `financials.yaml` per company, not in this layer.
+5. **Narrative deliverable** (per §16.1 item 3): `data/companies/<company_id>.md` per company — prose write-up of moat, franchise assets, competitive position, risk exposures, archetype-specific positioning, and Five Forces company-side findings. Produced during company population.
 
 ### 8.6 Review items
 
@@ -1134,6 +1138,8 @@ The `reasoning_trace` is what makes the module different from "pick a number and
 7. **Driver-schema fields populated per driver.** §9.2 already includes `base_definition`, `default_time_profile`, `aggregation_method`. The remaining work is to populate these fields per driver, not to add them to the schema. (Earlier draft of this review item was stale — closed.)
 8. **Confidence-band convention for macro time series (cross-link to §6.7 item 4).** Macro variable time series carry `confidence_band: {min, mid, max}`. Convention adopted: bands are *analyst subjective range conditional on the scenario playing out as defined*. Empirical historical-conditional bands imply the scenario already happened; consensus bands import other forecasters' priors. Subjective-conditional is honest about what's being claimed.
 
+**Narrative deliverable** (per §16.1 item 4): `analyses/<company>/scenarios/<scenario_id>.md` per scenario × company — prose write-up of how this scenario plays out for this company, sourced from the impact matrix entries (§10), overrides, and the resulting `AssumptionSet`. The §11.6 reasoning trace is the underlying evidence base.
+
 ---
 
 ## 12. Layer 7 — DCF Engine *(deferred, brief)*
@@ -1141,6 +1147,10 @@ The `reasoning_trace` is what makes the module different from "pick a number and
 Consumes an `AssumptionSet` object, returns enterprise value, equity value, and per-share value plus sensitivity tables. Distinct implementations required: traditional unlevered FCF DCF for IPL and CSL; residual income / DDM for WBC and any other archetype tagged `valuation_model: ddm | residual_income`. To be specified in a separate document once Layers 1–6 are built and a Phase 3.5 smoke-test (§14) has run end-to-end through one IPL × one scenario.
 
 **Relationship to `vcc-pricing-engine`.** The platform's separate `vcc-pricing-engine` (NoCodeQL containerised; bond / swap / curve pricing via QuantLib) handles current valuations of structured products. This valuations module handles forward-looking equity DCFs under scenarios. Two complementary services on the platform: pricing is point-in-time, mark-to-market structured-product valuation; valuations is scenario-conditional forward equity valuation. They share the **scenario library at the macro layer** — interest-rate / FX / commodity scenarios feed both — which is part of the case in §5.1 item 8 for hosting the scenario library platform-side rather than valuation-internal.
+
+**Narrative deliverables** (per §16.1 items 5 and 6):
+- `analyses/<company>/valuations/<scenario_id>.md` per scenario × company — one-page valuation note: headline EV / equity value / per-share value, drivers of value, sensitivities, what would change the view.
+- `analyses/<company>/thesis.md` per company (rollup) — cross-scenario investment view: overall picture across scenarios, where the asymmetry sits, what would update the view.
 
 ---
 
@@ -1238,6 +1248,31 @@ The structure of three angles is settled; the techniques inside each are:
 2. **Fiscal year.** All three subjects report to 30 June. "Year 1" in assumption sets means the first full forecast year after the most recent reported FY.
 3. **File naming.** `snake_case` for ids and filenames; `CamelCase` for Python classes.
 4. **Schema versioning.** Every schema carries a `version` field; breaking changes bump major version and require a migration note in `design/schemas/migrations.md`.
+
+### 16.1 Narrative deliverables
+
+Alongside the structured engine outputs (YAML, JSON, computed numbers), every key analytical component carries a parallel **narrative write-up** — the form an analyst or client can read in prose, not extract from fields. The structured artefacts and the narrative artefacts are two views of the same analysis; the structured ones are the source of truth for ratings, lists, and numbers, and the narrative explains them.
+
+**Mental model.** `data/` carries inputs (structured + the prose description of the input); `analyses/` carries engine outputs made readable.
+
+**The six narrative deliverables and where they live:**
+
+1. **Scenario narrative** — `data/scenarios/<scenario_id>.md`. Per scenario, reused across all companies. Describes the future-world: macro variables, regime characterisation, what gets disrupted, what stays stable, time profile. Sources from §6. Produced during the scenarios workshop (step 3 of the build plan).
+2. **Industry view** — `data/industries/<archetype_id>.md`. Per archetype, reused across all companies in the archetype. Five Forces narrative (industry-level), lifecycle and ROIC durability framing, complementary framework where used (§7.5.1), default driver-range commentary. Sources from §7. Produced during archetype population.
+3. **Company positioning** — `data/companies/<company_id>.md`. Per company. Moat, franchise assets, competitive position, risk exposures, archetype-specific positioning, Five Forces company-side findings (where positioning diverges from the industry pattern). Sources from §8. Produced during company population.
+4. **Scenario impact narrative** — `analyses/<company>/scenarios/<scenario_id>.md`. Per scenario × company, roughly 1–2 pages. "How does this scenario play out for this company." Sources from §10 (impact matrix entries + overrides) and §11 (`AssumptionSet`). The structured `DriverMovementSet` and `AssumptionSet` provide the evidence; this is the readable version.
+5. **Valuation note** — `analyses/<company>/valuations/<scenario_id>.md`. Per scenario × company, roughly one page. Headline EV / equity value / per-share value, the drivers of value, sensitivities, what would change the view. Sources from §12.
+6. **Cross-scenario investment view (thesis)** — `analyses/<company>/thesis.md`. Per company, rollup. The synthesis: overall picture across scenarios, where the asymmetry sits, what would update the view.
+
+**Cross-referencing convention.** Each narrative file cites the specific YAML / JSON schema fields it draws from, so a reader can jump from prose to source. The §11.6 reasoning trace is the shared evidence base for the scenario impact narrative and the valuation note — those two narratives are essentially human-readable wrappers around their respective structured outputs.
+
+**Source-of-truth rule.** Where prose and structured fields disagree, the structured field wins (as a definitional source). The narrative then needs updating, not the structured field. A simple validator can flag mismatches (e.g. ratings cited in prose that don't match ratings in YAML); this is overkill for v0.1 but worth flagging for later.
+
+**Refresh cadence.** Tied to the 6-month scenario refresh (§6.5). Scenario narrative refreshes when the scenario does. Industry view, company positioning refresh when their underlying YAML changes materially. Scenario impact narrative, valuation note, and thesis re-generate when any upstream input changes (and `vcc valuation regenerate` per §14.2 is the mechanism).
+
+**Length discipline.** Each narrative is "brief" by design — typical lengths are scenario narrative 2–4 pages, industry view 3–5 pages, company positioning 3–5 pages, scenario impact 1–2 pages, valuation note 1 page, thesis 1–2 pages. Total per company-archetype-scenario set: roughly 15–25 pages. The discipline is to write what a reader needs, not exhaustive coverage.
+
+**Layer-section forward references.** Each layer section that has a narrative deliverable carries a one-line pointer to the relevant entry in this §16.1 list. The narrative is a layer's deliverable, even though the convention is centralised here.
 
 ---
 
