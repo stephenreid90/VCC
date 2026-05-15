@@ -34,15 +34,15 @@ A living scratchpad for conversational decisions, current preoccupations, and co
 
 ---
 
-## Current state of play (as of 7 May 2026)
+## Current state of play (as of 16 May 2026)
 
-- Architecture spec sections 1–17 reviewed and updated.
-- Ben's-bot platform-side review (5 May 2026) absorbed; Group 1 changes committed.
+- Architecture spec **v0.1 frozen** (`design/architecture.md`), tagged in git as `architecture-v0.1`. Sections 1–17 reviewed and updated. Ben's-bot platform-side review (5 May 2026) absorbed; Group 1 changes committed.
 - Build plan wall chart at `design/build_plan.html` (currently v3).
-- **Currently on Step 2** of the 12-step build plan (Draft analytical methodology).
-  - Five Forces question bank (`design/frameworks/five_forces_questions.md`) — Buyer Power drafted to Porter 2008. Other four forces TBD pending shape confirmation.
-  - Payor-and-regulator framework schema not yet started.
-- Step 1 (close out design hardening) substantively done but not formally ticked off — outstanding: editorial sweep (import-path naming, `imported_input_share` rename) and v0.1 git tag.
+- **Step 1** (close out design hardening): **done.** Editorial sweep applied (engine/... paths updated to src/vcc_valuations/...; `imported_input_share` renamed to `_static` / `_responsiveness` to disambiguate). v0.1 freeze and git tag in place.
+- **Step 2** (Draft analytical methodology): **done.**
+  - `design/frameworks/five_forces_questions.md` — all five forces, Porter-2008-aligned. Paired industry/company questions per sub-determinant; synthesis sections map to schema fields.
+  - `design/frameworks/payor_and_regulator.md` — v1 draft. Two-axis (regulatory + payor) framework for archetypes Porter doesn't adequately describe. WBC will be the first archetype populated against it (Step 9).
+- **Next: Step 3** — Scenarios workshop. Workshop itself happens away from chat; Claude's role is workshop prep (themes, structuring questions, "what makes a good scenario") and YAML drafting after the workshop.
 
 ---
 
@@ -113,15 +113,4 @@ A living scratchpad for conversational decisions, current preoccupations, and co
 
 ## Recent commits (reference)
 
-- `b387f1a` — initial architecture spec push (sections 1-17 first cut).
-- `8df0784` — sections 7-11 worked through with Tara.
-- `0b976eb` — Ben's-bot platform-side review absorbed (Group 1 changes).
-- `f62d3ae` — narrative-deliverables convention added; Five Forces question bank started.
-
----
-
-## Last updated
-
-7 May 2026 — initial creation as hedge against chat context-length limits.
-
-Update this file whenever a conversational decision is made that doesn't belong in the architecture spec. Concision matters — this needs to remain skim-readable.
+- `b387f1a` — initial architecture spec push (sections 1-17
