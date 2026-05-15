@@ -1,11 +1,11 @@
 # VCC Valuations — Scenario-Based Equity Valuation Module
 ## Architecture & Design Specification
 
-**Version:** 0.1 (Draft)
-**Date:** 21 April 2026
-**Status:** Working draft for mark-up and iteration
+**Version:** 0.1
+**Date:** 21 April 2026 (drafted); 7 May 2026 (Ben's-bot review + Group 1 changes); 7 May 2026 (editorial sweep, v0.1 freeze).
+**Status:** v0.1 frozen. Section-by-section review with Tara complete; Ben's-bot platform-side review (5 May 2026) incorporated. Subsequent material changes will bump to v0.2 with a migration note.
 **Scope of this phase:** Layers 1–6 (the "assumptions engine"). Layers 7 (DCF) and 8 (interface) are described at a high level only and deferred to later phases.
-**Review convention:** Open issues raised during section-by-section review are captured as an `X.1 Review items` subsection at the end of the relevant section. Search the document for "Review items" to surface all open issues in one pass. Items in these subsections are candidates for cross-review with Ben's data-sourcing workstream.
+**Review convention:** Open issues raised during section-by-section review are captured as an `X.N Review items` subsection at the end of the relevant section. Search the document for "Review items" to surface all open issues in one pass. Items in these subsections are candidates for cross-review with Ben's data-sourcing workstream.
 
 ---
 
@@ -139,7 +139,7 @@ Items 1–6 below were surfaced during the original Section 5 review and have al
 
 7. **Data-sourcing workstream contract.** The valuation module's `data/financials/<co>.yaml` schema and the contract by which Ben's `market-ingest` workstream populates it need to be written down explicitly and version-pinned. Specifically: what fields, in what units, from what source records, with what update cadence. Sits at the boundary between this spec and the data workstream's own.
 8. **Industry archetype location — strategic decision parked.** Industry archetypes (`major_banks_au`, `specialty_biologics` etc.) are currently colocated with the valuation module. Once other consumers of archetypes appear in the platform — additional bank VCCs (NAB / ANZ / CBA), the structurer, etc. — these may be better hosted as a platform-level artefact (sibling `vcc-reference-data/` repo, or under `vcc-platform/data/reference/`). The same applies to scenarios. Decision deferred until at least one additional consumer materialises; revisit at that point. For v0.1 they live in `vcc-valuations`.
-9. **Tree-vs-imports drift.** With the `src/vcc_valuations/` move, the imports-style references in the rest of the document (e.g. "engine/assumptions/time_profiles.py") will need a sweep to match the new package paths. Defer the path-renaming sweep to a follow-up editorial pass once §13 and §14 are settled.
+9. **Tree-vs-imports drift.** *Resolved* in the v0.1 editorial sweep — all imports-style references in the document now use the `src/vcc_valuations/` package path.
 
 ---
 
@@ -311,7 +311,7 @@ industry_archetype:
     labour_share_of_cost: low | moderate | high
     commodity_share_of_cost: low | moderate | high
     energy_share_of_cost: low | moderate | high
-    imported_input_share: low | moderate | high
+    imported_input_share_static: low | moderate | high   # static share of cost base
   scenario_sensitivity:                       # the responsiveness picture — mediates
                                               # scenario-to-driver transmission in Layer 5
     labour:
@@ -333,7 +333,7 @@ industry_archetype:
       demand_age_profile: string              # e.g. "ageing drives demand", "youth-skewed"
       labour_supply_sensitivity: low | moderate | high
     trade_and_supply_chain:
-      imported_input_share: low | moderate | high   # cross-reference with cost_structure
+      imported_input_share_responsiveness: low | moderate | high   # responsiveness; see cost_structure for static share
       supply_chain_concentration: low | moderate | high
     regulatory_cross_cutting:
       tax_sensitivity: low | moderate | high
@@ -414,7 +414,7 @@ The defined-enum-vs-open-ended question is marked open-to-revisit (§7.7) and sh
 1. **Scenario-sensitivity attribute list.** The block above is comprehensive but may need pruning or additions as we populate actual archetypes. Ben's data-sourcing workstream needs to confirm data availability for each attribute (cross-checked against what `market-ingest` and external sources can populate); attributes that cannot be reliably sourced should either be dropped or marked analyst-judgment-only so the engine does not treat unset as "low".
 2. **Multi-segment handling for CSL.** Whether Behring and Seqirus are one archetype with internal segmentation or two distinct archetypes. To be tested when populating.
 3. **Treatment of CSL Vifor.** Separate segment or rolled into Behring; depends on the post-acquisition reporting structure Ben can source.
-4. **`imported_input_share` rename to disambiguate.** The field currently appears in both `cost_structure` and `scenario_sensitivity.trade_and_supply_chain`. Resolved direction: rename to `cost_structure.imported_input_share_static` and `scenario_sensitivity.trade_and_supply_chain.imported_input_share_responsiveness` (or a shorter pair with the same disambiguation intent). Pin during the next editorial pass.
+4. **`imported_input_share` rename to disambiguate.** *Resolved* in the v0.1 editorial sweep. `cost_structure.imported_input_share` renamed to `cost_structure.imported_input_share_static`; `scenario_sensitivity.trade_and_supply_chain.imported_input_share` renamed to `scenario_sensitivity.trade_and_supply_chain.imported_input_share_responsiveness`. The two fields are now lexically distinct, eliminating the data-entry ambiguity.
 5. **Submarket granularity and data availability.** Where multiple regions are captured, depth of regional analysis is constrained by what Ben's workstream can reliably source per region. Needs alignment.
 6. **Lifecycle_rationale field is narrative.** Over time we may want to standardise the way lifecycle is evidenced (e.g. require reference to a peer-group ROIC vs WACC comparison).
 7. **Five Forces question bank to be developed.** Build out `design/frameworks/five_forces_questions.md` with two parallel question sets per force (industry-level and company-level). Sub-questions per force based on Porter's determinants. Iterate as we apply it to IPL / CSL / WBC; first cut to be drafted before populating the first archetype so the analysis is structured from the start.
@@ -1013,7 +1013,7 @@ A small named library; each driver in Layer 4 declares a default profile, overri
 | `back_loaded` | `years=N` | Skewed phase-in: most of the effect in the last N years. |
 | `linear_through_horizon` | — | Proportional ramp through the entire horizon. |
 
-Library lives as code in `engine/assumptions/time_profiles.py`. Per-driver defaults and per-scenario overrides live as data.
+Library lives as code in `src/vcc_valuations/assumptions/time_profiles.py`. Per-driver defaults and per-scenario overrides live as data.
 
 ### 11.4 Derivations and consistency checks
 
@@ -1280,6 +1280,4 @@ Alongside the structured engine outputs (YAML, JSON, computed numbers), every ke
 
 1. Mark up this document — anything to add, remove, or challenge.
 2. Scenarios workshop — develop 4–5 named scenario themes with narrative and macro-variable outlines.
-3. First industry archetype — populate `fertilisers_explosives.yaml` as the pilot; test that the schema holds up under real content before populating the other two.
-4. First company positioning — populate `ipl.yaml` as the pilot; same logic.
-5. Decide horizon default once scenario arcs are visible.
+3. First industry archetype — populate `fertilisers_explosives.yaml` as the pilot; test that the schema hol
