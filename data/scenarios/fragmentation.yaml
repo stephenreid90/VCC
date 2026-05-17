@@ -1,0 +1,216 @@
+scenario:
+  id: fragmentation
+  name: Fragmentation and Resource Nationalism
+  version: 2026-Q2-v1
+  published: 2026-05-16
+
+  narrative:
+    key_mechanism: >
+      Geopolitical alignment hardens into blocs. Trade barriers ratchet up;
+      tariffs widen; sanctions architecture extends; export-control regimes
+      tighten in semiconductors, critical minerals, biotech, AI hardware.
+      Supply chains regionalise; FDI flows rebalance to allied jurisdictions.
+      Capital markets fracture with capital controls in selected EMs; reserve
+      diversification away from USD accelerates modestly. Energy markets
+      bifurcate: Russian / Iranian / Venezuelan crude flows to China-aligned
+      bloc at discount; US shale and Gulf to US-aligned bloc. Critical minerals
+      access becomes the new geopolitical front. China's strategic position is
+      uniquely strong (self-sufficient demographic response, AI / robotics
+      capability, dominance within its bloc); Australia's most exposed.
+    distinguishing_features: >
+      Unlike Muddle Through, trade barriers ratchet up rather than stay stable;
+      bloc formation is explicit. Unlike Orderly Convergence, geopolitical
+      tensions deepen rather than resolve. Unlike Stagflation Persists, the
+      driver is geopolitical realignment not energy / monetary policy
+      (although energy is affected). Unlike Disorderly Climate Crystallisation,
+      the driver is bloc politics not climate. Unlike AI Productivity Lag, AI
+      stacks bifurcate by bloc and Chinese AI matures faster than Western
+      consensus credits.
+    leading_indicators: >
+      Major sanctions packages targeting cross-bloc technology / commodity
+      flows; formal trade-bloc announcements (CPTPP+, BRICS+, RCEP expansion);
+      semiconductor export-control deepening; critical-mineral export
+      restrictions widening beyond rare earths; capital-account restrictions
+      in major EMs; reserve-currency reallocation evidence (CIPS, gold,
+      multi-currency); Chinese AI breakthroughs gaining recognition.
+    disconfirming_evidence: >
+      Major diplomatic breakthroughs (US-China summit yielding substantive
+      trade framework, Russia-Ukraine settlement, Iran nuclear deal revival)
+      would weaken the bloc-formation logic. Sustained globalisation gains in
+      lower-sensitivity categories would suggest barrier-stability rather than
+      ratcheting.
+
+  time_profile:
+    - phase: early_realignment
+      year_start: 1
+      year_end: 4
+      characterisation: >
+        Initial sanctions / tariff / export-control packages catalyse
+        bloc-formation moves. Markets disrupted; supply-chain restructuring
+        begins. Pricing of bloc-political risk into asset values.
+    - phase: structural_adjustment
+      year_start: 5
+      year_end: 9
+      characterisation: >
+        Supply chains rewire; industrial capacity duplicates within blocs;
+        capital flows reallocate; alliances harden. Inflation runs structurally
+        higher from duplication costs and security premiums. Chinese bloc grows
+        faster than US-aligned bloc; Europe hardest hit.
+    - phase: new_equilibrium
+      year_start: 10
+      year_end: null
+      characterisation: >
+        New bifurcated equilibrium consolidates. Reduced cross-bloc trade but
+        deeper bloc-internal integration. Structurally inferior to
+        pre-fragmentation world but stable.
+
+  macro_variables:
+    - variable: real_gdp_growth_world
+      units: percent_yoy
+      type: time_series
+      time_series:
+        - {year: 1, value: 2.2, confidence_low: 1.7, confidence_high: 2.7}
+        - {year: 3, value: 1.8, confidence_low: 1.0, confidence_high: 2.5}
+        - {year: 5, value: 2.0, confidence_low: 1.3, confidence_high: 2.7}
+        - {year: 10, value: 2.0, confidence_low: 1.3, confidence_high: 2.7}
+        - {year: 15, value: 2.0, confidence_low: 1.3, confidence_high: 2.7}
+
+    - variable: real_gdp_growth_china_bloc
+      units: percent_yoy
+      type: time_series
+      time_series:
+        - {year: 1, value: 4.0, confidence_low: 3.0, confidence_high: 5.0}
+        - {year: 5, value: 3.8, confidence_low: 3.0, confidence_high: 4.5}
+        - {year: 10, value: 3.5, confidence_low: 2.5, confidence_high: 4.5}
+
+    - variable: real_gdp_growth_us_bloc
+      units: percent_yoy
+      type: time_series
+      time_series:
+        - {year: 1, value: 2.0, confidence_low: 1.5, confidence_high: 2.5}
+        - {year: 5, value: 1.8, confidence_low: 1.2, confidence_high: 2.5}
+        - {year: 10, value: 1.8, confidence_low: 1.2, confidence_high: 2.5}
+
+    - variable: cpi_inflation_advanced
+      units: percent_yoy
+      type: time_series
+      time_series:
+        - {year: 1, value: 3.2, confidence_low: 2.7, confidence_high: 3.8}
+        - {year: 3, value: 3.5, confidence_low: 3.0, confidence_high: 4.0}
+        - {year: 5, value: 3.5, confidence_low: 3.0, confidence_high: 4.0}
+        - {year: 10, value: 3.3, confidence_low: 2.8, confidence_high: 3.8}
+
+    - variable: policy_rate_real_advanced
+      units: percent
+      type: time_series
+      time_series:
+        - {year: 1, value: 1.2, confidence_low: 0.7, confidence_high: 1.7}
+        - {year: 5, value: 1.5, confidence_low: 1.0, confidence_high: 2.0}
+        - {year: 10, value: 1.5, confidence_low: 1.0, confidence_high: 2.0}
+
+    - variable: trade_regime
+      units: regime
+      type: regime
+      regime:
+        label: bloc_bifurcated
+        description: >
+          Formal or de facto bloc formation: US-aligned, China-aligned,
+          non-aligned. Bloc-internal trade grows; bloc-crossing trade
+          contracts. Tariffs and export controls ratcheted up.
+
+    - variable: geopolitical_regime
+      units: regime
+      type: regime
+      regime:
+        label: bipolar_with_non_aligned
+        description: >
+          US-China contestation hardens into formal bloc structures.
+          Non-aligned middle powers (India, Brazil, ASEAN core) navigate
+          carefully but increasingly forced to choose.
+
+  geopolitical:
+    bloc_dynamics: >
+      Formal or de facto bloc formation: US-aligned (NATO + AUKUS + Quad +
+      East Asia treaty network), China-aligned (BRICS+, SCO, Belt-and-Road
+      partners), non-aligned (India, Brazil, ASEAN core, parts of Africa).
+      Bloc-internal trade grows; bloc-crossing trade contracts.
+    trade_policy: >
+      Barriers rise materially. Tariffs widen across goods categories;
+      export-control regimes tighten in dual-use, critical minerals, biotech,
+      AI hardware. Cross-border M&A increasingly blocked on security grounds.
+    resource_nationalism: >
+      Acute. Critical-minerals access weaponised; energy-supply contracts
+      bloc-aligned; transition-mineral cooperation only within bloc; agricultural
+      export restrictions in stress periods.
+
+  technology:
+    productivity_regime: >
+      Bifurcated. Within blocs, productivity continues — but cross-bloc
+      technology transfer constrained. Chinese AI matures faster than Western
+      consensus credits; parallel ecosystems develop.
+    disruption_vectors:
+      - Separate AI stacks (US/EU vs Chinese)
+      - Bloc-internal supply-chain duplication accelerating manufacturing investment
+      - Critical-mineral / battery / semiconductor onshoring as strategic capex
+
+  regulatory:
+    climate_policy: >
+      Bloc-divergent. EU maintains aggressive carbon-pricing within bloc;
+      US under continued political contestation; China-aligned bloc pursues
+      transition for strategic / industrial-policy reasons rather than climate
+      reasons. Cross-bloc carbon-border-adjustment mechanisms become
+      trade-war instruments.
+    financial_regulation: >
+      Bloc-aligned. Differential capital and liquidity treatment of cross-bloc
+      counterparties; SWIFT alternatives (CIPS) gaining share; reserve
+      diversification frameworks formalised.
+    healthcare_regulation: >
+      Bloc-divergent in pharmaceutical IP and biotech regulation;
+      cross-bloc clinical-trial cooperation constrained.
+
+  commodity_and_energy:
+    oil_regime: >
+      Bifurcated. Russian / Iranian / Venezuelan crude to China-aligned bloc
+      at structural USD 10–20 discount; US-aligned bloc relies on US shale
+      and Gulf supply. Brent benchmark fragments.
+    gas_regime: >
+      Russian gas locked into Chinese market via expanded Power of Siberia;
+      EU pays premium for LNG from US / Qatar.
+    metals_regime: >
+      Critical-mineral pricing fragments by bloc; rare earths, lithium,
+      cobalt, nickel access constrained for non-aligned buyers.
+    ag_regime: >
+      Bloc-aligned trade for staples; export restrictions in stress periods;
+      regional self-sufficiency push.
+
+  demand_profile:
+    consumer: >
+      Differential by bloc. China-aligned bloc consumer demand robust
+      (large internal market). US-aligned consumer growth subdued.
+    industrial: >
+      Capex elevated everywhere for onshoring / duplication; manufacturing
+      growth above trend in bloc-internal capacity build-out.
+    infrastructure: >
+      Bloc-internal infrastructure prioritised over cross-bloc connectivity.
+      China continues Belt-and-Road within its bloc; US-aligned bloc invests
+      in resilience.
+    healthcare: >
+      Bloc-internal supply security pursued; pharmaceutical onshoring
+      accelerates.
+
+  financial_conditions:
+    policy_rates: >
+      Nominal cash rates 4–5% in US-aligned bloc; somewhat lower in China-aligned.
+      Differential persists.
+    credit_spreads: >
+      Widening between bloc-internal and cross-bloc exposures; sovereign
+      spreads bifurcate by alignment.
+    fx_regime: >
+      USD share of reserves declines gradually but remains dominant; CNY
+      gains share within China-aligned bloc; gold prominent.
+    equity_risk_premium: >
+      Rises on geopolitical risk; bloc-internal companies trade at discount
+      vs domestic-revenue purity premium; multinationals with cross-bloc
+      operations re-rated lower.
+
+  probability: null

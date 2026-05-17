@@ -1,0 +1,181 @@
+scenario:
+  id: muddle_through
+  name: Muddle Through
+  version: 2026-Q2-v1
+  published: 2026-05-16
+
+  narrative:
+    key_mechanism: >
+      Post-2022 friction proves persistent rather than transitional. Inflation
+      cools but lands above target; central banks accept structural overshoot
+      rather than crush demand. Real rates settle structurally higher than
+      pre-2022. The US continues to outperform as a fiscal-plus-AI-plus-immigration
+      growth engine but the lift does not propagate. Climate policy stays patchy
+      with regional divergence. AI investment continues but productivity
+      transmission is slow with rents concentrated in platform owners; the
+      labour-cost containment channel is the main working transmission.
+      Geopolitical contestation continues without escalation. The world is
+      recognisable, just structurally harder than the pre-pandemic norm.
+    distinguishing_features: >
+      Unlike Orderly Convergence, inflation does not return to target and real
+      rates do not normalise. Unlike Stagflation Persists, inflation does not
+      un-anchor and growth does not recess. Unlike Fragmentation, trade barriers
+      are stable not ratcheting. Unlike Disorderly Climate Crystallisation, no
+      crystallisation event occurs. Unlike AI Productivity Lag, AI is not the
+      dominant story — Muddle Through is the absence of any single dominant
+      story.
+    leading_indicators: >
+      US growth continuing 2.0–2.5%; advanced-economy inflation sticky at
+      2.5–3.5%; central banks holding restrictive policy but not tightening
+      further; geopolitical flashpoints continuing without resolution or
+      escalation; climate-policy reform attempts failing politically without
+      backsliding to the worst case; AI capex continuing at high levels with
+      enterprise-adoption surveys showing slow uptake outside specific cohorts.
+    disconfirming_evidence: >
+      A sustained move in advanced-economy inflation back to target with credible
+      central-bank declarations (would shift toward Orderly Convergence). A
+      sustained inflation-expectations break above 3% with second-round wage
+      dynamics (would shift toward Stagflation Persists). A trigger event in
+      energy / financial markets / climate / geopolitics that forces regime
+      change in one of those dimensions (would shift toward one of the boundary
+      scenarios).
+
+  time_profile:
+    - phase: continuation
+      year_start: 1
+      year_end: null
+      characterisation: >
+        Status-quo extension. Current friction persists at current intensity.
+        No phase transition inside the horizon.
+
+  macro_variables:
+    - variable: real_gdp_growth_world
+      units: percent_yoy
+      type: time_series
+      time_series:
+        - {year: 1, value: 2.3, confidence_low: 1.8, confidence_high: 2.7}
+        - {year: 2, value: 2.3, confidence_low: 1.7, confidence_high: 2.8}
+        - {year: 3, value: 2.3, confidence_low: 1.6, confidence_high: 2.9}
+        - {year: 5, value: 2.3, confidence_low: 1.5, confidence_high: 3.0}
+        - {year: 7, value: 2.3, confidence_low: 1.4, confidence_high: 3.1}
+        - {year: 10, value: 2.3, confidence_low: 1.3, confidence_high: 3.2}
+
+    - variable: real_gdp_growth_us
+      units: percent_yoy
+      type: time_series
+      time_series:
+        - {year: 1, value: 2.4, confidence_low: 1.9, confidence_high: 2.9}
+        - {year: 5, value: 2.3, confidence_low: 1.5, confidence_high: 3.0}
+        - {year: 10, value: 2.2, confidence_low: 1.3, confidence_high: 3.0}
+
+    - variable: cpi_inflation_advanced
+      units: percent_yoy
+      type: time_series
+      time_series:
+        - {year: 1, value: 3.0, confidence_low: 2.5, confidence_high: 3.5}
+        - {year: 5, value: 3.0, confidence_low: 2.3, confidence_high: 3.7}
+        - {year: 10, value: 3.0, confidence_low: 2.0, confidence_high: 4.0}
+
+    - variable: policy_rate_real_advanced
+      units: percent
+      type: time_series
+      time_series:
+        - {year: 1, value: 1.0, confidence_low: 0.5, confidence_high: 1.5}
+        - {year: 5, value: 1.0, confidence_low: 0.5, confidence_high: 1.5}
+        - {year: 10, value: 1.0, confidence_low: 0.5, confidence_high: 1.5}
+
+    - variable: inflation_regime
+      units: regime
+      type: regime
+      regime:
+        label: sticky_above_target
+        description: >
+          Inflation cools from post-2022 peak but settles structurally above
+          central-bank targets. Central banks accept the overshoot rather than
+          force the last point down.
+
+  geopolitical:
+    bloc_dynamics: >
+      US-China contestation continues without escalation. Sanctions architecture
+      intact and modestly extending; no major new fronts opened. Regional
+      flashpoints (Middle East, Taiwan, Russia-NATO) continue at current
+      intensity.
+    trade_policy: >
+      Barriers stable but not relaxing. Tariffs at post-2022 levels persist;
+      export controls (semiconductors, AI hardware) continue but do not deepen
+      materially. Supply chain regionalisation gradual rather than acute.
+    resource_nationalism: >
+      Selective: critical-mineral export restrictions continue (China rare
+      earths, Indonesian nickel); broader resource markets functioning normally.
+
+  technology:
+    productivity_regime: >
+      Slow transmission. Aggregate TFP growth around 0.7–0.9%, modestly above
+      pre-pandemic norm but well short of the bull-case. Productivity gains
+      concentrate in well-integrated firms within sectors most amenable to AI
+      substitution.
+    disruption_vectors:
+      - AI in pockets — narrow productivity gains, broad enterprise lags
+      - Electrification / EVs — continued but uneven roll-out by geography
+      - Biotech — gradual progress on therapeutic frontiers, no breakthrough wave
+
+  regulatory:
+    climate_policy: >
+      Patchy with regional divergence. EU maintains carbon-pricing trajectory;
+      US under continued political contestation with periodic policy reversals;
+      developing-economy progress contingent on cost-of-living and fiscal
+      conditions. Aggregate emissions trajectory drifts modestly above stated
+      pathways.
+    financial_regulation: >
+      Basel finalisation continues; post-SVB framework gains permanence;
+      modest deepening of bank-sector capital requirements; non-bank-financial-
+      intermediary oversight expanding gradually.
+    healthcare_regulation: >
+      Drug-pricing pressure continues in major markets (US IRA implementation,
+      European reference pricing). Specialty therapeutics relatively protected
+      where clinical differentiation is strong.
+
+  commodity_and_energy:
+    oil_regime: >
+      Brent in USD 70–90 range. OPEC+ discipline broadly holds; US production
+      stable; demand growth subdued.
+    gas_regime: >
+      LNG market stable post-Russia-EU rewiring; new capacity coming online
+      keeps prices contained absent disruption.
+    metals_regime: >
+      Industrial metals supported by transition demand (copper, nickel,
+      lithium) but capped by subdued manufacturing growth in advanced
+      economies. Iron ore in a defined range.
+    ag_regime: >
+      Generally well-supplied; weather-driven volatility around a stable trend;
+      no structural supply shock.
+
+  demand_profile:
+    consumer: >
+      Real spending growth subdued in advanced economies; saving rates
+      modestly above pre-pandemic; durable-goods cycle stretched.
+    industrial: >
+      Manufacturing PMI bouncing around expansion / contraction boundary;
+      capex on AI / transition continues but broader capex muted.
+    infrastructure: >
+      Public infrastructure spend continues on prior policy commitments
+      (IIJA, CHIPS, IRA in US; EU recovery funds tapering); not accelerating.
+    healthcare: >
+      Demand robust on demographic drivers; aged-care capacity-constrained;
+      drug-pricing pressure dampening branded-pharma economics.
+
+  financial_conditions:
+    policy_rates: >
+      Nominal cash rates 3.5–4.5% in advanced economies; central banks holding
+      restrictive policy but not tightening further. Real rates 1.0%.
+    credit_spreads: >
+      Investment-grade spreads near long-term averages; high-yield modestly
+      wider than 2010s norm reflecting structurally higher base rates.
+    fx_regime: >
+      USD broadly firm but range-bound; emerging-market currencies under
+      gradual pressure from higher US real rates.
+    equity_risk_premium: >
+      Near long-term average. Growth-stock premium persists but does not
+      expand further; value re-rated modestly.
+
+  probability: null

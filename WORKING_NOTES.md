@@ -36,13 +36,15 @@ A living scratchpad for conversational decisions, current preoccupations, and co
 
 ## Current state of play (as of 16 May 2026)
 
-- Architecture spec **v0.1 frozen** (`design/architecture.md`), tagged in git as `architecture-v0.1`. Sections 1–17 reviewed and updated. Ben's-bot platform-side review (5 May 2026) absorbed; Group 1 changes committed.
+- Architecture spec **v0.1 frozen** (`design/architecture.md`), tagged in git as `architecture-v0.1`. Sections 1–17 reviewed and updated. Ben's-bot platform-side review (5 May 2026) absorbed; Group 1 changes committed. Plus a new §9.7 review item (#9) added 16 May 2026 capturing the terminal-growth-from-demographic-trajectory principle.
 - Build plan wall chart at `design/build_plan.html` (currently v3).
-- **Step 1** (close out design hardening): **done.** Editorial sweep applied (engine/... paths updated to src/vcc_valuations/...; `imported_input_share` renamed to `_static` / `_responsiveness` to disambiguate). v0.1 freeze and git tag in place.
+- Response document to Ben's `vcc_valuations` rev1 design committed at `design/reviews/vcc_valuations_rev1_response_2026-05-16.md`.
+- **Step 1** (close out design hardening): **done.** Editorial sweep applied; v0.1 freeze and git tag in place.
 - **Step 2** (Draft analytical methodology): **done.**
-  - `design/frameworks/five_forces_questions.md` — all five forces, Porter-2008-aligned. Paired industry/company questions per sub-determinant; synthesis sections map to schema fields.
-  - `design/frameworks/payor_and_regulator.md` — v1 draft. Two-axis (regulatory + payor) framework for archetypes Porter doesn't adequately describe. WBC will be the first archetype populated against it (Step 9).
-- **Next: Step 3** — Scenarios workshop. Workshop itself happens away from chat; Claude's role is workshop prep (themes, structuring questions, "what makes a good scenario") and YAML drafting after the workshop.
+  - `design/frameworks/five_forces_questions.md` — all five forces, Porter-2008-aligned.
+  - `design/frameworks/payor_and_regulator.md` — v1 draft. Two-axis (regulatory + payor) framework.
+- **Step 3** (Scenarios workshop): **done.** Six scenarios selected via interactive workshop (16 May 2026): Muddle Through (interior, most-likely), Orderly Convergence (upside boundary), Stagflation Persists (macro-downside boundary), Fragmentation and Resource Nationalism (geopolitical boundary), Disorderly Climate Crystallisation (climate boundary), AI Productivity Lag (technology boundary). All six scenarios drafted into `data/scenarios/<id>.yaml` (structured per §6.4) and `data/scenarios/<id>.md` (narrative per §16.1). Workshop output at `design/scenarios_workshop.md` includes institutional comparison (IMF / OECD / World Bank / IEA / NGFS mapping).
+- **Next: Step 4** — Formalise data schemas. Turn the in-doc YAML examples into pydantic / JSON Schema; wire validators. Mechanical work but bounded.
 
 ---
 
@@ -53,8 +55,14 @@ A living scratchpad for conversational decisions, current preoccupations, and co
 - Industry archetype location **parked** — stays in `vcc-valuations` for now; may relocate to a platform-level repo when other archetype consumers (NAB / ANZ / CBA VCCs) materialise.
 - Time budget for step 5 (populate IPL): provisional **3-week** working anchor pre-narrative-deliverables; bumped to roughly **4 weeks** (320–800 chat-min) once narrative deliverables were added in v3 of the build plan.
 - Complementary-framework approach: **defined enum** (`payor_and_regulator | network_effect | resource_lifecycle | none`) chosen but **open-to-revisit** after first non-Porter archetype (banking / WBC) is populated.
-- Probability-weighting of scenarios: **comparative output is canonical**; mode (a) blended expected value is *not* supported under §6.2 boundary-cases commitment. Optional per-scenario probability supported only for analyst-side indicative blends.
+- Probability-weighting of scenarios: **comparative output is canonical**; mode (a) blended expected value is *not* supported under §6.2 boundary-cases commitment. Optional per-scenario probability supported only for analyst-side indicative blends. Scenarios workshop chose not to populate the probability field in YAMLs at this stage.
 - Narrative deliverables: six per company (scenario, industry view, company positioning, scenario impact, valuation note, thesis) — see §16.1.
+- **Workshop refinement on §6.2 framing:** scenarios are boundary cases except for the most-likely interior (Muddle Through). The set spans the plausible range; it doesn't aim for exhaustive coverage. (§6.2 with workshop refinement.)
+- **US powerhouse as cross-cutting assumption.** Tara's view — the US economy is structurally stronger than consensus credits. Handled implicitly in each scenario's narrative rather than as a structured regime tag.
+- **Climate posture and demographic response also cross-cutting**, addressed in each scenario's narrative, not as structured regime tags. Tara's preference.
+- **Terminal-growth-from-demographic-trajectory.** Scenario × company × geography-conditional. Even when the 2040s skilled-migration cliff sits beyond the explicit forecast horizon, terminal growth must reflect the demographic-adaptation trajectory. Captured as §9.7 review item 9 in architecture spec (added 16 May 2026).
+- **AI Productivity Lag insight (workshop):** AI doesn't need to deliver economy-wide TFP gains to be useful for labour substitution. Rents capture asymmetric — platform owners win; labour-cost containment in white-collar work is the working channel. China's bipedal-robotics is uniquely advantaged in physical-substitution domains.
+- **Disorderly Climate Crystallisation framing:** scenario is about the *crystallisation event*, not about whether climate transition becomes disorderly (it already is, per Tara's workshop point about money-supply / inflation / cost-of-living pressure crushing climate-policy coordination).
 
 ---
 
@@ -113,4 +121,28 @@ A living scratchpad for conversational decisions, current preoccupations, and co
 
 ## Recent commits (reference)
 
-- `b387f1a` — initial architecture spec push (sections 1-17
+- `b387f1a` — initial architecture spec push (sections 1-17 first cut).
+- `8df0784` — sections 7-11 worked through with Tara.
+- `0b976eb` — Ben's-bot platform-side review absorbed (Group 1 changes).
+- `f62d3ae` — narrative-deliverables convention added; Five Forces question bank started.
+- `9f91be4` — WORKING_NOTES.md created.
+- `ac4e8e7` — Five Forces question bank completed (Supplier, New Entrants, Substitutes, Rivalry).
+- `4616ede` — payor-and-regulator framework v1 draft added.
+- `ec462c5` — editorial sweep + v0.1 freeze (Step 1 closed out).
+- `8e7a51b` — WORKING_NOTES update after Step 1 and Step 2 closed.
+- `a76a9ec` — scenarios workshop prep document.
+- `8cc2527` — response to Ben's `vcc_valuations` rev1 design.
+- (Step 3 completion — architecture review item, workshop output document, six scenario YAMLs and narratives, WORKING_NOTES update — pending commit when this update saves.)
+- **Tag:** `architecture-v0.1` points at `ec462c5`.
+
+---
+
+## Last updated
+
+16 May 2026 (later) — Step 3 (Scenarios workshop) closed out. Six scenarios drafted into structured YAML and narrative form. Ready for Step 4 (Formalise data schemas).
+
+Previous updates:
+- 16 May 2026 (earlier) — Step 1 and Step 2 closed.
+- 7 May 2026 — initial creation as hedge against chat context-length limits.
+
+Update this file whenever a conversational decision is made that doesn't belong in the architecture spec. Concision matters — this needs to remain skim-readable.

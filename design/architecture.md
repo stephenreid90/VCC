@@ -786,6 +786,7 @@ The bank valuation flow is conceptually: rates / scenario → NIM and loan growt
 6. **Driver-ID style guide to be drafted before populating the catalogue.** Once IDs are baked into the impact matrix, renaming is a breaking change discovered exactly when the matrix is most painful to migrate. Initial style-guide topics: naming convention (snake_case), group prefixes (e.g. `rev_`, `mgn_`, `cap_`, `fin_`, `term_`, `bank_`), avoidance of vendor-specific terminology, stability guarantees once published.
 7. **Derived-driver derivation formulas need to be populated** under the new §9.2 `derivation_formula` field. For each driver tagged `role: derived` (cost of equity, WACC, EBIT margin, EBITDA margin, asset turnover, operating leverage coefficient, effective tax rate, return on equity, RWA growth, required equity), write the formula plain-language or expression form. Layer 6 consumers depend on these being explicit.
 8. **Driver default-range completeness check.** Validator: for each (archetype × driver), confirm `default_range` is populated. Driver missing a default range under an archetype that uses it (i.e. driver is in `applicable_archetypes` for that archetype) should fail validation.
+9. **Terminal-growth assumptions reflect demographic-adaptation trajectory.** Even when a scenario's explicit forecast horizon does not reach the demographic cliff (the late-2040s / 2050s use-by date for immigration-led adaptation in advanced economies), the terminal-growth assumption must reflect the trajectory the scenario is on. Self-sufficient demographic-response capability (China via industrial robotics) supports higher terminal growth; economies renting demographic time from a shrinking global skilled-migration pool (Australia, parts of Europe) carry lower terminal-growth assumptions. Terminal growth is therefore not a single scalar per company — it's a **scenario × company × geography**-conditional value. Sit alongside the §1 / §7.3 / §11.4.2 cost-of-capital convergence discipline; surfaces under the §11.4.2 rule 4 terminal-share-reasonableness check. Convention to be implemented when terminal-growth rules are drafted; surfaced from the scenarios workshop (16 May 2026).
 
 ---
 
@@ -1280,4 +1281,6 @@ Alongside the structured engine outputs (YAML, JSON, computed numbers), every ke
 
 1. Mark up this document — anything to add, remove, or challenge.
 2. Scenarios workshop — develop 4–5 named scenario themes with narrative and macro-variable outlines.
-3. First industry archetype — populate `fertilisers_explosives.yaml` as the pilot; test that the schema hol
+3. First industry archetype — populate `fertilisers_explosives.yaml` as the pilot; test that the schema holds up under real content before populating the other two.
+4. First company positioning — populate `ipl.yaml` as the pilot; same logic.
+5. Decide horizon default once scenario arcs are visible.

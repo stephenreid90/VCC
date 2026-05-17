@@ -1,0 +1,211 @@
+scenario:
+  id: disorderly_climate_crystallisation
+  name: Disorderly Climate Crystallisation
+  version: 2026-Q2-v1
+  published: 2026-05-16
+
+  narrative:
+    key_mechanism: >
+      The disorderly climate path that is already in motion has its
+      crystallisation moment. Trigger is most likely a confluence rather than
+      a single event: a major physical-loss event (catastrophic extreme weather
+      hitting an insured population centre), forced regulator-led de-leveraging
+      of carbon-intensive bank loan books, a sudden carbon-price spike in a
+      major jurisdiction. Policy snaps from drift to abrupt action under crisis
+      conditions: carbon prices spike to EUR 200+ in advanced economies;
+      carbon-border-adjustment mechanisms force pricing onto imports; subsidies
+      for renewables / EVs / adaptation infrastructure massively expanded.
+      Capital reallocates abruptly. Asset-price dispersion widens sharply
+      across sectors. Inflation runs persistently 3-5% from carbon-cost
+      pass-through. Insurance withdraws from exposed regions; bank loan books
+      in carbon-intensive sectors take write-downs. The scenario where
+      terminal-state convergence discipline is tested hardest — assumed-
+      perpetual moats turn out to have stranded-asset half-lives that
+      crystallise inside the forecast horizon.
+    distinguishing_features: >
+      Unlike Muddle Through, climate trajectory crystallises rather than
+      continuing to drift. Unlike Orderly Convergence, the climate resolution
+      is via crisis not via political reset. Unlike Stagflation Persists, the
+      inflation driver is carbon-cost pass-through not energy-supply shock.
+      Unlike Fragmentation, the bloc dynamic is incidental; climate is the
+      organising principle. Unlike AI Productivity Lag, AI is incidental.
+    leading_indicators: >
+      Major physical-loss event hitting an insured population centre;
+      regulator-led de-leveraging signal (APRA / ECB / Fed climate stress
+      tests deepening); sudden carbon-price moves in EU ETS or California /
+      RGGI; insurance withdrawal from exposed regions accelerating;
+      stranded-asset write-downs at major banks / energy companies; cross-
+      border adjustment mechanism deepening.
+    disconfirming_evidence: >
+      Continued drift without crystallisation (would shift toward Muddle
+      Through). Major political reset enabling orderly transition (would
+      shift toward Orderly Convergence). Climate-policy backsliding without
+      crystallisation event (would extend Muddle Through climate posture
+      toward worse but without the crystallisation dynamic).
+
+  time_profile:
+    - phase: crystallisation
+      year_start: 1
+      year_end: 2
+      characterisation: >
+        Trigger event(s). Sudden carbon-price spike, regulator-led
+        de-leveraging signal, or major physical-loss event. Initial market
+        dislocation as capital realigns.
+    - phase: repricing
+      year_start: 2
+      year_end: 5
+      characterisation: >
+        Asset-price repricing plays out. Stranded-asset write-downs in
+        carbon-intensive sectors; multiple expansion in transition winners;
+        insurance restructuring; bank loan book adjustments. Inflation
+        runs persistently 3-5%.
+    - phase: new_equilibrium
+      year_start: 6
+      year_end: null
+      characterisation: >
+        New carbon-pricing regime consolidates; reallocated capital flows
+        into new patterns; insurance sector restructured around climate-
+        risk-adjusted underwriting; affected sectors at new lower equilibrium
+        valuations.
+
+  macro_variables:
+    - variable: real_gdp_growth_world
+      units: percent_yoy
+      type: time_series
+      time_series:
+        - {year: 1, value: 2.0, confidence_low: 1.4, confidence_high: 2.6}
+        - {year: 3, value: 1.8, confidence_low: 1.0, confidence_high: 2.5}
+        - {year: 5, value: 2.0, confidence_low: 1.3, confidence_high: 2.7}
+        - {year: 10, value: 2.2, confidence_low: 1.5, confidence_high: 2.9}
+
+    - variable: cpi_inflation_advanced
+      units: percent_yoy
+      type: time_series
+      time_series:
+        - {year: 1, value: 3.5, confidence_low: 3.0, confidence_high: 4.0}
+        - {year: 3, value: 4.5, confidence_low: 3.5, confidence_high: 5.5}
+        - {year: 5, value: 4.0, confidence_low: 3.0, confidence_high: 5.0}
+        - {year: 10, value: 3.0, confidence_low: 2.5, confidence_high: 3.5}
+
+    - variable: policy_rate_real_advanced
+      units: percent
+      type: time_series
+      time_series:
+        - {year: 1, value: 1.0, confidence_low: 0.5, confidence_high: 1.5}
+        - {year: 3, value: 1.7, confidence_low: 1.0, confidence_high: 2.4}
+        - {year: 5, value: 1.5, confidence_low: 1.0, confidence_high: 2.0}
+        - {year: 10, value: 1.2, confidence_low: 0.7, confidence_high: 1.7}
+
+    - variable: carbon_price_eu_ets
+      units: eur_per_tco2
+      type: time_series
+      time_series:
+        - {year: 1, value: 120, confidence_low: 100, confidence_high: 140}
+        - {year: 2, value: 200, confidence_low: 150, confidence_high: 280}
+        - {year: 3, value: 220, confidence_low: 180, confidence_high: 280}
+        - {year: 5, value: 200, confidence_low: 160, confidence_high: 240}
+        - {year: 10, value: 220, confidence_low: 180, confidence_high: 280}
+
+    - variable: climate_policy_regime
+      units: regime
+      type: regime
+      regime:
+        label: crystallised_disorderly
+        description: >
+          Drift transitions abruptly to crisis-led action. Carbon prices spike,
+          subsidies expand, regulatory pressure on financial sector intensifies.
+          Sectoral dispersion sharp.
+
+  geopolitical:
+    bloc_dynamics: >
+      Climate becomes a geopolitical organising principle alongside bloc
+      dynamics. Carbon-border-adjustment mechanisms create trade friction;
+      climate-financing disputes intensify; transition-mineral supply
+      becomes strategic.
+    trade_policy: >
+      Carbon-border-adjustment mechanisms (CBAMs) expand and deepen; climate-
+      related tariffs proliferate; transition-aligned trade preferences
+      established within climate-cooperating blocs.
+    resource_nationalism: >
+      Transition-mineral access becomes acute strategic priority. Critical-
+      mineral export restrictions tighten. Fossil-fuel-exporting states pivot
+      strategy toward downstream petrochemicals and transition leverage.
+
+  technology:
+    productivity_regime: >
+      Sectoral dispersion wide. Transition technologies (renewables, storage,
+      EVs, hydrogen, CCS, climate-adaptation infrastructure) attract capital
+      and grow rapidly. Carbon-intensive sectors face stranded-asset realisation
+      and capex compression.
+    disruption_vectors:
+      - Renewables and storage capex acceleration
+      - EVs and transition-mineral demand surge
+      - Climate-adaptation infrastructure as new growth category
+      - Insurance-sector restructuring under physical-risk repricing
+      - Stranded-asset crystallisation in fossil fuels, energy-intensive
+        manufacturing, exposed real estate
+
+  regulatory:
+    climate_policy: >
+      Accelerated and uneven. EU and other advanced jurisdictions impose
+      carbon prices in the EUR 200+ range; emerging markets stay laggard but
+      cross-border adjustment forces effective pricing on imports. Renewable
+      / EV / adaptation subsidies massively expanded.
+    financial_regulation: >
+      APRA and prudential peers force capital reallocation away from
+      carbon-intensive exposures. Climate-risk capital surcharges; mandatory
+      transition planning; physical-risk stress testing intensified.
+    healthcare_regulation: >
+      Climate-related healthcare demand recognised in regulatory frameworks
+      (heat-related illness, infectious-disease spread); supply-chain
+      resilience requirements.
+
+  commodity_and_energy:
+    oil_regime: >
+      Demand peak materialises faster than consensus; long-end of futures
+      curve repriced lower; near-term prices volatile around USD 70-90 but
+      forward curve flattened.
+    gas_regime: >
+      Transition role contested; bridge-fuel narrative weakens; LNG capacity
+      investments face stranded-asset risk.
+    metals_regime: >
+      Transition-mineral structural up-cycle accelerates; copper, lithium,
+      nickel, rare earths in sustained bull market; traditional
+      base-metals demand softens.
+    ag_regime: >
+      Climate-disruption risk to agricultural production; carbon pricing on
+      fertilisers / methane feeds into food prices; agricultural-emissions
+      regulation expands.
+
+  demand_profile:
+    consumer: >
+      Real spending under pressure from carbon-cost pass-through; sector mix
+      shifts (electric for combustion, sustainable for traditional);
+      insurance-pricing pressure on exposed properties.
+    industrial: >
+      Sharp bifurcation: transition sectors boom; energy-intensive manufacturing
+      contracts; capex shifts dramatically.
+    infrastructure: >
+      Massive expansion of transition infrastructure (renewables, grid,
+      EV charging, adaptation); fossil-fuel infrastructure investment collapses.
+    healthcare: >
+      Climate-related demand growth (heat-related illness, vector-borne
+      disease); supply-chain resilience investment.
+
+  financial_conditions:
+    policy_rates: >
+      Nominal cash rates choppy with elevated volatility — central banks face
+      policy dilemma between supply-shock tightening and reallocation
+      accommodation. Real rates 1.5%.
+    credit_spreads: >
+      Sectorally dispersed: wide for carbon-intensive exposures, tight for
+      transition-aligned; insurance-sector spreads stressed.
+    fx_regime: >
+      Climate-vulnerable currencies (low-lying / extreme-weather-exposed)
+      under pressure; transition-mineral exporters supported.
+    equity_risk_premium: >
+      Rises overall on transition uncertainty; sector dispersion extreme
+      (transition winners re-rated up, losers re-rated down sharply); ESG
+      flows accelerate the divergence.
+
+  probability: null

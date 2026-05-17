@@ -1,0 +1,192 @@
+scenario:
+  id: orderly_convergence
+  name: Orderly Convergence
+  version: 2026-Q2-v1
+  published: 2026-05-16
+
+  narrative:
+    key_mechanism: >
+      The set of conditions for benign resolution all come together. Inflation
+      cools to target via supply-side normalisation and AI-enabled productivity
+      gains absorbing wage growth. Real rates settle modestly positive but
+      defensibly. Climate-policy reset restores coordinated transition. AI
+      delivers economy-wide productivity surprise — adoption broadens, rents
+      diffuse to users, productivity surprise supports lower inflation and
+      higher real growth simultaneously. Geopolitical tensions resolve
+      materially. US powerhouse propagates lift to Europe and EM. The world
+      the IMF reference forecast and OECD baseline implicitly assume but
+      almost no one privately bets on.
+    distinguishing_features: >
+      Unlike Muddle Through, inflation returns to target and real rates
+      normalise. Unlike Stagflation Persists, inflation re-anchors rather than
+      breaking higher. Unlike Fragmentation, geopolitical tensions resolve and
+      trade barriers relax. Unlike Disorderly Climate Crystallisation, the
+      climate path resolves orderly via political reset rather than crystallising
+      via crisis. Unlike AI Productivity Lag, AI productivity transmission works.
+      The single scenario where every dimension resolves favourably.
+    leading_indicators: >
+      Sustained advanced-economy inflation move toward target with credible
+      central-bank communication; meaningful US-China stabilisation evidence
+      (trade framework agreements, military de-escalation); Middle East
+      de-escalation; bilateral trade-barrier reductions; political coalitions
+      rebuilding around climate-policy commitments; enterprise-adoption surveys
+      showing AI integration broadening beyond early-adopter cohort with
+      productivity flow-through.
+    disconfirming_evidence: >
+      Continued sticky inflation despite supply normalisation (would shift
+      toward Muddle Through). Inflation-expectations un-anchoring (would shift
+      toward Stagflation Persists). Geopolitical escalation events (would shift
+      toward Fragmentation). Major physical-loss event or carbon-policy crisis
+      (would shift toward Disorderly Climate Crystallisation). Persistent
+      enterprise-AI adoption lag despite continued investment (would shift
+      toward AI Productivity Lag).
+
+  time_profile:
+    - phase: convergence
+      year_start: 1
+      year_end: 4
+      characterisation: >
+        Inflation cools to target; real rates normalise; AI adoption broadens;
+        geopolitical resolution progressing. Phase-in over 3-4 years from
+        current conditions to new steady state.
+    - phase: steady_state
+      year_start: 5
+      year_end: null
+      characterisation: >
+        New equilibrium: target inflation, modestly positive real rates,
+        broad-based productivity gains, orderly climate transition, normalised
+        geopolitics. Conditions sustainable through the horizon though
+        long-term demographic challenges remain.
+
+  macro_variables:
+    - variable: real_gdp_growth_world
+      units: percent_yoy
+      type: time_series
+      time_series:
+        - {year: 1, value: 2.8, confidence_low: 2.3, confidence_high: 3.2}
+        - {year: 3, value: 3.1, confidence_low: 2.6, confidence_high: 3.5}
+        - {year: 5, value: 3.2, confidence_low: 2.7, confidence_high: 3.6}
+        - {year: 10, value: 3.0, confidence_low: 2.5, confidence_high: 3.5}
+
+    - variable: real_gdp_growth_us
+      units: percent_yoy
+      type: time_series
+      time_series:
+        - {year: 1, value: 2.5, confidence_low: 2.0, confidence_high: 3.0}
+        - {year: 5, value: 2.5, confidence_low: 2.0, confidence_high: 3.0}
+        - {year: 10, value: 2.3, confidence_low: 1.8, confidence_high: 2.8}
+
+    - variable: cpi_inflation_advanced
+      units: percent_yoy
+      type: time_series
+      time_series:
+        - {year: 1, value: 2.8, confidence_low: 2.5, confidence_high: 3.1}
+        - {year: 3, value: 2.4, confidence_low: 2.0, confidence_high: 2.7}
+        - {year: 5, value: 2.3, confidence_low: 2.0, confidence_high: 2.5}
+        - {year: 10, value: 2.3, confidence_low: 2.0, confidence_high: 2.5}
+
+    - variable: policy_rate_real_advanced
+      units: percent
+      type: time_series
+      time_series:
+        - {year: 1, value: 1.5, confidence_low: 1.0, confidence_high: 2.0}
+        - {year: 3, value: 1.0, confidence_low: 0.5, confidence_high: 1.5}
+        - {year: 5, value: 0.8, confidence_low: 0.3, confidence_high: 1.2}
+        - {year: 10, value: 0.8, confidence_low: 0.3, confidence_high: 1.2}
+
+    - variable: inflation_regime
+      units: regime
+      type: regime
+      regime:
+        label: anchored_at_target
+        description: >
+          Central banks succeed in re-anchoring inflation expectations near
+          target; structural overshoot resolves rather than being accepted.
+
+  geopolitical:
+    bloc_dynamics: >
+      Meaningful US-China stabilisation: trade frameworks negotiated, military
+      tensions managed, technology export controls relaxed selectively.
+      Middle East de-escalation with security architecture refresh.
+      Russia-NATO standoff de-escalates over the medium term.
+    trade_policy: >
+      Bilateral barrier reductions; tariffs partly rolled back; export-control
+      regimes simplified to focus on genuinely dual-use technology rather than
+      broad-strategic-classification. Supply chain regionalisation slows;
+      partial reglobalisation in lower-sensitivity categories.
+    resource_nationalism: >
+      Eases as bloc stabilisation reduces incentives. Critical-mineral
+      cooperation frameworks emerge between aligned economies; export
+      restrictions selectively relaxed.
+
+  technology:
+    productivity_regime: >
+      Aggregate TFP grows 1.5–2.0% — the bull-case productivity surprise
+      materialises. Enterprise AI adoption broadens beyond early-adopter
+      cohort; rents diffuse from platform owners to broader user base over
+      the medium term. Compounding gains.
+    disruption_vectors:
+      - AI economy-wide — productivity transmission works
+      - Electrification accelerating with grid investment catching up
+      - Biotech — orderly pipeline progression with platform-stage breakthroughs
+
+  regulatory:
+    climate_policy: >
+      Political reset restores coordinated transition. Carbon-pricing
+      trajectories reaffirmed and extended; renewables / EV / transition-
+      minerals subsidies stabilised on long-term frameworks; cross-border-
+      adjustment mechanisms harmonised across major economies. Aggregate
+      emissions trajectory bends downward toward IEA STEPS or modestly better.
+    financial_regulation: >
+      Stable. Basel finalisation completed without disruption; post-SVB
+      framework integrated; non-bank oversight evolving without acute
+      tightening.
+    healthcare_regulation: >
+      Stable drug-pricing frameworks; coordinated international approach to
+      pharmaceutical innovation incentives; biosimilar competition continues
+      orderly substitution.
+
+  commodity_and_energy:
+    oil_regime: >
+      Brent in USD 60–80 range. Geopolitical-risk premium compresses;
+      transition demand modestly damping but offset by EM growth.
+    gas_regime: >
+      Stable post-Russia-EU rewiring; ample LNG capacity; orderly transition
+      to lower share of energy mix.
+    metals_regime: >
+      Transition-mineral demand sustained; copper, lithium, nickel in
+      structural up-cycle but supply responding; price spikes moderated.
+    ag_regime: >
+      Well-supplied; transition to lower-carbon agricultural practices
+      proceeding without disruption.
+
+  demand_profile:
+    consumer: >
+      Real-spending growth recovers to pre-pandemic trend; saving rates
+      normalise; durable-goods cycle resets.
+    industrial: >
+      Manufacturing PMI in expansion territory; capex broadens beyond AI /
+      transition into general business investment as policy uncertainty fades.
+    infrastructure: >
+      Spending continues on transition infrastructure; private capital
+      participation expands.
+    healthcare: >
+      Robust demand on demographic drivers; pricing frameworks stable
+      supporting innovation economics.
+
+  financial_conditions:
+    policy_rates: >
+      Nominal cash rates settle 3.0–3.5% in advanced economies; central banks
+      ease modestly into the convergence as inflation cooperates. Real rates
+      0.8%.
+    credit_spreads: >
+      Tight across investment-grade and high-yield as risk appetite recovers;
+      sovereign spreads compress.
+    fx_regime: >
+      USD softens modestly as Fed eases; EM currencies recover; capital flows
+      reglobalise.
+    equity_risk_premium: >
+      Compresses below long-term average as risk appetite recovers and growth
+      visibility improves. Growth-stock premium re-expands.
+
+  probability: null

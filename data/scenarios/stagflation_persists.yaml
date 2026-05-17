@@ -1,0 +1,194 @@
+scenario:
+  id: stagflation_persists
+  name: Stagflation Persists
+  version: 2026-Q2-v1
+  published: 2026-05-16
+
+  narrative:
+    key_mechanism: >
+      IMF severe scenario plays out. Energy shock entrenches via Middle East
+      escalation and Strait of Hormuz disruption. Inflation expectations break
+      above the 3% credibility threshold; second-round wage-price dynamics
+      take hold in services and labour-intensive sectors. Central banks lose
+      hard-won credibility and are forced to maintain restrictive policy
+      through the horizon. Real rates settle 2-3%. Advanced-economy recession
+      probable inside horizon. Climate policy stagnates or backslides under
+      cost-of-living crisis. AI investment continues but financing constraints
+      compress marginal capex; productivity dispersion intensifies. US
+      powerhouse persists but pays for it in inflation; outperformance becomes
+      sectorally specific (commodity-exposed, financials with wide NIM,
+      defensive-pricing-power names).
+    distinguishing_features: >
+      Unlike Muddle Through, inflation un-anchors and growth slows materially
+      with recession inside horizon. Unlike Orderly Convergence, central banks
+      lose credibility and real rates rise sharply. Unlike Fragmentation, the
+      driver is macro / energy / monetary policy, not geopolitical realignment
+      per se. Unlike Disorderly Climate Crystallisation, the driver is energy
+      cost rather than climate policy. Unlike AI Productivity Lag, the AI story
+      is incidental.
+    leading_indicators: >
+      Middle East situation deepening rather than resolving; energy prices
+      sustained above scenario thresholds (Brent > USD 110); advanced-economy
+      headline inflation breaking above 4% with services inflation rising;
+      central-bank rhetoric tightening; wage settlements in services sectors
+      accelerating; consumer-inflation-expectations surveys showing un-anchoring.
+    disconfirming_evidence: >
+      Energy-price spike fading without second-round transmission (would shift
+      toward Muddle Through). Credible central-bank action re-anchoring
+      inflation expectations (would shift toward Muddle Through or Orderly
+      Convergence). Recession deeper than expected with rapid disinflation
+      (would shift toward a deflationary case not in the current set).
+
+  time_profile:
+    - phase: shock
+      year_start: 1
+      year_end: 1
+      characterisation: >
+        Energy-price spike via Middle East escalation; inflation breaks above
+        4% in advanced economies; initial central-bank response is data-dependent
+        but inadequate to prevent expectations un-anchoring.
+    - phase: entrenchment
+      year_start: 2
+      year_end: 4
+      characterisation: >
+        Second-round wage-price dynamics. Central banks forced to hold
+        restrictive policy. Real rates settle 2-3%. Advanced-economy recession
+        inside horizon (likely years 2-3).
+    - phase: resolution
+      year_start: 5
+      year_end: null
+      characterisation: >
+        Either deep recession forces inflation expectations back down, or
+        structural adjustment yields gradual re-anchoring. New equilibrium
+        with higher trend inflation than pre-2022 and structurally higher
+        real rates.
+
+  macro_variables:
+    - variable: real_gdp_growth_world
+      units: percent_yoy
+      type: time_series
+      time_series:
+        - {year: 1, value: 2.0, confidence_low: 1.5, confidence_high: 2.5}
+        - {year: 2, value: 1.5, confidence_low: 0.5, confidence_high: 2.0}
+        - {year: 3, value: 1.5, confidence_low: 0.5, confidence_high: 2.0}
+        - {year: 5, value: 1.8, confidence_low: 1.2, confidence_high: 2.5}
+        - {year: 7, value: 2.0, confidence_low: 1.5, confidence_high: 2.5}
+
+    - variable: real_gdp_growth_advanced
+      units: percent_yoy
+      type: time_series
+      time_series:
+        - {year: 1, value: 0.8, confidence_low: 0.0, confidence_high: 1.5}
+        - {year: 2, value: -0.5, confidence_low: -1.5, confidence_high: 0.5}
+        - {year: 3, value: 0.0, confidence_low: -1.0, confidence_high: 1.0}
+        - {year: 5, value: 1.2, confidence_low: 0.5, confidence_high: 1.8}
+        - {year: 7, value: 1.5, confidence_low: 0.8, confidence_high: 2.0}
+
+    - variable: cpi_inflation_advanced
+      units: percent_yoy
+      type: time_series
+      time_series:
+        - {year: 1, value: 5.0, confidence_low: 4.0, confidence_high: 6.0}
+        - {year: 2, value: 5.5, confidence_low: 4.5, confidence_high: 6.5}
+        - {year: 3, value: 5.0, confidence_low: 4.0, confidence_high: 6.0}
+        - {year: 5, value: 4.0, confidence_low: 3.0, confidence_high: 5.0}
+        - {year: 7, value: 3.5, confidence_low: 2.5, confidence_high: 4.5}
+
+    - variable: policy_rate_real_advanced
+      units: percent
+      type: time_series
+      time_series:
+        - {year: 1, value: 2.0, confidence_low: 1.5, confidence_high: 2.5}
+        - {year: 3, value: 2.5, confidence_low: 2.0, confidence_high: 3.0}
+        - {year: 5, value: 2.5, confidence_low: 2.0, confidence_high: 3.0}
+        - {year: 7, value: 2.0, confidence_low: 1.5, confidence_high: 2.5}
+
+    - variable: inflation_regime
+      units: regime
+      type: regime
+      regime:
+        label: un_anchored
+        description: >
+          Inflation expectations break above the 3% credibility threshold and
+          stay there. Second-round wage-price dynamics established. Central
+          banks lose post-COVID-cycle credibility.
+
+  geopolitical:
+    bloc_dynamics: >
+      Energy-driven contestation intensifies. Middle East flashpoints active.
+      Other regional flashpoints (Taiwan, Russia-NATO) opportunistically gain
+      intensity. Sanctions used aggressively as crisis-response.
+    trade_policy: >
+      Tariffs and export controls ratchet up as crisis tools. Energy-product
+      embargoes proliferate.
+    resource_nationalism: >
+      Intensifying. Energy-exporting states leveraging supply position;
+      strategic-minerals access weaponised.
+
+  technology:
+    productivity_regime: >
+      AI investment continues (deficit-funded, US-led); financing constraints
+      compress marginal capex; productivity dispersion intensifies as
+      well-capitalised firms continue AI investment while others retrench.
+      Aggregate TFP growth ~0.5% — modestly above pre-pandemic.
+    disruption_vectors:
+      - AI continues at well-capitalised firms; broader enterprise lags acutely
+      - Energy transition slowed by high real rates; capex on renewables compressed
+      - Defensive technology investment (cyber, energy security) accelerates
+
+  regulatory:
+    climate_policy: >
+      Stagnant or backsliding. Cost-of-living crisis crushes climate political
+      capital further than Muddle Through. Carbon-pricing rollbacks accelerate;
+      renewable subsidies cut to fund inflation-relief programs. Aggregate
+      emissions trajectory drifts upward.
+    financial_regulation: >
+      Pressure to tighten amid recession-stress; bank capital buffers
+      reviewed; NBFI oversight expanded in response to any acute stress events.
+    healthcare_regulation: >
+      Drug-pricing pressure intensifies as fiscal capacity constrained;
+      reimbursement squeeze across major markets.
+
+  commodity_and_energy:
+    oil_regime: >
+      Brent USD 110–150+ sustained through years 1-3. OPEC+ unable or
+      unwilling to fully offset disruption.
+    gas_regime: >
+      LNG market disrupted; European gas prices spike; Asian buyers compete
+      for cargoes; price volatility extreme.
+    metals_regime: >
+      Industrial metals fall on demand destruction; precious metals (gold)
+      rally on stagflation hedge demand.
+    ag_regime: >
+      Fertiliser cost spike (gas-driven ammonia / urea) feeds into food
+      prices; political backlash to food inflation.
+
+  demand_profile:
+    consumer: >
+      Real spending compressed sharply; saving rate collapses then partly
+      recovers; durable goods cycle deep down-leg.
+    industrial: >
+      Manufacturing in contraction; capex cycle stalls.
+    infrastructure: >
+      Public infrastructure spend protected nominally but real value erodes
+      under inflation; private infrastructure capex delayed.
+    healthcare: >
+      Real-terms healthcare spend pressure; aged-care system strain acute.
+
+  financial_conditions:
+    policy_rates: >
+      Nominal cash rates 5–7% in advanced economies; central banks maintain
+      restrictive policy. Real rates 2.5%.
+    credit_spreads: >
+      Wide and rising into the recession; defaults rise; high-yield
+      reprices materially.
+    fx_regime: >
+      USD strong on rate-differential and safe-haven flows; commodity
+      currencies bifurcated (energy-rich rally, importers weaken); EM
+      currency crises in stressed sovereigns.
+    equity_risk_premium: >
+      Rises materially as risk appetite contracts; growth-stock multiples
+      compress sharply; sector dispersion wide (energy / financials /
+      defensives outperform, growth / cyclicals underperform).
+
+  probability: null

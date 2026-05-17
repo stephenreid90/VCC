@@ -1,0 +1,207 @@
+scenario:
+  id: ai_productivity_lag
+  name: AI Productivity Lag
+  version: 2026-Q2-v1
+  published: 2026-05-16
+
+  narrative:
+    key_mechanism: >
+      Solow productivity paradox plays out at AI scale. Capability and capex
+      continue at high levels (deficit-funded, US-led, capital available);
+      foundation models advance; agents proliferate; AI infrastructure spend
+      stays high. But enterprise adoption is slow — workflow integration is
+      hard, trust / audit requirements slow rollout in regulated industries,
+      behavioural change in workforce takes years not quarters. Productivity
+      gains concentrate in well-integrated firms within sectors most amenable
+      to AI substitution; aggregate TFP grows ~0.5%, modestly above
+      pre-pandemic norm but well short of bull case. Rents capture is
+      asymmetric — platform owners (model providers, compute, cloud) capture
+      the bulk; broader enterprise pays for AI tools without proportional
+      productivity payback. Equity-market concentration in platform owners
+      intensifies. The saving grace is the labour-cost channel: AI does
+      materially contain wage growth in white-collar / professional /
+      clerical roles, addressing labour shortages — different transmission
+      from productivity but real. China's bipedal-robotics-plus-AI approach
+      has tangible deployment in physical-substitution use cases even though
+      general AI penetration is slow.
+    distinguishing_features: >
+      Unlike Muddle Through, AI is the dominant story (or rather, AI's
+      failure to be the story is the story). Unlike Orderly Convergence, AI
+      productivity transmission does not work; rents do not diffuse. Unlike
+      Stagflation Persists, no acute energy / inflation shock. Unlike
+      Fragmentation, bloc dynamics secondary. Unlike Disorderly Climate
+      Crystallisation, climate posture continues to drift without
+      crystallisation.
+    leading_indicators: >
+      Aggregate TFP data continuing below 1% despite sustained AI capex;
+      enterprise-adoption surveys showing penetration plateauing outside
+      software / professional services / content sectors; equity-market
+      concentration in AI platform owners intensifying; growth-stock
+      multiples gradually compressing; wage-growth containment in white-collar
+      roles continuing without GDP transmission; Chinese physical-AI
+      deployment data showing factory-floor traction.
+    disconfirming_evidence: >
+      Sustained enterprise-AI adoption broadening with productivity flow-through
+      to aggregate TFP (would shift toward Orderly Convergence). AI capex
+      collapse / financial-market unwind (would shift toward a different
+      scenario closer to original Tech-Investment Unwind framing not in
+      current set). Major acute non-AI shock (would shift toward Stagflation
+      / Fragmentation / Climate Crystallisation).
+
+  time_profile:
+    - phase: continued_investment
+      year_start: 1
+      year_end: 3
+      characterisation: >
+        AI capex continues high; capability advances; adoption begins among
+        early-adopter cohort but broader enterprise lags. Productivity
+        transmission slow.
+    - phase: divergence
+      year_start: 4
+      year_end: 7
+      characterisation: >
+        Adoption gap between cohorts widens. Platform rents consolidate.
+        Labour-cost containment channel becomes the working transmission.
+        Growth-stock premium gradually compresses as productivity surprise
+        fails to deliver.
+    - phase: late_recognition
+      year_start: 8
+      year_end: null
+      characterisation: >
+        Market recognises the productivity lag is structural not temporary.
+        Equity-market concentration in platform owners peaks. Labour-cost
+        gains continue. Chinese physical-AI deployment differentiates.
+
+  macro_variables:
+    - variable: real_gdp_growth_world
+      units: percent_yoy
+      type: time_series
+      time_series:
+        - {year: 1, value: 2.0, confidence_low: 1.5, confidence_high: 2.5}
+        - {year: 3, value: 1.9, confidence_low: 1.4, confidence_high: 2.4}
+        - {year: 5, value: 1.9, confidence_low: 1.3, confidence_high: 2.5}
+        - {year: 7, value: 1.9, confidence_low: 1.3, confidence_high: 2.5}
+        - {year: 10, value: 2.0, confidence_low: 1.3, confidence_high: 2.6}
+
+    - variable: cpi_inflation_advanced
+      units: percent_yoy
+      type: time_series
+      time_series:
+        - {year: 1, value: 3.0, confidence_low: 2.5, confidence_high: 3.5}
+        - {year: 5, value: 3.0, confidence_low: 2.5, confidence_high: 3.5}
+        - {year: 10, value: 2.8, confidence_low: 2.3, confidence_high: 3.3}
+
+    - variable: policy_rate_real_advanced
+      units: percent
+      type: time_series
+      time_series:
+        - {year: 1, value: 1.0, confidence_low: 0.5, confidence_high: 1.5}
+        - {year: 5, value: 1.0, confidence_low: 0.5, confidence_high: 1.5}
+        - {year: 10, value: 1.0, confidence_low: 0.5, confidence_high: 1.5}
+
+    - variable: tfp_growth_advanced
+      units: percent_yoy
+      type: time_series
+      time_series:
+        - {year: 1, value: 0.6, confidence_low: 0.3, confidence_high: 0.9}
+        - {year: 5, value: 0.5, confidence_low: 0.2, confidence_high: 0.9}
+        - {year: 10, value: 0.6, confidence_low: 0.3, confidence_high: 1.0}
+
+    - variable: ai_capex_continuing
+      units: regime
+      type: regime
+      regime:
+        label: continued_high
+        description: >
+          AI capex continues at high levels through the horizon; no
+          financial-market unwind; deficit funding sustains investment;
+          capability advances.
+
+    - variable: ai_adoption_regime
+      units: regime
+      type: regime
+      regime:
+        label: narrow_concentrated
+        description: >
+          Adoption concentrates in well-integrated firms and amenable sectors;
+          broader enterprise lags; rents accrue to platform owners.
+
+  geopolitical:
+    bloc_dynamics: >
+      Bloc-fragmentation themes partly apply (AI stacks separating) but at
+      lower intensity than Fragmentation scenario; trade frictions slow rather
+      than accelerate.
+    trade_policy: >
+      AI hardware export controls continue; broader trade settings stable.
+    resource_nationalism: >
+      Critical-mineral access for AI hardware (rare earths, gallium,
+      germanium) modestly contested; semiconductor supply chains under
+      ongoing strategic scrutiny.
+
+  technology:
+    productivity_regime: >
+      Slow transmission via cognitive channel; faster via physical-substitution
+      channel where China leads. Aggregate TFP growth ~0.5%. Productivity
+      dispersion wide across firms and sectors.
+    disruption_vectors:
+      - AI in narrow cohort — productivity gains real but narrow
+      - Chinese physical AI / robotics — material factory-floor deployment
+      - Labour-cost containment via AI in white-collar work
+      - Platform-owner rent capture intensifying equity-market concentration
+
+  regulatory:
+    climate_policy: >
+      Continues to drift as in Muddle Through; AI-energy demand (data centre
+      power) becomes a climate-policy flashpoint without resolution.
+    financial_regulation: >
+      AI-model risk frameworks evolve; some bank caution around tech-lending
+      books but no acute event.
+    healthcare_regulation: >
+      AI-assisted clinical decision support and drug-discovery faces
+      ongoing regulatory scrutiny; trust / audit requirements slow adoption
+      in healthcare specifically (a key labour-substitution domain that
+      moves slower than the cognitive-substitution average).
+
+  commodity_and_energy:
+    oil_regime: >
+      Similar to Muddle Through; Brent in USD 70–90 range.
+    gas_regime: >
+      Stable; AI data-centre power demand supports gas in the medium term
+      where renewable build-out lags.
+    metals_regime: >
+      Copper and transition-metal demand modestly supported by AI-infrastructure
+      and electrification capex; otherwise similar to Muddle Through.
+    ag_regime: >
+      Generally stable.
+
+  demand_profile:
+    consumer: >
+      Real spending subdued; labour-cost containment in white-collar work
+      moderates wage growth and modestly constrains consumer demand;
+      offset partly by lower-than-bull inflation.
+    industrial: >
+      AI capex elevated; broader capex muted; physical-AI deployment growing
+      in advanced manufacturing.
+    infrastructure: >
+      Data centre and AI-infrastructure investment elevated; broader
+      infrastructure subdued.
+    healthcare: >
+      Demand robust on demographic drivers; AI labour-cost containment
+      in administrative / clinical-support roles offsets some cost pressure.
+
+  financial_conditions:
+    policy_rates: >
+      Nominal cash rates similar to Muddle Through (3.5-4.5%); productivity
+      surprise insufficient to enable rate cuts. Real rates 1.0%.
+    credit_spreads: >
+      Tech-lending books observe some stress without crisis; broader
+      spreads near long-term averages.
+    fx_regime: >
+      USD broadly firm; CNY supported by China's manufacturing
+      competitiveness through physical-AI deployment.
+    equity_risk_premium: >
+      Platform-owner concentration intensifies; growth-stock multiples for
+      AI beneficiaries compress gradually as productivity-surprise narrative
+      fades; broad-enterprise equities under-perform.
+
+  probability: null
