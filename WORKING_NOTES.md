@@ -44,7 +44,8 @@ A living scratchpad for conversational decisions, current preoccupations, and co
   - `design/frameworks/five_forces_questions.md` — all five forces, Porter-2008-aligned.
   - `design/frameworks/payor_and_regulator.md` — v1 draft. Two-axis (regulatory + payor) framework.
 - **Step 3** (Scenarios workshop): **done.** Six scenarios selected via interactive workshop (16 May 2026): Muddle Through (interior, most-likely), Orderly Convergence (upside boundary), Stagflation Persists (macro-downside boundary), Fragmentation and Resource Nationalism (geopolitical boundary), Disorderly Climate Crystallisation (climate boundary), AI Productivity Lag (technology boundary). All six scenarios drafted into `data/scenarios/<id>.yaml` (structured per §6.4) and `data/scenarios/<id>.md` (narrative per §16.1). Workshop output at `design/scenarios_workshop.md` includes institutional comparison (IMF / OECD / World Bank / IEA / NGFS mapping).
-- **Next: Step 4** — Formalise data schemas. Turn the in-doc YAML examples into pydantic / JSON Schema; wire validators. Mechanical work but bounded.
+- **Step 4** (Formalise data schemas): **done.** pydantic v2 models for all eight layer schemas live under `src/vcc_valuations/schemas/` (scenario, industry, company + corporate-action overlay, driver, linkage, assumption, frameworks, plus common enums). JSON Schema exports generated under `design/schemas/`. Round-trip tests under `tests/schemas/` validate each scenario YAML against the model — all six pass; 22/22 tests pass overall. Includes structural validators per architecture spec: derived drivers can't be scenario-sensitive (§9.2); beyond-scale overrides require quantified band (§10.4); sign-flip overrides require ≥2 evidence refs (§10.6).
+- **Next: Step 5** — Populate first archetype (IPL). The first true test of whether the framework holds up against real content. Wall-chart budget: 320-800 chat-min, spread across multiple sessions, with substantial offline analyst work between sessions and parallel Ben data workstream contribution.
 
 ---
 
@@ -130,19 +131,4 @@ A living scratchpad for conversational decisions, current preoccupations, and co
 - `4616ede` — payor-and-regulator framework v1 draft added.
 - `ec462c5` — editorial sweep + v0.1 freeze (Step 1 closed out).
 - `8e7a51b` — WORKING_NOTES update after Step 1 and Step 2 closed.
-- `a76a9ec` — scenarios workshop prep document.
-- `8cc2527` — response to Ben's `vcc_valuations` rev1 design.
-- (Step 3 completion — architecture review item, workshop output document, six scenario YAMLs and narratives, WORKING_NOTES update — pending commit when this update saves.)
-- **Tag:** `architecture-v0.1` points at `ec462c5`.
-
----
-
-## Last updated
-
-16 May 2026 (later) — Step 3 (Scenarios workshop) closed out. Six scenarios drafted into structured YAML and narrative form. Ready for Step 4 (Formalise data schemas).
-
-Previous updates:
-- 16 May 2026 (earlier) — Step 1 and Step 2 closed.
-- 7 May 2026 — initial creation as hedge against chat context-length limits.
-
-Update this file whenever a conversational decision is made that doesn't belong in the architecture spec. Concision matters — this needs to remain skim-readable.
+- `a76a9ec` — scenarios workshop prep d
