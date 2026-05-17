@@ -1,0 +1,198 @@
+{
+  "$defs": {
+    "Driver": {
+      "additionalProperties": false,
+      "description": "A driver in the Layer 4 catalogue.",
+      "properties": {
+        "id": {
+          "description": "Stable snake_case id used by the impact matrix.",
+          "title": "Id",
+          "type": "string"
+        },
+        "group": {
+          "description": "revenue | margin | capital | financial_risk | terminal | archetype_specific.",
+          "title": "Group",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "unit": {
+          "description": "decimal | bps | days | currency | ratio | multiplier.",
+          "title": "Unit",
+          "type": "string"
+        },
+        "default_range": {
+          "$ref": "#/$defs/DriverRange",
+          "description": "Set at archetype level; overridable per company."
+        },
+        "applicable_archetypes": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "List of archetype ids, or 'all'.",
+          "title": "Applicable Archetypes"
+        },
+        "valuation_model": {
+          "items": {
+            "$ref": "#/$defs/ValuationModel"
+          },
+          "title": "Valuation Model",
+          "type": "array"
+        },
+        "dcf_line_item": {
+          "title": "Dcf Line Item",
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/$defs/DriverRole"
+        },
+        "dependencies": {
+          "description": "Other driver ids; required where role == derived.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Dependencies",
+          "type": "array"
+        },
+        "derivation_formula": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Required where role == derived. Plain-language or expression form, e.g. 'wacc = (E/V) * cost_of_equity + (D/V) * cost_of_debt_pretax * (1 - tax_rate)'.",
+          "title": "Derivation Formula"
+        },
+        "scope": {
+          "$ref": "#/$defs/DriverScope"
+        },
+        "scenario_sensitive": {
+          "description": "Whether the impact matrix may move it. Must be False where role == derived (derived drivers are computed by Layer 6, not written by Layer 5).",
+          "title": "Scenario Sensitive",
+          "type": "boolean"
+        },
+        "base_definition": {
+          "description": "latest_reported_fy | ttm | three_year_avg | ntm_consensus \u2014 used by Layer 6 (section 11.2) to anchor deltas against base-year values.",
+          "title": "Base Definition",
+          "type": "string"
+        },
+        "default_time_profile": {
+          "description": "Default time-profile name from the section 11.3 library, with parameters bundled (e.g. 'regime_shift(phase_in_years=3)').",
+          "title": "Default Time Profile",
+          "type": "string"
+        },
+        "aggregation_method": {
+          "description": "revenue_weighted_avg | ebit_weighted_avg | sum | identity_if_company_scope \u2014 used by Layer 6 (section 11.2) to roll segment values to company level.",
+          "title": "Aggregation Method",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "group",
+        "name",
+        "description",
+        "unit",
+        "default_range",
+        "applicable_archetypes",
+        "valuation_model",
+        "dcf_line_item",
+        "role",
+        "scope",
+        "scenario_sensitive",
+        "base_definition",
+        "default_time_profile",
+        "aggregation_method"
+      ],
+      "title": "Driver",
+      "type": "object"
+    },
+    "DriverRange": {
+      "additionalProperties": false,
+      "description": "Default min / mid / max for a driver under a given archetype (section 9.2).",
+      "properties": {
+        "min": {
+          "title": "Min",
+          "type": "number"
+        },
+        "mid": {
+          "title": "Mid",
+          "type": "number"
+        },
+        "max": {
+          "title": "Max",
+          "type": "number"
+        }
+      },
+      "required": [
+        "min",
+        "mid",
+        "max"
+      ],
+      "title": "DriverRange",
+      "type": "object"
+    },
+    "DriverRole": {
+      "description": "Whether a driver is written by Layer 5 or computed by Layer 6 (section 9.2).",
+      "enum": [
+        "primary",
+        "derived"
+      ],
+      "title": "DriverRole",
+      "type": "string"
+    },
+    "DriverScope": {
+      "description": "Where a driver is populated (section 9.2).",
+      "enum": [
+        "company",
+        "segment"
+      ],
+      "title": "DriverScope",
+      "type": "string"
+    },
+    "ValuationModel": {
+      "description": "Which valuation engine consumes the driver (section 9.2).",
+      "enum": [
+        "fcf",
+        "ddm",
+        "residual_income"
+      ],
+      "title": "ValuationModel",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Top-level wrapper for data/drivers/<id>.yaml or a catalogue file.",
+  "properties": {
+    "drivers": {
+      "items": {
+        "$ref": "#/$defs/Driver"
+      },
+      "title": "Drivers",
+      "type": "array"
+    }
+  },
+  "required": [
+    "drivers"
+  ],
+  "title": "DriverFile",
+  "type": "object"
+}

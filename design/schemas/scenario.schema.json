@@ -1,0 +1,469 @@
+{
+  "$defs": {
+    "CommodityAndEnergy": {
+      "additionalProperties": false,
+      "properties": {
+        "oil_regime": {
+          "title": "Oil Regime",
+          "type": "string"
+        },
+        "gas_regime": {
+          "title": "Gas Regime",
+          "type": "string"
+        },
+        "metals_regime": {
+          "title": "Metals Regime",
+          "type": "string"
+        },
+        "ag_regime": {
+          "title": "Ag Regime",
+          "type": "string"
+        }
+      },
+      "required": [
+        "oil_regime",
+        "gas_regime",
+        "metals_regime",
+        "ag_regime"
+      ],
+      "title": "CommodityAndEnergy",
+      "type": "object"
+    },
+    "DemandProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "consumer": {
+          "title": "Consumer",
+          "type": "string"
+        },
+        "industrial": {
+          "title": "Industrial",
+          "type": "string"
+        },
+        "infrastructure": {
+          "title": "Infrastructure",
+          "type": "string"
+        },
+        "healthcare": {
+          "title": "Healthcare",
+          "type": "string"
+        }
+      },
+      "required": [
+        "consumer",
+        "industrial",
+        "infrastructure",
+        "healthcare"
+      ],
+      "title": "DemandProfile",
+      "type": "object"
+    },
+    "FinancialConditions": {
+      "additionalProperties": false,
+      "properties": {
+        "policy_rates": {
+          "title": "Policy Rates",
+          "type": "string"
+        },
+        "credit_spreads": {
+          "title": "Credit Spreads",
+          "type": "string"
+        },
+        "fx_regime": {
+          "title": "Fx Regime",
+          "type": "string"
+        },
+        "equity_risk_premium": {
+          "title": "Equity Risk Premium",
+          "type": "string"
+        }
+      },
+      "required": [
+        "policy_rates",
+        "credit_spreads",
+        "fx_regime",
+        "equity_risk_premium"
+      ],
+      "title": "FinancialConditions",
+      "type": "object"
+    },
+    "Geopolitical": {
+      "additionalProperties": false,
+      "properties": {
+        "bloc_dynamics": {
+          "title": "Bloc Dynamics",
+          "type": "string"
+        },
+        "trade_policy": {
+          "title": "Trade Policy",
+          "type": "string"
+        },
+        "resource_nationalism": {
+          "title": "Resource Nationalism",
+          "type": "string"
+        }
+      },
+      "required": [
+        "bloc_dynamics",
+        "trade_policy",
+        "resource_nationalism"
+      ],
+      "title": "Geopolitical",
+      "type": "object"
+    },
+    "MacroRegime": {
+      "additionalProperties": false,
+      "description": "Qualitative regime tag for a macro variable (section 6.4).",
+      "properties": {
+        "label": {
+          "description": "e.g. 'anchored', 'un_anchored', 'fragmented'.",
+          "title": "Label",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        }
+      },
+      "required": [
+        "label",
+        "description"
+      ],
+      "title": "MacroRegime",
+      "type": "object"
+    },
+    "MacroTimeSeriesPoint": {
+      "additionalProperties": false,
+      "description": "A single year-value observation with optional confidence band.",
+      "properties": {
+        "year": {
+          "minimum": 1,
+          "title": "Year",
+          "type": "integer"
+        },
+        "value": {
+          "title": "Value",
+          "type": "number"
+        },
+        "confidence_low": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence Low"
+        },
+        "confidence_high": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence High"
+        }
+      },
+      "required": [
+        "year",
+        "value"
+      ],
+      "title": "MacroTimeSeriesPoint",
+      "type": "object"
+    },
+    "MacroVariable": {
+      "additionalProperties": false,
+      "description": "A macro variable; either quantitative time series or qualitative regime.",
+      "properties": {
+        "variable": {
+          "description": "e.g. 'real_gdp_growth_world', 'cpi_inflation_advanced'.",
+          "title": "Variable",
+          "type": "string"
+        },
+        "units": {
+          "description": "e.g. 'percent_yoy', 'percent', 'regime', 'eur_per_tco2'.",
+          "title": "Units",
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/$defs/MacroVariableType"
+        },
+        "time_series": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/MacroTimeSeriesPoint"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Time Series"
+        },
+        "regime": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MacroRegime"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "variable",
+        "units",
+        "type"
+      ],
+      "title": "MacroVariable",
+      "type": "object"
+    },
+    "MacroVariableType": {
+      "description": "Whether a macro variable is a time series or a regime tag (section 6.4).",
+      "enum": [
+        "time_series",
+        "regime"
+      ],
+      "title": "MacroVariableType",
+      "type": "string"
+    },
+    "Regulatory": {
+      "additionalProperties": false,
+      "properties": {
+        "climate_policy": {
+          "title": "Climate Policy",
+          "type": "string"
+        },
+        "financial_regulation": {
+          "title": "Financial Regulation",
+          "type": "string"
+        },
+        "healthcare_regulation": {
+          "title": "Healthcare Regulation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "climate_policy",
+        "financial_regulation",
+        "healthcare_regulation"
+      ],
+      "title": "Regulatory",
+      "type": "object"
+    },
+    "Scenario": {
+      "additionalProperties": false,
+      "description": "A scenario per section 6.4.",
+      "properties": {
+        "id": {
+          "description": "Stable snake_case identifier.",
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "description": "Display name.",
+          "title": "Name",
+          "type": "string"
+        },
+        "version": {
+          "description": "e.g. '2026-Q2-v1'.",
+          "title": "Version",
+          "type": "string"
+        },
+        "published": {
+          "format": "date",
+          "title": "Published",
+          "type": "string"
+        },
+        "narrative": {
+          "$ref": "#/$defs/ScenarioNarrative"
+        },
+        "time_profile": {
+          "items": {
+            "$ref": "#/$defs/TimePhase"
+          },
+          "minItems": 1,
+          "title": "Time Profile",
+          "type": "array"
+        },
+        "macro_variables": {
+          "items": {
+            "$ref": "#/$defs/MacroVariable"
+          },
+          "minItems": 1,
+          "title": "Macro Variables",
+          "type": "array"
+        },
+        "geopolitical": {
+          "$ref": "#/$defs/Geopolitical"
+        },
+        "technology": {
+          "$ref": "#/$defs/Technology"
+        },
+        "regulatory": {
+          "$ref": "#/$defs/Regulatory"
+        },
+        "commodity_and_energy": {
+          "$ref": "#/$defs/CommodityAndEnergy"
+        },
+        "demand_profile": {
+          "$ref": "#/$defs/DemandProfile"
+        },
+        "financial_conditions": {
+          "$ref": "#/$defs/FinancialConditions"
+        },
+        "probability": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional per section 3.3; canonical output is comparative.",
+          "title": "Probability"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "version",
+        "published",
+        "narrative",
+        "time_profile",
+        "macro_variables",
+        "geopolitical",
+        "technology",
+        "regulatory",
+        "commodity_and_energy",
+        "demand_profile",
+        "financial_conditions"
+      ],
+      "title": "Scenario",
+      "type": "object"
+    },
+    "ScenarioNarrative": {
+      "additionalProperties": false,
+      "description": "Prescribed-structure narrative block (section 6.4).",
+      "properties": {
+        "key_mechanism": {
+          "description": "One paragraph stating the central logic of the scenario.",
+          "title": "Key Mechanism",
+          "type": "string"
+        },
+        "distinguishing_features": {
+          "description": "How it differs from other scenarios in the library.",
+          "title": "Distinguishing Features",
+          "type": "string"
+        },
+        "leading_indicators": {
+          "description": "What you'd observe if this scenario were materialising.",
+          "title": "Leading Indicators",
+          "type": "string"
+        },
+        "disconfirming_evidence": {
+          "description": "What would invalidate this scenario.",
+          "title": "Disconfirming Evidence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key_mechanism",
+        "distinguishing_features",
+        "leading_indicators",
+        "disconfirming_evidence"
+      ],
+      "title": "ScenarioNarrative",
+      "type": "object"
+    },
+    "Technology": {
+      "additionalProperties": false,
+      "properties": {
+        "productivity_regime": {
+          "title": "Productivity Regime",
+          "type": "string"
+        },
+        "disruption_vectors": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Disruption Vectors",
+          "type": "array"
+        }
+      },
+      "required": [
+        "productivity_regime",
+        "disruption_vectors"
+      ],
+      "title": "Technology",
+      "type": "object"
+    },
+    "TimePhase": {
+      "additionalProperties": false,
+      "description": "One phase of a scenario's time profile (section 6.4).",
+      "properties": {
+        "phase": {
+          "description": "e.g. 'initial_shock', 'adjustment', 'new_equilibrium'.",
+          "title": "Phase",
+          "type": "string"
+        },
+        "year_start": {
+          "minimum": 1,
+          "title": "Year Start",
+          "type": "integer"
+        },
+        "year_end": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "None = open-ended through terminal.",
+          "title": "Year End"
+        },
+        "characterisation": {
+          "title": "Characterisation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "phase",
+        "year_start",
+        "characterisation"
+      ],
+      "title": "TimePhase",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Top-level YAML wrapper: each data/scenarios/<id>.yaml has `scenario:` at root.",
+  "properties": {
+    "scenario": {
+      "$ref": "#/$defs/Scenario"
+    }
+  },
+  "required": [
+    "scenario"
+  ],
+  "title": "ScenarioFile",
+  "type": "object"
+}

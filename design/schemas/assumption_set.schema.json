@@ -1,0 +1,480 @@
+{
+  "$defs": {
+    "AssumptionCell": {
+      "additionalProperties": false,
+      "description": "One driver's assumption \u2014 a year-indexed range (min / mid / max) per section 11.5.",
+      "properties": {
+        "min": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Min",
+          "type": "array"
+        },
+        "mid": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Mid",
+          "type": "array"
+        },
+        "max": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Max",
+          "type": "array"
+        },
+        "confidence": {
+          "$ref": "#/$defs/Confidence"
+        },
+        "time_profile": {
+          "description": "Profile name + parameters per section 11.3.",
+          "title": "Time Profile",
+          "type": "string"
+        },
+        "base_value": {
+          "title": "Base Value",
+          "type": "number"
+        },
+        "aggregation_method": {
+          "title": "Aggregation Method",
+          "type": "string"
+        }
+      },
+      "required": [
+        "min",
+        "mid",
+        "max",
+        "confidence",
+        "time_profile",
+        "base_value",
+        "aggregation_method"
+      ],
+      "title": "AssumptionCell",
+      "type": "object"
+    },
+    "BaseYearSnapshot": {
+      "additionalProperties": true,
+      "description": "Anchor values from Ben's data workstream (section 11.5).",
+      "properties": {
+        "fiscal_year": {
+          "title": "Fiscal Year",
+          "type": "string"
+        },
+        "revenue": {
+          "title": "Revenue",
+          "type": "number"
+        },
+        "ebit": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ebit"
+        },
+        "ebit_margin": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ebit Margin"
+        },
+        "capex": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Capex"
+        },
+        "net_debt": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Net Debt"
+        }
+      },
+      "required": [
+        "fiscal_year",
+        "revenue"
+      ],
+      "title": "BaseYearSnapshot",
+      "type": "object"
+    },
+    "Confidence": {
+      "description": "Pinned meaning: joint confidence in direction x magnitude.",
+      "enum": [
+        "low",
+        "moderate",
+        "high"
+      ],
+      "title": "Confidence",
+      "type": "string"
+    },
+    "ConsolidatedAssumptions": {
+      "additionalProperties": false,
+      "description": "Archetype-tagged consolidated block (section 11.5).",
+      "properties": {
+        "valuation_model": {
+          "$ref": "#/$defs/ValuationModel"
+        },
+        "consolidated_assumptions_fcf": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ConsolidatedAssumptionsFCF"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "consolidated_assumptions_ddm": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ConsolidatedAssumptionsDDM"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "valuation_model"
+      ],
+      "title": "ConsolidatedAssumptions",
+      "type": "object"
+    },
+    "ConsolidatedAssumptionsDDM": {
+      "additionalProperties": false,
+      "description": "DDM / residual-income consolidated block (e.g. WBC).",
+      "properties": {
+        "assumptions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/AssumptionCell"
+          },
+          "title": "Assumptions",
+          "type": "object"
+        }
+      },
+      "required": [
+        "assumptions"
+      ],
+      "title": "ConsolidatedAssumptionsDDM",
+      "type": "object"
+    },
+    "ConsolidatedAssumptionsFCF": {
+      "additionalProperties": false,
+      "description": "FCF-model consolidated block (e.g. IPL, CSL).",
+      "properties": {
+        "assumptions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/AssumptionCell"
+          },
+          "title": "Assumptions",
+          "type": "object"
+        }
+      },
+      "required": [
+        "assumptions"
+      ],
+      "title": "ConsolidatedAssumptionsFCF",
+      "type": "object"
+    },
+    "Direction": {
+      "description": "Matrix entry direction. Separate from magnitude (section 10.2).",
+      "enum": [
+        "negative",
+        "neutral",
+        "positive"
+      ],
+      "title": "Direction",
+      "type": "string"
+    },
+    "Magnitude": {
+      "description": "Matrix entry magnitude. Separate from direction (section 10.2).",
+      "enum": [
+        "small",
+        "moderate",
+        "large"
+      ],
+      "title": "Magnitude",
+      "type": "string"
+    },
+    "QuantifiedBand": {
+      "additionalProperties": false,
+      "description": "Optional quantified override of the ordinal direction x magnitude (section 10.2).",
+      "properties": {
+        "min": {
+          "title": "Min",
+          "type": "number"
+        },
+        "mid": {
+          "title": "Mid",
+          "type": "number"
+        },
+        "max": {
+          "title": "Max",
+          "type": "number"
+        }
+      },
+      "required": [
+        "min",
+        "mid",
+        "max"
+      ],
+      "title": "QuantifiedBand",
+      "type": "object"
+    },
+    "ReasoningTraceEntry": {
+      "additionalProperties": false,
+      "description": "One entry in the end-to-end audit trace (section 11.5).",
+      "properties": {
+        "segment": {
+          "description": "Segment id or the literal 'company_level'.",
+          "title": "Segment",
+          "type": "string"
+        },
+        "driver": {
+          "title": "Driver",
+          "type": "string"
+        },
+        "scenario_narrative_excerpt": {
+          "title": "Scenario Narrative Excerpt",
+          "type": "string"
+        },
+        "industry_direction": {
+          "$ref": "#/$defs/Direction"
+        },
+        "industry_magnitude": {
+          "$ref": "#/$defs/Magnitude"
+        },
+        "industry_confidence": {
+          "$ref": "#/$defs/Confidence"
+        },
+        "company_override": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Company Override"
+        },
+        "final_direction": {
+          "$ref": "#/$defs/Direction"
+        },
+        "final_magnitude": {
+          "$ref": "#/$defs/Magnitude"
+        },
+        "final_quantified_band": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QuantifiedBand"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "translation_rule_applied": {
+          "title": "Translation Rule Applied",
+          "type": "string"
+        },
+        "base_definition": {
+          "title": "Base Definition",
+          "type": "string"
+        },
+        "base_value": {
+          "title": "Base Value",
+          "type": "number"
+        },
+        "time_profile_used": {
+          "title": "Time Profile Used",
+          "type": "string"
+        },
+        "consistency_rules_applied": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Consistency Rules Applied",
+          "type": "array"
+        },
+        "final_numerical_value": {
+          "$ref": "#/$defs/AssumptionCell"
+        },
+        "narrative": {
+          "title": "Narrative",
+          "type": "string"
+        }
+      },
+      "required": [
+        "segment",
+        "driver",
+        "scenario_narrative_excerpt",
+        "industry_direction",
+        "industry_magnitude",
+        "industry_confidence",
+        "final_direction",
+        "final_magnitude",
+        "translation_rule_applied",
+        "base_definition",
+        "base_value",
+        "time_profile_used",
+        "final_numerical_value",
+        "narrative"
+      ],
+      "title": "ReasoningTraceEntry",
+      "type": "object"
+    },
+    "SegmentAssumptions": {
+      "additionalProperties": false,
+      "description": "Driver-keyed map of per-segment assumptions (section 11.5).",
+      "properties": {
+        "segment": {
+          "title": "Segment",
+          "type": "string"
+        },
+        "industry_archetype": {
+          "title": "Industry Archetype",
+          "type": "string"
+        },
+        "weight": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Weight",
+          "type": "number"
+        },
+        "assumptions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/AssumptionCell"
+          },
+          "description": "Driver id -> assumption cell.",
+          "title": "Assumptions",
+          "type": "object"
+        }
+      },
+      "required": [
+        "segment",
+        "industry_archetype",
+        "weight",
+        "assumptions"
+      ],
+      "title": "SegmentAssumptions",
+      "type": "object"
+    },
+    "ValuationModel": {
+      "description": "Which valuation engine consumes the driver (section 9.2).",
+      "enum": [
+        "fcf",
+        "ddm",
+        "residual_income"
+      ],
+      "title": "ValuationModel",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Top-level AssumptionSet per company x scenario (section 11.5).",
+  "properties": {
+    "company": {
+      "title": "Company",
+      "type": "string"
+    },
+    "scenario": {
+      "title": "Scenario",
+      "type": "string"
+    },
+    "scenario_version": {
+      "title": "Scenario Version",
+      "type": "string"
+    },
+    "horizon_years": {
+      "description": "Parametric per section 2 \u2014 set per company x scenario combination, not a fixed 5 or 10.",
+      "title": "Horizon Years",
+      "type": "integer"
+    },
+    "functional_currency": {
+      "title": "Functional Currency",
+      "type": "string"
+    },
+    "translation_rules_version": {
+      "title": "Translation Rules Version",
+      "type": "string"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "generated_by": {
+      "title": "Generated By",
+      "type": "string"
+    },
+    "base_year_snapshot": {
+      "$ref": "#/$defs/BaseYearSnapshot"
+    },
+    "segment_assumptions": {
+      "items": {
+        "$ref": "#/$defs/SegmentAssumptions"
+      },
+      "title": "Segment Assumptions",
+      "type": "array"
+    },
+    "consolidated_assumptions": {
+      "$ref": "#/$defs/ConsolidatedAssumptions"
+    },
+    "reasoning_trace": {
+      "items": {
+        "$ref": "#/$defs/ReasoningTraceEntry"
+      },
+      "title": "Reasoning Trace",
+      "type": "array"
+    }
+  },
+  "required": [
+    "company",
+    "scenario",
+    "scenario_version",
+    "horizon_years",
+    "functional_currency",
+    "translation_rules_version",
+    "generated_at",
+    "generated_by",
+    "base_year_snapshot",
+    "segment_assumptions",
+    "consolidated_assumptions",
+    "reasoning_trace"
+  ],
+  "title": "AssumptionSet",
+  "type": "object"
+}

@@ -1,0 +1,877 @@
+{
+  "$defs": {
+    "BalanceSheet": {
+      "additionalProperties": false,
+      "description": "Consolidated balance-sheet posture (section 8.2).",
+      "properties": {
+        "net_debt_ebitda": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Null where archetype_specific replaces it (e.g. banks).",
+          "title": "Net Debt Ebitda"
+        },
+        "leverage_posture": {
+          "$ref": "#/$defs/LeveragePosture"
+        },
+        "liquidity": {
+          "title": "Liquidity",
+          "type": "string"
+        }
+      },
+      "required": [
+        "leverage_posture",
+        "liquidity"
+      ],
+      "title": "BalanceSheet",
+      "type": "object"
+    },
+    "CapabilityProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "strengths": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Strengths",
+          "type": "array"
+        },
+        "gaps": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Gaps",
+          "type": "array"
+        }
+      },
+      "required": [
+        "strengths",
+        "gaps"
+      ],
+      "title": "CapabilityProfile",
+      "type": "object"
+    },
+    "CapitalAllocation": {
+      "additionalProperties": false,
+      "description": "Section 8.2.",
+      "properties": {
+        "dividend_policy": {
+          "title": "Dividend Policy",
+          "type": "string"
+        },
+        "buyback_posture": {
+          "title": "Buyback Posture",
+          "type": "string"
+        },
+        "m_and_a_posture": {
+          "title": "M And A Posture",
+          "type": "string"
+        },
+        "reinvestment_rate": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Definition: 5-year average capex / EBITDA (specify alternative in comment).",
+          "title": "Reinvestment Rate"
+        }
+      },
+      "required": [
+        "dividend_policy",
+        "buyback_posture",
+        "m_and_a_posture"
+      ],
+      "title": "CapitalAllocation",
+      "type": "object"
+    },
+    "CompanyPosition": {
+      "additionalProperties": false,
+      "description": "Company position per section 8.2.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "ticker": {
+          "title": "Ticker",
+          "type": "string"
+        },
+        "reporting_currency": {
+          "title": "Reporting Currency",
+          "type": "string"
+        },
+        "functional_currency": {
+          "title": "Functional Currency",
+          "type": "string"
+        },
+        "functional_currency_rationale": {
+          "title": "Functional Currency Rationale",
+          "type": "string"
+        },
+        "balance_sheet": {
+          "$ref": "#/$defs/BalanceSheet"
+        },
+        "capital_allocation": {
+          "$ref": "#/$defs/CapitalAllocation"
+        },
+        "management_and_governance": {
+          "$ref": "#/$defs/ManagementAndGovernance"
+        },
+        "esg_and_transition": {
+          "$ref": "#/$defs/ESGAndTransition"
+        },
+        "scenario_sensitivity_overrides_global": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ScenarioSensitivityOverrides"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "segments": {
+          "items": {
+            "$ref": "#/$defs/Segment"
+          },
+          "minItems": 1,
+          "title": "Segments",
+          "type": "array"
+        },
+        "corporate_actions": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/CorporateAction"
+          },
+          "title": "Corporate Actions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "ticker",
+        "reporting_currency",
+        "functional_currency",
+        "functional_currency_rationale",
+        "balance_sheet",
+        "capital_allocation",
+        "management_and_governance",
+        "esg_and_transition",
+        "segments"
+      ],
+      "title": "CompanyPosition",
+      "type": "object"
+    },
+    "CompetitivePosition": {
+      "additionalProperties": false,
+      "description": "Cost position + differentiation position (section 8.2).",
+      "properties": {
+        "cost_position": {
+          "$ref": "#/$defs/CostPositionBlock"
+        },
+        "differentiation_position": {
+          "$ref": "#/$defs/DifferentiationPosition"
+        }
+      },
+      "required": [
+        "cost_position",
+        "differentiation_position"
+      ],
+      "title": "CompetitivePosition",
+      "type": "object"
+    },
+    "CorporateAction": {
+      "additionalProperties": false,
+      "description": "Discrete corporate event reshaping segment weights at an effective year (section 8.4).",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/CorporateActionKind"
+        },
+        "effective_year": {
+          "minimum": 1,
+          "title": "Effective Year",
+          "type": "integer"
+        },
+        "scenario_id": {
+          "description": "Scenario id, or 'all' for cross-scenario.",
+          "title": "Scenario Id",
+          "type": "string"
+        },
+        "affected_segments": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Affected Segments",
+          "type": "array"
+        },
+        "post_event_weights": {
+          "items": {
+            "$ref": "#/$defs/PostEventWeight"
+          },
+          "title": "Post Event Weights",
+          "type": "array"
+        },
+        "rationale": {
+          "title": "Rationale",
+          "type": "string"
+        },
+        "evidence_refs": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/EvidenceRef"
+          },
+          "title": "Evidence Refs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "effective_year",
+        "scenario_id",
+        "affected_segments",
+        "post_event_weights",
+        "rationale"
+      ],
+      "title": "CorporateAction",
+      "type": "object"
+    },
+    "CorporateActionKind": {
+      "description": "Type of corporate-action overlay event (section 8.4).",
+      "enum": [
+        "demerger",
+        "acquisition",
+        "divestment",
+        "spin_off"
+      ],
+      "title": "CorporateActionKind",
+      "type": "string"
+    },
+    "CostPositionBlock": {
+      "additionalProperties": false,
+      "description": "Mainly relevant for commodity-like industries (section 8.2).",
+      "properties": {
+        "placement_on_curve": {
+          "$ref": "#/$defs/CostPositionPlacement"
+        },
+        "evidence": {
+          "title": "Evidence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "placement_on_curve",
+        "evidence"
+      ],
+      "title": "CostPositionBlock",
+      "type": "object"
+    },
+    "CostPositionPlacement": {
+      "description": "Position on cost curve (section 8.2).",
+      "enum": [
+        "bottom_quartile",
+        "2nd",
+        "3rd",
+        "top_quartile",
+        "n/a"
+      ],
+      "title": "CostPositionPlacement",
+      "type": "string"
+    },
+    "CustomerConcentration": {
+      "additionalProperties": false,
+      "properties": {
+        "top_n": {
+          "title": "Top N",
+          "type": "integer"
+        },
+        "share_of_revenue": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Share Of Revenue",
+          "type": "number"
+        },
+        "narrative": {
+          "title": "Narrative",
+          "type": "string"
+        }
+      },
+      "required": [
+        "top_n",
+        "share_of_revenue",
+        "narrative"
+      ],
+      "title": "CustomerConcentration",
+      "type": "object"
+    },
+    "DifferentiationPosition": {
+      "additionalProperties": false,
+      "description": "Mainly relevant for differentiated industries (section 8.2).",
+      "properties": {
+        "pricing_power": {
+          "$ref": "#/$defs/Rating"
+        },
+        "differentiation_basis": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Differentiation Basis",
+          "type": "array"
+        },
+        "evidence": {
+          "title": "Evidence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "pricing_power",
+        "differentiation_basis",
+        "evidence"
+      ],
+      "title": "DifferentiationPosition",
+      "type": "object"
+    },
+    "Durability": {
+      "description": "Moat / franchise asset durability (section 8.2).",
+      "enum": [
+        "low",
+        "moderate",
+        "high"
+      ],
+      "title": "Durability",
+      "type": "string"
+    },
+    "ESGAndTransition": {
+      "additionalProperties": false,
+      "properties": {
+        "carbon_intensity": {
+          "title": "Carbon Intensity",
+          "type": "string"
+        },
+        "transition_plan": {
+          "title": "Transition Plan",
+          "type": "string"
+        },
+        "stranded_asset_exposure": {
+          "title": "Stranded Asset Exposure",
+          "type": "string"
+        }
+      },
+      "required": [
+        "carbon_intensity",
+        "transition_plan",
+        "stranded_asset_exposure"
+      ],
+      "title": "ESGAndTransition",
+      "type": "object"
+    },
+    "EvidenceRef": {
+      "additionalProperties": false,
+      "description": "Used across the schema for traceability (sections 10.3, 10.4, 8.4).",
+      "properties": {
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "location": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Location"
+        },
+        "date_accessed": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Date Accessed"
+        }
+      },
+      "required": [
+        "source_id"
+      ],
+      "title": "EvidenceRef",
+      "type": "object"
+    },
+    "FranchiseAssets": {
+      "additionalProperties": false,
+      "description": "Supply-side / distribution / customer-relationship moats (section 8.2).",
+      "properties": {
+        "assets": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Assets",
+          "type": "array"
+        },
+        "durability": {
+          "$ref": "#/$defs/Durability"
+        },
+        "evidence": {
+          "title": "Evidence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "assets",
+        "durability",
+        "evidence"
+      ],
+      "title": "FranchiseAssets",
+      "type": "object"
+    },
+    "GeographicConcentration": {
+      "additionalProperties": false,
+      "properties": {
+        "regions": {
+          "items": {
+            "$ref": "#/$defs/GeographicRegionShare"
+          },
+          "title": "Regions",
+          "type": "array"
+        },
+        "narrative": {
+          "title": "Narrative",
+          "type": "string"
+        }
+      },
+      "required": [
+        "regions",
+        "narrative"
+      ],
+      "title": "GeographicConcentration",
+      "type": "object"
+    },
+    "GeographicRegionShare": {
+      "additionalProperties": false,
+      "properties": {
+        "geo": {
+          "title": "Geo",
+          "type": "string"
+        },
+        "share_of_revenue": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Share Of Revenue",
+          "type": "number"
+        }
+      },
+      "required": [
+        "geo",
+        "share_of_revenue"
+      ],
+      "title": "GeographicRegionShare",
+      "type": "object"
+    },
+    "InnovationPosition": {
+      "additionalProperties": false,
+      "description": "Required where archetype is innovation-driven (section 8.2).",
+      "properties": {
+        "rd_intensity": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rd Intensity"
+        },
+        "pipeline_strength": {
+          "$ref": "#/$defs/Rating"
+        },
+        "pipeline_horizon_years": {
+          "title": "Pipeline Horizon Years",
+          "type": "integer"
+        },
+        "evidence": {
+          "title": "Evidence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "pipeline_strength",
+        "pipeline_horizon_years",
+        "evidence"
+      ],
+      "title": "InnovationPosition",
+      "type": "object"
+    },
+    "LeveragePosture": {
+      "description": "Company-level capital-structure stance (section 8.2).",
+      "enum": [
+        "low",
+        "moderate",
+        "high"
+      ],
+      "title": "LeveragePosture",
+      "type": "string"
+    },
+    "ManagementAndGovernance": {
+      "additionalProperties": false,
+      "properties": {
+        "strategy_quality": {
+          "$ref": "#/$defs/Rating"
+        },
+        "strategy_evidence": {
+          "title": "Strategy Evidence",
+          "type": "string"
+        },
+        "execution_track_record": {
+          "$ref": "#/$defs/Rating"
+        },
+        "execution_evidence": {
+          "title": "Execution Evidence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "strategy_quality",
+        "strategy_evidence",
+        "execution_track_record",
+        "execution_evidence"
+      ],
+      "title": "ManagementAndGovernance",
+      "type": "object"
+    },
+    "MarketPosition": {
+      "additionalProperties": false,
+      "description": "One entry per meaningful market (section 8.2).",
+      "properties": {
+        "market": {
+          "title": "Market",
+          "type": "string"
+        },
+        "unit": {
+          "description": "revenue | volume | other",
+          "title": "Unit",
+          "type": "string"
+        },
+        "share": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Share",
+          "type": "number"
+        },
+        "rank": {
+          "title": "Rank",
+          "type": "integer"
+        },
+        "share_trend": {
+          "$ref": "#/$defs/MarketTrend"
+        }
+      },
+      "required": [
+        "market",
+        "unit",
+        "share",
+        "rank",
+        "share_trend"
+      ],
+      "title": "MarketPosition",
+      "type": "object"
+    },
+    "MarketTrend": {
+      "additionalProperties": false,
+      "properties": {
+        "direction": {
+          "description": "gaining | stable | losing",
+          "title": "Direction",
+          "type": "string"
+        },
+        "delta_5yr_bps": {
+          "description": "Quantified change in share, basis points.",
+          "title": "Delta 5Yr Bps",
+          "type": "integer"
+        },
+        "narrative": {
+          "title": "Narrative",
+          "type": "string"
+        }
+      },
+      "required": [
+        "direction",
+        "delta_5yr_bps",
+        "narrative"
+      ],
+      "title": "MarketTrend",
+      "type": "object"
+    },
+    "Moat": {
+      "additionalProperties": false,
+      "description": "Section 8.2 moat block.",
+      "properties": {
+        "sources": {
+          "description": "Enum members from: scale | brand | network | switching_cost | regulatory | resource | patent | distribution | data.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Sources",
+          "type": "array"
+        },
+        "durability": {
+          "$ref": "#/$defs/Durability"
+        },
+        "evidence": {
+          "title": "Evidence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sources",
+        "durability",
+        "evidence"
+      ],
+      "title": "Moat",
+      "type": "object"
+    },
+    "PostEventWeight": {
+      "additionalProperties": false,
+      "properties": {
+        "segment": {
+          "title": "Segment",
+          "type": "string"
+        },
+        "revenue_share": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Revenue Share",
+          "type": "number"
+        },
+        "ebit_share": {
+          "title": "Ebit Share",
+          "type": "number"
+        }
+      },
+      "required": [
+        "segment",
+        "revenue_share",
+        "ebit_share"
+      ],
+      "title": "PostEventWeight",
+      "type": "object"
+    },
+    "Rating": {
+      "description": "Three-point ordinal \u2014 the standard across the framework.",
+      "enum": [
+        "low",
+        "moderate",
+        "high"
+      ],
+      "title": "Rating",
+      "type": "string"
+    },
+    "RiskExposures": {
+      "additionalProperties": false,
+      "properties": {
+        "commodity": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Commodity",
+          "type": "array"
+        },
+        "regulatory": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Regulatory",
+          "type": "array"
+        },
+        "customer_concentration": {
+          "$ref": "#/$defs/CustomerConcentration"
+        },
+        "geographic_concentration": {
+          "$ref": "#/$defs/GeographicConcentration"
+        }
+      },
+      "required": [
+        "customer_concentration",
+        "geographic_concentration"
+      ],
+      "title": "RiskExposures",
+      "type": "object"
+    },
+    "ScenarioSensitivityOverrides": {
+      "additionalProperties": true,
+      "description": "Company-level or segment-level overrides to archetype scenario_sensitivity (section 8.2).",
+      "properties": {},
+      "title": "ScenarioSensitivityOverrides",
+      "type": "object"
+    },
+    "Segment": {
+      "additionalProperties": false,
+      "description": "One operating segment (section 8.2).",
+      "properties": {
+        "segment": {
+          "title": "Segment",
+          "type": "string"
+        },
+        "industry_archetype": {
+          "description": "FK to Layer 2 industry archetype id.",
+          "title": "Industry Archetype",
+          "type": "string"
+        },
+        "functional_currency": {
+          "title": "Functional Currency",
+          "type": "string"
+        },
+        "functional_currency_rationale": {
+          "title": "Functional Currency Rationale",
+          "type": "string"
+        },
+        "revenue_share": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Revenue Share",
+          "type": "number"
+        },
+        "ebit_share": {
+          "title": "Ebit Share",
+          "type": "number"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "market_positions": {
+          "items": {
+            "$ref": "#/$defs/MarketPosition"
+          },
+          "title": "Market Positions",
+          "type": "array"
+        },
+        "moat": {
+          "$ref": "#/$defs/Moat"
+        },
+        "competitive_position": {
+          "$ref": "#/$defs/CompetitivePosition"
+        },
+        "innovation_position": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/InnovationPosition"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "franchise_assets": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FranchiseAssets"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "capability_profile": {
+          "$ref": "#/$defs/CapabilityProfile"
+        },
+        "risk_exposures": {
+          "$ref": "#/$defs/RiskExposures"
+        },
+        "archetype_specific": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Shape varies by industry archetype; see architecture spec section 8.3 and the archetype's own schema (e.g. banking: CET1, NIM, cost-to-income).",
+          "title": "Archetype Specific"
+        },
+        "scenario_sensitivity_overrides": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ScenarioSensitivityOverrides"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "segment",
+        "industry_archetype",
+        "functional_currency",
+        "functional_currency_rationale",
+        "revenue_share",
+        "ebit_share",
+        "market_positions",
+        "moat",
+        "competitive_position",
+        "capability_profile",
+        "risk_exposures"
+      ],
+      "title": "Segment",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Top-level YAML wrapper for data/companies/<id>.yaml.",
+  "properties": {
+    "company_position": {
+      "$ref": "#/$defs/CompanyPosition"
+    }
+  },
+  "required": [
+    "company_position"
+  ],
+  "title": "CompanyPositionFile",
+  "type": "object"
+}

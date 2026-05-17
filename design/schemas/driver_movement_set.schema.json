@@ -1,0 +1,535 @@
+{
+  "$defs": {
+    "CompanyLevelMovementOutput": {
+      "additionalProperties": false,
+      "description": "Company-scope movements (tax, WACC components, terminal-state, minorities).",
+      "properties": {
+        "movements": {
+          "items": {
+            "$ref": "#/$defs/MovementOutput"
+          },
+          "title": "Movements",
+          "type": "array"
+        }
+      },
+      "required": [
+        "movements"
+      ],
+      "title": "CompanyLevelMovementOutput",
+      "type": "object"
+    },
+    "CompanyOverride": {
+      "additionalProperties": false,
+      "description": "An override to an impact matrix entry (section 10.4).",
+      "properties": {
+        "company": {
+          "title": "Company",
+          "type": "string"
+        },
+        "segment": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "If None, the override applies to the whole company.",
+          "title": "Segment"
+        },
+        "scenario": {
+          "title": "Scenario",
+          "type": "string"
+        },
+        "driver": {
+          "title": "Driver",
+          "type": "string"
+        },
+        "override_direction": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Direction"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "override_magnitude": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Magnitude"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "quantified_override": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QuantifiedBand"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "sign_flip": {
+          "default": false,
+          "description": "True when override_direction opposes industry_direction.",
+          "title": "Sign Flip",
+          "type": "boolean"
+        },
+        "beyond_scale": {
+          "default": false,
+          "description": "True when ordinal cannot represent the movement; quantified_override required when this is True (section 10.4).",
+          "title": "Beyond Scale",
+          "type": "boolean"
+        },
+        "reason_category": {
+          "description": "cost_advantage | scale | regulation | contract | management | product_mix | diversification | franchise_asset | data_workstream | other",
+          "title": "Reason Category",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "evidence_refs": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/EvidenceRef"
+          },
+          "title": "Evidence Refs",
+          "type": "array"
+        },
+        "governance": {
+          "$ref": "#/$defs/Governance"
+        },
+        "review_dialogue": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ReviewDialogue"
+          },
+          "title": "Review Dialogue",
+          "type": "array"
+        },
+        "half_life": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/HalfLifeTracker"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "company",
+        "scenario",
+        "driver",
+        "reason_category",
+        "reason",
+        "governance"
+      ],
+      "title": "CompanyOverride",
+      "type": "object"
+    },
+    "Confidence": {
+      "description": "Pinned meaning: joint confidence in direction x magnitude.",
+      "enum": [
+        "low",
+        "moderate",
+        "high"
+      ],
+      "title": "Confidence",
+      "type": "string"
+    },
+    "Direction": {
+      "description": "Matrix entry direction. Separate from magnitude (section 10.2).",
+      "enum": [
+        "negative",
+        "neutral",
+        "positive"
+      ],
+      "title": "Direction",
+      "type": "string"
+    },
+    "EvidenceRef": {
+      "additionalProperties": false,
+      "description": "Used across the schema for traceability (sections 10.3, 10.4, 8.4).",
+      "properties": {
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "location": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Location"
+        },
+        "date_accessed": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Date Accessed"
+        }
+      },
+      "required": [
+        "source_id"
+      ],
+      "title": "EvidenceRef",
+      "type": "object"
+    },
+    "Governance": {
+      "additionalProperties": false,
+      "description": "Per-entry / per-override governance audit (sections 10.3 and 10.4).",
+      "properties": {
+        "created_by": {
+          "title": "Created By",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "approved_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Approved By"
+        },
+        "approved_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Approved At"
+        },
+        "last_reviewed_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Last Reviewed At"
+        }
+      },
+      "required": [
+        "created_by",
+        "created_at"
+      ],
+      "title": "Governance",
+      "type": "object"
+    },
+    "HalfLifeTracker": {
+      "additionalProperties": false,
+      "description": "Scenario-version-tied refresh tracking (section 10.4).",
+      "properties": {
+        "scenario_version_at_creation": {
+          "title": "Scenario Version At Creation",
+          "type": "string"
+        },
+        "review_required_at_scenario_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Review Required At Scenario Version"
+        },
+        "stale": {
+          "default": false,
+          "title": "Stale",
+          "type": "boolean"
+        },
+        "requires_re_review": {
+          "default": false,
+          "title": "Requires Re Review",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "scenario_version_at_creation"
+      ],
+      "title": "HalfLifeTracker",
+      "type": "object"
+    },
+    "Magnitude": {
+      "description": "Matrix entry magnitude. Separate from direction (section 10.2).",
+      "enum": [
+        "small",
+        "moderate",
+        "large"
+      ],
+      "title": "Magnitude",
+      "type": "string"
+    },
+    "MovementOutput": {
+      "additionalProperties": false,
+      "description": "Per-driver movement output, including industry default and any override resolution.",
+      "properties": {
+        "driver": {
+          "title": "Driver",
+          "type": "string"
+        },
+        "industry_direction": {
+          "$ref": "#/$defs/Direction"
+        },
+        "industry_magnitude": {
+          "$ref": "#/$defs/Magnitude"
+        },
+        "industry_confidence": {
+          "$ref": "#/$defs/Confidence"
+        },
+        "industry_rationale": {
+          "title": "Industry Rationale",
+          "type": "string"
+        },
+        "company_override": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompanyOverride"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "final_direction": {
+          "$ref": "#/$defs/Direction"
+        },
+        "final_magnitude": {
+          "$ref": "#/$defs/Magnitude"
+        },
+        "final_confidence": {
+          "$ref": "#/$defs/Confidence"
+        },
+        "final_quantified_band": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QuantifiedBand"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "driver",
+        "industry_direction",
+        "industry_magnitude",
+        "industry_confidence",
+        "industry_rationale",
+        "final_direction",
+        "final_magnitude",
+        "final_confidence"
+      ],
+      "title": "MovementOutput",
+      "type": "object"
+    },
+    "QuantifiedBand": {
+      "additionalProperties": false,
+      "description": "Optional quantified override of the ordinal direction x magnitude (section 10.2).",
+      "properties": {
+        "min": {
+          "title": "Min",
+          "type": "number"
+        },
+        "mid": {
+          "title": "Mid",
+          "type": "number"
+        },
+        "max": {
+          "title": "Max",
+          "type": "number"
+        }
+      },
+      "required": [
+        "min",
+        "mid",
+        "max"
+      ],
+      "title": "QuantifiedBand",
+      "type": "object"
+    },
+    "ReviewDialogue": {
+      "additionalProperties": false,
+      "description": "Optional peer-review trail capturing the challenge / response (section 10.4).",
+      "properties": {
+        "challenge": {
+          "title": "Challenge",
+          "type": "string"
+        },
+        "challenger": {
+          "title": "Challenger",
+          "type": "string"
+        },
+        "response": {
+          "title": "Response",
+          "type": "string"
+        },
+        "challenge_at": {
+          "format": "date-time",
+          "title": "Challenge At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "challenge",
+        "challenger",
+        "response",
+        "challenge_at"
+      ],
+      "title": "ReviewDialogue",
+      "type": "object"
+    },
+    "SegmentMovementOutput": {
+      "additionalProperties": false,
+      "description": "Per-segment movement output.",
+      "properties": {
+        "segment": {
+          "title": "Segment",
+          "type": "string"
+        },
+        "industry_archetype": {
+          "title": "Industry Archetype",
+          "type": "string"
+        },
+        "weight": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Weight",
+          "type": "number"
+        },
+        "movements": {
+          "items": {
+            "$ref": "#/$defs/MovementOutput"
+          },
+          "title": "Movements",
+          "type": "array"
+        }
+      },
+      "required": [
+        "segment",
+        "industry_archetype",
+        "weight",
+        "movements"
+      ],
+      "title": "SegmentMovementOutput",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "The output of Layer 5 per company x scenario (section 10.5).",
+  "properties": {
+    "company": {
+      "title": "Company",
+      "type": "string"
+    },
+    "scenario": {
+      "title": "Scenario",
+      "type": "string"
+    },
+    "scenario_version": {
+      "title": "Scenario Version",
+      "type": "string"
+    },
+    "scenario_severity": {
+      "description": "boundary | central (from section 6).",
+      "title": "Scenario Severity",
+      "type": "string"
+    },
+    "scenario_probability": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Scenario Probability"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "generated_by": {
+      "title": "Generated By",
+      "type": "string"
+    },
+    "segments": {
+      "items": {
+        "$ref": "#/$defs/SegmentMovementOutput"
+      },
+      "title": "Segments",
+      "type": "array"
+    },
+    "company_level": {
+      "$ref": "#/$defs/CompanyLevelMovementOutput"
+    }
+  },
+  "required": [
+    "company",
+    "scenario",
+    "scenario_version",
+    "scenario_severity",
+    "generated_at",
+    "generated_by",
+    "segments",
+    "company_level"
+  ],
+  "title": "DriverMovementSet",
+  "type": "object"
+}

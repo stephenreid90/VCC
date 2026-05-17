@@ -1,0 +1,1032 @@
+{
+  "$defs": {
+    "BindingConstraint": {
+      "additionalProperties": false,
+      "properties": {
+        "metric": {
+          "title": "Metric",
+          "type": "string"
+        },
+        "level": {
+          "title": "Level",
+          "type": "string"
+        },
+        "consequence_of_breach": {
+          "title": "Consequence Of Breach",
+          "type": "string"
+        },
+        "severity": {
+          "$ref": "#/$defs/Rating"
+        }
+      },
+      "required": [
+        "metric",
+        "level",
+        "consequence_of_breach",
+        "severity"
+      ],
+      "title": "BindingConstraint",
+      "type": "object"
+    },
+    "CompetitiveEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "dimensions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Dimensions",
+          "type": "array"
+        },
+        "narrative": {
+          "title": "Narrative",
+          "type": "string"
+        }
+      },
+      "required": [
+        "dimensions",
+        "narrative"
+      ],
+      "title": "CompetitiveEnvelope",
+      "type": "object"
+    },
+    "ComplementaryFramework": {
+      "additionalProperties": false,
+      "description": "Wrapper carried on an industry archetype (section 7.4 schema extension).",
+      "properties": {
+        "type": {
+          "$ref": "#/$defs/ComplementaryFrameworkType"
+        },
+        "details": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PayorAndRegulator"
+            },
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Shape determined by type. For 'payor_and_regulator' use PayorAndRegulator. For 'network_effect' and 'resource_lifecycle' the details schemas are TBD; free-form Dict is permitted in v0.1 with a tightening planned per architecture spec section 7.7 review item 9.",
+          "title": "Details"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "title": "ComplementaryFramework",
+      "type": "object"
+    },
+    "ComplementaryFrameworkType": {
+      "description": "The enum that drives details-block shape (section 7.5.1).",
+      "enum": [
+        "payor_and_regulator",
+        "network_effect",
+        "resource_lifecycle",
+        "none"
+      ],
+      "title": "ComplementaryFrameworkType",
+      "type": "string"
+    },
+    "Concentration": {
+      "additionalProperties": false,
+      "properties": {
+        "top_3_share": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Top 3 Share"
+        },
+        "structure": {
+          "$ref": "#/$defs/ConcentrationStructure"
+        }
+      },
+      "required": [
+        "structure"
+      ],
+      "title": "Concentration",
+      "type": "object"
+    },
+    "ConcentrationStructure": {
+      "description": "Industry concentration structure (section 7.4).",
+      "enum": [
+        "fragmented",
+        "consolidating",
+        "oligopoly",
+        "monopoly"
+      ],
+      "title": "ConcentrationStructure",
+      "type": "string"
+    },
+    "CostStructure": {
+      "additionalProperties": false,
+      "description": "Static cost-economics picture (section 7.4).",
+      "properties": {
+        "primary_cost_drivers": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Primary Cost Drivers",
+          "type": "array"
+        },
+        "operating_leverage": {
+          "$ref": "#/$defs/Rating"
+        },
+        "capital_intensity": {
+          "$ref": "#/$defs/Rating"
+        },
+        "fixed_vs_variable_mix": {
+          "title": "Fixed Vs Variable Mix",
+          "type": "string"
+        },
+        "labour_share_of_cost": {
+          "$ref": "#/$defs/Rating"
+        },
+        "commodity_share_of_cost": {
+          "$ref": "#/$defs/Rating"
+        },
+        "energy_share_of_cost": {
+          "$ref": "#/$defs/Rating"
+        },
+        "imported_input_share_static": {
+          "$ref": "#/$defs/Rating",
+          "description": "Static share of cost base from imported inputs. Renamed during the v0.1 editorial sweep to disambiguate from the responsiveness field under scenario_sensitivity.trade_and_supply_chain."
+        }
+      },
+      "required": [
+        "primary_cost_drivers",
+        "operating_leverage",
+        "capital_intensity",
+        "fixed_vs_variable_mix",
+        "labour_share_of_cost",
+        "commodity_share_of_cost",
+        "energy_share_of_cost",
+        "imported_input_share_static"
+      ],
+      "title": "CostStructure",
+      "type": "object"
+    },
+    "CycleAmplitude": {
+      "description": "Industry cyclicality amplitude (section 7.4).",
+      "enum": [
+        "low",
+        "moderate",
+        "high"
+      ],
+      "title": "CycleAmplitude",
+      "type": "string"
+    },
+    "CyclePhase": {
+      "description": "Current cycle phase (section 7.4).",
+      "enum": [
+        "trough",
+        "early",
+        "mid",
+        "late",
+        "peak"
+      ],
+      "title": "CyclePhase",
+      "type": "string"
+    },
+    "Cyclicality": {
+      "additionalProperties": false,
+      "properties": {
+        "cycle_length_years": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cycle Length Years"
+        },
+        "current_cycle_phase": {
+          "$ref": "#/$defs/CyclePhase"
+        },
+        "amplitude": {
+          "$ref": "#/$defs/CycleAmplitude"
+        }
+      },
+      "required": [
+        "current_cycle_phase",
+        "amplitude"
+      ],
+      "title": "Cyclicality",
+      "type": "object"
+    },
+    "DemographicSensitivity": {
+      "additionalProperties": false,
+      "properties": {
+        "demand_age_profile": {
+          "title": "Demand Age Profile",
+          "type": "string"
+        },
+        "labour_supply_sensitivity": {
+          "$ref": "#/$defs/Rating"
+        }
+      },
+      "required": [
+        "demand_age_profile",
+        "labour_supply_sensitivity"
+      ],
+      "title": "DemographicSensitivity",
+      "type": "object"
+    },
+    "DisruptionVector": {
+      "additionalProperties": false,
+      "description": "One disruption vector. Multiple per archetype (section 7.4).",
+      "properties": {
+        "vector": {
+          "title": "Vector",
+          "type": "string"
+        },
+        "nature": {
+          "description": "threat | opportunity | both",
+          "title": "Nature",
+          "type": "string"
+        },
+        "incumbency_position": {
+          "description": "defender | attacker | neutral",
+          "title": "Incumbency Position",
+          "type": "string"
+        },
+        "time_horizon": {
+          "description": "'0-3 years' | '3-7 years' | '7+ years'",
+          "title": "Time Horizon",
+          "type": "string"
+        },
+        "severity": {
+          "$ref": "#/$defs/Rating"
+        },
+        "certainty": {
+          "$ref": "#/$defs/Rating"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        }
+      },
+      "required": [
+        "vector",
+        "nature",
+        "incumbency_position",
+        "time_horizon",
+        "severity",
+        "certainty",
+        "description"
+      ],
+      "title": "DisruptionVector",
+      "type": "object"
+    },
+    "EnergyTransitionSensitivity": {
+      "additionalProperties": false,
+      "properties": {
+        "operational_carbon_exposure": {
+          "$ref": "#/$defs/Rating"
+        },
+        "customer_transition_exposure": {
+          "$ref": "#/$defs/Rating"
+        },
+        "stranded_asset_risk": {
+          "$ref": "#/$defs/Rating"
+        }
+      },
+      "required": [
+        "operational_carbon_exposure",
+        "customer_transition_exposure",
+        "stranded_asset_risk"
+      ],
+      "title": "EnergyTransitionSensitivity",
+      "type": "object"
+    },
+    "FiveForces": {
+      "additionalProperties": false,
+      "description": "Porter's Five Forces, populated using the question bank in\ndesign/frameworks/five_forces_questions.md.",
+      "properties": {
+        "buyer_power": {
+          "$ref": "#/$defs/Force"
+        },
+        "supplier_power": {
+          "$ref": "#/$defs/Force"
+        },
+        "new_entrants": {
+          "$ref": "#/$defs/Force"
+        },
+        "substitutes": {
+          "$ref": "#/$defs/Force"
+        },
+        "rivalry": {
+          "$ref": "#/$defs/Force"
+        }
+      },
+      "required": [
+        "buyer_power",
+        "supplier_power",
+        "new_entrants",
+        "substitutes",
+        "rivalry"
+      ],
+      "title": "FiveForces",
+      "type": "object"
+    },
+    "Force": {
+      "additionalProperties": false,
+      "description": "One of Porter's five forces (section 7.4).",
+      "properties": {
+        "rating": {
+          "$ref": "#/$defs/Rating"
+        },
+        "rationale": {
+          "description": "Short paragraph; sub-determinants per Porter 2008.",
+          "title": "Rationale",
+          "type": "string"
+        }
+      },
+      "required": [
+        "rating",
+        "rationale"
+      ],
+      "title": "Force",
+      "type": "object"
+    },
+    "GeographyScope": {
+      "description": "Industry geographical scope (section 7.4).",
+      "enum": [
+        "global",
+        "regional",
+        "national",
+        "multi_geographic"
+      ],
+      "title": "GeographyScope",
+      "type": "string"
+    },
+    "IndustryArchetype": {
+      "additionalProperties": false,
+      "description": "Industry archetype per section 7.4.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "version": {
+          "title": "Version",
+          "type": "string"
+        },
+        "geography": {
+          "$ref": "#/$defs/GeographyScope"
+        },
+        "submarkets": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Submarket"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Submarkets"
+        },
+        "five_forces": {
+          "$ref": "#/$defs/FiveForces"
+        },
+        "complementary_framework": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ComplementaryFramework"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "lifecycle_stage": {
+          "$ref": "#/$defs/LifecycleStage"
+        },
+        "lifecycle_rationale": {
+          "title": "Lifecycle Rationale",
+          "type": "string"
+        },
+        "concentration": {
+          "$ref": "#/$defs/Concentration"
+        },
+        "cost_structure": {
+          "$ref": "#/$defs/CostStructure"
+        },
+        "scenario_sensitivity": {
+          "$ref": "#/$defs/ScenarioSensitivity"
+        },
+        "disruption_vectors": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/DisruptionVector"
+          },
+          "title": "Disruption Vectors",
+          "type": "array"
+        },
+        "regulatory_regime": {
+          "$ref": "#/$defs/RegulatoryRegime"
+        },
+        "cyclicality": {
+          "$ref": "#/$defs/Cyclicality"
+        },
+        "input_dependencies": {
+          "$ref": "#/$defs/InputDependencies"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "version",
+        "geography",
+        "five_forces",
+        "lifecycle_stage",
+        "lifecycle_rationale",
+        "concentration",
+        "cost_structure",
+        "scenario_sensitivity",
+        "regulatory_regime",
+        "cyclicality",
+        "input_dependencies"
+      ],
+      "title": "IndustryArchetype",
+      "type": "object"
+    },
+    "InputDependencies": {
+      "additionalProperties": false,
+      "properties": {
+        "critical_inputs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Critical Inputs",
+          "type": "array"
+        },
+        "supply_risk": {
+          "$ref": "#/$defs/Rating"
+        }
+      },
+      "required": [
+        "critical_inputs",
+        "supply_risk"
+      ],
+      "title": "InputDependencies",
+      "type": "object"
+    },
+    "LabourSensitivity": {
+      "additionalProperties": false,
+      "properties": {
+        "intensity": {
+          "$ref": "#/$defs/Rating"
+        },
+        "skill_mix": {
+          "$ref": "#/$defs/Rating"
+        },
+        "wage_pass_through": {
+          "$ref": "#/$defs/Rating"
+        },
+        "automation_potential": {
+          "$ref": "#/$defs/Rating"
+        }
+      },
+      "required": [
+        "intensity",
+        "skill_mix",
+        "wage_pass_through",
+        "automation_potential"
+      ],
+      "title": "LabourSensitivity",
+      "type": "object"
+    },
+    "LifecycleStage": {
+      "description": "Industry lifecycle stage (section 7.3).",
+      "enum": [
+        "emerging",
+        "growth",
+        "mature",
+        "declining"
+      ],
+      "title": "LifecycleStage",
+      "type": "string"
+    },
+    "Payor": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "channel": {
+          "$ref": "#/$defs/PayorChannel"
+        },
+        "share_of_revenue": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Share Of Revenue",
+          "type": "number"
+        }
+      },
+      "required": [
+        "name",
+        "channel",
+        "share_of_revenue"
+      ],
+      "title": "Payor",
+      "type": "object"
+    },
+    "PayorAndRegulator": {
+      "additionalProperties": false,
+      "description": "Details block when type == payor_and_regulator (section 7.5.1).",
+      "properties": {
+        "axis_weight": {
+          "enum": [
+            "regulator_dominant",
+            "payor_dominant",
+            "both_material"
+          ],
+          "title": "Axis Weight",
+          "type": "string"
+        },
+        "regulators": {
+          "items": {
+            "$ref": "#/$defs/Regulator"
+          },
+          "title": "Regulators",
+          "type": "array"
+        },
+        "binding_constraints": {
+          "items": {
+            "$ref": "#/$defs/BindingConstraint"
+          },
+          "title": "Binding Constraints",
+          "type": "array"
+        },
+        "regime": {
+          "$ref": "#/$defs/RegulatoryRegimeDetail"
+        },
+        "dynamic": {
+          "$ref": "#/$defs/RegulatoryDynamic"
+        },
+        "payors": {
+          "items": {
+            "$ref": "#/$defs/Payor"
+          },
+          "title": "Payors",
+          "type": "array"
+        },
+        "payor_concentration": {
+          "$ref": "#/$defs/Rating"
+        },
+        "payor_pricing_power": {
+          "$ref": "#/$defs/Rating"
+        },
+        "payor_mix_evolution": {
+          "$ref": "#/$defs/PayorMixEvolution"
+        },
+        "competitive_envelope": {
+          "$ref": "#/$defs/CompetitiveEnvelope"
+        },
+        "asymmetries": {
+          "items": {
+            "$ref": "#/$defs/RegimeAsymmetry"
+          },
+          "title": "Asymmetries",
+          "type": "array"
+        }
+      },
+      "required": [
+        "axis_weight",
+        "regulators",
+        "binding_constraints",
+        "regime",
+        "dynamic",
+        "payors",
+        "payor_concentration",
+        "payor_pricing_power",
+        "payor_mix_evolution",
+        "competitive_envelope",
+        "asymmetries"
+      ],
+      "title": "PayorAndRegulator",
+      "type": "object"
+    },
+    "PayorChannel": {
+      "enum": [
+        "direct_payment",
+        "insurance",
+        "government_scheme",
+        "rate_recovery",
+        "fee_based"
+      ],
+      "title": "PayorChannel",
+      "type": "string"
+    },
+    "PayorMixEvolution": {
+      "additionalProperties": false,
+      "properties": {
+        "direction": {
+          "enum": [
+            "stable",
+            "shifting_to_public",
+            "shifting_to_private",
+            "consolidating",
+            "fragmenting"
+          ],
+          "title": "Direction",
+          "type": "string"
+        },
+        "pace": {
+          "$ref": "#/$defs/Rating"
+        },
+        "narrative": {
+          "title": "Narrative",
+          "type": "string"
+        }
+      },
+      "required": [
+        "direction",
+        "pace",
+        "narrative"
+      ],
+      "title": "PayorMixEvolution",
+      "type": "object"
+    },
+    "PhysicalClimateSensitivity": {
+      "additionalProperties": false,
+      "properties": {
+        "asset_damage_risk": {
+          "$ref": "#/$defs/Rating"
+        },
+        "demand_climate_sensitivity": {
+          "$ref": "#/$defs/Rating"
+        }
+      },
+      "required": [
+        "asset_damage_risk",
+        "demand_climate_sensitivity"
+      ],
+      "title": "PhysicalClimateSensitivity",
+      "type": "object"
+    },
+    "Rating": {
+      "description": "Three-point ordinal \u2014 the standard across the framework.",
+      "enum": [
+        "low",
+        "moderate",
+        "high"
+      ],
+      "title": "Rating",
+      "type": "string"
+    },
+    "RegimeAsymmetry": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "direction": {
+          "enum": [
+            "favours_incumbents",
+            "favours_entrants",
+            "favours_specific_segment"
+          ],
+          "title": "Direction",
+          "type": "string"
+        },
+        "materiality": {
+          "$ref": "#/$defs/Rating"
+        }
+      },
+      "required": [
+        "description",
+        "direction",
+        "materiality"
+      ],
+      "title": "RegimeAsymmetry",
+      "type": "object"
+    },
+    "Regulator": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Named regulator, e.g. 'APRA', 'ASIC'.",
+          "title": "Name",
+          "type": "string"
+        },
+        "mandate": {
+          "$ref": "#/$defs/RegulatorMandate"
+        },
+        "instruments": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Instruments",
+          "type": "array"
+        },
+        "independence": {
+          "$ref": "#/$defs/Rating"
+        }
+      },
+      "required": [
+        "name",
+        "mandate",
+        "instruments",
+        "independence"
+      ],
+      "title": "Regulator",
+      "type": "object"
+    },
+    "RegulatorMandate": {
+      "enum": [
+        "prudential",
+        "conduct",
+        "antitrust",
+        "safety",
+        "pricing",
+        "market_access"
+      ],
+      "title": "RegulatorMandate",
+      "type": "string"
+    },
+    "RegulatoryCrossCuttingSensitivity": {
+      "additionalProperties": false,
+      "properties": {
+        "tax_sensitivity": {
+          "$ref": "#/$defs/Rating"
+        },
+        "competition_policy_exposure": {
+          "$ref": "#/$defs/Rating"
+        },
+        "data_and_digital_regulation": {
+          "$ref": "#/$defs/Rating"
+        }
+      },
+      "required": [
+        "tax_sensitivity",
+        "competition_policy_exposure",
+        "data_and_digital_regulation"
+      ],
+      "title": "RegulatoryCrossCuttingSensitivity",
+      "type": "object"
+    },
+    "RegulatoryDynamic": {
+      "additionalProperties": false,
+      "properties": {
+        "direction": {
+          "enum": [
+            "tightening",
+            "steady",
+            "loosening"
+          ],
+          "title": "Direction",
+          "type": "string"
+        },
+        "known_step_changes": {
+          "items": {
+            "$ref": "#/$defs/StepChange"
+          },
+          "title": "Known Step Changes",
+          "type": "array"
+        }
+      },
+      "required": [
+        "direction",
+        "known_step_changes"
+      ],
+      "title": "RegulatoryDynamic",
+      "type": "object"
+    },
+    "RegulatoryRegime": {
+      "additionalProperties": false,
+      "properties": {
+        "primary_regulators": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Primary Regulators",
+          "type": "array"
+        },
+        "current_pressure": {
+          "$ref": "#/$defs/Rating"
+        },
+        "known_step_changes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Known Step Changes",
+          "type": "array"
+        }
+      },
+      "required": [
+        "primary_regulators",
+        "current_pressure",
+        "known_step_changes"
+      ],
+      "title": "RegulatoryRegime",
+      "type": "object"
+    },
+    "RegulatoryRegimeDetail": {
+      "additionalProperties": false,
+      "properties": {
+        "favourability_to_incumbents": {
+          "$ref": "#/$defs/Rating"
+        },
+        "policy_stance": {
+          "enum": [
+            "protective",
+            "pro_competition",
+            "pro_consumer",
+            "pro_investment",
+            "mixed"
+          ],
+          "title": "Policy Stance",
+          "type": "string"
+        },
+        "narrative": {
+          "title": "Narrative",
+          "type": "string"
+        }
+      },
+      "required": [
+        "favourability_to_incumbents",
+        "policy_stance",
+        "narrative"
+      ],
+      "title": "RegulatoryRegimeDetail",
+      "type": "object"
+    },
+    "ScenarioSensitivity": {
+      "additionalProperties": false,
+      "description": "Responsiveness picture \u2014 mediates scenario-to-driver transmission in Layer 5.",
+      "properties": {
+        "labour": {
+          "$ref": "#/$defs/LabourSensitivity"
+        },
+        "physical_climate": {
+          "$ref": "#/$defs/PhysicalClimateSensitivity"
+        },
+        "technology": {
+          "$ref": "#/$defs/TechnologySensitivity"
+        },
+        "energy_transition": {
+          "$ref": "#/$defs/EnergyTransitionSensitivity"
+        },
+        "demographic": {
+          "$ref": "#/$defs/DemographicSensitivity"
+        },
+        "trade_and_supply_chain": {
+          "$ref": "#/$defs/TradeAndSupplyChainSensitivity"
+        },
+        "regulatory_cross_cutting": {
+          "$ref": "#/$defs/RegulatoryCrossCuttingSensitivity"
+        }
+      },
+      "required": [
+        "labour",
+        "physical_climate",
+        "technology",
+        "energy_transition",
+        "demographic",
+        "trade_and_supply_chain",
+        "regulatory_cross_cutting"
+      ],
+      "title": "ScenarioSensitivity",
+      "type": "object"
+    },
+    "StepChange": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "effective_date": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Effective Date"
+        },
+        "uncertainty": {
+          "$ref": "#/$defs/Rating"
+        }
+      },
+      "required": [
+        "description",
+        "uncertainty"
+      ],
+      "title": "StepChange",
+      "type": "object"
+    },
+    "Submarket": {
+      "additionalProperties": false,
+      "description": "For multi_geographic archetypes (section 7.4).",
+      "properties": {
+        "region": {
+          "title": "Region",
+          "type": "string"
+        },
+        "weight": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Weight",
+          "type": "number"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        }
+      },
+      "required": [
+        "region",
+        "weight"
+      ],
+      "title": "Submarket",
+      "type": "object"
+    },
+    "TechnologySensitivity": {
+      "additionalProperties": false,
+      "properties": {
+        "absorptive_capacity": {
+          "$ref": "#/$defs/Rating"
+        },
+        "digital_substitution_risk": {
+          "$ref": "#/$defs/Rating"
+        }
+      },
+      "required": [
+        "absorptive_capacity",
+        "digital_substitution_risk"
+      ],
+      "title": "TechnologySensitivity",
+      "type": "object"
+    },
+    "TradeAndSupplyChainSensitivity": {
+      "additionalProperties": false,
+      "properties": {
+        "imported_input_share_responsiveness": {
+          "$ref": "#/$defs/Rating",
+          "description": "Responsiveness of cost / supply to imported-input disruption. Distinct from cost_structure.imported_input_share_static, which captures the static share."
+        },
+        "supply_chain_concentration": {
+          "$ref": "#/$defs/Rating"
+        }
+      },
+      "required": [
+        "imported_input_share_responsiveness",
+        "supply_chain_concentration"
+      ],
+      "title": "TradeAndSupplyChainSensitivity",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Top-level YAML wrapper for data/industries/<id>.yaml.",
+  "properties": {
+    "industry_archetype": {
+      "$ref": "#/$defs/IndustryArchetype"
+    }
+  },
+  "required": [
+    "industry_archetype"
+  ],
+  "title": "IndustryArchetypeFile",
+  "type": "object"
+}

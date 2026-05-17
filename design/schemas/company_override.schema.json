@@ -1,0 +1,338 @@
+{
+  "$defs": {
+    "Direction": {
+      "description": "Matrix entry direction. Separate from magnitude (section 10.2).",
+      "enum": [
+        "negative",
+        "neutral",
+        "positive"
+      ],
+      "title": "Direction",
+      "type": "string"
+    },
+    "EvidenceRef": {
+      "additionalProperties": false,
+      "description": "Used across the schema for traceability (sections 10.3, 10.4, 8.4).",
+      "properties": {
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "location": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Location"
+        },
+        "date_accessed": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Date Accessed"
+        }
+      },
+      "required": [
+        "source_id"
+      ],
+      "title": "EvidenceRef",
+      "type": "object"
+    },
+    "Governance": {
+      "additionalProperties": false,
+      "description": "Per-entry / per-override governance audit (sections 10.3 and 10.4).",
+      "properties": {
+        "created_by": {
+          "title": "Created By",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "approved_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Approved By"
+        },
+        "approved_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Approved At"
+        },
+        "last_reviewed_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Last Reviewed At"
+        }
+      },
+      "required": [
+        "created_by",
+        "created_at"
+      ],
+      "title": "Governance",
+      "type": "object"
+    },
+    "HalfLifeTracker": {
+      "additionalProperties": false,
+      "description": "Scenario-version-tied refresh tracking (section 10.4).",
+      "properties": {
+        "scenario_version_at_creation": {
+          "title": "Scenario Version At Creation",
+          "type": "string"
+        },
+        "review_required_at_scenario_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Review Required At Scenario Version"
+        },
+        "stale": {
+          "default": false,
+          "title": "Stale",
+          "type": "boolean"
+        },
+        "requires_re_review": {
+          "default": false,
+          "title": "Requires Re Review",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "scenario_version_at_creation"
+      ],
+      "title": "HalfLifeTracker",
+      "type": "object"
+    },
+    "Magnitude": {
+      "description": "Matrix entry magnitude. Separate from direction (section 10.2).",
+      "enum": [
+        "small",
+        "moderate",
+        "large"
+      ],
+      "title": "Magnitude",
+      "type": "string"
+    },
+    "QuantifiedBand": {
+      "additionalProperties": false,
+      "description": "Optional quantified override of the ordinal direction x magnitude (section 10.2).",
+      "properties": {
+        "min": {
+          "title": "Min",
+          "type": "number"
+        },
+        "mid": {
+          "title": "Mid",
+          "type": "number"
+        },
+        "max": {
+          "title": "Max",
+          "type": "number"
+        }
+      },
+      "required": [
+        "min",
+        "mid",
+        "max"
+      ],
+      "title": "QuantifiedBand",
+      "type": "object"
+    },
+    "ReviewDialogue": {
+      "additionalProperties": false,
+      "description": "Optional peer-review trail capturing the challenge / response (section 10.4).",
+      "properties": {
+        "challenge": {
+          "title": "Challenge",
+          "type": "string"
+        },
+        "challenger": {
+          "title": "Challenger",
+          "type": "string"
+        },
+        "response": {
+          "title": "Response",
+          "type": "string"
+        },
+        "challenge_at": {
+          "format": "date-time",
+          "title": "Challenge At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "challenge",
+        "challenger",
+        "response",
+        "challenge_at"
+      ],
+      "title": "ReviewDialogue",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "An override to an impact matrix entry (section 10.4).",
+  "properties": {
+    "company": {
+      "title": "Company",
+      "type": "string"
+    },
+    "segment": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "If None, the override applies to the whole company.",
+      "title": "Segment"
+    },
+    "scenario": {
+      "title": "Scenario",
+      "type": "string"
+    },
+    "driver": {
+      "title": "Driver",
+      "type": "string"
+    },
+    "override_direction": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Direction"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "override_magnitude": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Magnitude"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "quantified_override": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/QuantifiedBand"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "sign_flip": {
+      "default": false,
+      "description": "True when override_direction opposes industry_direction.",
+      "title": "Sign Flip",
+      "type": "boolean"
+    },
+    "beyond_scale": {
+      "default": false,
+      "description": "True when ordinal cannot represent the movement; quantified_override required when this is True (section 10.4).",
+      "title": "Beyond Scale",
+      "type": "boolean"
+    },
+    "reason_category": {
+      "description": "cost_advantage | scale | regulation | contract | management | product_mix | diversification | franchise_asset | data_workstream | other",
+      "title": "Reason Category",
+      "type": "string"
+    },
+    "reason": {
+      "title": "Reason",
+      "type": "string"
+    },
+    "evidence_refs": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/EvidenceRef"
+      },
+      "title": "Evidence Refs",
+      "type": "array"
+    },
+    "governance": {
+      "$ref": "#/$defs/Governance"
+    },
+    "review_dialogue": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/ReviewDialogue"
+      },
+      "title": "Review Dialogue",
+      "type": "array"
+    },
+    "half_life": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/HalfLifeTracker"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "company",
+    "scenario",
+    "driver",
+    "reason_category",
+    "reason",
+    "governance"
+  ],
+  "title": "CompanyOverride",
+  "type": "object"
+}

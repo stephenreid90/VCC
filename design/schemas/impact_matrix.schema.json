@@ -1,0 +1,271 @@
+{
+  "$defs": {
+    "Confidence": {
+      "description": "Pinned meaning: joint confidence in direction x magnitude.",
+      "enum": [
+        "low",
+        "moderate",
+        "high"
+      ],
+      "title": "Confidence",
+      "type": "string"
+    },
+    "Direction": {
+      "description": "Matrix entry direction. Separate from magnitude (section 10.2).",
+      "enum": [
+        "negative",
+        "neutral",
+        "positive"
+      ],
+      "title": "Direction",
+      "type": "string"
+    },
+    "DriverMovement": {
+      "additionalProperties": false,
+      "description": "One cell of the impact matrix \u2014 scenario x archetype x driver.",
+      "properties": {
+        "direction": {
+          "$ref": "#/$defs/Direction"
+        },
+        "magnitude": {
+          "$ref": "#/$defs/Magnitude"
+        },
+        "confidence": {
+          "$ref": "#/$defs/Confidence"
+        },
+        "rationale": {
+          "title": "Rationale",
+          "type": "string"
+        },
+        "quantified_override": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QuantifiedBand"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "not_applicable": {
+          "default": false,
+          "description": "True where the driver does not apply to this archetype (distinct from direction == neutral, which means 'applies but scenario doesn't move it').",
+          "title": "Not Applicable",
+          "type": "boolean"
+        },
+        "evidence_refs": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/EvidenceRef"
+          },
+          "title": "Evidence Refs",
+          "type": "array"
+        },
+        "governance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Governance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "direction",
+        "magnitude",
+        "confidence",
+        "rationale"
+      ],
+      "title": "DriverMovement",
+      "type": "object"
+    },
+    "EvidenceRef": {
+      "additionalProperties": false,
+      "description": "Used across the schema for traceability (sections 10.3, 10.4, 8.4).",
+      "properties": {
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "location": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Location"
+        },
+        "date_accessed": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Date Accessed"
+        }
+      },
+      "required": [
+        "source_id"
+      ],
+      "title": "EvidenceRef",
+      "type": "object"
+    },
+    "Governance": {
+      "additionalProperties": false,
+      "description": "Per-entry / per-override governance audit (sections 10.3 and 10.4).",
+      "properties": {
+        "created_by": {
+          "title": "Created By",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "approved_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Approved By"
+        },
+        "approved_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Approved At"
+        },
+        "last_reviewed_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Last Reviewed At"
+        }
+      },
+      "required": [
+        "created_by",
+        "created_at"
+      ],
+      "title": "Governance",
+      "type": "object"
+    },
+    "ImpactMatrixEntry": {
+      "additionalProperties": false,
+      "description": "All driver movements for one scenario under one archetype (section 10.3).",
+      "properties": {
+        "scenario": {
+          "title": "Scenario",
+          "type": "string"
+        },
+        "scenario_version": {
+          "title": "Scenario Version",
+          "type": "string"
+        },
+        "drivers": {
+          "additionalProperties": {
+            "$ref": "#/$defs/DriverMovement"
+          },
+          "description": "Map from driver id (Layer 4) to its movement. Absent drivers imply direction == neutral and were not explicitly assessed (per the section 10.2 sparse-representation convention).",
+          "title": "Drivers",
+          "type": "object"
+        }
+      },
+      "required": [
+        "scenario",
+        "scenario_version",
+        "drivers"
+      ],
+      "title": "ImpactMatrixEntry",
+      "type": "object"
+    },
+    "Magnitude": {
+      "description": "Matrix entry magnitude. Separate from direction (section 10.2).",
+      "enum": [
+        "small",
+        "moderate",
+        "large"
+      ],
+      "title": "Magnitude",
+      "type": "string"
+    },
+    "QuantifiedBand": {
+      "additionalProperties": false,
+      "description": "Optional quantified override of the ordinal direction x magnitude (section 10.2).",
+      "properties": {
+        "min": {
+          "title": "Min",
+          "type": "number"
+        },
+        "mid": {
+          "title": "Mid",
+          "type": "number"
+        },
+        "max": {
+          "title": "Max",
+          "type": "number"
+        }
+      },
+      "required": [
+        "min",
+        "mid",
+        "max"
+      ],
+      "title": "QuantifiedBand",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "The impact matrix for one industry archetype (section 10.3 outer wrapper).",
+  "properties": {
+    "industry": {
+      "title": "Industry",
+      "type": "string"
+    },
+    "matrix": {
+      "items": {
+        "$ref": "#/$defs/ImpactMatrixEntry"
+      },
+      "minItems": 1,
+      "title": "Matrix",
+      "type": "array"
+    }
+  },
+  "required": [
+    "industry",
+    "matrix"
+  ],
+  "title": "ImpactMatrix",
+  "type": "object"
+}
