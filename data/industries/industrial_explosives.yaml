@@ -1,0 +1,241 @@
+industry_archetype:
+  id: industrial_explosives
+  name: Industrial Explosives and Blasting Services
+  version: 2026-Q2-v1
+
+  geography: multi_geographic
+
+  submarkets:
+    - region: Australia
+      weight: 0.45
+      notes: >
+        Dominated by mining-customer demand (iron ore, coal, gold, base
+        metals, lithium). Long-term offtake contracts typical with the
+        large miners (BHP, Rio, FMG, Glencore, Newmont). On-site service
+        model dominant.
+
+    - region: North America
+      weight: 0.35
+      notes: >
+        US + Canada. Mix of mining, quarrying, and construction. Mining
+        customer base less concentrated than Australia; transit-trade
+        flows of ammonium nitrate across the US-Canada border are
+        regulatorily sensitive post-2024.
+
+    - region: Rest of World
+      weight: 0.20
+      notes: >
+        Latin America (mining-driven), Africa (mining-driven), Asia
+        ex-China (mixed), Europe (quarrying-driven). Market structure
+        and regulatory regime varies materially by jurisdiction.
+
+  five_forces:
+    buyer_power:
+      rating: high
+      rationale: >
+        Mining-customer concentration is the dominant feature. Top 5
+        global mining houses (BHP, Rio Tinto, Vale, Glencore, Anglo
+        American) account for material shares of industry volume; in
+        Australia the top 3 (BHP, Rio, FMG) drive most of the volume.
+        Switching costs are moderate (technical re-qualification needed
+        but not prohibitive). Backward-integration threat is real and
+        historical (Wesfarmers' CSBP example; mining-major captives).
+        Buyers are highly price-sensitive on bulk ANFO; less sensitive
+        on technology-differentiated products (electronic initiation
+        systems, blast-design services). Net: high — the binding
+        constraint on industry profitability.
+
+    supplier_power:
+      rating: moderate
+      rationale: >
+        Anhydrous ammonia (and its precursor, natural gas) is the
+        dominant input. Ammonia market is regionalised; gas pricing
+        is regionalised (US Henry Hub very different from Australian
+        domestic gas). For producers with long-term gas contracts
+        (IPL Dyno-historical) supplier power is contained; for spot-
+        gas-exposed competitors it is significant. Labour is a moderate
+        supplier group (skilled but not specialist; unionised in some
+        jurisdictions).
+
+    new_entrants:
+      rating: low
+      rationale: >
+        Strong barriers: regulatory (explosives licensing, dangerous-
+        goods transport, environmental approvals); capital (production
+        plants are large, capital-intensive, long lead times);
+        incumbency advantages (long-term mining offtake contracts;
+        on-site infrastructure; regulatory relationships). Distribution
+        channels are tied up via on-site service model. Expected
+        retaliation high given high fixed costs and concentrated
+        customer base.
+
+    substitutes:
+      rating: low
+      rationale: >
+        No meaningful substitute for industrial explosives in hard-rock
+        mining. Blast-free mining (mechanical excavation, surface miners)
+        exists for specific applications but does not displace bulk
+        explosives in conventional open-cut operations. Selective
+        substitution risk in coal mining if customers reduce volumes
+        materially under climate transition, but that's a demand
+        question, not a substitute one.
+
+    rivalry:
+      rating: high
+      rationale: >
+        Concentrated oligopoly globally with regional variation. Top 3
+        (Orica, IPL Dyno Nobel, MAXAM) account for roughly 65% of
+        global market; EPC Groupe is a meaningful Tier 1 fourth player.
+        Tier 2 regional / international players include Austin Powder
+        (US), AECI Mining Chemicals (South Africa), Solar Industries
+        India, Sasol / BME (South Africa), and Yara International
+        (via mining services arm). Country-specific markets (China,
+        Russia) are effectively closed to Western majors and dominated
+        by domestic players. Australia specifically is a duopoly
+        (Orica + IPL Dyno Nobel). Capacity is lumpy (plants are large);
+        contracts are long-term; loss of a major customer is hard to
+        win back. Bulk ANFO competition runs on price; technology
+        products run on differentiation. Net: high overall, with price
+        competition concentrated on bulk products in markets where
+        Tier 2 competitors are active.
+
+  complementary_framework:
+    type: none
+
+  lifecycle_stage: mature
+  lifecycle_rationale: >
+    Mining-customer demand is structurally tied to mineral extraction
+    volumes, which are mature globally. Volume growth is at GDP-adjacent
+    rates with cyclical variation. ROIC has been moderately above
+    cost of capital for the dominant duopoly in Australia; closer to
+    cost of capital for sub-scale players globally. Per the §7.3 lifecycle
+    framing, the industry has reached the state where mature competitive
+    dynamics dominate — duopolists earn moderate excess returns from
+    structural advantages (offtake contracts, on-site infrastructure,
+    technology); marginal players are pushed toward cost-of-capital
+    returns. The Five Forces profile (high buyer power + high rivalry)
+    constrains the durability of excess returns.
+
+  concentration:
+    top_3_share: 0.65
+    structure: oligopoly
+
+  cost_structure:
+    primary_cost_drivers:
+      - ammonia (and upstream natural gas)
+      - other raw materials (ammonium nitrate, emulsifiers, packaging)
+      - distribution and logistics (dangerous-goods transport)
+      - manufacturing labour
+      - on-site service labour
+    operating_leverage: high
+    capital_intensity: high
+    fixed_vs_variable_mix: "predominantly fixed; ~60-70% fixed cost base"
+    labour_share_of_cost: moderate
+    commodity_share_of_cost: high
+    energy_share_of_cost: high
+    imported_input_share_static: moderate
+
+  scenario_sensitivity:
+    labour:
+      intensity: moderate
+      skill_mix: moderate
+      wage_pass_through: moderate
+      automation_potential: moderate
+    physical_climate:
+      asset_damage_risk: moderate
+      demand_climate_sensitivity: high
+    technology:
+      absorptive_capacity: moderate
+      digital_substitution_risk: low
+    energy_transition:
+      operational_carbon_exposure: high
+      customer_transition_exposure: high
+      stranded_asset_risk: moderate
+    demographic:
+      demand_age_profile: "demographically insensitive — mining-customer driven"
+      labour_supply_sensitivity: moderate
+    trade_and_supply_chain:
+      imported_input_share_responsiveness: high
+      supply_chain_concentration: high
+    regulatory_cross_cutting:
+      tax_sensitivity: moderate
+      competition_policy_exposure: moderate
+      data_and_digital_regulation: low
+
+  disruption_vectors:
+    - vector: electronic_initiation_systems
+      nature: opportunity
+      incumbency_position: defender
+      time_horizon: "3-7 years"
+      severity: moderate
+      certainty: moderate
+      description: >
+        Electronic detonators (e.g. IPL's DigiShot, Orica's WebGen)
+        progressively displace shock-tube and cap-and-fuse systems.
+        Higher margin, technology-differentiated. Incumbents are well
+        positioned; new entrants face high integration barriers.
+
+    - vector: ai_driven_blast_design
+      nature: opportunity
+      incumbency_position: neutral
+      time_horizon: "3-7 years"
+      severity: moderate
+      certainty: moderate
+      description: >
+        Machine-learning-based blast design and fragmentation optimisation
+        improves mining-customer productivity. Service offering shift
+        from product-only to product + outcome-based. Both Orica and
+        IPL Dyno have credible programs; smaller players exposed.
+
+    - vector: thermal_coal_demand_decline
+      nature: threat
+      incumbency_position: defender
+      time_horizon: "7+ years"
+      severity: moderate
+      certainty: high
+      description: >
+        Thermal coal mining volume declines under energy transition.
+        Industrial explosives demand for thermal coal mining contracts
+        accordingly. Met coal and base metals customer growth offsets
+        partly; transition-mineral demand (lithium, copper, nickel)
+        offsets further. Net direction depends on jurisdiction and
+        scenario.
+
+    - vector: regulatory_security_tightening
+      nature: threat
+      incumbency_position: neutral
+      time_horizon: "0-3 years"
+      severity: low
+      certainty: high
+      description: >
+        Post-2020 sensitivities around ammonium-nitrate security and
+        transport have driven progressive regulatory tightening
+        (background checks, transport restrictions, storage standards).
+        Incumbents bear cost; new entrants face higher hurdles. Mild
+        positive for the duopoly structure.
+
+  regulatory_regime:
+    primary_regulators:
+      - "Australian explosives regulators (state-based, mainly Resources Safety)"
+      - "US Bureau of Alcohol, Tobacco, Firearms and Explosives (ATF)"
+      - "US Department of Transportation (DOT)"
+      - "EU REACH and explosives directives"
+      - "ASIO / equivalents for security clearance frameworks"
+    current_pressure: moderate
+    known_step_changes:
+      - "Australian state-level safety review (Queensland 2025) tightening"
+      - "US ATF licensing renewal cycle 2026"
+      - "Continued tightening of ammonium nitrate transport rules globally"
+
+  cyclicality:
+    cycle_length_years: 7
+    current_cycle_phase: mid
+    amplitude: moderate
+
+  input_dependencies:
+    critical_inputs:
+      - anhydrous ammonia
+      - natural gas (upstream of ammonia)
+      - ammonium nitrate
+      - emulsifiers and surfactants
+    supply_risk: moderate
