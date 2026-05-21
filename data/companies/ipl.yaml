@@ -1,0 +1,276 @@
+company_position:
+  id: ipl
+  name: Incitec Pivot Limited
+  ticker: ASX:IPL
+  reporting_currency: AUD
+  functional_currency: USD
+  functional_currency_rationale: >
+    Post-demerger, IPL is a pure-play industrial explosives company operating
+    predominantly through Dyno Nobel's North American footprint, with material
+    Australian and rest-of-world exposure. The majority of cash flows, input
+    costs (US natural gas → ammonia), customer contracts, and capital
+    requirements are USD-denominated. AUD remains the ASX-reporting currency.
+    Functional-currency determination per IAS 21 / AASB 121 favours USD given:
+    (i) USD-dominant revenue streams; (ii) USD-denominated input cost base
+    (gas, ammonia, ammonium nitrate); (iii) USD-denominated long-term gas
+    supply contracts driving cost advantage; (iv) US capital markets the
+    primary debt source. Australian and RoW operations operate in their own
+    functional currencies but consolidate to USD at parent level. Most
+    published Australian sell-side DCFs of IPL incorrectly treat AUD as
+    functional currency because it is the reporting currency — that
+    introduces FX translation noise into operating performance interpretation.
+
+  # ---- Consolidated, parent-level blocks ----
+
+  balance_sheet:
+    net_debt_ebitda: 1.8
+    leverage_posture: moderate
+    liquidity: >
+      Comfortable. Post-demerger debt restructuring established a sustainable
+      capital structure. Cash flow generation supports debt service across
+      the commodity cycle. Committed revolving credit facilities provide
+      liquidity buffer.
+
+  capital_allocation:
+    dividend_policy: >
+      Progressive dividend policy targeting 60-70% payout ratio of
+      underlying earnings, subject to maintaining investment-grade credit
+      metrics. Post-demerger dividend rebased from pre-demerger combined
+      entity.
+    buyback_posture: >
+      Occasional opportunistic buybacks when share price is materially
+      below intrinsic value and net-debt/EBITDA is comfortably below
+      target range.
+    m_and_a_posture: >
+      Selectively acquisitive. Focus on bolt-on technology acquisitions
+      (electronic initiation, AI-driven blast design) and modest
+      regional capability extensions. Not a serial large-scale acquirer.
+    reinvestment_rate: 0.50
+
+  management_and_governance:
+    strategy_quality: moderate
+    strategy_evidence: >
+      Strategic clarity improved materially through the demerger process.
+      Post-demerger strategy focuses on technology-led services growth,
+      operational efficiency in core manufacturing, and selective capacity
+      additions in growth markets. Coherent narrative but not
+      transformational.
+    execution_track_record: moderate
+    execution_evidence: >
+      Mixed historical record on large capital projects (Louisiana ammonia
+      plant cost overruns from 2017-2020 are well-documented). Operating
+      execution in core explosives business has been solid; capital
+      project execution has been the historical weakness. Post-demerger
+      management team has continuity from the legacy executive ranks.
+
+  esg_and_transition:
+    carbon_intensity: >
+      High Scope 1 and Scope 2 emissions from ammonia production
+      (carbon-intensive Haber-Bosch process). Scope 3 emissions
+      meaningful via customer mix (thermal coal mining customers).
+      Disclosure aligned with TCFD recommendations.
+    transition_plan: >
+      Committed to net-zero by 2050 with interim 2030 target.
+      Investment in green ammonia / blue ammonia pilots underway;
+      not yet at commercial scale. Transition risk acknowledged but
+      not material near-term to industry returns.
+    stranded_asset_exposure: >
+      Moderate. Customer-mix concentration in coal mining (both met and
+      thermal) creates indirect stranded-asset exposure; own
+      ammonia-production assets are partially exposed to carbon pricing
+      flow-through. Long-life ammonia plants are the primary direct
+      exposure but have residual value as feedstock for green-ammonia
+      transition where economics support it.
+
+  scenario_sensitivity_overrides_global:
+    energy_transition:
+      operational_carbon_exposure:
+        rating: high
+        rationale: >
+          IPL's ammonia production is carbon-intensive; carbon-pricing
+          regimes flow through to margins more directly than for downstream
+          industrial explosives producers without ammonia integration.
+    trade_and_supply_chain:
+      supply_chain_concentration:
+        rating: moderate
+        rationale: >
+          IPL is more vertically integrated than some Tier 2 competitors
+          (own ammonia production), reducing supplier-power exposure on the
+          critical input. Below archetype average on this dimension.
+
+  # ---- Per-segment positioning ----
+
+  segments:
+    - segment: industrial_explosives
+      industry_archetype: industrial_explosives
+      functional_currency: USD
+      functional_currency_rationale: >
+        Sole post-demerger segment. USD functional currency per consolidated
+        rationale above; same drivers (US gas / ammonia / industrial
+        explosives demand).
+      revenue_share: 1.00
+      ebit_share: 1.00
+      notes: >
+        Single-segment post-demerger. Pre-demerger, IPL operated two
+        distinct segments (Dyno Nobel explosives + Fertilisers Australia);
+        the fertilisers business was demerged. Now a pure-play industrial
+        explosives company.
+
+      market_positions:
+        - market: North American industrial explosives
+          unit: revenue
+          share: 0.30
+          rank: 1
+          share_trend:
+            direction: stable
+            delta_5yr_bps: 0
+            narrative: >
+              Co-leader with Austin Powder / Orica in different sub-segments.
+              Stable share with periodic contract wins and losses cancelling
+              over the cycle.
+
+        - market: Australian industrial explosives
+          unit: revenue
+          share: 0.40
+          rank: 2
+          share_trend:
+            direction: stable
+            delta_5yr_bps: 0
+            narrative: >
+              Number two to Orica in the Australian duopoly. Share has been
+              broadly stable; some swings on individual major contract
+              renewals (BHP, Rio, FMG).
+
+        - market: RoW industrial explosives
+          unit: revenue
+          share: 0.05
+          rank: 4
+          share_trend:
+            direction: gaining
+            delta_5yr_bps: 50
+            narrative: >
+              Sub-scale in Latin America, Africa, Asia ex-China. Modest
+              share gains from specific contract wins; not a strategic
+              focus.
+
+      moat:
+        sources:
+          - scale
+          - switching_cost
+          - regulatory
+          - resource
+        durability: moderate
+        evidence: >
+          Scale: top 2 globally; cost advantage in US from gas-contract
+          position. Switching costs: on-site manufacturing infrastructure
+          at major customer sites creates physical lock-in; technical
+          re-qualification for new supplier is non-trivial. Regulatory:
+          explosives licensing across jurisdictions raises entry hurdles.
+          Resource: long-term US natural gas supply contracts predating
+          recent pricing moves provide a cost-curve advantage that decays
+          slowly as contracts roll over.
+
+      competitive_position:
+        cost_position:
+          placement_on_curve: 2nd
+          evidence: >
+            US operations sit in the bottom quartile of the cost curve
+            due to long-term gas contracts. Australian and RoW operations
+            are closer to industry average. Consolidated cost position
+            is the second quartile when weighted across regions.
+        differentiation_position:
+          pricing_power: moderate
+          differentiation_basis:
+            - switching_cost
+            - service
+            - ip
+          evidence: >
+            Differentiation strongest in technology products (DigiShot
+            electronic initiation system) and on-site service offerings
+            (blast-design optimisation, fragmentation analysis). Bulk
+            ANFO is commodity-like with limited differentiation.
+
+      innovation_position:
+        rd_intensity: 0.015
+        pipeline_strength: moderate
+        pipeline_horizon_years: 5
+        evidence: >
+          R&D spend approximately 1.5% of revenue. Pipeline includes
+          next-generation electronic initiation systems, AI-driven
+          blast design and fragmentation services, and longer-term
+          green-ammonia / decarbonised manufacturing initiatives.
+          Pipeline strength is moderate — credible programs but neither
+          best-in-class nor genuinely differentiated from Orica.
+
+      franchise_assets:
+        assets:
+          - "Long-term mining offtake contracts with major Australian miners (BHP, Rio Tinto, FMG)"
+          - "Long-term US natural gas supply contracts (predating recent gas-price moves)"
+          - "On-site manufacturing infrastructure at major customer mine sites"
+          - "Operating licences and explosives-handling regulatory approvals across multiple jurisdictions"
+          - "Multi-decade customer relationships in the duopolistic Australian market"
+        durability: high
+        evidence: >
+          Contract durations typically 5-10 years with embedded renewal
+          mechanisms. On-site infrastructure represents customer-specific
+          sunk capital from both sides. Regulatory approvals are
+          jurisdiction-specific and non-trivial for new entrants to
+          replicate.
+
+      capability_profile:
+        strengths:
+          - "Cost advantage in US operations from gas-contract position"
+          - "Scale in manufacturing and distribution"
+          - "Customer relationships and on-site service capability"
+          - "Electronic initiation technology (DigiShot platform)"
+        gaps:
+          - "Lower geographic diversification than Orica (more US-weighted)"
+          - "Smaller technology / R&D budget than Orica"
+          - "Capital-project execution track record (Louisiana ammonia plant)"
+          - "Less footprint in growth EM markets than Solar Industries / EPC Groupe"
+
+      risk_exposures:
+        commodity:
+          - "Natural gas (input via ammonia)"
+          - "Ammonia spot pricing (where contract-uncovered)"
+          - "Thermal coal mining customer exposure (~20% of mining customer mix)"
+          - "Met coal mining customer exposure (~15-20% of mining customer mix)"
+        regulatory:
+          - "Explosives security and licensing"
+          - "Dangerous-goods transport regulation"
+          - "Carbon pricing / cross-border carbon adjustment mechanisms"
+          - "Australian state-level workplace safety reforms"
+        customer_concentration:
+          top_n: 5
+          share_of_revenue: 0.45
+          narrative: >
+            Top 5 customers (BHP, Rio Tinto, FMG, large US miners) account
+            for approximately 45% of revenue. Top 10 customers approximately
+            65%. Loss of any single major customer is recoverable over time
+            but materially affects short-run financials.
+        geographic_concentration:
+          regions:
+            - geo: United States
+              share_of_revenue: 0.55
+            - geo: Australia
+              share_of_revenue: 0.35
+            - geo: Rest of World
+              share_of_revenue: 0.10
+          narrative: >
+            US is the dominant geography post-demerger. Australia significant
+            but smaller than pre-demerger. RoW limited.
+
+      archetype_specific:
+        us_gas_contract_maturity_profile: >
+          Average contract maturity 6 years remaining. Tiered roll-off
+          through to 2032 with re-pricing risk concentrated in 2028-2030
+          window.
+        electronic_detonator_revenue_share: 0.18
+        on_site_service_unit_count: ">200 mobile manufacturing units across
+          customer mine sites"
+        ammonia_self_supply_share: 0.55
+        coal_customer_mix_share: 0.35
+
+      scenario_sensitivity_overrides: null
+
+  corporate_actions: []
