@@ -1,9 +1,10 @@
 # VCC Valuations — Scenario-Based Equity Valuation Module
 ## Architecture & Design Specification
 
-**Version:** 0.1
-**Date:** 21 April 2026 (drafted); 7 May 2026 (Ben's-bot review + Group 1 changes); 7 May 2026 (editorial sweep, v0.1 freeze).
-**Status:** v0.1 frozen. Section-by-section review with Tara complete; Ben's-bot platform-side review (5 May 2026) incorporated. Subsequent material changes will bump to v0.2 with a migration note.
+**Version:** 0.2
+**Date:** 21 April 2026 (drafted); 7 May 2026 (Ben's-bot review + Group 1 changes; editorial sweep; v0.1 freeze); 17 May 2026 (v0.2: archetype-granularity principle added at §7.1.1).
+**Status:** v0.2. Section-by-section review with Tara complete; Ben's-bot platform-side review (5 May 2026) incorporated; archetype-granularity principle added 17 May 2026. Subsequent material changes will bump version with a migration note.
+**Migration from v0.1 → v0.2:** Additive change only. New §7.1.1 "Defining archetype granularity" added; no schema changes; no breaking changes to existing content. Existing v0.1 archetype YAMLs remain valid.
 **Scope of this phase:** Layers 1–6 (the "assumptions engine"). Layers 7 (DCF) and 8 (interface) are described at a high level only and deferred to later phases.
 **Review convention:** Open issues raised during section-by-section review are captured as an `X.N Review items` subsection at the end of the relevant section. Search the document for "Review items" to surface all open issues in one pass. Items in these subsections are candidates for cross-review with Ben's data-sourcing workstream.
 
@@ -243,7 +244,37 @@ The scenario library is refreshed on a **six-month cadence** to reflect evolving
 
 ### 7.1 Purpose
 
-A standardised template for analysing the structure of an industry, independent of the subject company. Each of our three companies maps to one (or in IPL's case, two) industry archetypes. The archetype schema captures both the traditional industry-structure picture (Five Forces, concentration, cost structure, etc.) and the **scenario-sensitivity attributes** that allow the Layer 5 impact matrix to translate world-level scenario dimensions (per §6.3) into industry-specific driver movements.
+A standardised template for analysing the structure of an industry, independent of the subject company. Each test company maps to one or more industry archetypes via per-segment FKs (§8.2). The archetype schema captures both the traditional industry-structure picture (Five Forces, concentration, cost structure, etc.) and the **scenario-sensitivity attributes** that allow the Layer 5 impact matrix to translate world-level scenario dimensions (per §6.3) into industry-specific driver movements.
+
+### 7.1.1 Defining archetype granularity
+
+How fine-grained should the archetype taxonomy be? Too coarse (e.g. "banking" globally) misses material variation in drivers and regulatory regimes. Too fine (e.g. "Australian variable-rate retail mortgages") collapses toward one-archetype-per-company and loses the comparative analytical leverage that the industry layer exists to provide.
+
+**The driver-set principle.** An industry archetype is the level at which the relevant set of value drivers, their default ranges, and their scenario sensitivities are meaningfully similar across the companies / segments grouped under it. Five tests, all of which should hold:
+
+1. **Driver-set similarity.** The set of *relevant drivers* is similar across instances of the archetype. A bank archetype has NIM, CET1, credit-loss charge, cost-to-income; a mining archetype has volume, realised price, cost-curve placement. They cannot share an archetype.
+2. **Default-range consistency.** The *default ranges* (§9.2 `default_range`) for shared drivers can be set with reasonable consistency across instances. Advanced-economy retail-banking NIM defaults differ structurally from emerging-market banking NIM defaults; they should be different archetypes.
+3. **Scenario-sensitivity coherence.** Scenarios transmit similarly across instances. Metallurgical coal and thermal coal respond differently to climate-policy scenarios (thermal is transition-exposed; met is partially insulated via steel demand); they shouldn't share an archetype.
+4. **Five Forces coherence.** The Five Forces analysis yields similar results. Australian supermarkets (Coles + Woolworths duopoly) have very different rivalry intensity from US fragmented grocery; different archetype.
+5. **Regulatory / macro-policy similarity.** The regulatory regime, monetary policy environment, accounting framework, and competitive structure are similar enough across instances. Australian banks vs European universal banks vs Chinese state banks each fail this test against each other; they are distinct archetypes.
+
+If any of these tests fails materially, the archetype is too broad and should be subdivided. Conversely, archetypes with only one company in the test set ("thin archetypes") are explicitly fine — see §7.6 last paragraph.
+
+**Three handling mechanisms in the schema.** When variation between companies / segments / regions matters, choose the right mechanism:
+
+6. **Distinct archetypes** when the five-test principle indicates material divergence on drivers, default ranges, scenario sensitivity, Five Forces, or regulatory regime. Examples: metallurgical coal vs thermal coal vs domestic-thermal-coal-AU; supermarkets-AU vs supermarkets-US; major-banks-AU vs us-regional-banks.
+7. **Submarkets within an archetype** (§7.4 `submarkets[]`) when the product and drivers are similar but regional exposure varies meaningfully. Force ratings can be overridden per submarket; default ranges stay archetype-level. Example: industrial explosives with Australia / North America / RoW submarkets.
+8. **Multi-segment within a company** (§8.2 `segments[]`) when a company spans archetypes. Each segment FK-references its own archetype; per-segment positioning lives at the company level. Examples: CSL spanning specialty plasma therapeutics + vaccines + potential Vifor segment; a diversified conglomerate spanning multiple unrelated archetypes; an oil major spanning upstream + downstream + chemicals.
+
+**Geographic specificity as a special case.** Geographic-and-regulatory specificity is built into archetype *identity* (the `id` field) when the regime materially shifts drivers. `major_banks_au` rather than `banks`. `australian_supermarkets` rather than `supermarkets`. `chinese_property_developers` rather than `property_developers`. The default test: if companies in the geography face a meaningfully different regulator, monetary policy regime, accounting framework, or competitive structure from the rest of the world, geography is part of archetype identity.
+
+**Worked examples.** Test the principle against ambiguous cases by walking through the five tests, not by intuition. Three worked examples for the v0.1 spec:
+
+9. **Coal sub-sectors.** Metallurgical coal vs thermal coal: test 3 (scenario sensitivity to climate policy) fails — distinct archetypes. Within thermal coal, domestic-AU vs seaborne: test 1 (driver set) and test 3 (scenario sensitivity) both partially fail — Australian domestic thermal coal is heavily contracted on long-term offtake terms; seaborne is spot-volatile and more exposed to carbon-border-adjustment mechanisms. My lean: distinct archetypes (`thermal_coal_seaborne`, `thermal_coal_domestic_au`) rather than submarkets — but the call can be revisited when a coal company enters the test set.
+10. **Banking sub-segments within Australia.** Retail + business + institutional within Australian banking share the archetype's driver set (NIM, credit-loss charge, cost-to-income, CET1, RWA intensity); what differs is the *exposure mix* per segment (institutional has wholesale-funding exposure; retail has mortgage-book physical-risk exposure; business has SME credit-cycle exposure). Test 1 passes; tests 2-5 are within tolerance. My lean: **one archetype, with per-segment positioning at the company level capturing the mix differences**. WBC stays single-segment for v0.1 unless segment-level driver divergence justifies otherwise during populating.
+11. **Retail sub-sectors.** Grocery vs apparel vs electronics vs DIY: test 1 (driver-set) and test 3 (scenario-sensitivity) both fail across these — gross margin levels differ structurally; demand-cyclicality differs structurally. Distinct archetypes per sub-sector. A company spanning multiple (e.g. Wesfarmers spanning Bunnings + Kmart + Officeworks + chemicals) is multi-segment.
+
+**As the test set grows.** The archetype taxonomy expands by adding new archetypes that meet the principle, not by stretching existing archetypes to fit new companies. When a candidate company doesn't fit cleanly under any existing archetype, the question is which test fails, and the archetype that meets the principle gets defined.
 
 ### 7.2 Rating convention
 
