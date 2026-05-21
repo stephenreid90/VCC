@@ -44,8 +44,14 @@ A living scratchpad for conversational decisions, current preoccupations, and co
   - `design/frameworks/five_forces_questions.md` — all five forces, Porter-2008-aligned.
   - `design/frameworks/payor_and_regulator.md` — v1 draft. Two-axis (regulatory + payor) framework.
 - **Step 3** (Scenarios workshop): **done.** Six scenarios selected via interactive workshop (16 May 2026): Muddle Through (interior, most-likely), Orderly Convergence (upside boundary), Stagflation Persists (macro-downside boundary), Fragmentation and Resource Nationalism (geopolitical boundary), Disorderly Climate Crystallisation (climate boundary), AI Productivity Lag (technology boundary). All six scenarios drafted into `data/scenarios/<id>.yaml` (structured per §6.4) and `data/scenarios/<id>.md` (narrative per §16.1). Workshop output at `design/scenarios_workshop.md` includes institutional comparison (IMF / OECD / World Bank / IEA / NGFS mapping).
-- **Step 4** (Formalise data schemas): **done.** pydantic v2 models for all eight layer schemas live under `src/vcc_valuations/schemas/` (scenario, industry, company + corporate-action overlay, driver, linkage, assumption, frameworks, plus common enums). JSON Schema exports generated under `design/schemas/`. Round-trip tests under `tests/schemas/` validate each scenario YAML against the model — all six pass; 22/22 tests pass overall. Includes structural validators per architecture spec: derived drivers can't be scenario-sensitive (§9.2); beyond-scale overrides require quantified band (§10.4); sign-flip overrides require ≥2 evidence refs (§10.6).
-- **Next: Step 5** — Populate first archetype (IPL). The first true test of whether the framework holds up against real content. Wall-chart budget: 320-800 chat-min, spread across multiple sessions, with substantial offline analyst work between sessions and parallel Ben data workstream contribution.
+- **Step 4** (Formalise data schemas): **done.** pydantic v2 models for all eight layer schemas live under `src/vcc_valuations/schemas/` (scenario, industry, company + corporate-action overlay, driver, linkage, assumption, frameworks, plus common enums). JSON Schema exports generated under `design/schemas/`. Round-trip tests under `tests/schemas/` validate each scenario YAML against the model — all six pass; 22/22 tests pass overall.
+- **Step 5** (Populate first archetype — IPL): **substantively done.** Five phases completed:
+  - **Phase A:** industrial_explosives archetype YAML + narrative, validates against schema. Multi-tier competitive landscape (Tier 1: Orica + Dyno + MAXAM + EPC; Tier 2: Austin Powder + AECI + Solar Industries + Sasol/BME + Yara; Tier 3: country-specific).
+  - **Phase B:** IPL company position YAML + narrative + indicative base-year financials. **USD functional currency** (Ben's-bot review point). Single segment post-demerger. Five franchise assets, archetype-specific positioning block, two company-level scenario sensitivity overrides (high operational carbon, moderate supply-chain concentration).
+  - **Phase C:** industrial_explosives impact matrix across all six scenarios. 46 driver movements populated; sparse per §10.2; two defended-exception terminal-state entries per §10.6 rule 2.
+  - **Phase D:** six per-scenario impact narratives + cross-scenario thesis. Each scenario sketch covers IPL-specific transmission channels and divergences from archetype baseline. Thesis identifies negative asymmetry: downside scenarios compress value more than upside lifts it.
+  - **Phase E (valuations):** deferred to Phase 3.5 smoke-test DCF (Step 7).
+- **Next: Step 6** — Build the translator (Layer 5 + Layer 6 engine code). Or **Step 7** (Phase 3.5 smoke-test DCF) since the IPL × scenarios material is now populated and ready for end-to-end pipeline test. Or revisit step 5 to do further IPL validation against Ben's curated data when it lands.
 
 ---
 
@@ -130,5 +136,4 @@ A living scratchpad for conversational decisions, current preoccupations, and co
 - `ac4e8e7` — Five Forces question bank completed (Supplier, New Entrants, Substitutes, Rivalry).
 - `4616ede` — payor-and-regulator framework v1 draft added.
 - `ec462c5` — editorial sweep + v0.1 freeze (Step 1 closed out).
-- `8e7a51b` — WORKING_NOTES update after Step 1 and Step 2 closed.
-- `a76a9ec` — scenarios workshop prep d
+- `
