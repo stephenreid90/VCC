@@ -1,0 +1,732 @@
+# Impact matrix for industrial_explosives archetype.
+#
+# One entry per scenario; drivers populated sparsely per architecture spec
+# §10.2 — absent drivers default to neutral / small / not assessed.
+#
+# Direction: negative | neutral | positive (3-way per §10.2)
+# Magnitude: small | moderate | large (3-way per §10.2)
+# Confidence: low | moderate | high (joint confidence in direction × magnitude
+#             assuming the scenario plays out per §10.2 pinned definition)
+#
+# Scope: archetype-applicable segment-scope drivers + company-scope drivers
+# whose movements are consistent across companies in the archetype.
+# Company-specific overrides live in the company file's
+# scenario_sensitivity_overrides_global block (e.g. IPL's high operational
+# carbon exposure under climate scenarios).
+
+industry: industrial_explosives
+
+matrix:
+
+  # ----------------------------------------------------------------------
+  - scenario: muddle_through
+    scenario_version: "2026-Q2-v1"
+    drivers:
+
+      volume_growth:
+        direction: neutral
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Mining-customer capex cycle continues at current pace. Demand growth
+          tracks the slow grind of global mining volumes — GDP-adjacent with
+          modest cyclical variation. No catalyst for material movement either
+          direction.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      input_cost_pass_through:
+        direction: neutral
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Long-term gas and ammonia contracts plus established customer
+          relationships maintain established pass-through dynamics. No
+          new stress on the cost transmission mechanism.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      risk_free_rate:
+        direction: neutral
+        magnitude: small
+        confidence: high
+        rationale: >
+          Real rates settle ~1% in the Muddle Through baseline and stay
+          there — no further movement from current conditions. This is the
+          baseline anchor against which other scenarios are compared.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      terminal_growth_rate:
+        direction: neutral
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Long-term mining-customer demand approximately GDP-adjacent.
+          Demographic adaptation in Australia and US handled at current
+          pace; terminal trajectory consistent with cost-of-capital
+          convergence over the fade period.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+  # ----------------------------------------------------------------------
+  - scenario: orderly_convergence
+    scenario_version: "2026-Q2-v1"
+    drivers:
+
+      volume_growth:
+        direction: positive
+        magnitude: moderate
+        confidence: moderate
+        rationale: >
+          Global mining-customer capex cycle healthy under coordinated
+          climate transition and broad-based growth recovery. Transition-
+          mineral demand (lithium, copper, nickel) particularly supportive.
+          Modest positive volume against base.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      price_mix:
+        direction: positive
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Technology product mix (electronic detonators, AI blast design)
+          gradually lifts under broader productivity acceleration in mining
+          customer base.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      gross_margin:
+        direction: positive
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Input costs (ammonia, gas) normalise; supply chain disruption
+          unwinds; modest margin uplift on stabilised cost base.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      risk_free_rate:
+        direction: negative
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Real rates ease modestly from Muddle Through baseline (~1%) toward
+          ~0.5-0.8% as central banks ease into the convergence. Modest
+          tailwind to valuation multiples.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      equity_risk_premium:
+        direction: negative
+        magnitude: moderate
+        confidence: moderate
+        rationale: >
+          Risk appetite recovers as macro and geopolitical tensions resolve.
+          Cyclical industrial ERP compresses meaningfully toward long-run
+          average.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      terminal_growth_rate:
+        direction: positive
+        magnitude: small
+        confidence: low
+        rationale: >
+          Modestly higher long-run growth under coordinated transition.
+          Low confidence because terminal trajectory depends heavily on
+          African skills-development and migration corridor progress that
+          is presumed in Orderly Convergence but not yet realised.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      terminal_roic:
+        direction: positive
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Slightly above cost-of-capital convergence target via productivity
+          surprise sustaining excess returns marginally longer. Subject to
+          §11.4.2 convergence discipline — terminal ROIC should still
+          approach WACC over the fade period. Defended exception per §10.6
+          rule 2: moat source = scale + switching_cost + resource (long-term
+          contracts); decay horizon = 10-15 years; named threat = Orica
+          competitive response; sensitivity test = halving the fade period
+          extension still preserves positive scenario value.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+  # ----------------------------------------------------------------------
+  - scenario: stagflation_persists
+    scenario_version: "2026-Q2-v1"
+    drivers:
+
+      volume_growth:
+        direction: negative
+        magnitude: moderate
+        confidence: high
+        rationale: >
+          Mining-customer capex slows under restrictive financial conditions.
+          High real rates compress new mine development; deferral of expansion
+          decisions reduces explosives demand growth. Recession in advanced
+          economies amplifies the slowdown for 1-2 years inside the horizon.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      input_cost_pass_through:
+        direction: negative
+        magnitude: large
+        confidence: high
+        rationale: >
+          Critical driver under Stagflation. Sustained energy / ammonia
+          price spike of 40-60% above baseline. Supplier power moderate
+          (per §7.4 archetype) blocks full pass-through to mining customers
+          under sustained input inflation — Ben's-bot worked example.
+          IPL's long-term gas contracts partly insulate ~70% of US gas
+          exposure through 2028 but ammonia spot exposure and Australian
+          gas costs compress margins materially. Critical to the scenario's
+          impact on industrial explosives profitability.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      gross_margin:
+        direction: negative
+        magnitude: large
+        confidence: high
+        rationale: >
+          Direct flow-through from input_cost_pass_through. Cost pressure
+          exceeds contract protection; margin compression material. Mining
+          customers themselves under cost pressure resist explosives
+          price increases.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      sga_pct_revenue:
+        direction: positive
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Wage inflation and operating cost pressure feed into SG&A.
+          Some labour-cost containment from AI augmentation but
+          overwhelmed by broader cost-base inflation.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      maintenance_capex_pct_revenue:
+        direction: positive
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Deferred maintenance capex catches up; replacement cycle costs
+          inflated. No new growth capex inside horizon.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      working_capital_days:
+        direction: positive
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Customer payment cycles lengthen modestly under stress;
+          inventory builds as demand softens; working capital tied up
+          modestly increases.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      risk_free_rate:
+        direction: positive
+        magnitude: large
+        confidence: high
+        rationale: >
+          Real rates settle 2-3% (vs Muddle Through 1%). Central banks
+          forced to maintain restrictive policy through horizon. Material
+          headwind to valuation multiples and to capital-intensive
+          industrial economics.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      equity_risk_premium:
+        direction: positive
+        magnitude: moderate
+        confidence: high
+        rationale: >
+          Risk appetite contracts materially. Cyclical industrials face
+          higher ERP demanded by investors. Compounds the real-rates
+          headwind for valuation.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      beta:
+        direction: positive
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Mining-customer cyclicality drives higher correlation with broader
+          industrial cycles during recession. Beta drifts upward modestly.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      terminal_growth_rate:
+        direction: negative
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Long-run trend growth shaded down modestly given structural damage
+          to capital formation cycles and skilled-migration constraints
+          binding earlier.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+  # ----------------------------------------------------------------------
+  - scenario: fragmentation
+    scenario_version: "2026-Q2-v1"
+    drivers:
+
+      volume_growth:
+        direction: negative
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Bloc bifurcation creates uneven mining-customer demand. China-
+          aligned bloc grows faster (positive for transition-mineral
+          mining in their bloc); US-aligned bloc slower. Net for industrial
+          explosives consolidated demand is modestly negative due to
+          duplication-cost drag on the US-aligned customer base.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      price_mix:
+        direction: negative
+        magnitude: small
+        confidence: low
+        rationale: >
+          Cross-bloc product trade constrained; price discovery less
+          efficient; pricing of premium technology products under
+          pressure where Tier 2 competitors not subject to same trade
+          restrictions undercut.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      gross_margin:
+        direction: negative
+        magnitude: moderate
+        confidence: moderate
+        rationale: >
+          Supply-chain duplication costs (regional manufacturing capacity,
+          parallel logistics, bloc-aligned ammonia / gas sourcing).
+          Ammonium nitrate cross-bloc trade restrictions raise effective
+          input costs.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      input_cost_pass_through:
+        direction: negative
+        magnitude: moderate
+        confidence: moderate
+        rationale: >
+          Regional input price fragmentation makes pass-through harder
+          to negotiate with customers when contract structures haven't
+          anticipated bloc-aligned pricing. Lag effect for several years
+          while contracts reset.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      maintenance_capex_pct_revenue:
+        direction: positive
+        magnitude: moderate
+        confidence: moderate
+        rationale: >
+          Supply-chain duplication requires capex in bloc-internal
+          capacity. Includes both maintenance and capacity additions
+          to replace cross-bloc supply.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      risk_free_rate:
+        direction: positive
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Structurally higher rates from inflationary effects of supply-
+          chain duplication. Smaller move than Stagflation.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      equity_risk_premium:
+        direction: positive
+        magnitude: moderate
+        confidence: high
+        rationale: >
+          Geopolitical risk premium rises materially. Multinationals with
+          cross-bloc operations re-rated lower; industrial explosives sits
+          in this category given IPL's US-Australia footprint and global
+          input dependencies.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      country_risk_premium:
+        direction: positive
+        magnitude: moderate
+        confidence: moderate
+        rationale: >
+          Cross-bloc operations face elevated jurisdiction risk. For an
+          ASX-listed company with US-dominant operations and bloc-aligned
+          customer base, country-risk premium rises modestly to materially.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      terminal_growth_rate:
+        direction: negative
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Structurally inferior world to pre-fragmentation. Long-run growth
+          drag from inefficient resource allocation; partial offset from
+          China-aligned bloc growing faster, but for consolidated industrial
+          explosives the net is negative.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+  # ----------------------------------------------------------------------
+  - scenario: disorderly_climate_crystallisation
+    scenario_version: "2026-Q2-v1"
+    drivers:
+
+      volume_growth:
+        direction: negative
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Bifurcating: thermal coal mining volume declines materially
+          (negative); metallurgical coal continues; transition-mineral
+          mining (lithium, copper, nickel) accelerates (positive). Net
+          modestly negative for aggregate volumes initially given coal-
+          mining customer mix (~35% of IPL customer mix); recovers as
+          transition-mineral demand compounds.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      price_mix:
+        direction: neutral
+        magnitude: small
+        confidence: low
+        rationale: >
+          Customer-mix shift toward transition minerals may modestly
+          improve product mix (higher-tech bulk and specialty products
+          for hard-rock mineral mining) but offset by margin pressure
+          on cost pass-through. Net broadly neutral.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      gross_margin:
+        direction: negative
+        magnitude: moderate
+        confidence: high
+        rationale: >
+          Carbon-cost pass-through to ammonia production materially affects
+          industrial explosives manufacturing margin. IPL is more exposed
+          than archetype average due to ammonia self-supply (~55% of
+          internal use) — captured in company-level override
+          (scenario_sensitivity_overrides_global.energy_transition).
+          Carbon prices spike to EUR 200+ in advanced economies with cross-
+          border-adjustment forcing pricing onto imports.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      input_cost_pass_through:
+        direction: negative
+        magnitude: moderate
+        confidence: moderate
+        rationale: >
+          Carbon-driven cost increases harder to pass through to mining
+          customers themselves under cost pressure from their own carbon
+          exposure. Asymmetric where coal-customer subsegment is most
+          stressed.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      maintenance_capex_pct_revenue:
+        direction: positive
+        magnitude: moderate
+        confidence: moderate
+        rationale: >
+          Decarbonisation capex for ammonia production (carbon capture,
+          green ammonia pilots). Material spending required to maintain
+          licence to operate under new carbon-pricing regimes.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      growth_capex_pct_revenue:
+        direction: positive
+        magnitude: moderate
+        confidence: moderate
+        rationale: >
+          Transition-aligned capacity additions (green ammonia, transition-
+          mineral-mining service expansion). Offsetting compression of capex
+          in coal-mining-supporting capacity.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      risk_free_rate:
+        direction: positive
+        magnitude: small
+        confidence: low
+        rationale: >
+          Choppy rates with elevated volatility. Central banks face policy
+          dilemma between supply-shock tightening and reallocation
+          accommodation. Net modestly higher; low confidence reflects the
+          volatility itself.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      equity_risk_premium:
+        direction: positive
+        magnitude: moderate
+        confidence: moderate
+        rationale: >
+          Sector dispersion wide. Industrial explosives is broadly seen
+          as carbon-exposed (mining customer base, own ammonia production);
+          ERP premium added relative to transition-aligned sectors.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      terminal_growth_rate:
+        direction: negative
+        magnitude: moderate
+        confidence: moderate
+        rationale: >
+          Long-run growth shaded down via accelerated coal-mining customer
+          attrition. Partial offset from transition-mineral mining but
+          net negative for industrial explosives aggregate volumes given
+          coal currently 35% of customer mix.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      terminal_roic:
+        direction: negative
+        magnitude: moderate
+        confidence: moderate
+        rationale: >
+          Stranded-asset risk on coal-supporting infrastructure and on
+          ammonia-production assets exposed to carbon pricing. Defended-
+          exception criteria per §10.6 rule 2: moat source = resource
+          (long-term gas contracts) + scale; decay horizon = 10-15 years
+          (faster than non-climate scenarios); named threat = carbon
+          pricing flow-through plus coal-customer attrition; sensitivity
+          test = halving decay horizon to 5-7 years shows additional
+          15-20% terminal-value impact.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      fade_period_length:
+        direction: negative
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Faster fade to convergence under transition pressures. Moat
+          assets decay faster under stranded-asset and carbon-pricing
+          dynamics.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+  # ----------------------------------------------------------------------
+  - scenario: ai_productivity_lag
+    scenario_version: "2026-Q2-v1"
+    drivers:
+
+      volume_growth:
+        direction: neutral
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Mining-customer productivity gains slower than bull case;
+          modest volume headwind from slower mining capex acceleration.
+          Net broadly neutral against Muddle Through baseline.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      sga_pct_revenue:
+        direction: negative
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Modest labour-cost containment in own operations from AI
+          augmentation of administrative / engineering functions.
+          Limited because mining-services labour is largely on-site
+          and harder to substitute.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      rd_intensity:
+        direction: positive
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Continued investment in AI-driven blast design and electronic
+          initiation systems. Pipeline-strength concerns of M9 dimension
+          per Ben's-bot competitive analysis — sustained R&D needed to
+          maintain technology position.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      equity_risk_premium:
+        direction: positive
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Growth-stock multiple compression broadly affects market.
+          Industrial explosives is not a growth-multiple name so the
+          impact is incidental — modest ERP increase from broader
+          risk-premium dynamics.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
+
+      terminal_growth_rate:
+        direction: negative
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Long-run growth shaded modestly down via slower mining-customer
+          productivity transmission. Less acute than Stagflation or
+          Disorderly Climate.
+        not_applicable: false
+        evidence_refs: []
+        governance:
+          created_by: tara@reidadvisory.net
+          created_at: 2026-05-17T10:00:00Z
