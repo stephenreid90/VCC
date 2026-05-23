@@ -1,0 +1,251 @@
+# Base-year financial snapshot for Dyno Nobel Limited (DNL).
+#
+# Formerly Incitec Pivot Limited (IPL); renamed to Dyno Nobel Limited
+# in March 2025 following the demerger of the fertilisers business.
+# Ticker is now DNL.AU (was IPL.AX). ISIN: AU0000390544.
+#
+# Source: Ben's data workstream / EODHD fundamentals export, generated
+# 22 May 2026. Replaces the earlier indicative snapshot drafted from
+# pre-demerger combined-entity disclosures.
+#
+# Reporting currency: AUD (ASX-listed, Australian corporate entity).
+# Fiscal year-end: 30 September.
+#
+# Functional currency: per-entity per IAS 21 / AASB 121:
+#   - Parent (Dyno Nobel Limited): AUD (Australian listed corporate)
+#   - US subsidiary (Dyno Nobel Americas): USD (dominant operations)
+#   - Australian operations: AUD
+# The earlier "consolidated USD functional" position has been refined
+# to per-entity treatment per Ben's data workstream review.
+
+company_id: dnl
+fiscal_year: FY2025
+fy_end_date: 2025-09-30
+reporting_currency: AUD
+
+base_year_status: ben_workstream_data
+data_source: EODHD fundamentals (Ben's market-ingest pipeline)
+data_generated: 2026-05-22
+last_updated: 2026-05-22
+
+# --- IDENTITY ---
+identity:
+  current_name: Dyno Nobel Limited
+  former_name: Incitec Pivot Limited
+  rename_effective: 2025-03
+  current_ticker: DNL.AU
+  former_ticker: IPL.AX
+  isin: AU0000390544
+  open_figi: BBG000PTL148
+  exchange: ASX
+  country: Australia
+  headquarters: "28 Freshwater Place, Southbank, VIC 3006, Australia"
+  full_time_employees: 5500
+  industry_description: Specialty Chemicals (basic materials sector)
+  product_description: >
+    Industrial explosives, chemicals, and ammonia (sold to both explosives
+    and fertilizer markets) in the United States and Australia. Product
+    lines include packaged explosives (Powermite, Dynosplit), ammonium
+    nitrates, electronic initiation systems (BlastWeb II, CE4 Commander,
+    DigiShot, DigiShot Plus, DigiShot Plus.4G, GeoShot), bulk technologies
+    (TITAN series), software (ViewShot 3D, DIFFERENTIAL ENERGY2, Nobel
+    Fire), and services (Dyno Consult, Drill and Blast Academies,
+    DYNOBULK FLEX, portable modular emulsion plants). Founded 1831
+    (Nobel-Dyno heritage).
+  key_management:
+    ceo: Mauro Neves de Moraes (MD, CEO & Director — joined from Vale)
+    cfo: Nitesh Naidoo
+    president_americas: Greg Hayne
+    president_asia_pacific: Stuart Sneyd
+    president_emea_latam: Richard Brown
+    investor_relations: Tom Dixon
+
+# --- INCOME STATEMENT (AUD millions) ---
+# FY2025 (year ending 30 Sep 2025) is the first reporting year as
+# Dyno Nobel Limited but is a partial-year post-demerger (rebrand
+# effective March 2025). TTM as of 31 March 2026 is the cleanest
+# post-demerger full-year baseline.
+income_statement:
+  fy_2025:
+    revenue: 3710.1
+    cost_of_revenue: 2688.3
+    gross_profit: 1021.8
+    selling_general_administrative: 957.7
+    selling_and_marketing: 295.7
+    depreciation_and_amortisation: 284.1
+    ebit: 344.2
+    ebitda: 628.3
+    operating_income: 483.9
+    net_interest_expense: 80.3
+    income_before_tax: 186.2
+    tax_expense: 37.9
+    effective_tax_rate: 0.204
+    net_income: 145.5
+    net_income_applicable_to_common: -53.2
+    notes: >
+      FY2025 includes the March-2025 demerger of the fertilisers business.
+      EBIT shaped by extraordinary items (~-AUD 200M); operating income
+      AUD 484M reflects underlying operations. Net income to common
+      shareholders -AUD 53M is depressed by extraordinary items
+      (demerger-related charges and write-offs).
+
+  ttm_to_2026_03_31:
+    revenue: 3905.4
+    gross_profit: 2222.3
+    operating_margin: 0.1123
+    ebitda: 853.6
+    diluted_eps: 0.08
+    profit_margin: -0.0104
+    return_on_assets: 0.0495
+    return_on_equity: 0.0576
+    notes: >
+      TTM ending 31 March 2026 is the first full 12 months post-demerger.
+      Closest available clean-baseline measure of underlying operating
+      performance. Net margin still affected by residual demerger items
+      and post-rename consolidation adjustments.
+
+# --- BALANCE SHEET (AUD millions, at 30 Sep 2025) ---
+balance_sheet:
+  cash_and_short_term_investments: 647.2
+  cash_only: 207.2
+  short_term_investments: 440.0
+  net_receivables: 840.5
+  inventory: 519.1
+  other_current_assets: 115.9
+  total_current_assets: 2122.7
+  property_plant_and_equipment_net: 2365.6
+  goodwill: 1778.5
+  intangible_assets: 847.7
+  long_term_investments: 457.7
+  other_non_current_assets: 73.3
+  total_non_current_assets: 5707.2
+  total_assets: 7829.9
+
+  accounts_payable: 733.7
+  short_term_debt: 626.3
+  other_current_liabilities: 231.3
+  total_current_liabilities: 1591.3
+  long_term_debt: 1238.9
+  capital_lease_obligations: 211.5
+  other_long_term_liabilities: 18.2
+  total_non_current_liabilities: 1805.7
+  total_liabilities: 3397.0
+  total_equity: 4431.1
+  minority_interests: -1.1
+
+derived_metrics:
+  net_debt: 1809.8
+  net_debt_ebitda_fy25: 2.88
+  net_debt_ebitda_ttm: 2.12
+  capex_fy25: 474.2
+  capex_pct_revenue_fy25: 0.128
+  free_cash_flow_fy25: 100.5
+  operating_cash_flow_fy25: 574.7
+  dividends_paid_fy25: 162.3
+  effective_payout_ratio_on_underlying_npat: 0.46
+  notes: >
+    Capex / revenue ratio inflated by FY25 partial-year reporting and
+    capital-restructuring items. Underlying normalised capex / revenue
+    is closer to 6-7% per pre-demerger historical pattern. Net debt /
+    EBITDA at 2.12x on TTM EBITDA is at the upper end of moderate
+    leverage; partly reflects demerger-related balance-sheet
+    restructuring and is expected to ease over the next 12 months
+    as integration completes.
+
+# --- MARKET DATA (at 21 May 2026) ---
+market_data:
+  share_price_recent: 3.6061
+  fifty_two_week_low: 2.505
+  fifty_two_week_high: 3.72
+  market_capitalisation: 6390.4
+  enterprise_value: 7681.5
+  shares_outstanding: 1875.9
+  pe_ratio_trailing: 45.5
+  pe_ratio_forward: 19.3
+  price_to_book_mrq: 1.43
+  price_to_sales_ttm: 1.64
+  ev_to_revenue: 2.07
+  ev_to_ebitda: 12.23
+  dividend_per_share: 0.141
+  dividend_yield: 0.0392
+  beta: 0.359
+  beta_notes: >
+    Beta of 0.359 is low for a cyclical industrial; reflects short post-
+    demerger data history (rename effective March 2025; only ~14 months
+    of trading-as-DNL data). Pre-demerger IPL beta was in the 0.9-1.1
+    range. Use a sector-derived levered beta (~1.0-1.1) for valuation
+    rather than the data-history-derived 0.359.
+  wall_street_target_price: 3.61
+
+# --- SHARE STATISTICS ---
+share_statistics:
+  shares_outstanding: 1875912826
+  shares_float: 1595329359
+  percent_insiders: 0.0008
+  percent_institutions: 0.6133
+  short_interest: low
+
+# --- CASH FLOW (FY25, AUD millions) ---
+cash_flow:
+  fy_2025:
+    operating_cash_flow: 574.7
+    capital_expenditures: 474.2
+    free_cash_flow: 100.5
+    dividends_paid: 162.3
+    sale_purchase_of_stock: -288.8
+    total_financing_cash_flow: -481.3
+    total_investing_cash_flow: -526.6
+    change_in_working_capital: -259.5
+    change_in_cash: 40.5
+    notes: >
+      Operating cash flow AUD 575M solid but free cash flow only
+      AUD 101M after AUD 474M capex (inflated by partial-year reporting
+      and restructuring). Dividends paid AUD 162M plus stock buyback
+      AUD 289M = AUD 451M capital return; covered by operating cash
+      flow but tight on free cash flow.
+
+# --- HISTORICAL CONTEXT ---
+historical_context:
+  notes: >
+    Pre-demerger IPL FY2024 revenue was AUD 5,279M (combined entity);
+    post-demerger Dyno Nobel revenue is approximately 70% of that
+    pre-demerger combined total, consistent with the explosives segment
+    being the dominant of the two demerged businesses. The 30%
+    reduction in scale at parent level matches the value contributed
+    by the demerged fertilisers entity. The pre-2025 history
+    represents the combined entity; only FY2025 forward represents
+    the pure-play industrial explosives operation, and only the TTM
+    ending 31 March 2026 represents a full 12 months post-demerger.
+
+# --- INDICATIVE PRODUCT MIX (estimated from disclosures; to be verified) ---
+product_mix:
+  bulk_anfo_share: 0.50
+  emulsion_products_share: 0.22
+  electronic_initiation_systems_share: 0.18
+  packaged_explosives_share: 0.06
+  on_site_services_share: 0.04
+  notes: >
+    Indicative breakdown; not directly reported in standard disclosures.
+    To be verified against segment-level reporting if available.
+
+# --- INDICATIVE GEOGRAPHIC SPLIT (estimated; to be verified) ---
+geographic_breakdown:
+  - geography: United States (Dyno Nobel Americas)
+    revenue_share: 0.55
+    notes: Cost-curve advantage from long-term gas contracts.
+  - geography: Australia (Dyno Nobel Asia Pacific)
+    revenue_share: 0.35
+    notes: Duopoly market with Orica.
+  - geography: EMEA & LATAM (Dyno Nobel EMEA / LATAM)
+    revenue_share: 0.10
+    notes: Sub-scale; managed under EMEA & LATAM regional president.
+
+# --- CUSTOMER CONCENTRATION (indicative) ---
+customer_concentration:
+  top_5_share_of_revenue: 0.45
+  top_10_share_of_revenue: 0.65
+  largest_single_customer_share: 0.13
+  notes: >
+    Indicative; not directly reported. Major customers include the
+    Australian mining majors (BHP, Rio Tinto, FMG) and large US
+    mining houses.

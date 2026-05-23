@@ -1,35 +1,41 @@
 company_position:
-  id: ipl
-  name: Incitec Pivot Limited
-  ticker: ASX:IPL
+  id: dnl
+  name: Dyno Nobel Limited
+  ticker: ASX:DNL
   reporting_currency: AUD
-  functional_currency: USD
+  functional_currency: AUD
   functional_currency_rationale: >
-    Post-demerger, IPL is a pure-play industrial explosives company operating
-    predominantly through Dyno Nobel's North American footprint, with material
-    Australian and rest-of-world exposure. The majority of cash flows, input
-    costs (US natural gas → ammonia), customer contracts, and capital
-    requirements are USD-denominated. AUD remains the ASX-reporting currency.
-    Functional-currency determination per IAS 21 / AASB 121 favours USD given:
-    (i) USD-dominant revenue streams; (ii) USD-denominated input cost base
-    (gas, ammonia, ammonium nitrate); (iii) USD-denominated long-term gas
-    supply contracts driving cost advantage; (iv) US capital markets the
-    primary debt source. Australian and RoW operations operate in their own
-    functional currencies but consolidate to USD at parent level. Most
-    published Australian sell-side DCFs of IPL incorrectly treat AUD as
-    functional currency because it is the reporting currency — that
-    introduces FX translation noise into operating performance interpretation.
+    Dyno Nobel Limited (formerly Incitec Pivot Limited; renamed in March 2025
+    following the demerger of the fertilisers business). Per IAS 21 / AASB 121
+    the parent's functional currency is AUD given Australian incorporation,
+    ASX listing, AUD-denominated parent financing, and the Australian regulatory
+    and reporting environment. The framework's per-entity functional-currency
+    treatment (§8.2 schema) captures USD-dominant operations through the
+    per-segment functional currency block — see segments[].functional_currency
+    below. Dyno Nobel Americas subsidiary operates with USD functional currency
+    (predominantly US revenue, US-denominated input cost base — gas, ammonia,
+    ammonium nitrate — and US-denominated long-term gas supply contracts).
+    Australian operations operate with AUD functional currency. Consolidation
+    translates the USD-functional Americas subsidiary into AUD at the parent
+    level. This refines an earlier draft position that treated the consolidated
+    functional currency as USD — the parent itself is AUD-functional; the
+    USD-functional treatment applies specifically to the US subsidiary as the
+    architecture's per-segment functional currency block intends.
 
   # ---- Consolidated, parent-level blocks ----
 
   balance_sheet:
-    net_debt_ebitda: 1.8
+    net_debt_ebitda: 2.12
     leverage_posture: moderate
     liquidity: >
-      Comfortable. Post-demerger debt restructuring established a sustainable
-      capital structure. Cash flow generation supports debt service across
-      the commodity cycle. Committed revolving credit facilities provide
-      liquidity buffer.
+      Adequate. Post-demerger net debt / TTM EBITDA at 2.12x sits at the
+      upper end of moderate leverage; AUD 207M cash plus AUD 440M short-term
+      investments provides AUD 647M liquidity buffer. Cash flow generation
+      supports debt service across the commodity cycle but FY25 free cash
+      flow of AUD 101M was thin given AUD 162M dividends + AUD 289M
+      buybacks. Net debt expected to ease over the next 12 months as
+      post-demerger integration completes and the capex / revenue ratio
+      normalises from FY25's inflated 12.8% toward the underlying 6-7%.
 
   capital_allocation:
     dividend_policy: >
@@ -105,16 +111,29 @@ company_position:
       industry_archetype: industrial_explosives
       functional_currency: USD
       functional_currency_rationale: >
-        Sole post-demerger segment. USD functional currency per consolidated
-        rationale above; same drivers (US gas / ammonia / industrial
-        explosives demand).
+        Sole post-demerger segment. USD functional currency reflects that
+        the dominant operating unit within the segment is Dyno Nobel Americas
+        (USD revenue, USD inputs, USD long-term gas contracts). The
+        Australian sub-operation within the segment is AUD-functional, but
+        for segment-level valuation purposes the segment is treated as
+        USD-dominant given approximately 55% US / 35% Australia / 10% EMEA-
+        LATAM revenue split. Architecture spec §8.2 supports finer-grained
+        per-region functional-currency treatment if the analyst wants to
+        sub-segment further; v0.1 keeps it at the single-segment level with
+        USD as the dominant currency and per-region functional-currency
+        commentary captured in the financials data file
+        (`data/financials/dnl.yaml`).
       revenue_share: 1.00
       ebit_share: 1.00
       notes: >
         Single-segment post-demerger. Pre-demerger, IPL operated two
         distinct segments (Dyno Nobel explosives + Fertilisers Australia);
-        the fertilisers business was demerged. Now a pure-play industrial
-        explosives company.
+        the fertilisers business was demerged in March 2025 and the
+        remaining entity was renamed to Dyno Nobel Limited. The Louisiana
+        ammonia plant continues to sell residual ammonia to the fertilizer
+        market alongside its primary explosives-feedstock role — this
+        residual fertilizer revenue is a downstream sale channel rather
+        than a separate operating segment.
 
       market_positions:
         - market: North American industrial explosives
