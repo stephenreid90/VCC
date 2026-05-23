@@ -45,7 +45,7 @@ A living scratchpad for conversational decisions, current preoccupations, and co
   - `design/frameworks/payor_and_regulator.md` — v1 draft. Two-axis (regulatory + payor) framework.
 - **Step 3** (Scenarios workshop): **done.** Six scenarios selected via interactive workshop (16 May 2026): Muddle Through (interior, most-likely), Orderly Convergence (upside boundary), Stagflation Persists (macro-downside boundary), Fragmentation and Resource Nationalism (geopolitical boundary), Disorderly Climate Crystallisation (climate boundary), AI Productivity Lag (technology boundary). All six scenarios drafted into `data/scenarios/<id>.yaml` (structured per §6.4) and `data/scenarios/<id>.md` (narrative per §16.1). Workshop output at `design/scenarios_workshop.md` includes institutional comparison (IMF / OECD / World Bank / IEA / NGFS mapping).
 - **Step 4** (Formalise data schemas): **done.** pydantic v2 models for all eight layer schemas live under `src/vcc_valuations/schemas/` (scenario, industry, company + corporate-action overlay, driver, linkage, assumption, frameworks, plus common enums). JSON Schema exports generated under `design/schemas/`. Round-trip tests under `tests/schemas/` validate each scenario YAML against the model — all six pass; 22/22 tests pass overall.
-- **Step 5** (Populate first archetype — IPL): **substantively done.** Five phases completed:
+- **Step 5** (Populate first archetype — DNL, formerly IPL): **substantively done.** Five phases completed. **Note (22 May 2026):** Ben's data dump revealed the company was renamed from Incitec Pivot Limited (IPL) to **Dyno Nobel Limited (DNL.AU)** in March 2025 following the demerger of the fertilisers business. Renamed all files (`data/companies/dnl.{yaml,md}`, `data/financials/dnl.yaml`, `analyses/dnl/`), bulk-replaced IPL → DNL in prose, replaced indicative financials with real EODHD-sourced data (FY2025 + TTM Mar 2026), refined functional-currency treatment to per-entity (parent AUD, US subsidiary USD per IAS 21 / AASB 121). Architecture spec IPL references not yet swept — deferred to next editorial pass.
   - **Phase A:** industrial_explosives archetype YAML + narrative, validates against schema. Multi-tier competitive landscape (Tier 1: Orica + Dyno + MAXAM + EPC; Tier 2: Austin Powder + AECI + Solar Industries + Sasol/BME + Yara; Tier 3: country-specific).
   - **Phase B:** IPL company position YAML + narrative + indicative base-year financials. **USD functional currency** (Ben's-bot review point). Single segment post-demerger. Five franchise assets, archetype-specific positioning block, two company-level scenario sensitivity overrides (high operational carbon, moderate supply-chain concentration).
   - **Phase C:** industrial_explosives impact matrix across all six scenarios. 46 driver movements populated; sparse per §10.2; two defended-exception terminal-state entries per §10.6 rule 2.
@@ -136,4 +136,13 @@ A living scratchpad for conversational decisions, current preoccupations, and co
 - `ac4e8e7` — Five Forces question bank completed (Supplier, New Entrants, Substitutes, Rivalry).
 - `4616ede` — payor-and-regulator framework v1 draft added.
 - `ec462c5` — editorial sweep + v0.1 freeze (Step 1 closed out).
-- `
+- `8e7a51b` — WORKING_NOTES update after Step 1 and Step 2 closed.
+- `a76a9ec` — scenarios workshop prep document.
+- `8cc2527` — response to Ben's `vcc_valuations` rev1 design.
+- `1d3d53b` — Step 3 complete (six scenarios drafted).
+- `35578ea` — Step 4 (pydantic + JSON Schema + tests).
+- `e142f95` — chore: removed accidentally-committed `__pycache__` files.
+- `f682363` — WORKING_NOTES Step 4 update.
+- `dfd1243` — architecture v0.2 (§7.1.1 archetype-granularity principle).
+- Step 5: Phase A `_` (industrial_explosives archetype), Phase B `_` (IPL position + indicative financials), Phase C `dea44c2` (IPL impact matrix), Phase D `_` (IPL per-scenario narratives + thesis). Hash placeholders updated when latest commits drop.
+- **Tag:** `architecture-v0.1`
