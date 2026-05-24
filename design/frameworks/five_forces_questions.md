@@ -1,6 +1,6 @@
 # Five Forces Question Bank
 
-**Status:** Draft v1. All five forces drafted to Porter 2008 framing. Subject to refinement as we apply it to the IPL / CSL / WBC archetypes during build-plan step 5.
+**Status:** Draft v1. All five forces drafted to Porter 2008 framing. Subject to refinement as we apply it to the DNL / CSL / WBC archetypes during build-plan step 5.
 **Source:** Aligned to Michael E. Porter, *"The Five Competitive Forces That Shape Strategy"*, Harvard Business Review, January 2008. Sub-determinants and structure track Porter's 2008 articulation directly; question wording is ours.
 **Companion to:** `design/architecture.md` §7.4 (industry archetype schema, `five_forces` block) and §7.5 (how Five Forces feeds the rest of the framework).
 

@@ -29,7 +29,7 @@ Tested against §6.2 commitments and §6.4 schema requirements.
 1. **Scenarios are boundary cases, not exhaustive coverage.** Per §6.2: *"They are a chosen set of meaningfully different worlds … neither exhaustive nor strictly hierarchical."* The whole point is to span the plausible range, not to enumerate every possibility nor to weight them probabilistically. If you find yourself wanting to add a scenario to "cover" something, the test is: *does the new scenario change the shape of the future, or is it a severity-dial variation on an existing one?* Only the former earns its place.
 2. **Each scenario must differ on multiple dimensions.** Per §2 item 2: *"Scenarios must differ on multiple dimensions — not simply severity dials on a single axis."* A scenario set of "mild recession / deep recession / severe recession" is one-dimensional and rejects this discipline. A scenario set that varies inflation regime, geopolitical alignment, energy intensity, and labour-market structure differently across scenarios is multidimensional and earns its place.
 3. **Internal consistency.** Within a scenario, macro variables and regime tags must move in logically consistent ways (§6.6 deliverable 3). "Stagflation persists" cannot have sticky inflation and falling policy rates. Workshop time should be spent stress-testing each scenario against this discipline.
-4. **Analytical purchase on IPL / CSL / WBC.** Each scenario should produce a *different* picture for at least two of the three test companies — otherwise it's not helping us separate views. A scenario that moves all three similarly is either too generic or has its discriminating action elsewhere (which then needs to be surfaced).
+4. **Analytical purchase on DNL / CSL / WBC.** Each scenario should produce a *different* picture for at least two of the three test companies — otherwise it's not helping us separate views. A scenario that moves all three similarly is either too generic or has its discriminating action elsewhere (which then needs to be surfaced).
 5. **Time profile is scenario-specific.** Per §2 item 5: forecast horizon is parametric per company-scenario combination. Some scenarios resolve in 1–3 years (e.g. a sharp shock that fades); others play out over 10+ (e.g. demographic regime, energy transition). The scenario should declare its natural horizon.
 6. **A narrative a non-economist can read.** The scenario narrative is the artefact a reviewer engages with first; the YAML is the source-of-truth structure. If the narrative can't survive two minutes of explanation to a smart non-economist, the scenario isn't crisp enough.
 
@@ -56,7 +56,7 @@ Single baseline projection (global GDP growth 2.9% in 2026, 3.0% in 2027; G20 in
 - **Downside factors:** Strait of Hormuz disruption; energy infrastructure damage; energy-and-fertiliser supply shocks; commodity-price spike feeding through to inflation.
 - **Tail risk:** prolonged Middle East export disruption causing sharper price reaction and commodity shortages; lower-than-expected AI investment returns triggering financial-market repricing.
 
-*What's signal-bearing for us:* the AI productivity story is now framed as live and bidirectional — upside if it pays off, downside if it doesn't. The energy-shock channel runs through fertilisers explicitly, which matters for any IPL-comparable nitrogen-fertilisers exposure (not in our test set but in our archetypes).
+*What's signal-bearing for us:* the AI productivity story is now framed as live and bidirectional — upside if it pays off, downside if it doesn't. The energy-shock channel runs through fertilisers explicitly, which matters for any DNL-comparable nitrogen-fertilisers exposure (not in our test set but in our archetypes).
 
 ### 3. World Bank — Global Economic Prospects, January 2026
 
@@ -102,7 +102,7 @@ These are themes, not scenarios. The workshop's job is to combine them into 3–
 
 ## Candidate scenario themes for the workshop
 
-A starting set to **discriminate against**, not adopt wholesale. The workshop should pick 3–6 that span the plausible range, differ on multiple dimensions, and give analytical purchase on IPL / CSL / WBC. Adapt names freely.
+A starting set to **discriminate against**, not adopt wholesale. The workshop should pick 3–6 that span the plausible range, differ on multiple dimensions, and give analytical purchase on DNL / CSL / WBC. Adapt names freely.
 
 1. **Orderly convergence.** Conflict de-escalates within 12 months; energy prices normalise. Central banks land softly; inflation glides to target. Trade barriers stable; AI investment continues productively. Real rates settle slightly above pre-2022. *Anchor: IEA STEPS + IMF reference.*
 2. **Stagflation persists.** Energy shock entrenches; second-round wage-price effects un-anchor inflation expectations; central banks forced to keep rates restrictive; growth slows materially. *Anchor: IMF adverse → severe; OECD downside tail.*
@@ -129,7 +129,7 @@ Use these to make the workshop's decisions visible.
 ### A. Theme selection
 
 1. **Multidimensional test.** For each candidate, on which dimensions does it materially differ from the *closest* other candidate? Inflation regime, geopolitical alignment, energy intensity, productivity growth, financial conditions, climate policy, labour supply. If the answer is "one dimension", the candidate is a severity dial — merge or drop.
-2. **Discrimination test.** For each pair of candidates, under which would IPL's view materially differ? CSL's? WBC's? If none of the three companies' views moves between two scenarios, they're indistinguishable for our purpose — merge.
+2. **Discrimination test.** For each pair of candidates, under which would DNL's view materially differ? CSL's? WBC's? If none of the three companies' views moves between two scenarios, they're indistinguishable for our purpose — merge.
 3. **Boundary test.** Does the candidate change the shape of the future, or is it interpolation between others already chosen?
 4. **Plausibility test.** Is there a credible chain from today's world to the scenario? Not "is it likely" — plausibility, not probability.
 

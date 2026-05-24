@@ -47,9 +47,9 @@ The conditions stack: cost-of-living pressure abates enough for climate-policy p
 
 Continued sticky inflation despite supply normalisation (would shift toward Muddle Through). Inflation-expectations un-anchoring (would shift toward Stagflation Persists). Geopolitical escalation (would shift toward Fragmentation). Major physical-loss event or carbon-policy crisis (would shift toward Disorderly Climate Crystallisation). Persistent enterprise-AI adoption lag despite continued investment (would shift toward AI Productivity Lag).
 
-## Implications for IPL, CSL, WBC (brief)
+## Implications for DNL, CSL, WBC (brief)
 
-**IPL** — mining capex cycle healthy; commodity demand robust; energy-input costs normalised; long-term gas contracts still helpful but less critical; AI helps mining-customer productivity; modest demand growth on top of cycle. Upside vs Muddle Through is moderate.
+**DNL** — mining capex cycle healthy; commodity demand robust; energy-input costs normalised; long-term gas contracts still helpful but less critical; AI helps mining-customer productivity; modest demand growth on top of cycle. Upside vs Muddle Through is moderate.
 
 **CSL** — strongest upside of the three. Healthcare spend healthy; pipeline-NPV multiples expand as growth-stock premium returns; AI accelerates drug-discovery economics; labour-cost containment continues; multiple-expansion compounds with productivity-driven earnings growth. The scenario where CSL re-rates upward materially.
 

@@ -1,10 +1,11 @@
 # VCC Valuations — Scenario-Based Equity Valuation Module
 ## Architecture & Design Specification
 
-**Version:** 0.2
-**Date:** 21 April 2026 (drafted); 7 May 2026 (Ben's-bot review + Group 1 changes; editorial sweep; v0.1 freeze); 17 May 2026 (v0.2: archetype-granularity principle added at §7.1.1).
-**Status:** v0.2. Section-by-section review with Tara complete; Ben's-bot platform-side review (5 May 2026) incorporated; archetype-granularity principle added 17 May 2026. Subsequent material changes will bump version with a migration note.
-**Migration from v0.1 → v0.2:** Additive change only. New §7.1.1 "Defining archetype granularity" added; no schema changes; no breaking changes to existing content. Existing v0.1 archetype YAMLs remain valid.
+**Version:** 0.2.1
+**Date:** 21 April 2026 (drafted); 7 May 2026 (Ben's-bot review + Group 1 changes; editorial sweep; v0.1 freeze); 17 May 2026 (v0.2: archetype-granularity principle added at §7.1.1); 22 May 2026 (v0.2.1: IPL → DNL rename editorial sweep).
+**Status:** v0.2.1. Section-by-section review with Tara complete; Ben's-bot platform-side review (5 May 2026) incorporated; archetype-granularity principle added 17 May 2026; test-company name change IPL → DNL swept through the spec 22 May 2026. Subsequent material changes will bump version with a migration note.
+**Migration from v0.1 → v0.2:** Additive change only. New §7.1.1 "Defining archetype granularity" added.
+**Migration from v0.2 → v0.2.1:** Editorial only. Test-company references updated from "IPL" / "Incitec Pivot Limited" to "DNL" / "Dyno Nobel Limited" following the company's March 2025 rename after demerger of the fertilisers business. Ticker now ASX:DNL (was ASX:IPL); ISIN AU0000390544. The "DNL, formerly IPL" historical pointer is retained in §2 item 4. No schema or analytical content changes. Existing v0.1 / v0.2 schemas remain valid.
 **Scope of this phase:** Layers 1–6 (the "assumptions engine"). Layers 7 (DCF) and 8 (interface) are described at a high level only and deferred to later phases.
 **Review convention:** Open issues raised during section-by-section review are captured as an `X.N Review items` subsection at the end of the relevant section. Search the document for "Review items" to surface all open issues in one pass. Items in these subsections are candidates for cross-review with Ben's data-sourcing workstream.
 
@@ -31,11 +32,11 @@ The target user base is intentionally left undetermined at this stage. Internal 
 
 1. **Technology stack.** Python engine (pandas, numpy, pydantic) exposing a JSON API. The user interface is **embedded in the existing VCC dashboard** — the engine returns rich structured `AssumptionSet` JSON, the dashboard's existing module loader (`v2.html` shell + `static/js/v2/` modules) renders it as a Valuations tab on each per-company VCC. This avoids building a second frontend, gives single UX / single auth / single ops surface, and aligns with the platform principle "server returns rich structured output; UI is one renderer, agent is another." (Earlier draft locked FastAPI + Vue as a standalone module; that decision was revisited following platform-side review and the VCC-dashboard-embed approach adopted instead.)
 2. **Scenario count.** Three to six named, qualitatively distinct scenarios. Scenarios must differ on *multiple dimensions* — not simply severity dials on a single axis. Exact count within the 3–6 range to emerge from the scenarios workshop.
-3. **Scenario-to-driver linkage.** Explicit impact matrix of the form `scenario × industry archetype × driver → directional impact and magnitude bucket`, with company-level analyst overrides permitted and documented with reason codes. Two structural nuances are recognised: (a) a company may span multiple industry archetypes, in which case each business segment references its own archetype matrix and contributes a weighted share to the company-level assumption set; and (b) an industry archetype may have few peers in practice (e.g., specialty plasma therapeutics, where CSL is effectively the dominant player), in which case the archetype matrix may closely track the subject company. The layer structure is retained in the thin-archetype case because writing down the industry-reference view remains analytically useful and preserves the override mechanism for future peers. (IPL formerly spanned two distinct archetypes — industrial explosives and nitrogen fertilisers — and was the original illustrative case for multi-segment treatment. Following the demerger of the fertilisers business, IPL trades as a single-segment industrial-explosives company. The multi-segment treatment in the schema remains relevant for CSL and any future test company spanning multiple archetypes; the corporate-action overlay (§8) handles the demerger / acquisition / divestment case generally.)
-4. **Test companies.** Incitec Pivot Limited (IPL), CSL Limited (CSL), Westpac Banking Corporation (WBC). All ASX-listed, spanning three genuinely different archetypes: industrial chemicals / mid-stream commodity exposure; defensive global healthcare; regulated domestic financial.
+3. **Scenario-to-driver linkage.** Explicit impact matrix of the form `scenario × industry archetype × driver → directional impact and magnitude bucket`, with company-level analyst overrides permitted and documented with reason codes. Two structural nuances are recognised: (a) a company may span multiple industry archetypes, in which case each business segment references its own archetype matrix and contributes a weighted share to the company-level assumption set; and (b) an industry archetype may have few peers in practice (e.g., specialty plasma therapeutics, where CSL is effectively the dominant player), in which case the archetype matrix may closely track the subject company. The layer structure is retained in the thin-archetype case because writing down the industry-reference view remains analytically useful and preserves the override mechanism for future peers. (DNL formerly spanned two distinct archetypes — industrial explosives and nitrogen fertilisers — and was the original illustrative case for multi-segment treatment. Following the demerger of the fertilisers business, DNL trades as a single-segment industrial-explosives company. The multi-segment treatment in the schema remains relevant for CSL and any future test company spanning multiple archetypes; the corporate-action overlay (§8) handles the demerger / acquisition / divestment case generally.)
+4. **Test companies.** Dyno Nobel Limited (DNL, formerly IPL), CSL Limited (CSL), Westpac Banking Corporation (WBC). All ASX-listed, spanning three genuinely different archetypes: industrial chemicals / mid-stream commodity exposure; defensive global healthcare; regulated domestic financial.
 5. **Forecast horizon.** Parametric per company-scenario combination. Schema supports both 5 explicit years + terminal and 10 explicit years + terminal. Default selection deferred until scenarios are specified, on the basis that some scenarios may have multi-stage arcs that only make sense over 10 years, while others may resolve within 5.
 6. **Data as data; logic as code.** Scenarios, industries, and companies are represented as YAML (easy for domain experts to edit); linkage, translation, DCF, and UI are Python (easy for engineers to refactor).
-7. **Currency handling — functional currency basis.** Each company's valuation is conducted in its **functional currency** — the currency of the primary economic environment in which the entity operates and generates cash flows — not necessarily its reporting currency (though for most of our subjects the two will coincide). Determining the functional currency is an explicit early step in company positioning (see §8). For multi-segment companies operating in materially different economic environments, segment-level functional currencies may differ from the consolidated view (IPL is the likely test case: Dyno Nobel operates globally with predominantly USD-denominated contracts and input costs, while Fertilisers Australia is a domestic AUD operation with AUD gas inputs and AUD farmer customers). Cross-company comparisons in the interface convert to a common display currency (default AUD) at spot; FX is a scenario variable.
+7. **Currency handling — functional currency basis.** Each company's valuation is conducted in its **functional currency** — the currency of the primary economic environment in which the entity operates and generates cash flows — not necessarily its reporting currency (though for most of our subjects the two will coincide). Determining the functional currency is an explicit early step in company positioning (see §8). For multi-segment companies operating in materially different economic environments, segment-level functional currencies may differ from the consolidated view (DNL is the likely test case: Dyno Nobel operates globally with predominantly USD-denominated contracts and input costs, while Fertilisers Australia is a domestic AUD operation with AUD gas inputs and AUD farmer customers). Cross-company comparisons in the interface convert to a common display currency (default AUD) at spot; FX is a scenario variable.
 8. **Workstreams and division of labour.** The engine build documented in this specification runs in parallel to a **data-sourcing workstream** led by Ben (collaborator). Ben's workstream is responsible for sourcing, curating, and updating the underlying financial, operational, and reference data the engine consumes. The interface between the two workstreams is the set of data schemas defined in §§6–11 of this document (scenarios, industry archetypes, company positioning, driver taxonomy, driver-movement outputs, base-year company financial snapshots). The engine workstream owns the schemas and is responsible for keeping them stable, versioning them cleanly when they change, and communicating changes in advance to the data workstream. The data workstream is out of scope for this specification but its outputs must conform to these schemas.
 
 ## 3. Scope Decisions — Open
@@ -403,7 +404,7 @@ The Five Forces ratings captured in the §7.4 schema are not standalone descript
 4. **→ Disruption surfacing (§7.3).** Disruption signals are detected through the `new_entrants` and `substitutes` forces rather than carried as a separate lifecycle state. A material adverse change in either force is a disruption signal that may compress lifecycle phase length and reset return economics.
 5. **→ Company-level positioning (§8).** Five Forces is the industry-level view of competitive intensity. Company positioning (§8) is then *how the subject company sits inside that force pattern* — moat sources are answers to "what protects this company from each adverse force?", franchise assets are positive-side analogues, and competitive position (cost / differentiation) is the company's weapon for surviving rivalry.
 
-A standardised **Five Forces question bank** — used to interview each industry archetype and each company within it — is a planned deliverable. The question bank will live at `design/frameworks/five_forces_questions.md` and will hold two parallel question sets per force: an industry-level set (assess the force in this archetype) and a company-level set (assess the subject company's position vis-à-vis the force). Sub-questions within each force draw on Porter's determinants (e.g. for buyer power: concentration, switching costs, price sensitivity, backward-integration credibility, information transparency). Question bank to be developed and refined as we work through the IPL / CSL / WBC archetypes; see §7.7 review items.
+A standardised **Five Forces question bank** — used to interview each industry archetype and each company within it — is a planned deliverable. The question bank will live at `design/frameworks/five_forces_questions.md` and will hold two parallel question sets per force: an industry-level set (assess the force in this archetype) and a company-level set (assess the subject company's position vis-à-vis the force). Sub-questions within each force draw on Porter's determinants (e.g. for buyer power: concentration, switching costs, price sensitivity, backward-integration credibility, information transparency). Question bank to be developed and refined as we work through the DNL / CSL / WBC archetypes; see §7.7 review items.
 
 #### 7.5.1 Complementary frameworks for archetypes Porter does not fully serve
 
@@ -429,12 +430,12 @@ The defined-enum-vs-open-ended question is marked open-to-revisit (§7.7) and sh
 
 ### 7.6 Archetypes needed for our test companies
 
-1. **Industrial explosives & ground-support services** — IPL (post-demerger; single-segment industrial explosives). Multi-geographic (Australia, North America, rest-of-world); industry dynamics dominated by mining-customer capex cycles, technology differentiation (electronic initiation systems), and scale in manufacturing / distribution.
+1. **Industrial explosives & ground-support services** — DNL (post-demerger; single-segment industrial explosives). Multi-geographic (Australia, North America, rest-of-world); industry dynamics dominated by mining-customer capex cycles, technology differentiation (electronic initiation systems), and scale in manufacturing / distribution.
 2. **Specialty biologics — plasma-derived therapies & vaccines** — CSL. Multi-geographic (US, EU, Asia); may be further sub-divided into Behring (plasma) and Seqirus (vaccines) if their scenario sensitivities diverge materially; to be tested when we populate.
 3. **Major Australian banks — retail, business and institutional banking** — WBC. National geography. Uses `complementary_framework: payor_and_regulator` per §7.5.1.
-4. **Nitrogen fertilisers** — *kept defined* but no longer required for any v0.1 test company. IPL formerly held this segment; following the demerger, the demerged fertilisers entity is not in the v0.1 test set. Archetype retained because (i) it's a clean illustrative example for the spec, and (ii) it remains available if a fertiliser-segment company is added later.
+4. **Nitrogen fertilisers** — *kept defined* but no longer required for any v0.1 test company. DNL formerly held this segment; following the demerger, the demerged fertilisers entity is not in the v0.1 test set. Archetype retained because (i) it's a clean illustrative example for the spec, and (ii) it remains available if a fertiliser-segment company is added later.
 
-**On multi-industry companies.** IPL formerly spanned industrial explosives and nitrogen fertilisers as two distinct archetypes with genuinely different industry structures, not merely two segments of one industry. Following the demerger, IPL is single-segment. The multi-segment treatment in the schema remains the right design — CSL is a current case (Behring + Seqirus + Vifor candidate), and any future test company spanning multiple archetypes will use the same mechanism. The corporate-action overlay (§8.4) handles discrete events (demerger / acquisition / divestment) that reshape segment weights at a defined effective year.
+**On multi-industry companies.** DNL formerly spanned industrial explosives and nitrogen fertilisers as two distinct archetypes with genuinely different industry structures, not merely two segments of one industry. Following the demerger, DNL is single-segment. The multi-segment treatment in the schema remains the right design — CSL is a current case (Behring + Seqirus + Vifor candidate), and any future test company spanning multiple archetypes will use the same mechanism. The corporate-action overlay (§8.4) handles discrete events (demerger / acquisition / divestment) that reshape segment weights at a defined effective year.
 
 **On thin archetypes.** CSL's archetype (specialty plasma therapeutics) has very few peers of comparable scale and positioning. The industry-level matrix may therefore track CSL closely in practice. We retain the industry layer nonetheless for three reasons: (i) writing down the industry-reference view forces explicit articulation of "what a generic specialty-biologics firm would experience in this scenario," which is analytically useful even when only one subject consumes it; (ii) the override mechanism remains available if peers are added later; and (iii) architectural consistency across the three test companies simplifies the engine.
 
@@ -448,7 +449,7 @@ The defined-enum-vs-open-ended question is marked open-to-revisit (§7.7) and sh
 4. **`imported_input_share` rename to disambiguate.** *Resolved* in the v0.1 editorial sweep. `cost_structure.imported_input_share` renamed to `cost_structure.imported_input_share_static`; `scenario_sensitivity.trade_and_supply_chain.imported_input_share` renamed to `scenario_sensitivity.trade_and_supply_chain.imported_input_share_responsiveness`. The two fields are now lexically distinct, eliminating the data-entry ambiguity.
 5. **Submarket granularity and data availability.** Where multiple regions are captured, depth of regional analysis is constrained by what Ben's workstream can reliably source per region. Needs alignment.
 6. **Lifecycle_rationale field is narrative.** Over time we may want to standardise the way lifecycle is evidenced (e.g. require reference to a peer-group ROIC vs WACC comparison).
-7. **Five Forces question bank to be developed.** Build out `design/frameworks/five_forces_questions.md` with two parallel question sets per force (industry-level and company-level). Sub-questions per force based on Porter's determinants. Iterate as we apply it to IPL / CSL / WBC; first cut to be drafted before populating the first archetype so the analysis is structured from the start.
+7. **Five Forces question bank to be developed.** Build out `design/frameworks/five_forces_questions.md` with two parallel question sets per force (industry-level and company-level). Sub-questions per force based on Porter's determinants. Iterate as we apply it to DNL / CSL / WBC; first cut to be drafted before populating the first archetype so the analysis is structured from the start.
 8. **Default driver ranges to be calibrated against Five Forces.** When Layer 4 default ranges are populated for each archetype, cross-check that the ranges (margins, pricing power, capital intensity) are consistent with the Five Forces profile per §7.5 link 2. Inconsistency should trigger a re-examination of either the ranges or the force ratings.
 9. **Complementary framework approach (defined enum vs open-ended) — open to revisit.** §7.5.1 commits to a defined-enum approach with per-framework schemas (payor_and_regulator, network_effect, resource_lifecycle). This is the right discipline in principle but untested. After the banking archetype (WBC) is populated using `payor_and_regulator`, revisit: is the discipline paying for its cost, or is it forcing analysts into rigid fields they want to extend? If the latter, consider a hybrid (defined core + extension fields).
 10. **Payor-and-regulator framework schema.** `design/frameworks/payor_and_regulator.md` needs to be drafted before WBC is populated. Initial schema: primary_payors / regulators by name; binding capital or solvency constraint; regulatory regime details (Basel tier, deposit-insurance scheme, four-pillars or equivalent); known step-change events on the regulatory horizon.
@@ -459,7 +460,7 @@ The defined-enum-vs-open-ended question is marked open-to-revisit (§7.7) and sh
 
 ### 8.1 Purpose
 
-Captures where the subject company sits within its industry archetype(s). This is what determines whether a given industry-level impact hits the company harder, softer, or differently than the industry average. Positioning blocks are held primarily at the segment level, because companies frequently span multiple industries with different competitive dynamics (CSL's Behring / Seqirus / Vifor structure is the v0.1 example; IPL formerly held a distinct fertilisers segment which has since been demerged). Single-segment companies carry a single segment that holds the positioning. Discrete corporate events that reshape segment composition over the forecast horizon (demergers, acquisitions, divestments) are handled by the corporate-action overlay in §8.4.
+Captures where the subject company sits within its industry archetype(s). This is what determines whether a given industry-level impact hits the company harder, softer, or differently than the industry average. Positioning blocks are held primarily at the segment level, because companies frequently span multiple industries with different competitive dynamics (CSL's Behring / Seqirus / Vifor structure is the v0.1 example; DNL formerly held a distinct fertilisers segment which has since been demerged). Single-segment companies carry a single segment that holds the positioning. Discrete corporate events that reshape segment composition over the forecast horizon (demergers, acquisitions, divestments) are handled by the corporate-action overlay in §8.4.
 
 ### 8.2 Schema (draft)
 
@@ -578,7 +579,7 @@ company_position:
 
 Generic positioning blocks (cost_position, moat, balance_sheet, etc.) do not adequately describe specialist archetypes. Each industry archetype declares its own `archetype_specific` schema, populated under `segments[].archetype_specific`. The schema definitions are co-located with the corresponding Layer 2 archetype YAMLs so the structure travels with the archetype.
 
-Initial archetype-specific schemas to draft alongside the IPL / CSL / WBC archetypes:
+Initial archetype-specific schemas to draft alongside the DNL / CSL / WBC archetypes:
 
 1. **Banking** — CET1 ratio, NIM (bps), cost-to-income, NPL ratio, funding mix (deposits / wholesale share), liquidity coverage ratio, net stable funding ratio, deposit franchise stickiness, asset mix, loan-loss provisioning posture.
 2. **Mining / commodity industrials** — position on global cost curve, mine life (years), by-product credits, jurisdictional risk index, reserve replacement.
@@ -611,13 +612,13 @@ company_position:
 
 The Layer 6 translator handles the weight transition deterministically: pre-event years use the base-case segment weights from §8.2; post-event years use `post_event_weights`. The transition itself can be modelled as a step at `effective_year` or smoothed using a time profile from §11.3 (`step` for a clean cut-over, `regime_shift` for a phased separation).
 
-This mechanism handles both the historical IPL demerger case (kept as a worked illustration even though IPL itself is now post-demerger) and the generic M&A case. Treating the demerger / acquisition / divestment cases as variants of one design problem — discrete corporate events reshaping segment weights at an `effective_year` — is the substantive merge of the older §8 multi-segment-time-evolution discussion and the older §9.7 M&A overlay item.
+This mechanism handles both the historical DNL demerger case (kept as a worked illustration even though DNL itself is now post-demerger) and the generic M&A case. Treating the demerger / acquisition / divestment cases as variants of one design problem — discrete corporate events reshaping segment weights at an `effective_year` — is the substantive merge of the older §8 multi-segment-time-evolution discussion and the older §9.7 M&A overlay item.
 
 For acquisitions where the acquirer takes on a wholly new archetype (rather than expanding an existing segment), the schema also requires a new segment to be appended with its own archetype FK and positioning blocks; the corporate action declares the new segment in `post_event_weights`.
 
 ### 8.5 Deliverables
 
-1. A populated `company_position.yaml` for IPL, CSL, and WBC.
+1. A populated `company_position.yaml` for DNL, CSL, and WBC.
 2. For each segment, cross-reference to the applicable industry archetype.
 3. Reasoning notes captured in-line (YAML comments or `evidence` fields) so positioning is defensible and auditable.
 4. Historical financials kept in a separate `financials.yaml` per company, not in this layer.
@@ -625,12 +626,12 @@ For acquisitions where the acquirer takes on a wholly new archetype (rather than
 
 ### 8.6 Review items
 
-1. Archetype-specific schemas for banking, mining, fertilisers, and plasma therapeutics need to be drafted as part of populating the IPL / CSL / WBC archetypes.
+1. Archetype-specific schemas for banking, mining, fertilisers, and plasma therapeutics need to be drafted as part of populating the DNL / CSL / WBC archetypes.
 2. CSL Vifor: confirm whether reported as a separate operating segment in CSL disclosures. Default treatment is a separate segment within CSL.
 3. Innovation-position requirement should be tagged at the industry-archetype level (Layer 2), so the engine can flag missing pipeline data for innovation-driven archetypes.
 4. Need to confirm whether `risk_exposures.fx` belongs at parent level (consolidated FX exposure) or per segment, or both. Currently omitted pending decision.
-5. IPL post-demerger segment structure to be confirmed by Ben's data-sourcing workstream when populating `data/companies/ipl.yaml`. Default working assumption is single-segment industrial explosives; this should be verified against IPL's most recent segment disclosures (residual stakes, pending divestments, ongoing inter-company arrangements with the demerged entity).
-6. Corporate-action overlay (§8.4) needs a worked example once the first event is encountered (e.g. a CSL acquisition or, as illustration, IPL's historical demerger encoded retrospectively).
+5. DNL post-demerger segment structure to be confirmed by Ben's data-sourcing workstream when populating `data/companies/ipl.yaml`. Default working assumption is single-segment industrial explosives; this should be verified against DNL's most recent segment disclosures (residual stakes, pending divestments, ongoing inter-company arrangements with the demerged entity).
+6. Corporate-action overlay (§8.4) needs a worked example once the first event is encountered (e.g. a CSL acquisition or, as illustration, DNL's historical demerger encoded retrospectively).
 
 ---
 
@@ -897,7 +898,7 @@ overrides:
                                               # | diversification | franchise_asset
                                               # | data_workstream | other
     reason: >
-      IPL's long-term gas supply contracts (signed 2024) insulate its cost
+      DNL's long-term gas supply contracts (signed 2024) insulate its cost
       base through 2031, allowing it to capture pricing upside that
       merchant-gas competitors cannot.
     evidence_refs:
@@ -1007,9 +1008,9 @@ Driver interactions of the cross-driver-coherence kind (e.g. directional consist
 
 1. **Default direction-magnitude → numeric-band mapping per driver.** Lives in Layer 4 (driver schema). Needs to be populated per archetype as part of populating the driver catalogue. Without this mapping the hybrid encoding cannot translate to numbers in Layer 6.
 2. **Validator implementation.** Consistency rules in §10.6 must be implemented as engine validation, not only stated. Includes: derived-driver write-protection, scenario-sensitivity consistency, defended-exception criteria check, freshness warning, sign-flip evidence count, and the override-density threshold from §10.4. Build alongside Layer 5 code.
-3. **Reason category enum stability.** Initial enum is `cost_advantage | scale | regulation | contract | management | product_mix | diversification | franchise_asset | data_workstream | other`. To be revisited after first pass populating IPL / CSL / WBC overrides; new categories added if patterns demand.
+3. **Reason category enum stability.** Initial enum is `cost_advantage | scale | regulation | contract | management | product_mix | diversification | franchise_asset | data_workstream | other`. To be revisited after first pass populating DNL / CSL / WBC overrides; new categories added if patterns demand.
 4. **Governance roles.** `created_by` = analyst writing the override; `approved_by` = named peer reviewer (one named human, not a committee, until volume requires otherwise). The audit-trail value comes from named humans more than formal governance structure.
-5. **Beyond-scale override convention** (`beyond_scale: true` plus quantified band) needs a worked example once we hit a real case in populating IPL / CSL / WBC.
+5. **Beyond-scale override convention** (`beyond_scale: true` plus quantified band) needs a worked example once we hit a real case in populating DNL / CSL / WBC.
 6. **High-importance driver completeness check.** Convention is sparse, but a validator should warn when a driver flagged "high importance" for an archetype has no matrix entry under any scenario. Mechanism for flagging "high importance" to be defined alongside the driver catalogue.
 7. **Override density threshold per archetype.** §10.4 sets a default threshold of ≤20% of cells overridden per company. Threshold should be archetype-tunable — thin-archetype cases (CSL) may legitimately sit higher. Calibrate after first pass populating.
 8. **Half-life staleness propagation logic.** When a scenario YAML bumps version, the engine should mark every override referencing the old `scenario_version_at_creation` with `requires_re_review: true`, on the basis that the override's rationale was scenario-version-specific. The override itself is preserved (not deleted); reviewer chooses whether to refresh, replace, or retire it at the next 6-month cycle.
@@ -1118,7 +1119,7 @@ assumption_set:
   consolidated_assumptions:                   # archetype-tagged
     valuation_model: fcf | ddm | residual_income
 
-    # if FCF model (e.g. IPL, CSL):
+    # if FCF model (e.g. DNL, CSL):
     consolidated_assumptions_fcf:
       assumptions:
         {driver_id}:                          # WACC components, terminal-state,
@@ -1157,7 +1158,7 @@ assumption_set:
 
 ### 11.6 Why the reasoning trace matters
 
-The `reasoning_trace` is what makes the module different from "pick a number and multiply." Every numerical assumption can be traced back through: numerical value → consistency rule (if any) → translation rule + base value → driver movement → override (if any) → industry-level impact → scenario narrative. If any reviewer (or Tara's strategist friend on the IPL benchmark, or a client) asks "why is year-3 EBIT margin 14.5% under Scenario 3 but 17.2% under Scenario 1?", the module answers with the chain of reasoning, not just the answer. The trace spans Layers 5 and 6 — Layer 5 contributes the qualitative chain; Layer 6 adds the translation rule, the consistency reconciliation, and the final number.
+The `reasoning_trace` is what makes the module different from "pick a number and multiply." Every numerical assumption can be traced back through: numerical value → consistency rule (if any) → translation rule + base value → driver movement → override (if any) → industry-level impact → scenario narrative. If any reviewer (or Tara's strategist friend on the DNL benchmark, or a client) asks "why is year-3 EBIT margin 14.5% under Scenario 3 but 17.2% under Scenario 1?", the module answers with the chain of reasoning, not just the answer. The trace spans Layers 5 and 6 — Layer 5 contributes the qualitative chain; Layer 6 adds the translation rule, the consistency reconciliation, and the final number.
 
 ### 11.7 Review items
 
@@ -1176,7 +1177,7 @@ The `reasoning_trace` is what makes the module different from "pick a number and
 
 ## 12. Layer 7 — DCF Engine *(deferred, brief)*
 
-Consumes an `AssumptionSet` object, returns enterprise value, equity value, and per-share value plus sensitivity tables. Distinct implementations required: traditional unlevered FCF DCF for IPL and CSL; residual income / DDM for WBC and any other archetype tagged `valuation_model: ddm | residual_income`. To be specified in a separate document once Layers 1–6 are built and a Phase 3.5 smoke-test (§14) has run end-to-end through one IPL × one scenario.
+Consumes an `AssumptionSet` object, returns enterprise value, equity value, and per-share value plus sensitivity tables. Distinct implementations required: traditional unlevered FCF DCF for DNL and CSL; residual income / DDM for WBC and any other archetype tagged `valuation_model: ddm | residual_income`. To be specified in a separate document once Layers 1–6 are built and a Phase 3.5 smoke-test (§14) has run end-to-end through one DNL × one scenario.
 
 **Relationship to `vcc-pricing-engine`.** The platform's separate `vcc-pricing-engine` (NoCodeQL containerised; bond / swap / curve pricing via QuantLib) handles current valuations of structured products. This valuations module handles forward-looking equity DCFs under scenarios. Two complementary services on the platform: pricing is point-in-time, mark-to-market structured-product valuation; valuations is scenario-conditional forward equity valuation. They share the **scenario library at the macro layer** — interest-rate / FX / commodity scenarios feed both — which is part of the case in §5.1 item 8 for hosting the scenario library platform-side rather than valuation-internal.
 
@@ -1188,7 +1189,7 @@ Consumes an `AssumptionSet` object, returns enterprise value, equity value, and 
 
 ## 13. Layer 8 — Interactive Interface *(deferred, brief)*
 
-Per §2.1, the user interface is **embedded in the existing VCC dashboard**, not built as a separate frontend. The valuation module exposes a JSON API; the dashboard's existing module loader (`v2.html` shell + `static/js/v2/` modules) renders the API output as a **Valuations tab on each per-company VCC** (CSL VCC, IPL VCC, WBC VCC). Single UX, single auth, single ops surface; the Vue frontend originally sketched here is no longer being built.
+Per §2.1, the user interface is **embedded in the existing VCC dashboard**, not built as a separate frontend. The valuation module exposes a JSON API; the dashboard's existing module loader (`v2.html` shell + `static/js/v2/` modules) renders the API output as a **Valuations tab on each per-company VCC** (CSL VCC, DNL VCC, WBC VCC). Single UX, single auth, single ops surface; the Vue frontend originally sketched here is no longer being built.
 
 **Per-company tab capabilities:**
 
@@ -1215,9 +1216,9 @@ Per §2.1, the user interface is **embedded in the existing VCC dashboard**, not
 1. **Phase 0 — Design (now).** This document + scenarios workshop. No engine code yet.
 2. **Phase 1 — Schema & data layer.** Formalise YAML schemas; populate industry archetypes, company positions, and one or two scenarios as worked examples. Draft the Five Forces question bank (§7.7 item 7) and the `payor_and_regulator` framework schema (§7.7 item 10) before the relevant archetypes are populated.
 3. **Phase 2 — Impact matrix population.** Populate the matrix across all scenarios × all three industries. Document reasoning. This is the intellectually heavy phase. See §14.1 below for population approach (starter templates, minimum-viable matrix, time budget).
-4. **Phase 3 — Assumption translator.** Code the translator that turns driver movements + base-year snapshot into `AssumptionSet` objects. First end-to-end run: IPL × base case.
-5. **Phase 3.5 — Smoke-test DCF.** Insert a minimal end-to-end run before Phase 4 expands across all scenarios. Even a 50-line traditional FCF DCF and a 50-line two-stage DDM. Run one IPL × one scenario through the full pipeline (Layers 1–7) before populating across all scenarios. Cheap insurance against schema rework — surfaces any assumption-set shape problems while the schema is still cheap to revise. Likely findings: terminal-state convergence forcing inexpressible reinvestment rates; FCF cycles requiring debt-financing assumptions Layer 6 hadn't generated; banking residual-income shape revealing a missing bank-specific driver. A few days of work; saves weeks if the cascade has to be re-run.
-6. **Phase 4 — Expand and calibrate.** Run all three companies across all scenarios. Compare IPL outputs to the strategist-friend benchmark per §15. Iterate on matrix and overrides. This is also where the trace-comparison tooling for the strategist benchmark gets built (§15).
+4. **Phase 3 — Assumption translator.** Code the translator that turns driver movements + base-year snapshot into `AssumptionSet` objects. First end-to-end run: DNL × base case.
+5. **Phase 3.5 — Smoke-test DCF.** Insert a minimal end-to-end run before Phase 4 expands across all scenarios. Even a 50-line traditional FCF DCF and a 50-line two-stage DDM. Run one DNL × one scenario through the full pipeline (Layers 1–7) before populating across all scenarios. Cheap insurance against schema rework — surfaces any assumption-set shape problems while the schema is still cheap to revise. Likely findings: terminal-state convergence forcing inexpressible reinvestment rates; FCF cycles requiring debt-financing assumptions Layer 6 hadn't generated; banking residual-income shape revealing a missing bank-specific driver. A few days of work; saves weeks if the cascade has to be re-run.
+6. **Phase 4 — Expand and calibrate.** Run all three companies across all scenarios. Compare DNL outputs to the strategist-friend benchmark per §15. Iterate on matrix and overrides. This is also where the trace-comparison tooling for the strategist benchmark gets built (§15).
 7. **Phase 5 — DCF engine.** Productionise the traditional FCF DCF and the bank DDM / residual-income engine; replace the Phase 3.5 smoke-test stubs with full implementations.
 8. **Phase 6 — Interface integration.** Embed valuation output as a Valuations tab in the existing VCC dashboard per §13. Build CLI commands (§14.2). No standalone frontend.
 
@@ -1229,7 +1230,7 @@ Populating the impact matrix is the intellectually heaviest part of the work and
 2. **Minimum-viable matrix per archetype.** Identify 5–10 *load-bearing* drivers per scenario per archetype — the ones that materially drive the headline assumption (revenue growth, EBIT margin, capex intensity, terminal margin for FCF; NIM, loan growth, credit-loss charge for banks). Populate these first. The long tail of drivers (asset turnover, working capital days, country premium, etc.) is populated only if the headline doesn't tell the full story or the strategist-friend comparison surfaces a gap.
 3. **Five Forces question bank as the structuring tool.** The §7.7 question bank should be drafted in Phase 1 and applied as the analyst works through each archetype, so the analysis is structured rather than ad-hoc.
 4. **Override discipline target.** Per §10.4, override density should sit ≤20% of cells per company. If population starts heading higher, pause and revisit the archetype.
-5. **Analyst time budget — provisional 3 weeks per archetype-company pair.** Working anchor for planning purposes only. Acknowledged drivers of variation: archetype novelty (banking and other non-Porter archetypes likely sit higher; subsequent applications of an established pattern compress); data-source maturity for the archetype; segment count (multi-segment companies take longer); calibration loops with the strategist friend (IPL specifically). Budget to be **calibrated against actuals** as IPL / CSL / WBC are populated; first revisit after IPL completes. Marked open-to-revisit (§14.3).
+5. **Analyst time budget — provisional 3 weeks per archetype-company pair.** Working anchor for planning purposes only. Acknowledged drivers of variation: archetype novelty (banking and other non-Porter archetypes likely sit higher; subsequent applications of an established pattern compress); data-source maturity for the archetype; segment count (multi-segment companies take longer); calibration loops with the strategist friend (DNL specifically). Budget to be **calibrated against actuals** as DNL / CSL / WBC are populated; first revisit after DNL completes. Marked open-to-revisit (§14.3).
 
 ### 14.2 Tooling for analyst workflow (Phase 4 onward)
 
@@ -1241,7 +1242,7 @@ Add to the existing platform `vcc` CLI:
 
 ### 14.3 Review items
 
-1. **Analyst time budget per archetype-company pair — open to revisit.** Initial planning anchor of 3 weeks per pair is provisional. Calibrate against actuals; first revisit after IPL completes. Track actuals broken into research / schema population / override population / calibration / review so the empirical anchor is granular enough to be useful. Reported in Phase 4 retrospective.
+1. **Analyst time budget per archetype-company pair — open to revisit.** Initial planning anchor of 3 weeks per pair is provisional. Calibrate against actuals; first revisit after DNL completes. Track actuals broken into research / schema population / override population / calibration / review so the empirical anchor is granular enough to be useful. Reported in Phase 4 retrospective.
 2. **Phase 3.5 smoke-test scope.** What counts as "good enough" for the smoke-test FCF and DDM stubs needs nailing down so the work is bounded. Proposed minimum: explicit-period free cash flow projection through the parametric horizon; Gordon-growth terminal; nominal WACC discounting; no fancy mid-period or stub-period adjustments. Same shape applies to a two-stage DDM for the bank.
 3. **Starter-template authoring** — who drafts the pre-populated expected cells, and against what reference set. Likely: Tara drafts initial set as part of the scenarios workshop output; Ben's data workstream confirms data feasibility.
 
@@ -1251,7 +1252,7 @@ Add to the existing platform `vcc` CLI:
 
 ### 15.1 Calibration angles
 
-1. **External benchmark — strategist-friend on IPL.** IPL has an independent scenario-valuation exercise already completed by a strategist friend. Treat this as the most important single calibration input — not because the strategist is necessarily right, but because divergence between framework output and strategist output **is the diagnostic**:
+1. **External benchmark — strategist-friend on DNL.** DNL has an independent scenario-valuation exercise already completed by a strategist friend. Treat this as the most important single calibration input — not because the strategist is necessarily right, but because divergence between framework output and strategist output **is the diagnostic**:
    (a) If both agree on conclusion but for different reasons → framework and strategist intuition are converging, good signal.
    (b) If both agree on conclusion for the same reasons → unsurprising, weak signal.
    (c) If both disagree on conclusion → the reasoning trace localises *where* the disagreement sits (positioning vs scenario impact vs translation), which is more valuable than either being individually right.
@@ -1263,13 +1264,13 @@ Add to the existing platform `vcc` CLI:
 
 The structure of three angles is settled; the techniques inside each are:
 
-1. **Historical scenario backtest.** Take a real past scenario shock (GFC 2008–09; COVID 2020; post-2022 inflation). Apply the framework retroactively: encode IPL's 2007 positioning, run the framework's "GFC scenario" against the 2008 base year, generate the framework's predicted margin / capex path, compare to what actually happened. If the framework systematically under- or over-estimates the magnitude of the shock, the translation rules are mis-calibrated. Cheap diagnostic for the bps mappings in `data/translation_rules/` because we know the answer.
+1. **Historical scenario backtest.** Take a real past scenario shock (GFC 2008–09; COVID 2020; post-2022 inflation). Apply the framework retroactively: encode DNL's 2007 positioning, run the framework's "GFC scenario" against the 2008 base year, generate the framework's predicted margin / capex path, compare to what actually happened. If the framework systematically under- or over-estimates the magnitude of the shock, the translation rules are mis-calibrated. Cheap diagnostic for the bps mappings in `data/translation_rules/` because we know the answer.
 2. **Framework-internal sensitivity analysis.** Decompose total variance in the headline output across the layers: how much is driven by scenario macro variables (Layer 1), industry archetype attributes (Layer 2), company positioning (Layer 3), driver default ranges (Layer 4), impact matrix entries (Layer 5), translation rules (Layer 6)? Whichever layer dominates is the load-bearing beam, and deserves disproportionate scrutiny. A common finding in scenario-DCF frameworks: translation rules end up dominating; if so, those bps mappings are not just plumbing — they're the framework's load-bearing beam.
 3. **Terminal-share reasonableness check.** Terminal value share of total EV is a known place where DCFs go wrong (terminal often 60–90% of EV, so terminal assumption changes dominate). Validator (also referenced in §11.4.2 rule 4): if terminal contributes >70% of EV under any scenario, force a sensitivity pass on terminal assumptions and require explicit defence in the reasoning trace.
 
 ### 15.3 Review items
 
-1. **Backtest design.** Which historical episodes, which scenario mappings, which companies (IPL is the obvious candidate; CSL through COVID is potentially informative; banks through GFC). To be planned alongside Phase 4.
+1. **Backtest design.** Which historical episodes, which scenario mappings, which companies (DNL is the obvious candidate; CSL through COVID is potentially informative; banks through GFC). To be planned alongside Phase 4.
 2. **Sensitivity-analysis methodology.** Per-layer variance decomposition needs a defined methodology — either Sobol indices (rigorous but expensive) or one-factor-at-a-time perturbation (cheaper, less precise). Decision deferred to Phase 4 implementation.
 
 ---
@@ -1310,8 +1311,4 @@ Alongside the structured engine outputs (YAML, JSON, computed numbers), every ke
 
 ## 17. Immediate Next Steps
 
-1. Mark up this document — anything to add, remove, or challenge.
-2. Scenarios workshop — develop 4–5 named scenario themes with narrative and macro-variable outlines.
-3. First industry archetype — populate `fertilisers_explosives.yaml` as the pilot; test that the schema holds up under real content before populating the other two.
-4. First company positioning — populate `ipl.yaml` as the pilot; same logic.
-5. Decide horizon default once scenario arcs are visible.
+1

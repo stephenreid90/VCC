@@ -47,9 +47,9 @@ The trigger is most likely Middle East escalation deepening through the year —
 
 Energy-price spike fading without second-round transmission (would shift toward Muddle Through). Credible central-bank action re-anchoring inflation expectations (would shift toward Muddle Through or Orderly Convergence). Recession deeper than expected with rapid disinflation (would shift toward a deflationary case not in the current set).
 
-## Implications for IPL, CSL, WBC (brief)
+## Implications for DNL, CSL, WBC (brief)
 
-**IPL** — margin-compression case. Input costs rise sharply (ammonia, gas, transport); supplier-side pricing power is moderate so pass-through is incomplete; mining-customer capex slows under credit-tightening; long-term gas contracts soften but don't eliminate the cost-shock. Net: negative EBIT margin trajectory, modestly negative on revenue, materially negative on multiples.
+**DNL** — margin-compression case. Input costs rise sharply (ammonia, gas, transport); supplier-side pricing power is moderate so pass-through is incomplete; mining-customer capex slows under credit-tightening; long-term gas contracts soften but don't eliminate the cost-shock. Net: negative EBIT margin trajectory, modestly negative on revenue, materially negative on multiples.
 
 **CSL** — mixed-to-negative. Healthcare spend nominal-stable but real-terms compressed; plasma-collection labour costs rise sharply; pipeline-NPV multiples compress as real rates rise and growth-stock premium evaporates. Earnings hold up but multiples compress materially.
 

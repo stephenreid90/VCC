@@ -49,9 +49,9 @@ Triggers are likely incremental rather than singular: a sequence of sanctions pa
 
 Major diplomatic breakthroughs (US-China summit yielding substantive trade framework, Russia-Ukraine settlement, Iran nuclear deal revival) would weaken the bloc-formation logic. Sustained globalisation gains in lower-sensitivity categories would suggest barrier-stability rather than ratcheting.
 
-## Implications for IPL, CSL, WBC (brief)
+## Implications for DNL, CSL, WBC (brief)
 
-**IPL** — most-exposed of our three. Industrial explosives traded globally; ammonia and gas inputs traded globally; supply-chain regionalisation forces duplicated production or accepts disruption. Strategic-mineral mining (Australia's bloc-strategic minerals) might lift volumes long-run, but disruption in the transition is sharp. Margin compression from supply-chain duplication costs. Net: materially negative for cyclical IPL.
+**DNL** — most-exposed of our three. Industrial explosives traded globally; ammonia and gas inputs traded globally; supply-chain regionalisation forces duplicated production or accepts disruption. Strategic-mineral mining (Australia's bloc-strategic minerals) might lift volumes long-run, but disruption in the transition is sharp. Margin compression from supply-chain duplication costs. Net: materially negative for cyclical DNL.
 
 **CSL** — moderately exposed. Plasma collection is geographic (US dominant); fractionation / manufacturing has some geographic flex. Strategic-biotech designations may constrain cross-bloc movement of plasma products. China's market for CSL products contracts under fragmentation. Net: modest revenue headwind; multiples compress as the global-quality-growth thesis erodes.
 

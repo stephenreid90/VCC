@@ -47,9 +47,9 @@ The path from here is the default — no single trigger event required. The cond
 
 Sustained inflation re-anchoring at target with credible central-bank declaration would shift toward Orderly Convergence. Inflation-expectations break above 3% with second-round wage dynamics would shift toward Stagflation Persists. A trigger event in energy, financial markets, climate, or geopolitics that forces regime change in one of those dimensions would shift toward one of the boundary scenarios.
 
-## Implications for IPL, CSL, WBC (brief)
+## Implications for DNL, CSL, WBC (brief)
 
-**IPL** — mining capex cycle continues; long-term gas contracts protect input costs; modest demand growth; mining customers absorb climate-policy costs gradually. Mid-case for IPL.
+**DNL** — mining capex cycle continues; long-term gas contracts protect input costs; modest demand growth; mining customers absorb climate-policy costs gradually. Mid-case for DNL.
 
 **CSL** — healthcare spend stays steady; plasma supply chain unstressed; pipeline-NPV multiples don't expand but hold; labour-cost containment from AI partly offsets Australian operations cost pressure. Mid-case for CSL.
 

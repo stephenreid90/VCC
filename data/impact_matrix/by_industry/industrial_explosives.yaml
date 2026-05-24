@@ -11,7 +11,7 @@
 # Scope: archetype-applicable segment-scope drivers + company-scope drivers
 # whose movements are consistent across companies in the archetype.
 # Company-specific overrides live in the company file's
-# scenario_sensitivity_overrides_global block (e.g. IPL's high operational
+# scenario_sensitivity_overrides_global block (e.g. DNL's high operational
 # carbon exposure under climate scenarios).
 
 industry: industrial_explosives
@@ -219,7 +219,7 @@ matrix:
           price spike of 40-60% above baseline. Supplier power moderate
           (per §7.4 archetype) blocks full pass-through to mining customers
           under sustained input inflation — Ben's-bot worked example.
-          IPL's long-term gas contracts partly insulate ~70% of US gas
+          DNL's long-term gas contracts partly insulate ~70% of US gas
           exposure through 2028 but ammonia spot exposure and Australian
           gas costs compress margins materially. Critical to the scenario's
           impact on industrial explosives profitability.
@@ -441,7 +441,7 @@ matrix:
         rationale: >
           Geopolitical risk premium rises materially. Multinationals with
           cross-bloc operations re-rated lower; industrial explosives sits
-          in this category given IPL's US-Australia footprint and global
+          in this category given DNL's US-Australia footprint and global
           input dependencies.
         not_applicable: false
         evidence_refs: []
@@ -492,7 +492,7 @@ matrix:
           (negative); metallurgical coal continues; transition-mineral
           mining (lithium, copper, nickel) accelerates (positive). Net
           modestly negative for aggregate volumes initially given coal-
-          mining customer mix (~35% of IPL customer mix); recovers as
+          mining customer mix (~35% of DNL customer mix); recovers as
           transition-mineral demand compounds.
         not_applicable: false
         evidence_refs: []
@@ -521,7 +521,7 @@ matrix:
         confidence: high
         rationale: >
           Carbon-cost pass-through to ammonia production materially affects
-          industrial explosives manufacturing margin. IPL is more exposed
+          industrial explosives manufacturing margin. DNL is more exposed
           than archetype average due to ammonia self-supply (~55% of
           internal use) — captured in company-level override
           (scenario_sensitivity_overrides_global.energy_transition).

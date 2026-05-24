@@ -52,7 +52,7 @@ industry_archetype:
         dominant input. Ammonia market is regionalised; gas pricing
         is regionalised (US Henry Hub very different from Australian
         domestic gas). For producers with long-term gas contracts
-        (IPL Dyno-historical) supplier power is contained; for spot-
+        (DNL Dyno-historical) supplier power is contained; for spot-
         gas-exposed competitors it is significant. Labour is a moderate
         supplier group (skilled but not specialist; unionised in some
         jurisdictions).
@@ -84,7 +84,7 @@ industry_archetype:
       rating: high
       rationale: >
         Concentrated oligopoly globally with regional variation. Top 3
-        (Orica, IPL Dyno Nobel, MAXAM) account for roughly 65% of
+        (Orica, DNL Dyno Nobel, MAXAM) account for roughly 65% of
         global market; EPC Groupe is a meaningful Tier 1 fourth player.
         Tier 2 regional / international players include Austin Powder
         (US), AECI Mining Chemicals (South Africa), Solar Industries
@@ -92,7 +92,7 @@ industry_archetype:
         (via mining services arm). Country-specific markets (China,
         Russia) are effectively closed to Western majors and dominated
         by domestic players. Australia specifically is a duopoly
-        (Orica + IPL Dyno Nobel). Capacity is lumpy (plants are large);
+        (Orica + DNL Dyno Nobel). Capacity is lumpy (plants are large);
         contracts are long-term; loss of a major customer is hard to
         win back. Bulk ANFO competition runs on price; technology
         products run on differentiation. Net: high overall, with price
@@ -170,7 +170,7 @@ industry_archetype:
       severity: moderate
       certainty: moderate
       description: >
-        Electronic detonators (e.g. IPL's DigiShot, Orica's WebGen)
+        Electronic detonators (e.g. DNL's DigiShot, Orica's WebGen)
         progressively displace shock-tube and cap-and-fuse systems.
         Higher margin, technology-differentiated. Incumbents are well
         positioned; new entrants face high integration barriers.
@@ -185,7 +185,7 @@ industry_archetype:
         Machine-learning-based blast design and fragmentation optimisation
         improves mining-customer productivity. Service offering shift
         from product-only to product + outcome-based. Both Orica and
-        IPL Dyno have credible programs; smaller players exposed.
+        DNL Dyno have credible programs; smaller players exposed.
 
     - vector: thermal_coal_demand_decline
       nature: threat

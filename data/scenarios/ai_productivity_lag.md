@@ -57,9 +57,9 @@ No trigger event required — this scenario is the default if the bull case for 
 
 Sustained enterprise-AI adoption broadening with productivity flow-through to aggregate TFP (would shift toward Orderly Convergence). AI capex collapse or financial-market unwind (would shift toward a different scenario closer to original "Tech-Investment Unwind" framing, not in current set — could become a stress-test variant). Major acute non-AI shock (would shift toward Stagflation Persists, Fragmentation, or Disorderly Climate Crystallisation depending on the shock).
 
-## Implications for IPL, CSL, WBC (brief)
+## Implications for DNL, CSL, WBC (brief)
 
-**IPL** — pays for AI tools but doesn't extract much rent; mining-customer productivity gains slow; modest labour-cost containment in own operations. Net: small headwind on demand-side, small margin-helper from labour costs. Roughly neutral.
+**DNL** — pays for AI tools but doesn't extract much rent; mining-customer productivity gains slow; modest labour-cost containment in own operations. Net: small headwind on demand-side, small margin-helper from labour costs. Roughly neutral.
 
 **CSL** — high-skill labour-intensive; meaningful labour-cost containment via AI augmentation; AI-assisted drug discovery is one of the higher-return areas for AI rent extraction, so CSL is better-positioned than the typical enterprise. Pipeline-NPV multiples don't expand as fast as bull case but the labour-cost story is supportive. Net: small positive on costs, mid-case on multiples, neutral-to-slightly-positive overall.
 

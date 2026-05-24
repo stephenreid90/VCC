@@ -53,9 +53,9 @@ Trigger is most likely a confluence rather than a single event. Plausible cataly
 
 Continued drift without crystallisation (would shift toward Muddle Through). Major political reset enabling orderly transition (would shift toward Orderly Convergence). Climate-policy backsliding under macro crisis (would shift toward Stagflation's climate-stagnant posture).
 
-## Implications for IPL, CSL, WBC (brief)
+## Implications for DNL, CSL, WBC (brief)
 
-**IPL** — significant transition exposure. Mining-customer base includes substantial fossil-fuel mining (thermal coal, oil-sands services); transition-mineral mining (lithium, copper, nickel, rare earths) accelerates and is positive for IPL. Net depends on customer-mix shift speed. Own emissions exposure (ammonia production is carbon-intensive) means carbon-pricing flow-through to margins. Net: negative on fossil-fuel-exposed business segments; positive on transition-mineral demand; multiple-compression as ESG re-rating happens.
+**DNL** — significant transition exposure. Mining-customer base includes substantial fossil-fuel mining (thermal coal, oil-sands services); transition-mineral mining (lithium, copper, nickel, rare earths) accelerates and is positive for DNL. Net depends on customer-mix shift speed. Own emissions exposure (ammonia production is carbon-intensive) means carbon-pricing flow-through to margins. Net: negative on fossil-fuel-exposed business segments; positive on transition-mineral demand; multiple-compression as ESG re-rating happens.
 
 **CSL** — relatively insulated. Specialty biologics not directly climate-exposed; supply chain has some carbon-cost flow-through; potential growth in climate-adapted-healthcare segments (heat-related illness, infectious-disease spread). Net: small negative on costs, small positive on demand mix; multiples broadly preserved given limited transition exposure.
 

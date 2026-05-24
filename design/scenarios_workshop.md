@@ -28,7 +28,7 @@ Six is at the §2 ceiling — used deliberately, not by accident. The set spans 
 
 The workshop followed the three-phase method set out in the prep document:
 
-1. **Phase 1 — discriminate.** Eight candidate themes from the prep document were assessed against three tests: multidimensional differentiation, discrimination on test companies (IPL / CSL / WBC), and plausibility. Three quick keeps; five dig-ins.
+1. **Phase 1 — discriminate.** Eight candidate themes from the prep document were assessed against three tests: multidimensional differentiation, discrimination on test companies (DNL / CSL / WBC), and plausibility. Three quick keeps; five dig-ins.
 2. **Phase 2 — develop.** For each scenario on the shortlist, settled name, multi-dimensional differentiation summary, time horizon, headline macro story, time-profile shape, test-company implications. Six one-page sketches produced.
 3. **Phase 3 — drafting.** Conversion of sketches into structured YAML (per §6.4) and narrative `.md` (per §16.1). Documented separately under `data/scenarios/`.
 
@@ -40,7 +40,7 @@ The workshop followed the three-phase method set out in the prep document:
 |---|---|---|
 | Orderly Convergence | Kept (renamed unchanged; reframed as boundary, not central case) | Originally drafted as the "central / baseline" but reframed mid-workshop after Tara challenged the framing. See "Framing shift" below. |
 | Stagflation Persists | Kept | Materially distinct from Orderly Convergence on inflation regime, real-rates trajectory, policy posture, growth. Multi-dimensional. |
-| Fragmentation and Resource Nationalism | Kept | Uniquely covers the geopolitical / trade dimension; no other scenario sits in that space. Particularly important for testing IPL's global-trade exposure and WBC's Australian-domestic-economy resilience under bloc-realignment. |
+| Fragmentation and Resource Nationalism | Kept | Uniquely covers the geopolitical / trade dimension; no other scenario sits in that space. Particularly important for testing DNL's global-trade exposure and WBC's Australian-domestic-economy resilience under bloc-realignment. |
 | Disorderly Climate Transition | Kept, **reframed** as "Disorderly Climate Crystallisation" | The disorderly climate path is already in motion (see "Framing shift"); this scenario re-focuses on the crystallisation event (physical-loss event, carbon-price spike, stranded-asset cascade) rather than on whether the transition becomes disorderly. |
 | AI-productivity boom | Dropped | Upside-AI case is captured between Orderly Convergence (AI-productivity-driven) and Muddle Through (AI in pockets). Doesn't need its own scenario. |
 | AI-investment disappointment | Kept, **renamed** as "AI Productivity Lag" | Tara pushed back on the original "Tech-Investment Unwind" framing — investment will likely continue (deficit-funded, US-led capital available); what's contested is the *productivity transmission*. Renamed to capture the Solow-productivity-paradox dynamic. |

@@ -117,4 +117,16 @@ Brief positioning-driven view; full per-scenario analysis follows in Phase D (`a
 - **Orderly Convergence**: modest positive. Mining-customer capex cycle healthy; transition-mineral demand support; technology premium re-rates moderately. Not the strongest beneficiary among our three test companies because DNL is cyclical / industrial, not growth-multiple-expansion-led.
 - **Stagflation Persists**: negative. Input-cost pressure exceeds contracted protection over time; supplier-power moderate (vs full pass-through) compresses margins; mining-customer capex slows under restrictive financing.
 - **Fragmentation and Resource Nationalism**: most exposed of our three test companies. Cross-bloc ammonia and ammonium-nitrate flows disrupted; supply-chain duplication costs; potential strategic-mineral mining beneficiary on volumes but bloc-aligned trade may shift.
-- **Disorderly Climate Crystallisation**: bifurcating. Negative on coal-customer mix and carbon-cost flow-through; positive on transition-mineral demand. Net depends on custome
+- **Disorderly Climate Crystallisation**: bifurcating. Negative on coal-customer mix and carbon-cost flow-through; positive on transition-mineral demand. Net depends on customer-mix shift pace.
+- **AI Productivity Lag**: roughly neutral. Modest labour-cost containment; AI-driven blast-design pipeline economics don't expand as bulls hope; mining-customer productivity gains slower than expected.
+
+The strongest scenario for DNL is Orderly Convergence; the worst is a Fragmentation × Stagflation combination (not in our set as a single scenario but illustrative of the binding-constraint case).
+
+## Cross-references
+
+- §8.2 schema: structured positioning in `dnl.yaml`.
+- §8.3 archetype-specific positioning fields: the industrial-explosives-specific block on `segments[0].archetype_specific` (gas-contract maturity, electronic-detonator share, on-site service unit count, ammonia self-supply share, coal customer mix).
+- `data/industries/industrial_explosives.{yaml,md}`: the archetype DNL FK-references.
+- `data/financials/dnl.yaml`: indicative base-year financial snapshot (to be replaced by Ben's data workstream curated version).
+- `analyses/dnl/scenarios/<scenario>.md` (Phase D): per-scenario impact analyses.
+- `analyses/dnl/thesis.md` (Phase D): cross-scenario investment view.

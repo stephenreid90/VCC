@@ -70,7 +70,7 @@ The archetype examples in §2.2 show only scalar typed-EAV attributes. The neste
 
 Our `architecture.md` §8.2 positions per-segment blocks (`moat`, `franchise_assets`, `competitive_position`, `innovation_position`, `scenario_sensitivity_overrides`) **inside each segment**, not at the company level.
 
-The IPL example in §2.3 only shows `revenue_share / ebit_share / functional_currency / archetype` per segment. The richer per-segment content is workable in the proposed model — additional `Reference.data_key_value_attributes` rows under each segment value — but the same stress-test applies as item 5: we should see one segment richly populated.
+The DNL example in §2.3 only shows `revenue_share / ebit_share / functional_currency / archetype` per segment. The richer per-segment content is workable in the proposed model — additional `Reference.data_key_value_attributes` rows under each segment value — but the same stress-test applies as item 5: we should see one segment richly populated.
 
 ### 7. Confidence — enum vs numeric
 

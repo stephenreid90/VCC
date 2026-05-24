@@ -26,7 +26,7 @@ Industrial explosives is a mature, concentrated-oligopoly industry with multi-ti
 
 Customer demand is structurally tied to mineral-extraction volumes — predominantly open-cut mining of iron ore, coal (both thermal and metallurgical), copper, gold, base metals, and increasingly transition minerals (lithium, nickel, rare earths). Demand cyclicality follows mining-customer capex cycles rather than commodity-price cycles directly — capex decisions lag commodity prices by 12–24 months and persist longer.
 
-The industry's economics are dominated by **anhydrous ammonia** (and its upstream feedstock, natural gas) as the primary cost input. Producers with long-term gas contracts (notably IPL Dyno Nobel's historical position in the US) have a structural cost advantage over spot-gas-exposed competitors. Manufacturing is large-scale, capital-intensive, and lumpy in capacity additions. On-site service infrastructure (mobile manufacturing units at customer mine sites) creates switching costs and lock-in.
+The industry's economics are dominated by **anhydrous ammonia** (and its upstream feedstock, natural gas) as the primary cost input. Producers with long-term gas contracts (notably DNL Dyno Nobel's historical position in the US) have a structural cost advantage over spot-gas-exposed competitors. Manufacturing is large-scale, capital-intensive, and lumpy in capacity additions. On-site service infrastructure (mobile manufacturing units at customer mine sites) creates switching costs and lock-in.
 
 ## Five Forces — industry-level
 
@@ -114,11 +114,11 @@ Heavy regulation across jurisdictions. Primary regulators include Australian sta
 
 ## Test-company mapping
 
-IPL is the v0.1 test company under this archetype. Post-demerger (the fertilisers business was demerged), IPL trades as a single-segment industrial-explosives company under the Dyno Nobel brand.
+DNL is the v0.1 test company under this archetype. Post-demerger (the fertilisers business was demerged), DNL trades as a single-segment industrial-explosives company under the Dyno Nobel brand.
 
 **Peer set for benchmarking** (not in v0.1 test set):
 
-- **Orica** (ASX:ORI) — direct global peer and dominant competitor in Australia. The natural benchmark for IPL on driver default ranges, margin profile, capital allocation discipline, and management quality.
+- **Orica** (ASX:ORI) — direct global peer and dominant competitor in Australia. The natural benchmark for DNL on driver default ranges, margin profile, capital allocation discipline, and management quality.
 - **EPC Groupe** (Euronext:EXPL) — European-listed Tier 1 player; useful as a non-Australian peer if the framework wants European-market data points.
 - **AECI Mining Chemicals** (JSE:AFE) — South African Tier 2; useful for understanding regional dynamics outside the major Western markets.
 - **Solar Industries India** (NSE:SOLARINDS) — emerging-market Tier 2 with growing international presence; useful for understanding cost-curve dynamics in lower-labour-cost geographies.
