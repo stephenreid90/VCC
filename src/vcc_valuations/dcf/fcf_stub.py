@@ -19,10 +19,69 @@ Step 7):
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import List, Optional
+from dataclasses import dataclass, field
+from typing import List, Optional, Union
 
 from vcc_valuations.translator import SmokeAssumptionSet
+
+
+@dataclass
+class WaccBuild:
+    """Component build-up of WACC.
+
+    Exposed component-by-component (rather than as an opaque baseline
+    scalar) so analysts or reviewers can rebuild the number from named
+    inputs and substitute their own. Design principle adopted during
+    Phase 3.5 calibration pass (24 May 2026).
+    """
+
+    risk_free_rate: float          # decimal, e.g. 0.043 = 4.30%
+    equity_risk_premium: float     # decimal, e.g. 0.050 = 5.00%
+    beta: float                    # unitless, e.g. 1.15
+    cost_of_debt_pretax: float     # decimal, e.g. 0.060 = 6.00%
+    tax_rate: float                # decimal, e.g. 0.30 = 30%
+    equity_market_value: float     # currency units (e.g. AUD m)
+    debt_market_value: float       # currency units (e.g. AUD m)
+
+    @property
+    def cost_of_equity(self) -> float:
+        """CAPM cost of equity."""
+        return self.risk_free_rate + self.beta * self.equity_risk_premium
+
+    @property
+    def after_tax_cost_of_debt(self) -> float:
+        return self.cost_of_debt_pretax * (1.0 - self.tax_rate)
+
+    @property
+    def enterprise_value(self) -> float:
+        return self.equity_market_value + self.debt_market_value
+
+    @property
+    def equity_weight(self) -> float:
+        return self.equity_market_value / self.enterprise_value
+
+    @property
+    def debt_weight(self) -> float:
+        return self.debt_market_value / self.enterprise_value
+
+    @property
+    def wacc(self) -> float:
+        return (
+            self.equity_weight * self.cost_of_equity
+            + self.debt_weight * self.after_tax_cost_of_debt
+        )
+
+    def describe(self) -> List[str]:
+        """One-line-per-component description for printable headers."""
+        return [
+            f"Rf={self.risk_free_rate:.2%}, ERP={self.equity_risk_premium:.2%}, beta={self.beta:.2f}",
+            f"Re = Rf + beta x ERP = {self.cost_of_equity:.2%}",
+            f"Rd_pretax={self.cost_of_debt_pretax:.2%}, tax={self.tax_rate:.0%}, Rd_after_tax={self.after_tax_cost_of_debt:.2%}",
+            f"E={self.equity_market_value:,.0f}, D={self.debt_market_value:,.0f}, "
+            f"E/V={self.equity_weight:.1%}, D/V={self.debt_weight:.1%}",
+            f"WACC = {self.equity_weight:.3f} x {self.cost_of_equity:.2%} + "
+            f"{self.debt_weight:.3f} x {self.after_tax_cost_of_debt:.2%} = {self.wacc:.2%}",
+        ]
 
 
 @dataclass
@@ -74,7 +133,7 @@ def run_fcf_dcf(
     aset: SmokeAssumptionSet,
     *,
     nominal_baseline_growth_pct: float = 2.0,
-    baseline_wacc: float = 0.085,
+    baseline_wacc: Union[float, WaccBuild] = 0.085,
     baseline_terminal_growth: float = 0.025,
     da_pct_revenue: float = 0.073,
 ) -> FcfDcfResult:
@@ -84,14 +143,18 @@ def run_fcf_dcf(
         aset: Output of translator.translate_to_assumption_set()
         nominal_baseline_growth_pct: GDP-adjacent nominal growth before
             scenario delta applied (%)
-        baseline_wacc: Baseline WACC; scenario deltas to risk-free rate
-            and ERP applied on top (decimal)
+        baseline_wacc: Either a scalar baseline WACC (decimal) or a
+            WaccBuild object that exposes the component build-up.
+            Scenario deltas to risk-free rate and ERP applied on top.
         baseline_terminal_growth: Terminal growth before scenario delta
             (decimal)
         da_pct_revenue: Depreciation & amortisation as fraction of revenue
     """
     notes: List[str] = []
     H = aset.horizon_years
+    baseline_wacc_scalar = (
+        baseline_wacc.wacc if isinstance(baseline_wacc, WaccBuild) else baseline_wacc
+    )
 
     # ---- Revenue trajectory ----
     # Apply volume_growth + price_mix deltas on top of baseline.
@@ -152,7 +215,7 @@ def run_fcf_dcf(
     rate_bps = sum(
         d.annual_delta for d in [rf_delta, erp_delta, country_delta] if d is not None
     )
-    wacc = baseline_wacc + rate_bps / 10_000
+    wacc = baseline_wacc_scalar + rate_bps / 10_000
 
     # ---- Terminal value ----
     tg_delta = aset.assumptions.get("terminal_growth_rate")
@@ -185,7 +248,7 @@ def run_fcf_dcf(
     if terminal_share > 0.70:
         notes.append(
             f"Terminal value contributes {terminal_share:.1%} of EV; "
-            "exceeds the section 11.4.2 / section 15.2 70% threshold — "
+            "exceeds the section 11.4.2 / section 15.2 70% threshold -- "
             "force a sensitivity pass on terminal assumptions."
         )
 

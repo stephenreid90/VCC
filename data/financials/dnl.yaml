@@ -26,7 +26,116 @@ reporting_currency: AUD
 base_year_status: ben_workstream_data
 data_source: EODHD fundamentals (Ben's market-ingest pipeline)
 data_generated: 2026-05-22
-last_updated: 2026-05-22
+last_updated: 2026-05-24
+
+# --- NORMALISED BASELINE (smoke-test calibration, 24 May 2026) ---
+# Overrides applied at translator level for the Phase 3.5 smoke-test
+# DCF baseline. Sit alongside the as-reported income / balance-sheet
+# numbers above — the reported data is the source of truth; this block
+# is the analyst's normalisation lens. Each override carries an
+# explicit rationale and a source pointer.
+#
+# Design principle (per smoke-test review, 24 May 2026): valuation
+# inputs are exposed as named, overridable components rather than as
+# opaque baseline scalars. Users (analyst or model reviewer) can
+# rebuild any number from the components and substitute their own.
+normalised_baseline:
+  # Operating-margin override
+  ebit_margin: 0.135
+  ebit_margin_rationale: >
+    Mid-point of pre-demerger Dyno Nobel segment range of 13-15%.
+    Replaces TTM Mar-2026 reported operating margin of 11.23%, which
+    is depressed by post-demerger transition costs (residual demerger
+    items + post-rename consolidation adjustments, per income-
+    statement TTM notes above).
+
+  # Net-debt override
+  net_debt: 1300.0
+  net_debt_rationale: >
+    Steady-state mid-point of estimated AUD 1.2-1.4bn underlying
+    leverage. Replaces reported AUD 1,810m, which reflects post-
+    demerger balance-sheet restructuring expected to ease over the
+    next 12 months (per derived-metrics notes above). Net debt /
+    EBITDA at this level is ~1.5x on TTM EBITDA — mid-range for the
+    industrial-explosives peer group.
+
+  # Capex (% of revenue) — already normalised in current smoke test;
+  # capturing here for transparency.
+  capex_pct_revenue: 0.07
+  capex_pct_revenue_rationale: >
+    Pre-demerger historical pattern (6-7%). FY25 reported 12.8% is
+    inflated by partial-year reporting and capital restructuring;
+    rejected as the steady-state anchor.
+
+  # Tax rate
+  tax_rate: 0.30
+  tax_rate_rationale: >
+    Australian statutory rate. Effective rate runs lower (FY25: 20.4%)
+    due to franking / R&D / foreign tax credits, but those are timing
+    and mix effects; statutory is the conservative anchor for a
+    forward-looking baseline.
+
+  # D&A (% of revenue)
+  da_pct_revenue: 0.073
+  da_pct_revenue_rationale: >
+    Matches assumed capex/revenue ratio of 7%, consistent with a
+    steady-state mature industrial where the asset base isn't growing
+    fast. FY25 D&A/revenue ratio of 7.7% (284.1 / 3,710) is in line.
+
+  # WACC build — exposed component-by-component (no opaque baseline)
+  wacc_build:
+    risk_free_rate: 0.0430
+    risk_free_rate_rationale: >
+      10-year Commonwealth of Australia government bond yield,
+      indicative May 2026 level. RBA cash rate ~3.85% with curve
+      ~45bps above policy in the current easing cycle.
+
+    equity_risk_premium: 0.0500
+    equity_risk_premium_rationale: >
+      Damodaran-style mature-Australia ERP. Between implied global-
+      mature mid-point (~4.6%) and Australian historical (~5.5%).
+      Modest country-risk premium over US base (~50bps) baked in.
+
+    beta: 1.15
+    beta_rationale: >
+      Pre-demerger IPL observed beta vs ASX200 was 1.05-1.10. The
+      demerger leaves pure-play mining-services exposure (the
+      fertilisers business partially offset mining-cycle volatility),
+      justifying modest uplift. Post-demerger trading history
+      (March 2025 onward) is too short for reliable direct regression;
+      reported EODHD beta of 0.36 is unreliable for this reason.
+
+    cost_of_debt_pretax: 0.0600
+    cost_of_debt_pretax_rationale: >
+      AUD investment-grade BBB-tier corporate spread ~170bps over
+      10-year sovereign. IPL pre-demerger BBB+/Baa1; post-demerger
+      DNL likely BBB given smaller scale and concentrated cyclical
+      exposure.
+
+    # Capital-structure weights use market-value basis with the
+    # *reported* (not normalised) net debt — market-value weights
+    # reflect what the market actually sees on the balance sheet today.
+    equity_market_value: 6802.0
+    debt_market_value: 1810.0
+    capital_structure_rationale: >
+      Equity = 1,884m shares x AUD 3.61 share price (21 May 2026).
+      Debt = reported net debt at 30 Sep 2025. E/V = 79.0%, D/V = 21.0%.
+
+    # Derived WACC:
+    #   Re = Rf + beta x ERP = 4.30% + 1.15 x 5.00% = 10.05%
+    #   Rd_after_tax = 6.00% x (1 - 0.30) = 4.20%
+    #   WACC = 0.790 x 10.05% + 0.210 x 4.20% = 7.94% + 0.88% = 8.82%
+    computed_wacc: 0.0882
+
+  # Terminal growth
+  terminal_growth: 0.025
+  terminal_growth_rationale: >
+    GDP-adjacent (Australian long-run nominal trend) for a mature
+    industrial in a developed-market context. Section 9.7 demographic
+    trajectory consideration: a structurally aging Australia could
+    pull terminal nominal growth toward 2.0%, but the explicit-
+    horizon is short enough (5 years) that the demographic shift
+    sits beyond it.
 
 # --- IDENTITY ---
 identity:

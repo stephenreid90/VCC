@@ -43,7 +43,7 @@ Our Muddle Through baseline is ~half of the market price. The market is implicit
 But this gap is large enough that calibration questions need addressing before the framework's output is presentable. Candidate explanations, in priority order:
 
 7. **Base-year EBIT margin is too low.** I used TTM Mar-2026 margin of 11.2%, which is depressed by post-demerger transition costs. Pre-demerger DNL (as Dyno Nobel segment of IPL) ran 13–15% margins. **Action: re-base on a normalised margin estimate (~13.5%) rather than the as-reported TTM.**
-8. **Baseline WACC of 8.5% may be too high.** Implied market WACC for DNL given the current price is closer to 7.0–7.5%. **Action: re-derive WACC from market data (forward P/E 19.3× implies cost of equity around 7-8%, plus contracted cost of debt around 6%, give a blended WACC around 7%).**
+8. **Baseline WACC of 8.5% is a round-number placeholder; rebuild it from components.** An earlier draft of this doc claimed market-implied WACC was 7.0–7.5% (back-of-envelope from forward P/E). A rigorous bottom-up build (24 May 2026 calibration pass) gives WACC = **8.82%**: Rf 4.30% (10Y AUD govt) + β 1.15 × ERP 5.00% = Re 10.05%; Rd_pretax 6.00% × (1 − 30% tax) = Rd_after_tax 4.20%; market-value weights E/V 79.0%, D/V 21.0% → WACC 8.82%. **Action: expose WACC as a transparent component build (named, overridable inputs) rather than as an opaque scalar baseline.** The full build is now captured in `data/financials/dnl.yaml` under `normalised_baseline.wacc_build`.
 9. **Net debt of AUD 1,810m reflects post-demerger restructuring** — the underlying steady-state net debt is closer to AUD 1.2-1.4bn. **Action: use a normalised net debt anchor.**
 10. **Base-year capex pct (7%) appropriate** for the steady state; FY25's 12.8% is partial-year inflated and rejected for the smoke test. This is correctly handled.
 
@@ -132,6 +132,85 @@ Production §11.3 time-profile library implementation is the fix; it exists in t
 41. **Got:** end-to-end validation that the architecture works; concrete catalogue of calibration / implementation issues; a working comparative output across all six scenarios; a baseline-vs-market gap to investigate; explicit catch by the terminal-share-reasonableness validator on four scenarios; confirmation that the framework's relative discriminating power is real.
 
 Per §14 Phase 3.5 spec — "A few days of work; saves weeks if the cascade has to be re-run" — the smoke test was cheaper than expected (hours not days) and caught exactly what it was meant to catch: implementation gaps to address in Steps 6 / 7 before Phase 4 populates across all companies.
+
+---
+
+## Calibration pass — 24 May 2026
+
+Tara's call: incrementally calibrate the smoke-test baseline before
+expanding to Step 6 / Step 9. Three baseline overrides applied via a
+new `normalised_baseline` block in `data/financials/dnl.yaml`; the
+translator now prefers these over the as-reported figures.
+
+### What was calibrated
+
+45. **EBIT margin:** 11.23% (TTM Mar-2026, depressed by post-demerger
+    transition costs) → **13.5%** (mid-point of pre-demerger Dyno
+    Nobel segment 13–15%). Rationale captured in the YAML block.
+46. **Net debt:** AUD 1,810m (reported, inflated by post-demerger
+    balance-sheet restructuring) → **AUD 1,300m** (steady-state
+    mid-point of estimated AUD 1.2–1.4bn).
+47. **WACC:** 8.5% (round-number baseline) → **8.82%** (rigorous
+    component build, market-value weights). See Issue 1 item 8 for
+    component-by-component derivation.
+
+### Calibrated headline numbers
+
+| Scenario | Original | Calibrated | Δ |
+|---|---:|---:|---:|
+| Muddle Through | AUD 1.87 | **AUD 2.53** | +35% |
+| Orderly Convergence | AUD 3.65 | AUD 4.44 | +22% |
+| AI Productivity Lag | AUD 1.79 | AUD 2.43 | +36% |
+| Fragmentation | AUD 0.09 | AUD 0.68 | swing to small positive |
+| Disorderly Climate | AUD −0.17 | AUD 0.46 | swing to small positive |
+| Stagflation Persists | AUD −0.48 | AUD 0.09 | swing to barely positive |
+
+Market reference unchanged: share price AUD 3.61, consensus target AUD 3.61, EV AUD 7,682m.
+
+### What the calibration showed
+
+48. **Muddle Through baseline is now AUD 2.53 vs market AUD 3.61** —
+    ~30% below market, down from ~50% below before calibration. The
+    remaining gap is no longer "the model is wrong"; it's "the model
+    is a more sceptical view, consistent with Tara's framing that
+    Muddle Through is the more-likely-than-Orderly central case."
+    Market is implicitly pricing roughly a 60/40 blend of Muddle
+    Through and Orderly Convergence.
+49. **Orderly Convergence at AUD 4.44 now sits above market.** This is
+    the right shape: an explicit Orderly upside case should price
+    above where the market is, because the market isn't fully
+    committed to Orderly.
+50. **Negative-equity outcomes disappeared.** Stagflation, Fragmentation
+    and Disorderly Climate all produced near-zero positive equity
+    rather than the previous negative figures. **Important caveat:**
+    this is not because the underlying issue (instantaneous margin
+    deltas + missing operating-leverage rule) was fixed — it's
+    because the higher steady-state margin and lower net-debt anchor
+    mean the scenarios start from a stronger position. The Step 6
+    requirements for time profiles and consistency rules still stand;
+    the calibration just made the gap less visually alarming.
+51. **Terminal-share validator still fires on 3 of 6 scenarios** (down
+    from 4 of 6). Muddle Through, Orderly, and AI Lag still run
+    72–80% terminal share. This is structural to long-horizon
+    valuations of mature low-growth assets and won't fully resolve
+    until Step 7 implements the explicit fade period (§11.4.2 rule 5).
+52. **Discriminating power preserved.** Calibrated ranking is identical:
+    Orderly > Muddle Through > AI Lag > Fragmentation > Disorderly
+    Climate > Stagflation. The framework is doing the analytical
+    work, not just the calibration arithmetic.
+
+### Design principle adopted
+
+53. **Valuation inputs are exposed as named, overridable components, not
+    as opaque baseline scalars.** WACC in particular is now constructed
+    via a `WaccBuild` dataclass that takes Rf, ERP, β, Rd_pretax,
+    tax, equity_market_value, debt_market_value — each a named
+    field with a rationale captured in the financials YAML. Analysts
+    or reviewers can rebuild any number from the components and
+    substitute their own. This principle should carry into the Step 7
+    production DCF engine: every valuation input that an analyst would
+    reasonably want to challenge or override should be a named field,
+    not a hidden parameter.
 
 ---
 

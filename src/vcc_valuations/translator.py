@@ -218,13 +218,18 @@ def translate_to_assumption_set(
     bs_total = financials["balance_sheet"]
     share_stats = financials["share_statistics"]
 
+    # If a normalised_baseline block is present in the financials YAML,
+    # prefer its values over the as-reported figures (smoke-test
+    # calibration overlay — see data/financials/<id>.yaml for the
+    # rationale against each override).
+    norm = financials.get("normalised_baseline") or {}
+
     base_revenue = income["revenue"]
-    base_ebit_margin = income["operating_margin"]
-    # Use normalised capex / revenue (~7%) rather than inflated FY25 figure.
-    base_capex_pct = 0.07
-    base_net_debt = derived["net_debt"]
+    base_ebit_margin = norm.get("ebit_margin", income["operating_margin"])
+    base_capex_pct = norm.get("capex_pct_revenue", 0.07)
+    base_net_debt = norm.get("net_debt", derived["net_debt"])
     base_shares = share_stats["shares_outstanding"] / 1_000_000  # to millions
-    base_tax_rate = 0.30  # statutory Australian rate (simplification)
+    base_tax_rate = norm.get("tax_rate", 0.30)
 
     aset = SmokeAssumptionSet(
         company_id=company.id,
