@@ -138,4 +138,33 @@ A living scratchpad for conversational decisions, current preoccupations, and co
 - `f62d3ae` — narrative-deliverables convention added; Five Forces question bank started.
 - `9f91be4` — WORKING_NOTES.md created.
 - `ac4e8e7` — Five Forces question bank completed (Supplier, New Entrants, Substitutes, Rivalry).
-- `4616ede` — payor-
+- `4616ede` — payor-and-regulator framework v1 draft added.
+- `ec462c5` — editorial sweep + v0.1 freeze (Step 1 closed out).
+- `8e7a51b` — WORKING_NOTES update after Step 1 and Step 2 closed.
+- `a76a9ec` — scenarios workshop prep document.
+- `8cc2527` — response to Ben's `vcc_valuations` rev1 design.
+- `1d3d53b` — Step 3 complete (six scenarios drafted).
+- `35578ea` — Step 4 (pydantic + JSON Schema + tests).
+- `e142f95` — chore: removed accidentally-committed `__pycache__` files.
+- `f682363` — WORKING_NOTES Step 4 update.
+- `dfd1243` — architecture v0.2 (§7.1.1 archetype-granularity principle).
+- Step 5: Phase A `_` (industrial_explosives archetype), Phase B `_` (IPL position + indicative financials), Phase C `dea44c2` (IPL impact matrix), Phase D `_` (IPL per-scenario narratives + thesis). Hash placeholders updated when latest commits drop.
+- `f21fb1e` — IPL → DNL first pass (renames + real EODHD financials + per-entity functional currency).
+- `5d55305` — IPL → DNL editorial sweep across spec/build-plan/workshop docs/industry/matrix/scenarios (architecture v0.2 → v0.2.1).
+- `86233ca` — Phase 3.5 smoke-test DCF (translator stub + FCF DCF stub + driver script + findings).
+- **Tag:** `architecture-v0.1` points at `ec462c5`.
+
+---
+
+## Last updated
+
+24 May 2026 — Phase 3.5 smoke-test DCF closed out. End-to-end pipeline runs cleanly; findings written to `docs/phase_3_5_findings.md`. Ready for Step 6 (production translator) with concrete calibration + design requirements from the smoke test.
+
+Previous updates:
+- 22 May 2026 — Step 5 closed out + IPL → DNL rename + editorial sweep.
+- 17 May 2026 — Step 4 (Formalise data schemas) closed out. All eight layer schemas as pydantic v2 models; JSON Schema exports; tests pass on all six scenario YAMLs (22/22). Ready for Step 5 (Populate first archetype — IPL).
+- 16 May 2026 (later) — Step 3 closed.
+- 16 May 2026 (earlier) — Step 1 and Step 2 closed.
+- 7 May 2026 — initial creation as hedge against chat context-length limits.
+
+Update this file whenever a conversational decision is made that doesn't belong in the architecture spec. Concision matters — this needs to remain skim-readable.
