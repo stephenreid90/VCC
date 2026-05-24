@@ -54,7 +54,8 @@ A living scratchpad for conversational decisions, current preoccupations, and co
   - **Phase C:** industrial_explosives impact matrix across all six scenarios. 46 driver movements populated; sparse per §10.2; two defended-exception terminal-state entries per §10.6 rule 2.
   - **Phase D:** six per-scenario impact narratives + cross-scenario thesis. Each scenario sketch covers IPL-specific transmission channels and divergences from archetype baseline. Thesis identifies negative asymmetry: downside scenarios compress value more than upside lifts it.
   - **Phase E (valuations):** deferred to Phase 3.5 smoke-test DCF (Step 7).
-- **Next: Step 6** — Build the translator (Layer 5 + Layer 6 engine code). Or **Step 7** (Phase 3.5 smoke-test DCF) since the IPL × scenarios material is now populated and ready for end-to-end pipeline test. Or revisit step 5 to do further IPL validation against Ben's curated data when it lands.
+- **Phase 3.5 smoke-test DCF (24 May 2026): done.** End-to-end pipeline (translator stub → FCF DCF stub → driver script) runs DNL × all six scenarios cleanly. Findings written to `docs/phase_3_5_findings.md`. Headline: framework works; comparative directional ranking matches the per-scenario narratives; baseline AUD 1.87/share vs market AUD 3.61 motivates calibration of base-year margin (normalise the depressed TTM), WACC (re-derive from market), and net debt (use steady-state anchor); two scenarios produce negative equity because instantaneous margin compression is unrealistic — motivates §11.3 time-profile library and §11.4.2 operating-leverage consistency rule; four of six trip the >70% terminal-share validator. Commit `86233ca`. No architecture spec changes required.
+- **Next: Step 6** — production translator informed by Phase 3.5 findings (calibrated baseline, §11.3 time profiles, §11.4.2 consistency rules), then either re-run smoke test or proceed straight to **Step 9** (populate CSL + WBC) once the engine is solid.
 
 ---
 
@@ -137,14 +138,4 @@ A living scratchpad for conversational decisions, current preoccupations, and co
 - `f62d3ae` — narrative-deliverables convention added; Five Forces question bank started.
 - `9f91be4` — WORKING_NOTES.md created.
 - `ac4e8e7` — Five Forces question bank completed (Supplier, New Entrants, Substitutes, Rivalry).
-- `4616ede` — payor-and-regulator framework v1 draft added.
-- `ec462c5` — editorial sweep + v0.1 freeze (Step 1 closed out).
-- `8e7a51b` — WORKING_NOTES update after Step 1 and Step 2 closed.
-- `a76a9ec` — scenarios workshop prep document.
-- `8cc2527` — response to Ben's `vcc_valuations` rev1 design.
-- `1d3d53b` — Step 3 complete (six scenarios drafted).
-- `35578ea` — Step 4 (pydantic + JSON Schema + tests).
-- `e142f95` — chore: removed accidentally-committed `__pycache__` files.
-- `f682363` — WORKING_NOTES Step 4 update.
-- `dfd1243` — architecture v0.2 (§7.1.1 archetype-granularity principle).
-- Step 5: Phase A `_` (industrial_explosives archetype), Phase B `_` (IPL position + indicative financials), Phase C `dea44c2` (IPL impact matrix), Ph
+- `4616ede` — payor-
