@@ -157,6 +157,85 @@ company_ebit_margin_y =
 
 ---
 
+## 3.5 Discount-rate discipline — single WACC across scenarios
+
+**The discount rate (WACC) is set at the valuation date and held constant
+across scenarios.** This is the single most important discipline in the
+methodology and was confirmed during the 28 May 2026 working session.
+
+### 3.5.1 Rationale
+
+Each scenario already prices its risk through the cash-flow path: Stagflation
+has compressed margins and slower growth; Disorderly Climate has elevated
+capex and lower terminal growth. The dispersion of cash flows across
+scenarios *is* the framework's representation of risk.
+
+If we also use a higher discount rate in a stress scenario, we are
+penalising the same risk twice — once via the cash flows the scenario
+describes, and again via the rate at which those cash flows are discounted.
+
+The marginal investor's required return on capital at the valuation date is
+a single number, set by today's market conditions. It does not change
+conditional on which future state is realised. The CAPM beta we apply
+(typically 1.0–1.3 for industrial cyclicals) already captures the
+systematic risk of the entire conditional cash-flow distribution —
+including the possibility of stress states. Layering scenario-conditional
+ERP or Rf adjustments on top compounds that.
+
+This was an open decision in architecture spec §12; it is resolved here in
+favour of single-WACC discipline.
+
+### 3.5.2 Practical mechanics
+
+- One WACC is computed from the `WaccBuild` components at the valuation
+  date per §2 (Rf, ERP, β, Rd_pretax, tax, market-value weights).
+- The same WACC is applied to every scenario's explicit-period cash flows
+  and to the terminal-value discounting.
+- Impact-matrix rate-driver entries (Rf delta, ERP delta, country risk
+  premium delta) are retained as scenario context — they describe the macro
+  state the scenario implies — but **do not flow into the DCF discount
+  rate**.
+- Where macro-rate changes affect company financing economics (e.g., a
+  scenario where the company's debt cost rises), the effect appears as
+  **higher interest expense in the P&L of that scenario** (compressing
+  NOPAT and FCF), not as a higher discount rate.
+
+### 3.5.3 User override (sensitivity)
+
+The DCF workbook exposes an "Applied WACC" cell. By default this cell is
+formula-linked to the `WaccBuild` components. Users can override the cell
+to test sensitivity to a different rate. This is an explicit, deliberate
+sensitivity exercise — not a scenario-conditional flow-through. Overrides
+should carry an analyst-facing comment explaining the rationale (e.g.,
+"sensitivity at WACC -100bps to reflect possible re-rating").
+
+### 3.5.4 Exception: terminal growth
+
+Terminal growth *is* held scenario-conditional and the impact-matrix
+`terminal_growth_rate` delta drivers do flow through.
+
+Rationale: terminal growth represents a structural economic state (the
+asymptotic real growth path of the economy in that scenario), which
+legitimately differs across boundary scenarios. This is not a re-pricing of
+risk; it is a description of the long-run economic regime the scenario
+implies. Stagflation's terminal economy is structurally weaker than Orderly
+Convergence's; that's a feature of the cash-flow path, not a hidden
+discount-rate adjustment.
+
+### 3.5.5 Schema implications
+
+- Layer 4 driver catalogue retains `risk_free_rate`, `equity_risk_premium`,
+  `country_risk_premium`, `beta` drivers. They appear in the impact matrix
+  for scenario-context purposes.
+- Step 6 production translator MUST NOT push these into the DCF discount
+  rate when computing scenario-conditional value. They flow into the
+  scenario narrative and (optionally) into the interest-expense line of
+  the P&L, not the WACC.
+- The `terminal_growth_rate` driver IS scenario-conditional and flows
+  through to the terminal-value calculation per §3.5.4.
+
+---
+
 ## 4. Equity-bridge discipline
 
 This is the discipline for walking from enterprise value to equity value to value-per-share. The principle: **every adjustment is explicit, has an anchor date, and flags whether it's already on the balance sheet.**
