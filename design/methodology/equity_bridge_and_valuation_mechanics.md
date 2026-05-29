@@ -142,6 +142,30 @@ margin_glide_path:
 
 For DNL the transformation overlay reflects the AUD 300m total EBIT uplift management has communicated, of which 65–75% is in the FY26 base year (per H1 disclosure).
 
+### 3.2.1 Structural-headwind overlay (sister concept)
+
+The transformation overlay captures known *tailwinds*. A symmetric `structural_headwind_overlay` block captures known *headwinds* — contract roll-offs, regulatory step-downs, customer-attrition schedules, technology-displacement timetables — that are scheduled, company-specific, and not captured by scenario-conditional margin deltas. Same shape as §3.2:
+
+```yaml
+structural_headwind_overlay:
+  - id: us_gas_contract_rolloff
+    description: "US long-term gas contracts roll 2028-2030; reverts to spot pricing"
+    trajectory:
+      - year: 3
+        ebit_margin_delta_bps: -50
+        rationale: "FY29: first tranche of contracts rolls off"
+      - year: 4
+        ebit_margin_delta_bps: -100
+        rationale: "FY30: further tranche rolls off; cumulative -100bps"
+      - year: 5
+        ebit_margin_delta_bps: -150
+        rationale: "FY31: majority at spot; cumulative -150bps"
+```
+
+Per the substack discipline (Stephen Reid + Tony Carlton, valuationmatters1.substack.com): structural headwinds that are knowable should be **built into the cash-flow path explicitly**, not deferred to terminal-state hand-waving or hidden behind discount-rate adjustments. The DNL Muddle Through worked example (analyses/dnl/valuations/dnl_muddle_through_valuation_v3.xlsx) applies the US gas-contract roll-off as a -50/-100/-150bps cumulative drag in Y3/Y4/Y5, partially offsetting the transformation overlay.
+
+Future refinement: the headwind can be made scenario-conditional where the magnitude legitimately differs across scenarios (e.g., post-roll-off gas pricing depends on the scenario's gas-price trajectory).
+
 ### 3.3 Scenario-conditional margin deltas
 
 The existing impact-matrix mechanism (`gross_margin`, `input_cost_pass_through`, `sga_pct_revenue` drivers) layers on top of the transformation overlay. These are scenario-specific and represent industry-level effects (cost compression in Stagflation, etc.).
