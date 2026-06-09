@@ -3,26 +3,26 @@
 **Company ID:** `dnl`
 **Ticker:** ASX:DNL
 **Former identity:** Incitec Pivot Limited (IPL); renamed to Dyno Nobel Limited in March 2025 following the demerger of the fertilisers business.
-**Version:** 2026-Q2-v1
+**Version:** 2026-Q2-v2 (refactored 9 June 2026 to use Five Forces spine per methodology §3.3)
 **Type:** Company positioning narrative per §16.1 item 3. Companion to `dnl.yaml`.
 
 ---
 
 ## Overview
 
-Dyno Nobel Limited is, post-demerger, a **pure-play industrial explosives company** trading under the Dyno Nobel brand. The fertilisers business that historically constituted the second leg of the company was demerged; what remains is the explosives operations across North America (predominantly US), Australia, and a smaller rest-of-world footprint.
+Dyno Nobel Limited is, post-demerger, a **pure-play industrial explosives company** trading under the Dyno Nobel brand. The fertilisers business that historically constituted the second leg of the company was demerged; what remains is the explosives operations across North America (~55% revenue), Australia (~35%), and a smaller rest-of-world footprint (~10%, primarily Latin America and Africa via Dyno Nobel EMEA & LATAM).
 
 DNL is the **number two global player** in industrial explosives behind Orica, and one of two players in the Australian duopoly. Its competitive position rests primarily on three structural advantages:
 
-1. **A US cost-curve advantage** derived from long-term natural gas supply contracts that predate recent gas-price moves. This advantage decays as contracts roll over (concentrated in the 2028–2030 window) but is meaningful through the explicit forecast horizon.
-2. **Long-term mining offtake contracts** with the major Australian miners (BHP, Rio Tinto, FMG), creating multi-year revenue visibility and switching-cost moats.
-3. **On-site manufacturing infrastructure** at major customer mine sites — over 200 mobile manufacturing units globally — creating physical switching costs and embedding the customer-supplier relationship.
+1. **A US cost-curve advantage** from long-term natural gas supply contracts. Concentrated roll-off in the 2028–2030 window, captured as a structural-headwind overlay in the valuation per methodology §3.2.1.
+2. **Long-term mining offtake contracts** with the major Australian miners (BHP, Rio Tinto, FMG). ~78% of revenue under multi-year contract; ~4-year weighted average maturity.
+3. **On-site manufacturing infrastructure** at major customer mine sites — 200+ mobile manufacturing units globally — creating physical switching costs.
 
-The company is structurally **less geographically diversified than Orica** (more US-weighted, less Latin American / European / African footprint) and has a **smaller technology R&D budget** in absolute terms. Its capital-project execution track record is mixed — the Louisiana ammonia plant cost overruns from 2017-2020 are the dominant negative reference point.
+The company is **less geographically diversified than Orica** (more US-weighted, less Latin American / European / African footprint) and has a **smaller technology R&D budget** in absolute terms. Its capital-project execution track record is mixed — the Louisiana ammonia plant cost overruns from 2017-2020 are the dominant negative reference point.
 
 ## Functional currency — per-entity, not consolidated
 
-Refined position following Ben's-data-workstream review. **DNL's functional-currency treatment is per-entity per IAS 21 / AASB 121, not consolidated.** Specifically:
+**DNL's functional-currency treatment is per-entity per IAS 21 / AASB 121, not consolidated.**
 
 - **Parent (Dyno Nobel Limited)** — AUD functional. Australian incorporation, ASX listing, AUD-denominated parent financing, Australian regulatory and reporting environment.
 - **Dyno Nobel Americas subsidiary** — USD functional. Predominantly US revenue, US-denominated input cost base (gas, ammonia, ammonium nitrate), US-denominated long-term gas supply contracts driving cost advantage.
@@ -30,61 +30,110 @@ Refined position following Ben's-data-workstream review. **DNL's functional-curr
 
 AUD is also the **reporting currency** at the parent level, so for parent-level reporting purposes the per-entity functional currencies are translated to AUD at consolidation.
 
-**Why this matters for valuation.** Most published Australian sell-side DCFs of DNL value the entire company in AUD because the reporting currency is AUD. That approach is correct at the parent level but loses the USD-dominant operating economics of the Americas subsidiary — FX translation noise enters every line item. The architecturally cleaner approach (per the framework's §8.2 per-segment functional-currency support) is to value the US operations in USD and Australian operations in AUD, then translate to the parent's reporting currency for headline display. An earlier draft of this positioning treated the consolidated functional currency as USD; that overstated the case — the parent itself is AUD-functional. The USD treatment applies specifically to the US subsidiary, which is the architecture's per-segment functional currency block doing its work.
-
-Practical implication for the IPL → DNL transition: the company is now Dyno Nobel Limited (March 2025 rename) but the same underlying entity structure persists. The per-entity functional-currency analysis above doesn't change with the rename.
+**Why this matters for valuation.** Most published Australian sell-side DCFs of DNL value the entire company in AUD because the reporting currency is AUD. That approach is correct at the parent level but loses the USD-dominant operating economics of the Americas subsidiary — FX translation noise enters every line item. The framework's §8.2 per-segment functional-currency support is the architecturally cleaner approach; the current Phase 3.5 worked example uses consolidated-AUD presentation for simplicity, with per-segment dual-currency parked for Step 7 production.
 
 ## Single segment, post-demerger
 
 DNL is **single-segment** in its current state. The corporate-action overlay (§8.4) is not active for DNL prospectively — there are no further known demerger / acquisition / divestment events. The pre-demerger multi-segment treatment remains historically relevant but does not apply to the forward-looking valuation.
 
-The architectural support for multi-segment positioning (§8.2) is retained in the schema for future test companies (CSL is the immediate case) and for any future DNL M&A activity.
+---
 
-## Moat — moderate-to-high durability across multiple sources
+## Company position via Five Forces (Step 3 spine per methodology §3.3)
 
-Per §8.2 moat block, DNL's moat draws on:
+DNL's company-position translation from industry economics is organised force-by-force, mirroring the §7 industry-archetype Five Forces analysis. For each force: the industry rating from the archetype, how DNL differs from the industry average, the specific mechanism, the quantified differential, and where the offset is captured in the valuation model.
 
-- **Scale** — top-2 globally; cost advantage in US from gas-contract position; manufacturing economies of scale.
-- **Switching costs** — on-site manufacturing infrastructure at major customer sites creates physical lock-in; technical re-qualification for new supplier is non-trivial; multi-year contracts.
-- **Regulatory** — explosives licensing across jurisdictions raises entry hurdles; DNL holds operating licences across multiple states / countries; new entrants face long approval timelines.
-- **Resource** — long-term US natural gas supply contracts that provide a cost-curve advantage; this is the resource leg specifically.
+### Buyer power
 
-Durability is rated **moderate**, not high — the gas-contract advantage has a defined roll-off; on-site infrastructure is durable but customer-specific (not portable); regulatory licensing is sticky but not exclusionary; scale advantage is structural but tempered by Orica's similar scale.
+| | |
+|---|---|
+| Industry rating | **HIGH (binding)** |
+| DNL-specific | **At industry average** |
+| Mechanism | Same mining-major customer mix as Orica (BHP, Rio Tinto, FMG in Australia; major US miners in North America). No specific moat or weakness vs the industry leader on customer concentration. Top 5 customers ~45% of revenue; top 10 ~65%. |
+| Δ | **0** |
+| Where captured | n/a — neutral on this force |
 
-## Cost position — second quartile consolidated
+Buyer power is the binding constraint at the industry level (highest leverage of the five forces); DNL faces it but does not differ from the industry leader. The framework therefore does not adjust for buyer power specifically.
 
-US operations sit in the **bottom quartile** of the cost curve due to the long-term gas-contract position. Australian and RoW operations sit closer to **industry average**. Weighted across regions, DNL is **second-quartile** consolidated. This is the cost-position basis for the company's competitive-position assessment under §8.2.
+### Supplier power
 
-## Differentiation position — moderate pricing power
+| | |
+|---|---|
+| Industry rating | **MODERATE** |
+| DNL-specific | **LOWER (favourable)** |
+| Mechanism | Long-term US natural gas supply contracts insulate ~70% of US gas exposure through 2028. Below-market gas prices vs spot-exposed competitors. Concentrated roll-off in the 2028–2030 window. |
+| Δ | Margin +200bps currently, erodes to 0 by FY31 |
+| Where captured | Gas-contract roll-off overlay per methodology §3.2.1 (-50 / -100 / -150 bps cumulative Y3 / Y4 / Y5) |
 
-Pricing power is rated moderate, not high. Differentiation manifests in:
+The US gas-contract position is DNL's single most consequential firm-specific variable. Its erosion is structural and dated — captured as a structural-headwind overlay so the margin path peaks at FY28 and declines through FY31 as contracts roll. Beyond Y5 the advantage is fully eroded; terminal-state margin reflects spot-gas pricing.
 
-- **DigiShot electronic initiation system** — technology product, defensible margins, growing share of mix (currently ~18% of explosives revenue).
-- **On-site service offerings** — blast design, fragmentation optimisation; sticky relationships once embedded; service-oriented business model.
-- **Embedded IP and operating expertise** — particularly in technical aspects of explosive product formulation and on-site delivery.
+### Threat of new entrants
 
-Bulk ANFO sales — the largest revenue category by volume — face commodity-like price competition with limited differentiation. The mix of bulk vs technology / service is the lever DNL can pull over time to lift average pricing power.
+| | |
+|---|---|
+| Industry rating | **LOW** |
+| DNL-specific | **LOWER (favourable in EM)** |
+| Mechanism | In emerging markets (LATAM, Africa) DNL is *itself* the new entrant via DNEL ramp. Sub-scale operations growing from a low base; underdeveloped Tier 2/3 local incumbents. Conditions reversed from mature-market norm. |
+| Δ | Growth +15bps for the explicit forecast period |
+| Where captured | `company_position_offsets.by_force.new_entrants` (chain growth offset) |
 
-## Innovation position — moderate
+The +15bps growth uplift is time-limited (3–5 years) — captured as a chain offset rather than a terminal-state assumption. Once DNEL reaches local scale, the differential closes.
 
-R&D intensity ~1.5% of revenue. Pipeline includes:
+### Threat of substitutes
 
-- Next-generation electronic initiation systems (incremental improvements on DigiShot).
-- AI-driven blast design and fragmentation services (the M9 driver-taxonomy / impact-matrix dimension flagged in Ben's competitive analysis as an underrated risk if Canalyst formalises sector-driver vocabularies for mining customers).
-- Longer-horizon green-ammonia / decarbonised manufacturing initiatives (decade horizon; commercial viability dependent on scenario).
+| | |
+|---|---|
+| Industry rating | **LOW** |
+| DNL-specific | **At industry average** |
+| Mechanism | Mechanical excavation is uneconomic at scale for hard-rock mining; intra-industry technology substitution (electronic detonators displacing non-electronic) affects all players similarly. No DNL-specific substitution exposure. |
+| Δ | **0** |
+| Where captured | n/a |
 
-Pipeline strength is moderate — credible programs but neither best-in-class globally (Orica is generally seen as the technology leader) nor breakthrough.
+### Rivalry
+
+| | |
+|---|---|
+| Industry rating | **MODERATE** |
+| DNL-specific | **HIGHER (unfavourable)** |
+| Mechanism | DNL is #2 globally vs Orica #1. Orica's scale advantage (~30% larger by revenue), technology lead in electronic detonators (Webgen, BlastIQ blast-design platform), and broader geographic diversification translate to a ~30bps faster revenue growth at the same exposure in mature markets. |
+| Δ (competitive position) | Growth −30bps |
+| Where captured | `company_position_offsets.by_force.rivalry` — competitive_position_vs_leader |
+
+Plus a sub-component within rivalry — product-mix differential:
+
+| | |
+|---|---|
+| Industry rating | (rivalry, MODERATE) |
+| DNL-specific | **Unfavourable** |
+| Mechanism | DNL is more bulk-ANFO weighted (~50% of revenue) and less exposed to higher-growth electronic detonators (~18%) and software/services. The mix-shift advantage accrues to Orica more than to DNL. |
+| Δ (product-mix) | Growth −10bps |
+| Where captured | `company_position_offsets.by_force.rivalry` — product_mix_vs_industry_average |
+
+### Net DNL company-position offset
+
+| Component | Force | Mechanism | Δ to growth |
+|---|---|---|---:|
+| Competitive position vs leader | Rivalry | Orica scale + tech lead | −30bps |
+| Product-mix vs industry average | Rivalry (sub) | More bulk-ANFO; less electronic detonators | −10bps |
+| DNEL pipeline | New entrants | Sub-scale ramp in EM | +15bps |
+| Buyer / supplier / substitutes | (others) | At industry average | 0 |
+| **Net company-position growth offset** | | | **−25bps** |
+
+Plus the supplier-power favourable position which manifests on the *margin* side (captured via gas-contract roll-off overlay), not on growth.
+
+The net result is **DNL grows ~25bps slower than its geographic-mix-implied industry baseline** because rivalry pressure from Orica dominates the offset chain, partially offset by DNEL's EM pipeline. This is articulable claim, anchored in specific forces — not "drag" in the abstract.
+
+---
 
 ## Franchise assets — high durability
 
-This is where the company's structural moat sits, beyond the scale advantage. Six asset categories captured in the YAML:
+The structural assets that underpin DNL's moderate-to-high overall moat sit on the *supplier-power* and *rivalry* legs of the Five Forces analysis above:
 
-- Long-term mining offtake contracts with Australian majors.
-- Long-term US natural gas supply contracts.
-- On-site manufacturing infrastructure at major customer mine sites.
-- Operating licences and explosives-handling regulatory approvals.
-- Multi-decade customer relationships in the duopolistic Australian market.
-- Recognised brand and operating reputation in core markets.
+- Long-term mining offtake contracts with Australian majors (rivalry: switching-cost moat).
+- Long-term US natural gas supply contracts (supplier-power: cost advantage).
+- On-site manufacturing infrastructure at customer mine sites (rivalry: switching-cost moat; new-entrants: barrier).
+- Operating licences and explosives-handling regulatory approvals (new-entrants: barrier).
+- Multi-decade customer relationships in the duopolistic Australian market (rivalry: incumbency).
+- Recognised brand and operating reputation in core markets (rivalry: incumbency).
 
 Durability is rated **high** because these assets are the result of multi-year-to-multi-decade accumulation; an entrant cannot replicate them quickly even with capital.
 
@@ -92,41 +141,44 @@ Durability is rated **high** because these assets are the result of multi-year-t
 
 Per §8.2 `risk_exposures`:
 
-- **Commodity input risk**: natural gas (primary), ammonia spot exposure (where contract-uncovered).
-- **Customer-mix commodity risk**: thermal coal mining customers ~20% of mining mix; metallurgical coal ~15-20%. This is the indirect transition-risk exposure.
-- **Regulatory risk**: explosives security and licensing tightening; dangerous-goods transport; carbon pricing flow-through; Australian state safety reforms.
-- **Customer concentration**: top 5 customers ~45% of revenue, top 10 ~65%.
-- **Geographic concentration**: US ~55%, Australia ~35%, RoW ~10%. US-dominant.
+- **Commodity input risk**: natural gas (primary), ammonia spot exposure (where contract-uncovered). Maps to supplier-power force.
+- **Customer-mix commodity risk**: thermal coal mining customers ~20% of mining mix; metallurgical coal ~15–20%. This is the indirect transition-risk exposure. Maps to buyer-power force (specifically customer-base trajectory under Disorderly Climate).
+- **Regulatory risk**: explosives security and licensing tightening; dangerous-goods transport; carbon pricing flow-through; Australian state safety reforms. Maps to new-entrants force (also weakens incumbents if compliance costs rise).
+- **Customer concentration**: top 5 customers ~45% of revenue, top 10 ~65%. Maps to buyer-power.
+- **Geographic concentration**: US ~55%, Australia ~35%, RoW ~10%. US-dominant; relevant to Fragmentation scenario specifically.
 
 The customer-concentration exposure is the dominant risk feature — losing a single major customer is materially impactful in the short run, though contracted volumes provide buffer.
 
-## How DNL maps to the industry archetype's drivers
+## Archetype divergence overrides
 
-DNL diverges from the industrial-explosives archetype average on the following dimensions, captured in `scenario_sensitivity_overrides_global` in the YAML:
+DNL diverges from the industrial-explosives archetype average on these dimensions (captured in `scenario_sensitivity_overrides_global` in the YAML):
 
 - **Energy-transition operational carbon exposure: HIGH** (vs archetype average). DNL's ammonia self-supply (~55% of internal use) makes it more carbon-intensive in operations than competitors who purchase ammonia. Carbon-pricing regimes flow through to margins more directly.
 - **Supply-chain concentration: MODERATE** (below archetype average). DNL is more vertically integrated than several Tier 2 competitors via its own ammonia production, reducing supplier-power exposure on the critical input.
 
-These overrides directly affect how scenarios transmit to DNL's drivers in Layer 5 (impact matrix) — covered in Phase C of Step 5.
+## How DNL maps to each of the six scenarios
 
-## Implications for valuation under our six scenarios
+Brief positioning-driven view; full per-scenario analysis in `analyses/dnl/scenarios/<scenario>.md`; v4 per-share numbers in `analyses/dnl/valuations/dnl_scenarios_comparison_v4.xlsx`.
 
-Brief positioning-driven view; full per-scenario analysis follows in Phase D (`analyses/dnl/scenarios/<scenario>.md`).
+| Scenario | DNL outcome (v4 per share) | Dominant driver |
+|---|---:|---|
+| Muddle Through | AUD 3.59 | Status-quo extension; gas-contract roll-off as headwind, transformation as tailwind |
+| Orderly Convergence | AUD 4.16 | Mining capex healthy; transition-mineral demand; modest margin lift |
+| AI Productivity Lag | AUD 3.48 | Modest labour-cost benefit on SG&A; otherwise neutral |
+| Fragmentation | AUD 2.63 | US-Australia bloc-aligned trade exposure; cross-bloc supply chains disrupted |
+| Disorderly Climate | AUD 1.44 | Coal-customer attrition + carbon-cost flow-through + decarbonisation capex |
+| Stagflation Persists | AUD 1.28 | Input-cost pass-through fails; supplier-power moderate blocks recovery; mining capex slows |
 
-- **Muddle Through**: mid-case. Continued cost-advantage benefit; modest demand growth from mining capex cycle; technology mix-shift incremental. Reference outcome.
-- **Orderly Convergence**: modest positive. Mining-customer capex cycle healthy; transition-mineral demand support; technology premium re-rates moderately. Not the strongest beneficiary among our three test companies because DNL is cyclical / industrial, not growth-multiple-expansion-led.
-- **Stagflation Persists**: negative. Input-cost pressure exceeds contracted protection over time; supplier-power moderate (vs full pass-through) compresses margins; mining-customer capex slows under restrictive financing.
-- **Fragmentation and Resource Nationalism**: most exposed of our three test companies. Cross-bloc ammonia and ammonium-nitrate flows disrupted; supply-chain duplication costs; potential strategic-mineral mining beneficiary on volumes but bloc-aligned trade may shift.
-- **Disorderly Climate Crystallisation**: bifurcating. Negative on coal-customer mix and carbon-cost flow-through; positive on transition-mineral demand. Net depends on customer-mix shift pace.
-- **AI Productivity Lag**: roughly neutral. Modest labour-cost containment; AI-driven blast-design pipeline economics don't expand as bulls hope; mining-customer productivity gains slower than expected.
-
-The strongest scenario for DNL is Orderly Convergence; the worst is a Fragmentation × Stagflation combination (not in our set as a single scenario but illustrative of the binding-constraint case).
+The strongest scenario for DNL is Orderly Convergence; the worst is Stagflation Persists. The framework-derived asymmetry ratio (downside / upside relative to Muddle Through) is ~4.0× — structural to a cyclical-industrial with elevated leverage.
 
 ## Cross-references
 
-- §8.2 schema: structured positioning in `dnl.yaml`.
+- §8.2 schema: structured positioning in `dnl.yaml` (with `company_position_offsets.by_force` block per methodology §3.3 going forward; current YAML is pre-§3.3 and will be updated in the Step 6 schema migration).
 - §8.3 archetype-specific positioning fields: the industrial-explosives-specific block on `segments[0].archetype_specific` (gas-contract maturity, electronic-detonator share, on-site service unit count, ammonia self-supply share, coal customer mix).
 - `data/industries/industrial_explosives.{yaml,md}`: the archetype DNL FK-references.
-- `data/financials/dnl.yaml`: indicative base-year financial snapshot (to be replaced by Ben's data workstream curated version).
-- `analyses/dnl/scenarios/<scenario>.md` (Phase D): per-scenario impact analyses.
-- `analyses/dnl/thesis.md` (Phase D): cross-scenario investment view.
+- `data/financials/dnl.yaml`: base-year financial snapshot (`normalised_baseline` block applies the v4 calibration overrides).
+- `data/companies/dnl_documents.yaml`: source-document register per methodology §14.
+- `analyses/dnl/scenarios/<scenario>.md`: per-scenario impact analyses.
+- `analyses/dnl/thesis.md`: cross-scenario investment view (v4-aligned).
+- `analyses/dnl/valuations/dnl_muddle_through_valuation_v4_5forces.xlsx`: worked-example valuation workbook.
+- `analyses/dnl/valuations/dnl_scenarios_comparison_v4.xlsx`: cross-scenario comparison.
