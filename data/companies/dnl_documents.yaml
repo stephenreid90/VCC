@@ -1,0 +1,203 @@
+# DNL source-document register
+#
+# Per methodology section 14 (source-document ingestion discipline).
+# Maintained alongside data/companies/dnl.{yaml,md} and
+# data/financials/dnl.yaml.
+#
+# Refresh trigger: any of (a) new half-year/annual reporting cycle;
+# (b) material continuous-disclosure announcement; (c) >5% market move
+# implying new information; (d) methodology-driven sweep.
+#
+# Last refreshed: 9 June 2026
+
+company_id: dnl
+
+documents:
+  # === Latest half-year reporting (priority sources) ===
+  - id: hy_2026_results_announcement
+    title: "2026 Half Year Results Announcement"
+    type: announcement
+    asx_subtype: appendix_4d_plus_release
+    date: 2026-05-11
+    source: "ASX continuous disclosure (companion to Appendix 4D)"
+    status: read_and_ingested
+    key_insights:
+      - "Group revenue AUD 1,898m (-15.7% pcp due to fertilisers discontinued)"
+      - "Explosives EBIT ex IMIs AUD 224m (+28% pcp); margin 13.9%"
+      - "Net debt 31 Mar 2026: AUD 1,261m; ND/EBITDA 1.3x"
+      - "Interim dividend 4.6cps unfranked (50% payout policy)"
+      - "Buyback: AUD 558m of AUD 900m complete; AUD 342m remaining"
+      - "Operating cash flow AUD 145m (depressed by AUD 111m one-off TWC unwind)"
+
+  - id: hy_2026_investor_presentation
+    title: "2026 Half Year Results Investor Presentation"
+    type: investor_presentation
+    date: 2026-05-11
+    source: "ASX continuous disclosure / company investor page"
+    status: read_and_ingested
+    key_insights:
+      - "Slide 11 - FY26 outlook: Explosives EBIT AUD 460-500m guidance; corporate AUD ~40m; effective tax 20-25%; capex AUD 250-300m"
+      - "Slide 27 - segment EBIT decomposition (DNAP/DNA/DNEL/Corp & elim) with AUD 16m corporate cost ALREADY DEDUCTED in segment total"
+      - "Slide 28 - transformation tracker: FY26 guidance AUD 460-500m, FY26 exit run rate AUD 495-525m, FY28 ambition AUD 600m, transformation EBIT uplift AUD 300m"
+      - "Slide 29 - Fertilisers separation cash flows: IPF Distribution +AUD 125m, Perdaman +AUD 145m, Geelong remediation -AUD 35m, Gibson Island -AUD 97m, Phosphate Hill ARO -AUD 126m, transaction costs -AUD 11m, Phosphate Hill contingent +AUD 100m"
+    pages_critical:
+      - 11   # outlook + sensitivities
+      - 27   # business unit performance
+      - 28   # transformation tracker
+      - 29   # fertilisers separation cash flows
+
+  - id: hy_2026_half_year_financial_report
+    title: "2026 Half Year Financial Report"
+    type: statutory_accounts
+    asx_subtype: appendix_4d_full_report
+    date: 2026-05-11
+    source: "ASX continuous disclosure"
+    status: read_partially
+    key_insights:
+      - "Full statutory balance sheet (gross presentation, total assets AUD 6,997.7m) vs announcement net-WC presentation (AUD 5,863m)"
+      - "Notes detail on environmental & restructure liabilities composition"
+    follow_up_required:
+      - "Read full notes on environmental provisions (Phosphate Hill ARO bridge) for Q5 source citation"
+
+  - id: hy_2026_dividend_declaration
+    title: "FY26 Half Year Dividend"
+    type: dividend_declaration
+    asx_subtype: appendix_3a1
+    date: 2026-05-11
+    source: "ASX 3A.1"
+    status: read_and_ingested
+    key_insights:
+      - "Interim 4.6cps unfranked"
+      - "Ex-div / record / payment dates per ASX 3A.1"
+
+  # === Prior reporting period ===
+  - id: fy_2025_annual_report
+    title: "FY2025 Annual Report"
+    type: annual_report
+    date: 2025-11-XX
+    status: not_yet_ingested
+    follow_up_required:
+      - "Ingest full FY2025 annual report for prior-year comparator data and segment notes"
+      - "Confirm pre-demerger combined-entity revenue trajectory"
+
+  - id: fy_2025_results_announcement
+    title: "2025 Full Year Results Announcement"
+    type: announcement
+    asx_subtype: appendix_4e_plus_release
+    date: 2025-11-XX
+    status: not_yet_ingested
+
+  # === Continuous disclosure: corporate actions ===
+  - id: phosphate_hill_sale_announcement
+    title: "Sale of Phosphate Hill to Mayfair (binding agreement)"
+    type: corporate_action_announcement
+    event_type: corporate_action
+    date: 2026-03-09
+    source: "ASX continuous disclosure"
+    status: read_and_ingested
+    key_insights:
+      - "Binding agreement for Phosphate Hill sale to Ryowa II GPS / Mayfair Australia Corp"
+      - "Nominal AUD 1 consideration; DNL commits AUD 80m inventory at completion"
+      - "AUD 126m ARO funding for site rehabilitation post-completion"
+      - "Up to AUD 100m contingent / deferred consideration on performance hurdles"
+
+  - id: perdaman_offtake_sale
+    title: "Sale of Perdaman Offtake Agreement to Macquarie"
+    type: corporate_action_announcement
+    event_type: corporate_action
+    date: 2025-12-XX
+    source: "ASX continuous disclosure"
+    status: read_and_ingested
+    key_insights:
+      - "Sold to Macquarie Commodities and Global Markets"
+      - "Up to AUD 145m consideration subject to operational milestones"
+      - "Perdaman project commissioning expected 2027"
+
+  - id: gibson_island_land_sale
+    title: "Sale of Gibson Island land to Goodman Group"
+    type: corporate_action_announcement
+    event_type: corporate_action
+    date: 2025-09-XX
+    source: "ASX continuous disclosure"
+    status: read_and_ingested
+    key_insights:
+      - "Sold to Goodman Group"
+      - "Receivable AUD 198m recognised at 30 Sep 2025; proceeds received in H1 FY26"
+      - "AUD 157m pre-tax remediation + leaseback obligation (AUD 110m post-tax)"
+
+  - id: ipf_distribution_sale
+    title: "Sale of IPF Distribution business to Ridley Corporation"
+    type: corporate_action_announcement
+    event_type: corporate_action
+    date: 2025-09-30  # completion date
+    source: "ASX continuous disclosure"
+    status: read_and_ingested
+    key_insights:
+      - "Sold to Ridley Corporation Limited"
+      - "AUD 50m vendor note (3 yrs)"
+      - "AUD 75m deferred consideration for Geelong property (2 yrs)"
+      - "Final purchase-price adjustments settled H1 FY26 (AUD 7.4m)"
+
+  - id: demerger_documentation
+    title: "Demerger documentation (IPL rename to DNL)"
+    type: scheme_documentation
+    event_type: corporate_action
+    date: 2025-03-XX
+    status: not_yet_ingested
+    follow_up_required:
+      - "Source the original demerger scheme booklet for the structural rationale and segment-allocation methodology"
+
+  # === Analyst-facing material ===
+  - id: hy_2026_results_call_transcript
+    title: "H1 FY26 Results Call Transcript (Q&A)"
+    type: conference_call_transcript
+    date: 2026-05-11
+    status: not_yet_ingested
+    follow_up_required:
+      - "Ingest Q&A transcript for nuance on transformation pace, gas-contract roll-off timing, and management response to analyst questions"
+
+  # === Sustainability / TCFD ===
+  - id: fy_2025_sustainability_report
+    title: "FY2025 Sustainability Report"
+    type: sustainability_report
+    date: 2025-11-XX
+    status: not_yet_ingested
+    follow_up_required:
+      - "Ingest for Disorderly Climate Crystallisation scenario calibration: carbon intensity of operations, mine-customer mix by commodity, transition-mineral exposure"
+
+  # === Third-party context ===
+  - id: porter_2008_hbr
+    title: "Porter (2008) - 'The Five Competitive Forces That Shape Strategy'"
+    type: framework_reference
+    date: 2008-01-XX
+    source: "Harvard Business Review"
+    status: read_and_ingested
+    key_insights:
+      - "Industry archetype Five Forces methodology framework"
+      - "Used in design/frameworks/five_forces_questions.md"
+
+# Refresh schedule
+refresh_cadence:
+  next_full_refresh: 2026-11-XX  # FY26 results announcement
+  trigger_events:
+    - "Any new continuous-disclosure announcement materially affecting equity value (>5% impact)"
+    - "FY26 EBIT guidance update / re-affirmation"
+    - "Material M&A announcement"
+    - "Credit-rating action"
+
+# Standing-checklist completeness (per methodology section 14.2)
+standing_checklist_status:
+  investor_presentation: read_and_ingested
+  half_year_results_announcement: read_and_ingested
+  statutory_half_year_report: read_partially
+  half_year_dividend_declaration: read_and_ingested
+  latest_annual_report: not_yet_ingested
+  continuous_disclosure_recent: read_and_ingested  # all corporate actions logged above
+  conference_call_transcript: not_yet_ingested
+  sustainability_tcfd: not_yet_ingested
+
+# Schema validator hooks (Step 6)
+validators_required:
+  - "corporate_action_overlay.active = true requires at least one event_type=corporate_action document"
+  - "All standing-checklist items must reach status=read_and_ingested or read_partially before validating equity bridge for production"
+  - "Last refresh date must be within 90 days of valuation date OR document must reference latest reporting period"
