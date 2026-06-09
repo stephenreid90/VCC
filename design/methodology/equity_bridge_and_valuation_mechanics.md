@@ -260,6 +260,67 @@ discount-rate adjustment.
 
 ---
 
+## 3.6 Tax-rate discipline — effective glides to blended statutory
+
+A clean conceptual distinction matters here:
+
+- **Effective rate**: actual tax paid / pre-tax income. Captures everything —
+  geographic mix, R&D credits, timing differences, JV income treatment,
+  prior-year true-ups. Volatile year-to-year.
+- **Blended statutory rate**: weighted average of statutory rates across
+  jurisdictions, weighted by income earned in each. Structural; captures
+  only the persistent geographic-mix advantage.
+
+### 3.6.1 Discipline
+
+Explicit-period tax rate is the effective rate (per management guidance);
+terminal-period rate is the blended statutory rate. Linear glide between
+the two over the explicit horizon captures the analyst's view that
+transient benefits (R&D credits, timing differences, JV effects)
+compress, while the structural jurisdictional-mix advantage persists.
+
+### 3.6.2 Blended statutory calculation
+
+```yaml
+tax_rate_blended_statutory:
+  jurisdictional_weights:
+    - jurisdiction: us
+      revenue_weight: 0.55
+      statutory_rate: 0.26   # federal 21% + state ~5%
+    - jurisdiction: au
+      revenue_weight: 0.35
+      statutory_rate: 0.30
+    - jurisdiction: other  # mix
+      revenue_weight: 0.10
+      statutory_rate: 0.27
+  computed_blended: 0.275   # weighted sum
+```
+
+All inputs user-overridable per the structured-component principle.
+
+### 3.6.3 Single-rate consistency principle
+
+The same blended statutory rate is used for:
+
+(a) Terminal operating tax (NOPAT in terminal value)
+(b) Cost-of-debt tax shield in WACC (Rd × (1 − t))
+(c) Hamada re-levering of beta (β_L = β_U × (1 + (1−t) × D/E))
+
+No "marginal vs effective" split for different uses within the model. One
+rate, one source, three uses. Internal consistency principle (per Tara,
+29 May 2026).
+
+### 3.6.4 DNL worked example
+
+- Effective rate FY26 (Y1): 22.5% (per management guidance midpoint 20-25%)
+- Blended statutory (Y5/terminal): 27.5%
+- Glide Y1-Y5: 22.5% / 23.75% / 25.0% / 26.25% / 27.5% (linear)
+
+The 5pp gap closes over the explicit horizon. Persistent ~2.5pp gap to
+Australian statutory (30%) reflects structural US-revenue weighting.
+
+---
+
 ## 4. Equity-bridge discipline
 
 This is the discipline for walking from enterprise value to equity value to value-per-share. The principle: **every adjustment is explicit, has an anchor date, and flags whether it's already on the balance sheet.**
@@ -543,3 +604,88 @@ Cross-references to existing pydantic modules under `src/vcc_valuations/schemas/
 ## 10. Worked example reference
 
 The DNL Muddle Through workbook (`analyses/dnl/valuations/dnl_muddle_through_valuation.xlsx`) is the canonical worked example. Each principle in this document is implemented and visible in the workbook. The workbook is the integration test: if it can't be built straightforwardly from a company position YAML + scenario YAML + industry archetype YAML + this methodology, the methodology has a gap.
+
+
+---
+
+## 14. Source-document ingestion discipline
+
+Per the discipline that emerged 29 May 2026 (after the DNL Q1–Q8 review
+surfaced material content in the H1 investor presentation that was missed
+in the initial calibration pass).
+
+### 14.1 Per-company document register
+
+Each company carries a `documents` register listing every ingested source
+with title, date, ASX announcement number / URL, key insights extracted,
+and status (read / unread / superseded). Lives in
+`data/companies/<id>/documents.yaml` or on the company financials YAML.
+
+### 14.2 Standing ingestion checklist
+
+For any ASX-listed reporting company, the following document types are
+read at population and at each refresh cycle:
+
+(a) **Investor presentation** (slides) — often the most incrementally useful
+beyond the announcement narrative; contains segment-level detail,
+sensitivities, transformation trackers, transition cash flows.
+
+(b) **Half-year results announcement** (Appendix 4D-paired ASX release) —
+press-release-style narrative.
+
+(c) **Statutory half-year financial report** (Appendix 4D + full HY
+accounts) — precision on balance-sheet line items; statutory vs net-
+working-capital presentation; notes detail.
+
+(d) **Half-year dividend declaration** (ASX 3A.1).
+
+(e) **Latest annual report** (Appendix 4E + statutory annual accounts).
+
+(f) **Continuous disclosure announcements since last reporting period** —
+particularly anything M&A, financing, guidance, or ratings related.
+
+(g) **Conference call / analyst day transcripts** — Q&A often surfaces
+nuance not in prepared remarks.
+
+(h) **Sustainability / TCFD reports** — particularly relevant for climate
+scenarios.
+
+### 14.3 Major-corporate-event trigger
+
+When a corporate-action overlay is active (demerger, acquisition, disposal,
+recapitalisation, scheme), the framework requires explicit reference to
+the specific announcement document(s) covering that event.
+
+Schema validator: "If `corporate_action_overlay.active = true`, then
+`documents` must include at least one entry tagged
+`event_type = corporate_action`." Refuses to validate company positions
+that omit known event documentation.
+
+### 14.4 Refresh cadence
+
+(a) Half-year-reporting companies: refresh within 2–4 weeks of each H1/H2
+release.
+
+(b) Quarterly-reporting companies: refresh quarterly.
+
+(c) Material announcements (>5% impact on equity value): refresh on receipt.
+
+(d) Methodology / spec changes: applied via top-down sweep (editorial pass
+across all companies).
+
+### 14.5 Source-citation discipline in deliverables
+
+Every calibration anchor in the valuation workbook cites its document
+source: title, date, specific page / slide reference. The "Sources" tab
+in the worked-example workbook (DNL v4) is the pattern.
+
+### 14.6 Handoff to data workstream
+
+Ben's data workstream populates the documents register and key-insight
+summaries per company. The valuation workstream consumes the register;
+no direct web research that doesn't pass through the register.
+
+This gives the data workstream a clear spec ("here's what to ingest per
+company") and the valuation workstream a clear input ("the register is
+what we read").
+

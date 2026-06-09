@@ -1,12 +1,24 @@
 # VCC Valuations — Scenario-Based Equity Valuation Module
 ## Architecture & Design Specification
 
-**Version:** 0.3.1
-**Date:** 21 April 2026 (drafted); 7 May 2026 (Ben's-bot review + Group 1 changes; editorial sweep; v0.1 freeze); 17 May 2026 (v0.2: archetype-granularity principle added at §7.1.1); 22 May 2026 (v0.2.1: IPL → DNL rename editorial sweep); 25 May 2026 (v0.3: equity-bridge and valuation-mechanics methodology added — see `design/methodology/equity_bridge_and_valuation_mechanics.md`).
+**Version:** 0.4
+**Date:** 21 April 2026 (drafted); 7 May 2026 (Ben's-bot review + Group 1 changes; editorial sweep; v0.1 freeze); 17 May 2026 (v0.2: archetype-granularity principle added at §7.1.1); 22 May 2026 (v0.2.1: IPL → DNL rename editorial sweep); 25 May 2026 (v0.3: equity-bridge and valuation-mechanics methodology added); 28 May 2026 (v0.3.1: single-WACC discipline resolved); 9 June 2026 (v0.4: Five-Forces spine for company position §3.3, tax-rate discipline §3.6, source-document ingestion §14).
 **Status:** v0.3. Section-by-section review with Tara complete; Ben's-bot platform-side review (5 May 2026) incorporated; archetype-granularity principle added 17 May 2026; test-company name change IPL → DNL swept through the spec 22 May 2026; equity-bridge methodology added 25 May 2026. Subsequent material changes will bump version with a migration note.
 **Migration from v0.1 → v0.2:** Additive change only. New §7.1.1 "Defining archetype granularity" added.
 **Migration from v0.2 → v0.2.1:** Editorial only. Test-company references updated from "IPL" / "Incitec Pivot Limited" to "DNL" / "Dyno Nobel Limited" following the company's March 2025 rename after demerger of the fertilisers business. Ticker now ASX:DNL (was ASX:IPL); ISIN AU0000390544. The "DNL, formerly IPL" historical pointer is retained in §2 item 4. No schema or analytical content changes. Existing v0.1 / v0.2 schemas remain valid.
-**Migration from v0.3 → v0.3.1:** Single-WACC discipline resolution. The parked §9.7 review item 4 ("WACC scenario behaviour") is resolved in favour of holding WACC constant across scenarios. Scenario rate-driver deltas no longer flow into the DCF discount rate. Terminal growth remains scenario-conditional. See `design/methodology/equity_bridge_and_valuation_mechanics.md` §3.5. Spec change is additive only (resolution of a parked decision); no schema or analytical content changes.
+**Migration from v0.3 → v0.3.1:** Single-WACC discipline resolution.
+
+**Migration from v0.3.1 → v0.4:** Substantive methodology additions, additive only — no schema breaks.
+
+(a) **§3.3 Company position via Five Forces (spine).** The Step 3 company-position translation is structured force-by-force, mirroring the §7 industry-archetype Five Forces analysis. Each company-position offset is anchored to a specific force with a named mechanism, replacing the earlier catch-all "company offset." See methodology §3.3 for the structure and DNL worked example.
+
+(b) **§3.6 Tax-rate discipline.** Effective rate (per management guidance) glides to blended statutory (computed from jurisdictional weights × statutory rates) over the explicit horizon. Single rate principle: same blended statutory used for terminal operating tax, WACC debt-tax-shield, and Hamada re-levering of beta. Internal consistency.
+
+(c) **§14 Source-document ingestion.** Standing checklist of source documents per company (investor presentations, statutory reports, continuous disclosure, transcripts, sustainability). Per-company `documents` register. Schema validator requires explicit reference to corporate-action documents when overlay is active. Refresh cadence aligned to half-year reporting. Handoff spec for Ben's data workstream.
+
+Schema-level implications listed in §3.3 of the methodology document. All v0.3.1 schemas remain valid (additive only).
+
+**Status:** The parked §9.7 review item 4 ("WACC scenario behaviour") is resolved in favour of holding WACC constant across scenarios. Scenario rate-driver deltas no longer flow into the DCF discount rate. Terminal growth remains scenario-conditional. See `design/methodology/equity_bridge_and_valuation_mechanics.md` §3.5. Spec change is additive only (resolution of a parked decision); no schema or analytical content changes.
 **Migration from v0.2.1 → v0.3:** Substantive methodology addition. A new companion document — `design/methodology/equity_bridge_and_valuation_mechanics.md` — specifies the equity-bridge and valuation-date mechanics that sit between the impact-matrix assumption set and the per-share output. Derives revenue growth from a scenario → industry → company chain rather than from an opaque baseline scalar; specifies a structured equity bridge with named, anchor-date-paired adjustments; specifies stub-period + mid-period discounting; codifies "show both bases + context" treatment for IMIs / underlying adjustments. Cross-referenced from §11.4.1, §11.4.2 and §11.5. Schema-level implications listed in §9 of that document; binding for Step 6 production translator and Step 7 production DCF.
 **Scope of this phase:** Layers 1–6 (the "assumptions engine"). Layers 7 (DCF) and 8 (interface) are described at a high level only and deferred to later phases.
 **Review convention:** Open issues raised during section-by-section review are captured as an `X.N Review items` subsection at the end of the relevant section. Search the document for "Review items" to surface all open issues in one pass. Items in these subsections are candidates for cross-review with Ben's data-sourcing workstream.
