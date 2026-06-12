@@ -1,0 +1,515 @@
+company_position:
+  id: wbc
+  name: Westpac Banking Corporation
+  ticker: ASX:WBC
+  reporting_currency: AUD
+  functional_currency: AUD
+  functional_currency_rationale: >
+    Westpac Banking Corporation parent functional currency is AUD. ASX listing,
+    Australian incorporation, AUD-denominated capital structure, primary
+    regulator APRA. NZ operations (Westpac NZ) operate in NZD with NZD
+    functional currency consolidated to AUD; other overseas operations
+    (institutional book) are AUD-functional with USD/GBP transactional exposure
+    hedged. The per-segment functional currency block below captures NZ as
+    the only material non-AUD operating unit.
+
+  industry_type: bank
+  industry_archetype: australian_major_banks
+
+  # ---- Consolidated, parent-level blocks ----
+
+  balance_sheet:
+    cet1_ratio: 0.1242
+    cet1_ratio_level_1: 0.1275
+    tier_1_ratio: 0.1428
+    total_capital_ratio: 0.2150
+    apra_leverage_ratio: 0.0498
+    leverage_posture: prudentially_strong
+    liquidity: >
+      CET1 ratio 12.42% (Level 2) at 31 March 2026, well above the 11.5%
+      APRA "unquestionably strong" floor (includes D-SIB surcharge) and
+      management's 11.0-11.5% operating target — leaving 90-150bps of
+      operating buffer. AT1 outstanding AUD 8.5bn. Total Capital 21.5%.
+      APRA leverage 4.98%. LCR and NSFR comfortably above 100%. Position
+      supports continued capital returns; buyback completion ongoing.
+
+  capital_allocation:
+    dividend_policy: >
+      Payout ratio target 70-75% of cash earnings (ex notable items).
+      Final and interim ordinary dividends consistent with this range.
+      Franking 100% maintained.
+    buyback_posture: >
+      Off-market buyback completed AUD 1.0bn FY24; ongoing capital
+      management via on-market buyback to manage CET1 above management
+      target. AUD 581m share buyback executed in FY25; further capital
+      management dependent on CET1 evolution.
+    m_and_a_posture: >
+      Conservative. No material M&A appetite under current management
+      (Anthony Miller, CEO from late 2024). Focus is on organic mortgage
+      and business banking re-build plus the multi-year technology
+      transformation. Suncorp Bank acquisition was ANZ's, not Westpac's.
+    reinvestment_rate: 0.27
+      # Implied retention rate = 1 - target payout 0.73
+
+  management_and_governance:
+    strategy_quality: moderate
+    strategy_evidence: >
+      Strategic clarity meaningfully improved post-AUSTRAC (2020), post-
+      King review (2022), and under Anthony Miller as CEO from late 2024.
+      Focus on (i) simplification — Westpac NZ retained but core franchise
+      narrowed; wealth largely divested; (ii) technology transformation
+      (UNITE program, FY24-FY28); (iii) re-building business banking
+      ground lost to NAB / CBA in 2018-2022; (iv) defending #2 mortgage
+      share against CBA. Coherent narrative; execution evidence is the
+      open question.
+    execution_track_record: moderate
+    execution_evidence: >
+      Mixed. AUSTRAC settlement AUD 1.3bn (2020) and the King review
+      damaged the franchise; Anthony Miller turnaround initiated mid-
+      2024. Technology re-platforming (UNITE program) is the largest
+      single execution risk and has been on schedule through FY25-1H26.
+      Mortgage book share has stabilised after losing ground 2022-2024.
+      Cost-to-income at 51.7% (1H26 statutory) / 51.7% (ex notable) sits
+      mid-pack of the Big Four (CBA ~42%, NAB ~43%, ANZ ~48%) — material
+      improvement path exists but execution-conditional.
+
+  esg_and_transition:
+    carbon_intensity: >
+      Direct Scope 1 / Scope 2 emissions modest (banks are not high-
+      emitting operators themselves). Material exposure is in financed
+      emissions — lending book to mining, oil & gas, and high-emission
+      manufacturing. Westpac has committed to net-zero financed emissions
+      by 2050 with interim sector targets. Climate scenario analysis
+      disclosed in Annual Report 2025 climate report.
+    transition_plan: >
+      Sector-by-sector financed-emissions targets; reduced thermal coal
+      exposure (target zero direct lending by 2030); managed exit from
+      certain oil & gas project lending; growth in sustainability-linked
+      loans. Climate Bond Initiative aligned.
+    stranded_asset_exposure: >
+      Direct stranded-asset exposure low (already exiting thermal coal;
+      oil & gas managed down). Indirect exposure via mortgage book in
+      climate-vulnerable geographies (flood, bushfire zones) is the
+      larger risk. Captured under the climate-RWA-adjustment disruption
+      vector at the archetype level.
+
+  scenario_sensitivity_overrides_global:
+    energy_transition:
+      direction: negative
+      magnitude: low_to_moderate
+      rationale: >
+        Direct fossil-fuel lending small share of book; ongoing managed
+        exit. Indirect housing-book climate risk is gradual. Net effect
+        of disorderly climate scenario worse than baseline because
+        of mortgage-book climate-vulnerable exposure plus business
+        book transition costs.
+    interest_rate_and_credit_cycle:
+      direction: negative
+      magnitude: high
+      rationale: >
+        Bank performance is highly sensitive to credit-cycle scenarios.
+        Disorderly climate and stagflation both stress credit losses
+        materially; muddle through holds at through-cycle anchor.
+
+  # ---- Segment block ----
+
+  segments:
+    - segment: consumer
+      industry_archetype: australian_major_banks
+      functional_currency: AUD
+      revenue_share: 0.37
+        # 1H26 cash NPAT proxy for revenue share: 1184 / 3,483 ex notable
+      ebit_share: 0.34
+      notes: >
+        Largest segment by both revenue and capital. Mortgage book is
+        the core — AUD 517.7bn Australian housing (incl. AUD 18.5bn
+        RAMS). Personal lending small (AUD 9bn). Retail deposit
+        franchise.
+
+      market_positions:
+        - market: Australian system mortgages
+          unit: outstanding_balance
+          share: 0.20
+          rank: 2
+          share_trend:
+            direction: stable
+            delta_5yr_bps: -150
+            narrative: >
+              Lost share 2022-2024 in the front-book cashback war (NAB
+              + ANZ aggression); stabilised 2025-1H26 as discipline
+              returned and Westpac's "Look Wider" repositioning took
+              hold. CBA remains #1 at ~25% share; WBC remains comfortable
+              #2 at ~20%.
+
+        - market: Australian household deposits
+          unit: outstanding_balance
+          share: 0.20
+          rank: 2
+          share_trend:
+            direction: stable
+            delta_5yr_bps: 0
+            narrative: >
+              Strong deposit franchise. AUD 615bn Australian retail
+              deposits (incl AUD 149bn non-interest-bearing transaction
+              accounts). Funding cost advantage from large transaction
+              account share.
+
+      moat:
+        sources:
+          - scale
+          - switching_cost
+          - distribution
+        durability: high
+        evidence: >
+          Scale: #2 mortgage book and deposit franchise nationally.
+          Switching costs: mortgage discharge friction, transaction-
+          account stickiness, broker-channel relationships. Distribution:
+          national branch network plus mature digital channels (Westpac
+          Live app generally well-rated, though typically trailing CBA's
+          CommBank app on independent assessments).
+
+    - segment: business_and_wealth
+      industry_archetype: australian_major_banks
+      functional_currency: AUD
+      revenue_share: 0.28
+      ebit_share: 0.33
+      notes: >
+        Business banking re-build. SME + mid-corporate + agribusiness +
+        residual wealth. Business loans AUD 238bn Australia. Higher
+        margin than mortgages; higher risk weights.
+
+      market_positions:
+        - market: Australian business lending
+          unit: outstanding_balance
+          share: 0.16
+          rank: 3
+          share_trend:
+            direction: gaining
+            delta_5yr_bps: 50
+            narrative: >
+              Lost share to NAB (#1) and CBA's rebuild over 2018-2022.
+              Re-investment in business-banker hiring and digital tools
+              from FY24 has started to recover share. NAB remains the
+              franchise leader with ~21% share.
+
+      moat:
+        sources:
+          - scale
+          - switching_cost
+        durability: moderate
+        evidence: >
+          Scale: #3 in business banking, behind NAB and CBA. Switching
+          costs: relationship-banker model, transaction-banking
+          integration. Moat is real but less defensible than the
+          consumer-segment moat.
+
+    - segment: institutional
+      industry_archetype: australian_major_banks
+      functional_currency: AUD
+      revenue_share: 0.17
+      ebit_share: 0.21
+      notes: >
+        WIB (Westpac Institutional Bank). Large corporate, FI, sovereign,
+        markets, transactional banking. Smaller scale than ANZ; similar
+        to CBA / NAB. Stable contribution. Higher non-interest income
+        share (markets + transaction banking fees).
+
+      market_positions:
+        - market: Australian institutional banking
+          unit: revenue
+          share: 0.20
+          rank: 3
+          share_trend:
+            direction: stable
+            delta_5yr_bps: 0
+
+      moat:
+        sources:
+          - scale
+          - relationship
+        durability: moderate
+        evidence: >
+          Long-standing relationships with Australian corporates and
+          financial institutions. Less differentiated than ANZ's
+          institutional offering; similar to CBA / NAB.
+
+    - segment: new_zealand
+      industry_archetype: australian_major_banks
+      functional_currency: NZD
+      functional_currency_rationale: >
+        Westpac NZ operates as RBNZ-regulated NZ subsidiary with NZD
+        functional currency. Consolidated to AUD at parent level.
+      revenue_share: 0.12
+      ebit_share: 0.13
+      notes: >
+        Westpac New Zealand. Mortgage-dominated retail bank plus business
+        banking. AUD 91.6bn loans (NZ residents view AUD 91.6bn = NZD
+        109.9bn). RBNZ capital requirements apply. NZ-specific cycle
+        moderately correlated with Australia.
+
+      market_positions:
+        - market: NZ system mortgages
+          unit: outstanding_balance
+          share: 0.18
+          rank: 3
+          share_trend:
+            direction: stable
+            delta_5yr_bps: -50
+
+      moat:
+        sources:
+          - scale
+          - regulatory
+        durability: high
+        evidence: >
+          Scale: top-four NZ bank. Regulatory: RBNZ BS2A subsidiary
+          capital framework is a moat against new entrants.
+
+    - segment: group_businesses
+      industry_archetype: australian_major_banks
+      functional_currency: AUD
+      revenue_share: 0.06
+      ebit_share: -0.01
+        # Treasury, group costs, eliminations. Small / negative
+        # contribution.
+      notes: >
+        Treasury, group support functions, intra-group eliminations.
+        Operating losses typical given allocation of unallocated
+        costs. Not a value-creating segment by itself.
+
+  # ---- Five Forces — company-position decomposition per §15.6 / §3.3 ----
+
+  five_forces_company_position:
+    buyer_power:
+      industry_rating: low_to_moderate
+      company_position: at_industry_average
+      mechanism: >
+        WBC's retail customer base behaves similarly to industry average:
+        mortgage book has high sticky retention but front-book
+        refinancing cohort is rate-sensitive. Business banking customer
+        mix slightly more SME-weighted than NAB, marginally less
+        switching pressure than enterprise-corporate-heavy ANZ.
+      quantified_impact_bps: 0
+      capture_location: "no impact on baseline forecast"
+
+    supplier_power:
+      industry_rating: moderate
+      company_position: lower_favourable
+      mechanism: >
+        Strong retail deposit franchise (#2 share by household deposits;
+        large non-interest-bearing transaction balances). Funding mix
+        is more retail-deposit-weighted than ANZ; closer to CBA but with
+        slightly less granular branch coverage. Translates to a structural
+        funding-cost advantage of 5-10bps versus the more wholesale-
+        funded peers.
+      quantified_impact_bps: 8
+      capture_location: "NIM trajectory: +8bps structural advantage on funding cost"
+
+    threat_of_new_entrants:
+      industry_rating: low
+      company_position: at_industry_average
+      mechanism: >
+        Same D-SIB-protected position as the rest of the Big Four. No
+        bank-specific differentiation.
+      quantified_impact_bps: 0
+      capture_location: "no impact on baseline forecast"
+
+    threat_of_substitutes:
+      industry_rating: low_to_moderate
+      company_position: at_industry_average
+      mechanism: >
+        Non-bank mortgage share-loss exposure proportional to mortgage
+        book scale — i.e., #2 by absolute size means #2 exposure to
+        non-bank flow gains. Westpac NZ benefits / suffers identically.
+      quantified_impact_bps: 0
+
+    rivalry:
+      industry_rating: moderate
+      company_position: higher_unfavourable
+      mechanism: >
+        Cost-to-income at 51.7% sits mid-pack; CBA at 42% and NAB at
+        43% set the pace. Translates to a ~150bps ROE drag versus the
+        leaders that the transformation program (UNITE, cost-out
+        plan FY26-FY28) is targeted to close. Closure is achievable
+        in principle but execution-conditional. Treated as a
+        transformation overlay (§3.2) — visible in the EBIT margin
+        glide, not the company-position offset itself.
+      quantified_impact_bps: -10
+      capture_location: "Net structural rivalry drag (residual after transformation overlay)"
+
+    rivalry_subforce_business_banking_rebuild:
+      industry_rating: moderate
+      company_position: higher_unfavourable
+      mechanism: >
+        Business banking share-loss to NAB and CBA 2018-2022. Re-build
+        from FY24 has stabilised share but has not yet meaningfully
+        recovered. Drag on segment growth ~20bps until the rebuild
+        closes (estimated FY28).
+      quantified_impact_bps: -5
+      capture_location: "Growth offset, time-limited 3-5 years"
+
+  net_company_position_offset_summary:
+    revenue_growth_offset_bps: -5
+    nim_offset_bps: 8
+    cost_to_income_overlay_target: "Transformation glide -150bps over FY26-FY28; -200bps total over FY26-FY29"
+    rationale: >
+      Net structural offset is modest: +8bps NIM advantage from funding
+      mix vs -5bps revenue-growth drag from business-banking rebuild +
+      -10bps rivalry pressure from cost-to-income gap. The dominant
+      forward driver is the transformation overlay, captured in margin
+      glide rather than the structural offset.
+
+  # ---- Bank-specifics block per methodology §15.9 ----
+
+  bank_specifics:
+    anchor_date: 2026-03-31
+    reporting_period: 1H26
+    basis: ex_notable_items
+
+    income_anchor:
+      net_interest_income_half: 9763
+      non_interest_income_half: 1521
+      core_nii_half: 9185
+      treasury_markets_nii_half: 578
+      operating_expenses_half: 5830
+      impairment_charges_half: 443
+      cash_npat_half: 3483
+      statutory_npat_half: 3414
+
+    average_interest_earning_assets:
+      total: 1035226
+      loans: 798692
+      housing: 516928
+      personal: 10025
+      business: 271739
+      liquid_assets: 211630
+      other: 24904
+      unit: "AUD m, half-year average"
+
+    nim_decomposition:
+      reported_nim: 0.0189
+      core_nim: 0.0178
+      treasury_markets_contribution: 0.0011
+      basis: ex_notable_items_1h26
+      drivers_commentary: >
+        Core NIM 178bps reflects asset yield 5.95% — funding cost 3.50%
+        — hedge contribution 65bps (replicating portfolio + structural
+        deposit hedge) — capital contribution and other. NIM compressed
+        4bps vs 2H25 (from 1.82% core) on continued mortgage front-
+        book competition and asset-mix shift toward lower-margin
+        housing. Treasury & Markets contribution stable.
+
+    credit_loss_through_cycle:
+      anchor_bps: 18
+      current_actual_bps: 10
+      peak_cycle_bps: 75
+      benign_cycle_bps: 5
+      basis: bps_per_annum_average_loans
+      commentary: >
+        Westpac's through-cycle anchor sits at the low end of Big Four
+        range (15-25bps), reflecting mortgage-book weighting (mortgages
+        run lower loss rates than business book). Current 1H26 annualised
+        10bps (= 443m / 1H avg loans ~875bn × 2) is benign-cycle
+        consistent. Peak-cycle stress 75bps assumed for stress scenarios.
+
+    cet1:
+      actual: 0.1242
+      target_minimum: 0.115
+      management_buffer: 0.005
+      management_target: 0.12
+      operating_target_range: [0.110, 0.115]
+      current_buffer_bps: 92
+      capital_actions_in_progress: "On-market buyback active; AUD 581m executed FY25"
+      commentary: >
+        Level 2 CET1 12.42%. Management target 11.0-11.5% operating
+        range; current position 92bps above the upper end of target.
+        Buyback in progress reduces buffer toward target over FY26.
+
+    rwa_composition:
+      total_rwa_level_2: 458343
+      credit_risk_components:
+        corporate: 95086
+        residential_mortgages: 117059
+        sme_retail: 15966
+        qualifying_revolving_retail: 3711
+        other_retail: 2331
+        large_corporate: 22709
+        sovereign: 2042
+        financial_institutions: 15296
+        specialised_lending: 5456
+        standardised: 20397
+        rbnz_regulated_entities: 45542
+        securitisation: 8797
+      housing_rwa_density: 0.226
+        # 117,059 / 517,719 = 22.6% — IRB-modelled, relatively low because
+        # IRB mortgage book typically runs 20-30%.
+      commentary: >
+        Total Level 2 RWA AUD 458bn. Residential mortgages 26% of RWA;
+        corporate (incl. large corporate) 26%; RBNZ-regulated entities
+        10% (Westpac NZ); standardised + financial institutions 8%.
+        Mortgage RWA density 22.6% reflects IRB modelling — within Big
+        Four typical range.
+
+    at1_hybrid_outstanding:
+      face_value: 8522
+      hybrid_issues_brief: "Capital Notes series; perpetual non-call structures with first call dates spanning FY26-FY30."
+      treatment: "Per §15.7(a) — deducted from ordinary equity for per-share value computation."
+
+    dta_balance:
+      approximate: 1500
+      commentary: "Deferred tax assets approximately AUD 1.5bn; mostly deducted from CET1 per APRA framework."
+
+    software_intangibles:
+      approximate: 800
+      commentary: "Capitalised software approximately AUD 800m; deducted from CET1 per APRA."
+
+    goodwill:
+      approximate: 9700
+      commentary: "Goodwill ~AUD 9.7bn (legacy from St.George, RAMS, BT acquisitions). Deducted from CET1."
+
+    loan_book:
+      gross_loans_total: 890259
+      provision_for_ecl: -4677
+      net_loans: 885582
+      by_segment:
+        au_housing: 517719
+        au_rams: 18517
+        au_personal: 9077
+        au_business: 238028
+        nz_housing_aud: 73335
+        nz_personal_aud: 1212
+        nz_business_aud: 35336
+        other_overseas_aud: 15303
+
+    deposit_funding:
+      total_customer_deposits: 745239
+      au_transactions: 123187
+      au_savings: 228200
+      au_term: 164959
+      au_non_interest_bearing: 148901
+      nz_total_aud: 69822
+      other_overseas: 10170
+      certificates_of_deposit: 48571
+      total_deposits_and_other_borrowings: 793810
+      commentary: >
+        Retail deposit funding ratio strong. Non-interest-bearing
+        Australian transaction balances AUD 149bn provide structural
+        funding-cost advantage versus wholesale-funded peers.
+
+  share_statistics:
+    shares_outstanding_anchor_date: 2026-03-31
+    shares_outstanding_millions: 3380
+      # WBC shares outstanding ~3.38bn at 31 March 2026; to be
+      # verified against statutory accounts (Note 14 share capital).
+    market_reference_price_aud: 38.50
+      # Indicative; to be calibrated against Ben's feed.
+    market_reference_date: 2026-06-12
+    indicative_market_cap_aud_m: 130130
+
+  corporate_actions:
+    - action: on_market_buyback
+      status: active
+      announced: 2024-11-04
+      total_announced_aud_m: 1500
+      executed_to_date_aud_m: 581
+      notes: "Per FY25 statement of changes in equity (Note 14)."

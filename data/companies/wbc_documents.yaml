@@ -1,0 +1,232 @@
+documents:
+  company_id: wbc
+  company_name: Westpac Banking Corporation
+  asx_code: WBC
+  register_maintained_by: claude_via_ben_workstream
+  register_last_updated: 2026-06-12
+  ingestion_pass: 1
+  source_pack_label: "wbc-items-impacting-1H26-results.zip (Ben handoff, 12 June 2026)"
+
+  documents:
+
+    - id: wbc_1h26_results_announcement
+      title: "Westpac Banking Corporation 1H26 Financial Results Announcement"
+      type: half_year_results_announcement
+      reporting_period: 2026-03-31
+      release_date: 2026-05-04
+      filename: wbc-1H26-financial-results-announcement-2026.pdf
+      pages_estimated: 220
+      key_insights:
+        - "Statutory NPAT 1H26: AUD 3,414m (+3% vs 1H25)"
+        - "Cash NPAT ex notable items: AUD 3,483m (+1% vs 1H25)"
+        - "Net interest income (statutory) AUD 9,771m; -3% vs 2H25, +4% vs 1H25"
+        - "Operating expenses (statutory) AUD 5,937m; AUD 107m large item in 1H26 (pre-tax)"
+        - "Impairment charges AUD 443m; substantial increase from AUD 174m in 2H25 and AUD 250m in 1H25 — credit cycle turning normalisation"
+        - "Effective tax rate 30.35%, broadly consistent with statutory 30%"
+      status: read
+      ingested_into:
+        - data/companies/wbc.yaml normalised_baseline
+        - data/companies/wbc.yaml bank_specifics
+        - data/financials/wbc.yaml (when populated)
+
+    - id: wbc_1h26_idp
+      title: "Westpac 1H26 Investor Discussion Pack"
+      type: investor_presentation
+      reporting_period: 2026-03-31
+      release_date: 2026-05-04
+      filename: wbc-1H26-presentation-IDP-2026.pdf
+      pages_estimated: 80
+      key_insights:
+        - "Segment-level walk: Consumer, Business & Wealth, Institutional, NZ"
+        - "Transformation program detail: cost-out trajectory, technology investment"
+        - "Capital position walk: CET1 at half-year close vs management target"
+        - "NIM evolution by segment and through-cycle commentary"
+        - "Credit quality detail: loss-rate by portfolio, watchlist, mortgage stress metrics"
+      status: read
+      ingested_into:
+        - data/companies/wbc.yaml bank_specifics.nim_decomposition
+        - data/companies/wbc.yaml normalised_baseline
+        - analyses/wbc/thesis.md (when populated)
+
+    - id: wbc_1h26_key_financial_xlsx
+      title: "WBC 1H26 Results Key Financial Information"
+      type: financial_data_pack
+      reporting_period: 2026-03-31
+      release_date: 2026-05-04
+      filename: wbc-1H26-results-key-financial-information-2026.xlsx
+      sheets_count: 29
+      key_insights:
+        - "Section 1: Group performance tables (1.1-1.17), including 1.1 statutory results, 1.2 ex-notable summary, 1.4 notable items detail, 1.6 average balance sheet"
+        - "Section 2: Segment reporting (2.1-2.6): Consumer, Business & Wealth, Institutional, NZ, Group Businesses"
+        - "Section 3: Statutory financial statements (3.1-3.5)"
+      status: read
+      ingested_into:
+        - data/financials/wbc.yaml (when populated)
+        - analyses/wbc/valuations/wbc_muddle_through_valuation.xlsx Calibration Anchors tab (when built)
+
+    - id: wbc_1h26_quantitative_xlsx
+      title: "WBC 1H26 Quantitative Information (Pillar 3)"
+      type: regulatory_capital_pillar_3
+      reporting_period: 2026-03-31
+      release_date: 2026-05-04
+      filename: wbc-1H26-quantitative-information-2026.xlsx
+      sheets_count: 40
+      key_insights:
+        - "KM1: Key Metrics — CET1, Tier 1, Total Capital ratios, leverage ratio, LCR, NSFR"
+        - "LV1: Capital Adequacy Ratios by APRA / Level 2"
+        - "Risk Weighted Assets (RWA): segment breakdown — credit risk, market risk, operational risk"
+        - "CC1, CC2: Capital composition — equity, AT1, T2"
+        - "OV1: RWA overview by risk type"
+        - "Credit risk (CR1-CR10): exposures, RWA density, expected loss, charge-offs by IRB segment"
+        - "CCR1-CCR8: counterparty credit risk"
+        - "SEC1-SEC4: securitisation"
+        - "Market Risk, IRRBB"
+        - "LR1-LR2: leverage ratio"
+        - "CCYB1: countercyclical buffer"
+        - "LIQ1, LIQ2: LCR and NSFR"
+      status: read
+      ingested_into:
+        - data/companies/wbc.yaml bank_specifics.cet1
+        - data/companies/wbc.yaml bank_specifics.rwa_composition
+        - data/companies/wbc.yaml bank_specifics.at1_hybrid_outstanding
+
+    - id: wbc_1h26_risk_factors
+      title: "WBC 1H26 Risk Factors"
+      type: risk_factors_disclosure
+      reporting_period: 2026-03-31
+      release_date: 2026-05-04
+      filename: wbc-1H26-risk-factors-2026.pdf
+      pages_estimated: 60
+      key_insights:
+        - "Macroeconomic risk factors disclosure"
+        - "Credit-cycle and housing-market risk commentary"
+        - "Operational, technology, conduct risk disclosure"
+        - "Climate-related risk factors"
+        - "Regulatory and compliance risk"
+      status: read
+      ingested_into:
+        - data/scenarios/disorderly_climate_crystallisation.md (calibration anchor)
+        - data/scenarios/stagflation_persists.md (calibration anchor)
+
+    - id: wbc_items_impacting_1h26
+      title: "WBC Items Impacting 1H26 Results"
+      type: notable_items_disclosure
+      reporting_period: 2026-03-31
+      release_date: 2026-05-04
+      filename: wbc-items-impacting-1H26-results.pdf
+      pages_estimated: 45
+      key_insights:
+        - "1H26 large item: AUD 107m pre-tax operating expense (AUD 75m post-tax)"
+        - "1H26 hedging items: +AUD 6m post-tax"
+        - "Bridges statutory NPAT AUD 3,414m to cash NPAT ex notable items AUD 3,483m"
+        - "Methodology for separating one-off from underlying performance"
+      status: read
+      ingested_into:
+        - data/companies/wbc.yaml underlying_adjustments_review
+        - data/companies/wbc.yaml normalised_baseline (ex notable items basis)
+      methodology_reference: "§6 (IMIs and one-off adjustments) — Westpac notable items follow the standard show-both-bases convention."
+
+    - id: wbc_1q26_trading_update
+      title: "WBC Q1 2026 Trading Update"
+      type: quarterly_trading_update
+      reporting_period: 2025-12-31
+      release_date: 2026-02-17
+      filename: wbc-1Q26-Update.pdf
+      pages_estimated: 65
+      key_insights:
+        - "Q1 2026 trading conditions: pre-1H26 directional view"
+        - "Capital position interim disclosure"
+        - "NIM trajectory commentary"
+        - "Credit quality interim commentary"
+      status: read
+      ingested_into:
+        - data/companies/wbc.yaml normalised_baseline (cross-check anchor)
+      methodology_reference: "§14.2(f) — Continuous disclosure announcement since last full reporting"
+
+    - id: wbc_1q26_idp
+      title: "WBC Q1 2026 Investor Discussion Pack"
+      type: investor_presentation_quarterly
+      reporting_period: 2025-12-31
+      release_date: 2026-02-17
+      filename: wbc-1Q26-IDP.pdf
+      pages_estimated: 35
+      key_insights:
+        - "Q1 segment trading detail: pre-1H26 view"
+        - "Capital walk Sep-Dec 2025"
+        - "Credit-quality interim view"
+      status: read
+      ingested_into:
+        - data/companies/wbc.yaml (cross-check)
+
+    - id: wbc_december_pillar_3
+      title: "WBC December 2025 Pillar 3 Report (Q1 2026)"
+      type: regulatory_capital_pillar_3_quarterly
+      reporting_period: 2025-12-31
+      release_date: 2026-02-17
+      filename: wbc-december-Pillar-3-report.pdf
+      pages_estimated: 50
+      key_insights:
+        - "Quarterly capital position: CET1, Tier 1, Total at Dec 2025"
+        - "RWA trajectory through Q1"
+        - "Cross-check on capital quality between Sep 2025 reporting and Mar 2026 reporting"
+      status: read
+      ingested_into:
+        - data/companies/wbc.yaml bank_specifics.cet1 (trajectory cross-check)
+
+    - id: wbc_march_2026_pillar_3
+      title: "WBC March 2026 Pillar 3 Report (1H26 end)"
+      type: regulatory_capital_pillar_3
+      reporting_period: 2026-03-31
+      release_date: 2026-05-04
+      filename: wbc-March-2026-Pillar-3-Report-2026.pdf
+      pages_estimated: 80
+      key_insights:
+        - "Full Pillar 3 narrative for 1H26 close"
+        - "RWA segment composition"
+        - "Credit-quality regulatory view (stages 1-3)"
+        - "Liquidity disclosures (LCR, NSFR)"
+        - "Companion to the 1H26 quantitative xlsx"
+      status: read
+      ingested_into:
+        - data/companies/wbc.yaml bank_specifics.cet1
+        - data/companies/wbc.yaml bank_specifics.rwa_composition
+
+    - id: wbc_annual_report_2025
+      title: "Westpac Annual Report 2025"
+      type: annual_report
+      reporting_period: 2025-09-30
+      release_date: 2025-11-04
+      filename: wbc-annual-report-2025.pdf
+      pages_estimated: 350
+      key_insights:
+        - "FY25 full-year statutory and cash results"
+        - "FY25 segment results and trajectory"
+        - "FY25 audited balance sheet"
+        - "FY25 capital position year-end"
+        - "Director's report and CEO commentary"
+        - "FY25 ESG / climate disclosures (TCFD-aligned)"
+        - "Notes to the accounts: AASB 9 staging, hedge accounting, fair value hierarchy"
+      status: read
+      ingested_into:
+        - data/companies/wbc.yaml bank_specifics (FY25 anchors)
+        - data/companies/wbc.yaml normalised_baseline (FY25 cross-check)
+        - data/financials/wbc.yaml (full FY25 baseline)
+      methodology_reference: "§14.2(e) — latest annual report; §14.2(h) — sustainability / TCFD section"
+
+  refresh_cadence:
+    next_refresh: "On 1Q27 trading update (Feb 2027) or material announcement"
+    refresh_trigger:
+      - "Quarterly trading update / Pillar 3"
+      - "Half-year results (next: 1H27 results, May 2027)"
+      - "Full-year results (next: FY26 results, Nov 2026)"
+      - "Any > 5% movement materially impacting equity value"
+      - "Regulatory step change (APRA / RBNZ capital framework)"
+
+  notes_for_data_workstream:
+    handoff_status: "Ben provided the source pack 12 June 2026; financial-feed time series (multi-year NIM, expenses, impairment history; equity beta from price; peer comp aggregation) pending."
+    requested_additions:
+      - "5-year time series for NIM, cost-to-income, credit losses, ROE — for trend / normalisation analysis"
+      - "Bloomberg or IRESS consensus estimates for FY27/FY28"
+      - "Equity beta vs ASX200 and vs world-index (MSCI World)"
+      - "Peer comparison data: CBA, NAB, ANZ on the same key metrics"
+      - "Macquarie banking division comparator (where disclosed separately)"

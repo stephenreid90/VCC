@@ -1,0 +1,353 @@
+industry_archetype:
+  id: australian_major_banks
+  name: Australian Major Banks (ADI-regulated retail and business banking)
+  version: 2026-Q2-v1
+  archetype_class: bank
+
+  geography: domestic_au_nz
+
+  submarkets:
+    - region: Australian housing (mortgages)
+      weight: 0.55
+      notes: >
+        The structural anchor of all Big Four balance sheets. Dominated by
+        owner-occupier and investor mortgages; broker channel ~50-60% of
+        new origination; back-book is sticky with high switching frictions
+        (refinancing cost, broker incumbency, deposit/transaction-account
+        bundling). Risk-weighted asset density typically 25-35% under
+        APRA's revised IRB framework. Pricing tension between front-book
+        (competitive on rate) and back-book (margin extraction) is the
+        single most important industry profitability dynamic.
+
+    - region: Australian business and commercial lending
+      weight: 0.18
+      notes: >
+        SME + mid-corporate. Higher risk weights (typically 70-90%) but
+        also higher margins. NAB's traditional strength; CBA has been
+        rebuilding; WBC, ANZ mid-pack. Mining-services and agribusiness
+        sub-segments material at NAB and Rabobank.
+
+    - region: Australian institutional / wholesale
+      weight: 0.12
+      notes: >
+        Large corporate, sovereigns, financial institutions. Markets and
+        FX. ANZ has the strongest franchise; CBA / WBC weaker; NAB
+        intermediate. Capital-light fee businesses but lower returns on
+        capital deployed (transaction banking, debt capital markets).
+
+    - region: New Zealand
+      weight: 0.10
+      notes: >
+        All Big Four operate via NZ banking subsidiaries (ASB / CBA,
+        BNZ / NAB, Westpac NZ / WBC, ANZ NZ). RBNZ-regulated. Smaller
+        scale than Australia but contributes ~10-15% of group profit.
+        Mortgage-dominated. NZ-specific cycle moderately correlated
+        with Australia.
+
+    - region: Other (rest-of-world institutional, wealth, other)
+      weight: 0.05
+      notes: >
+        Residual offshore institutional (mainly ANZ Asia / Pacific),
+        residual wealth management post-divestments. Material at ANZ;
+        de minimis at the others.
+
+  five_forces:
+    buyer_power:
+      rating: low_to_moderate
+      rationale: >
+        Households (retail mortgage and deposit customers) have low
+        switching propensity: relationship inertia, transaction-banking
+        bundling, mortgage-discharge friction, and broker-channel
+        re-anchoring. The exception is front-book mortgage refinancing —
+        the cohort that does shop around drives the marginal price
+        outcome. Business customers have moderate switching power
+        (annual reviews, multi-bank relationships standard for SMEs and
+        corporates); institutional customers have material power but
+        lower volume share. Net: low for retail, moderate for business,
+        binding constraint sits in the marginal-mortgage segment.
+
+    supplier_power:
+      rating: moderate
+      rationale: >
+        Deposit-holders are the primary funding "supplier". They have
+        switching options between banks (comparator sites, term-deposit
+        rate shopping), between bank deposits and superannuation, and
+        between at-call and term. Wholesale debt investors (covered
+        bond, senior unsecured) price credit spreads daily — moderate
+        supplier power on the cost-of-funds side, but the Big Four are
+        price-takers within a narrow oligopolistic range. The structural
+        constraint is that any one bank cannot push funding cost much
+        below the Big Four average without losing share.
+
+    threat_of_new_entrants:
+      rating: low
+      rationale: >
+        APRA's licensing regime, capital requirements (the Big Four are
+        all D-SIB-designated with CET1 floors at ~11.5% plus management
+        buffer), distribution scale (branch + broker + digital), and the
+        funding-cost advantage of established deposit franchises all
+        create high barriers. Neo-bank licensing waves (Volt, Xinja, 86
+        400) have not produced material competitive disruption; the
+        successful new entrants have been narrow-product (BNPL via
+        non-bank lenders, neo-deposit via Up / 86 400 / Judo). The
+        oligopoly is durable on a 5-10 year view.
+
+    threat_of_substitutes:
+      rating: low_to_moderate
+      rationale: >
+        Non-bank mortgage lenders (Pepper, Resimac, Liberty, La Trobe)
+        warehouse-funded, take share when bank credit serviceability
+        constraints bind — the post-2018 RC tightening drove a marked
+        non-bank share gain in mortgage refinancing. Superannuation
+        funds substitute for term deposits over long horizons (the
+        $4tn super pool is a structural drag on retail term-deposit
+        funding). Fintech payments (Apple Pay, Square / Block, PayID
+        infrastructure) substitute for some transaction-account
+        revenue but not the underlying funding base. Net effect:
+        gradual margin erosion in specific segments rather than
+        existential displacement.
+
+    rivalry:
+      rating: moderate
+      rationale: >
+        Oligopolistic among the Big Four (CBA ~25% mortgage share,
+        WBC ~20%, NAB ~14%, ANZ ~14% plus regional banks at 5-10%
+        combined). Pricing discipline holds in benign periods —
+        Standard Variable Rate moves are usually within bps of each
+        other and tied to RBA cash-rate decisions. Discipline breaks
+        under share-loss pressure: 2022-2024 front-book mortgage
+        cashbacks and discounting cost the industry materially. The
+        canonical break-pattern is share loss triggering a defensive
+        price response that compresses NIM across the cycle.
+
+    rivalry_subforces:
+      - sub_dimension: Mortgage pricing
+        rating: moderate_to_high
+        rationale: >
+          Standard pricing variable largely synchronised with the cash
+          rate. Discounting / cashback activity moves through cycles —
+          intense 2022-2024, moderating 2025-2026. Front-book vs back-
+          book pricing differential is the dominant driver of mortgage
+          NIM evolution at each bank.
+
+      - sub_dimension: Deposit pricing
+        rating: moderate
+        rationale: >
+          Term-deposit specials and at-call rate moves are the
+          competitive battleground. Major bank ATC (at-call) deposit
+          rates moved differently in the 2022-2023 RBA hiking cycle —
+          the asymmetry between hike pass-through on lending and
+          deposits is itself a margin lever.
+
+      - sub_dimension: Business and institutional pricing
+        rating: moderate
+        rationale: >
+          Annual relationship reviews, multi-bank competition for
+          quality corporates. Less volatile than retail mortgage
+          pricing.
+
+  disruption_vectors:
+    - vector: non_bank_mortgage_share_gains
+      nature: threat
+      incumbency_position: defender
+      time_horizon: "0-5 years"
+      severity: moderate
+      certainty: moderate
+      description: >
+        Non-bank lenders take 1-3pp of system mortgage flow share
+        per credit-tightening cycle. Net structural drag on Big Four
+        mortgage growth even in benign periods. Reverses partially
+        when bank credit policies loosen.
+
+    - vector: superannuation_funded_member_lending
+      nature: threat
+      incumbency_position: defender
+      time_horizon: "5-10 years"
+      severity: low
+      certainty: low
+      description: >
+        Super funds entering member lending (mainly mortgages) directly
+        — early-stage but a credible long-tail threat to bank ROE if
+        super-funded lenders can match bank cost of capital. Regulatory
+        framework still being negotiated.
+
+    - vector: open_banking_and_data_portability
+      nature: opportunity_or_threat
+      incumbency_position: neutral
+      time_horizon: "3-7 years"
+      severity: moderate
+      certainty: moderate
+      description: >
+        Consumer Data Right framework lowers retail switching frictions
+        over time. Big Four with strong digital execution (CBA
+        consistently leading) benefit on offence; weaker-digital banks
+        exposed. Asymmetric outcome.
+
+    - vector: climate_risk_weight_adjustment
+      nature: threat
+      incumbency_position: neutral
+      time_horizon: "3-7 years"
+      severity: low_to_moderate
+      certainty: moderate
+      description: >
+        APRA progressively incorporating climate-related credit risk
+        into IRB models. Higher risk weights on transition-vulnerable
+        mortgage book (high-flood-zone, high-bushfire-zone properties)
+        and on transition-vulnerable business book (mining, oil/gas).
+        Compresses ROE in affected portfolios; capital reallocation
+        toward lower-risk exposures.
+
+    - vector: digital_native_business_banking
+      nature: threat
+      incumbency_position: defender
+      time_horizon: "3-7 years"
+      severity: low_to_moderate
+      certainty: moderate
+      description: >
+        Judo Bank, Tyro, and SME-focused fintech lenders take share
+        in specific SME segments. Big Four defensive position:
+        scale, branch network, transaction-banking bundling. Judo
+        IPO 2021 a credible counter-example to "fintech can't scale
+        in business banking".
+
+  regulatory_regime:
+    primary_regulators:
+      - "APRA (Australian Prudential Regulation Authority) — prudential capital, liquidity, governance"
+      - "ASIC (Australian Securities and Investments Commission) — conduct, disclosure, financial advice"
+      - "ACCC (Australian Competition and Consumer Commission) — competition, mergers"
+      - "RBA (Reserve Bank of Australia) — monetary policy, payments oversight, financial stability"
+      - "RBNZ (Reserve Bank of New Zealand) — NZ subsidiary supervision"
+      - "AUSTRAC — anti-money-laundering / counter-terrorism financing"
+    current_pressure: high
+    known_step_changes:
+      - "APRA capital framework reform implementation (in progress 2023-2026)"
+      - "APRA D-SIB surcharge continues at +1.0% for Big Four"
+      - "RBNZ capital requirements remain high (BS2A NZ subsidiary capital floor)"
+      - "Climate-related risk weight integration progressing under APRA CPS 230 framework"
+      - "AUSTRAC enforcement actions (Westpac 2020 AUD 1.3bn settlement; ongoing scrutiny)"
+
+  cyclicality:
+    cycle_length_years: 10
+    current_cycle_phase: late_mid
+    amplitude: high
+    rationale: >
+      Credit cycle dominates. Through-cycle credit losses 15-25bps of
+      gross loans for Big Four; peak-cycle (GFC-equivalent) 60-100bps.
+      Current position late-mid cycle: housing-market exuberance from
+      2020-2022 has cooled, business-banking impairment cycle has
+      normalised post-COVID, no clear single-driver crisis catalyst —
+      but cycle-mature positioning means downside scenarios have less
+      buffer than they would at trough.
+
+  input_dependencies:
+    critical_inputs:
+      - "Retail deposit funding (households + SMEs)"
+      - "Wholesale funding (covered bond, senior unsecured, securitisation)"
+      - "Capital (CET1 retention from cash earnings; secondary equity raisings)"
+      - "Regulatory licence (APRA ADI licence + RBNZ NZ licence)"
+      - "Technology stack (core banking, digital channels, payments rails)"
+    supply_risk: low_to_moderate
+    rationale: >
+      Funding mix risk is the dominant supply-side concern. The Big
+      Four typical funding stack: 60-70% deposits, 20-25% wholesale
+      debt, 5-10% capital. Stressed conditions (2008, 2020-COVID,
+      2023 mini-banking-crisis episodes) widen wholesale spreads
+      sharply and constrain primary issuance. Deposit-funding ratio
+      is the key resilience metric.
+
+  bank_archetype:
+    # Bank-archetype-specific block per methodology §15.6 and §15.9.
+    # Adds bank-relevant calibration anchors to the archetype layer.
+
+    regulator: APRA
+    secondary_regulators:
+      - RBNZ
+      - ASIC
+
+    cet1_floor:
+      regulatory_minimum: 0.08
+      capital_conservation_buffer: 0.025
+      countercyclical_buffer: 0.01
+      d_sib_surcharge: 0.01
+      total_floor: 0.115
+      rationale: >
+        APRA's "unquestionably strong" framework, current state. Big
+        Four are designated D-SIB and carry the +1.0% surcharge.
+        Countercyclical buffer set by APRA, currently 1.0%. Floor for
+        non-D-SIB ADIs (regional banks) is 10.5% (no surcharge).
+
+    cet1_management_buffer_typical: 0.015
+      # Big Four typically run 50-150bps above the regulatory floor as
+      # management buffer; capital actions (special dividends, buybacks)
+      # triggered when CET1 ratio exceeds management target.
+
+    credit_cycle_anchor:
+      through_cycle_loss_rate_bps: 20
+      peak_cycle_loss_rate_bps: 80
+      benign_cycle_loss_rate_bps: 5
+      rationale: >
+        Big Four through-cycle anchor 15-25bps of gross loans. Peak
+        cycle (GFC, COVID stress) 60-100bps. Benign / current low
+        (2025-2026 has been benign) 5-15bps. Stages 1+2 expected loss
+        provision covers the through-cycle anchor; stage 3 emerges
+        in scenario-stress periods.
+
+    rwa_density_anchor:
+      housing_mortgages: 0.30
+      business_lending: 0.80
+      institutional: 0.50
+      sovereign_and_high_grade: 0.05
+      rationale: >
+        Indicative IRB risk-weighted asset density per AUD of credit
+        exposure. Housing 25-35% (depends on LVR mix and IRB model);
+        business lending 70-90%; institutional / sovereign / treasury
+        much lower. Each bank's actual density varies by portfolio
+        mix; specific values per bank in the company YAMLs.
+
+    cost_of_equity_anchor:
+      risk_free_rate: 0.0430
+      equity_risk_premium: 0.0500
+      beta_range: [0.85, 1.00]
+      cost_of_equity_range: [0.0855, 0.0930]
+      rationale: >
+        Cost-of-equity range for Big Four. Australian government bond
+        yield (10y) and Damodaran-style mature-Australia ERP same as
+        §3.5.2. Beta range 0.85-1.00 reflects oligopolistic banking
+        franchise lower volatility than diversified global financials.
+        Single-Ke discipline applies per §15.2(c): the bank-specific
+        Ke is held constant across scenarios.
+
+    terminal_roe_anchor:
+      big_four_range: [0.10, 0.13]
+      regional_banks_range: [0.08, 0.11]
+      rationale: >
+        Through-cycle terminal ROE per §15.8(b). Big Four sustained
+        ROE 10-13% historically; current 10-12%. Regional banks 8-11%
+        (lower scale, higher cost-to-income, sub-D-SIB capital
+        framework). Terminal ROE above cost of equity is sustainable
+        for Big Four given the oligopolistic franchise.
+
+    funding_mix_anchor:
+      retail_deposits: 0.45
+      wholesale_deposits: 0.20
+      senior_unsecured_and_covered: 0.20
+      securitisation: 0.05
+      capital_and_at1: 0.10
+      rationale: >
+        Indicative through-cycle funding mix for a Big Four. Retail
+        deposit ratio (LCR-stable + transaction-account funding) is
+        the dominant resilience metric. Banks with higher retail
+        deposit share (CBA, WBC historically) have a structural
+        cost-of-funds advantage versus more wholesale-funded peers
+        (ANZ institutional book).
+
+    cost_to_income_anchor:
+      big_four_range: [0.42, 0.50]
+      transformation_capacity_bps: 200
+      rationale: >
+        Big Four cost-to-income range 42-50% currently. Productivity
+        and technology-investment programs target 200-400bps of
+        improvement over a 3-5 year horizon (CBA leadership reference
+        ~42%, WBC currently mid-pack ~48%). Treated as a
+        transformation overlay (§3.2) where management has committed to
+        specific cost-out targets.
