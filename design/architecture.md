@@ -1,9 +1,17 @@
 # VCC Valuations — Scenario-Based Equity Valuation Module
 ## Architecture & Design Specification
 
-**Version:** 0.4
-**Date:** 21 April 2026 (drafted); 7 May 2026 (Ben's-bot review + Group 1 changes; editorial sweep; v0.1 freeze); 17 May 2026 (v0.2: archetype-granularity principle added at §7.1.1); 22 May 2026 (v0.2.1: IPL → DNL rename editorial sweep); 25 May 2026 (v0.3: equity-bridge and valuation-mechanics methodology added); 28 May 2026 (v0.3.1: single-WACC discipline resolved); 9 June 2026 (v0.4: Five-Forces spine for company position §3.3, tax-rate discipline §3.6, source-document ingestion §14).
-**Status:** v0.3. Section-by-section review with Tara complete; Ben's-bot platform-side review (5 May 2026) incorporated; archetype-granularity principle added 17 May 2026; test-company name change IPL → DNL swept through the spec 22 May 2026; equity-bridge methodology added 25 May 2026. Subsequent material changes will bump version with a migration note.
+**Version:** 0.5
+**Date:** 21 April 2026 (drafted); 7 May 2026 (Ben's-bot review + Group 1 changes; editorial sweep; v0.1 freeze); 17 May 2026 (v0.2: archetype-granularity principle added at §7.1.1); 22 May 2026 (v0.2.1: IPL → DNL rename editorial sweep); 25 May 2026 (v0.3: equity-bridge and valuation-mechanics methodology added); 28 May 2026 (v0.3.1: single-WACC discipline resolved); 9 June 2026 (v0.4: Five-Forces spine for company position §3.3, tax-rate discipline §3.6, source-document ingestion §14); 12 June 2026 (v0.5: bank-specific valuation conventions methodology §15 added).
+**Status:** v0.5. Section-by-section review with Tara complete; Ben's-bot platform-side review (5 May 2026) incorporated; archetype-granularity principle added 17 May 2026; test-company name change IPL → DNL swept through the spec 22 May 2026; equity-bridge methodology added 25 May 2026. Bank-specific methodology fork added 12 June 2026 ahead of WBC build. Subsequent material changes will bump version with a migration note.
+
+**Migration from v0.4 → v0.5:** Substantive methodology addition, additive only — no schema breaks to existing industrial company schemas.
+
+(a) **§15 Bank-specific valuation conventions.** Methodology fork covering valuation method (residual income on equity, not FCFF / WACC), revenue decomposition (NII = average interest-earning assets × NIM, plus non-interest income), impairment / credit-loss as scenario driver, CET1 capital constraint on payout and asset growth, Five Forces for the bank archetype, bank-specific equity-side adjustments (AT1 hybrids, deferred-tax assets, software intangibles), terminal value via ROE fade to cost of equity. New schema fields specified at §15.9 for bank companies (`bank_specifics.*`), bank industry archetypes (`bank_archetype.*`), and bank-relevant scenario fields (`macro_baseline.credit_cycle`, `macro_baseline.cash_rate_path`, `macro_baseline.swap_spreads`, `macro_baseline.housing_market`, `macro_baseline.regulatory`).
+
+(b) **Coexistence**: industrials methodology in §§2–7 of methodology doc unchanged. Companies tagged `industry_type: "bank"` (or whose archetype's `archetype_class = "bank"`) invoke §15 in place of §§2–4. Shared discipline retained: §5 share-count, §6 IMIs, §7 valuation-date mechanics, §3.5 single-discount-rate, §3.6 tax-rate consistency.
+
+(c) **First worked example**: WBC Muddle Through build, in progress 12 June 2026.
 **Migration from v0.1 → v0.2:** Additive change only. New §7.1.1 "Defining archetype granularity" added.
 **Migration from v0.2 → v0.2.1:** Editorial only. Test-company references updated from "IPL" / "Incitec Pivot Limited" to "DNL" / "Dyno Nobel Limited" following the company's March 2025 rename after demerger of the fertilisers business. Ticker now ASX:DNL (was ASX:IPL); ISIN AU0000390544. The "DNL, formerly IPL" historical pointer is retained in §2 item 4. No schema or analytical content changes. Existing v0.1 / v0.2 schemas remain valid.
 **Migration from v0.3 → v0.3.1:** Single-WACC discipline resolution.
@@ -1308,13 +1316,4 @@ Alongside the structured engine outputs (YAML, JSON, computed numbers), every ke
 2. **Industry view** — `data/industries/<archetype_id>.md`. Per archetype, reused across all companies in the archetype. Five Forces narrative (industry-level), lifecycle and ROIC durability framing, complementary framework where used (§7.5.1), default driver-range commentary. Sources from §7. Produced during archetype population.
 3. **Company positioning** — `data/companies/<company_id>.md`. Per company. Moat, franchise assets, competitive position, risk exposures, archetype-specific positioning, Five Forces company-side findings (where positioning diverges from the industry pattern). Sources from §8. Produced during company population.
 4. **Scenario impact narrative** — `analyses/<company>/scenarios/<scenario_id>.md`. Per scenario × company, roughly 1–2 pages. "How does this scenario play out for this company." Sources from §10 (impact matrix entries + overrides) and §11 (`AssumptionSet`). The structured `DriverMovementSet` and `AssumptionSet` provide the evidence; this is the readable version.
-5. **Valuation note** — `analyses/<company>/valuations/<scenario_id>.md`. Per scenario × company, roughly one page. Headline EV / equity value / per-share value, the drivers of value, sensitivities, what would change the view. Sources from §12.
-6. **Cross-scenario investment view (thesis)** — `analyses/<company>/thesis.md`. Per company, rollup. The synthesis: overall picture across scenarios, where the asymmetry sits, what would update the view.
-
-**Cross-referencing convention.** Each narrative file cites the specific YAML / JSON schema fields it draws from, so a reader can jump from prose to source. The §11.6 reasoning trace is the shared evidence base for the scenario impact narrative and the valuation note — those two narratives are essentially human-readable wrappers around their respective structured outputs.
-
-**Source-of-truth rule.** Where prose and structured fields disagree, the structured field wins (as a definitional source). The narrative then needs updating, not the structured field. A simple validator can flag mismatches (e.g. ratings cited in prose that don't match ratings in YAML); this is overkill for v0.1 but worth flagging for later.
-
-**Refresh cadence.** Tied to the 6-month scenario refresh (§6.5). Scenario narrative refreshes when the scenario does. Industry view, company positioning refresh when their underlying YAML changes materially. Scenario impact narrative, valuation note, and thesis re-generate when any upstream input changes (and `vcc valuation regenerate` per §14.2 is the mechanism).
-
-**Length discipline.** Each narrative is "brief" by design — typical lengths are scenario narrativ
+5. **Valuation note** — `analyses/<company>/valuations/<scenario_id>.md`. Per scenari

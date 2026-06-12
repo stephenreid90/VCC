@@ -34,7 +34,19 @@ A living scratchpad for conversational decisions, current preoccupations, and co
 
 ---
 
-## Current state of play (as of 16 May 2026)
+## Current state of play (as of 12 June 2026)
+
+**12 June 2026 — Westpac build kicked off; bank-methodology fork landed first.**
+
+Ben sent the WBC source pack (11 files: 1H26 financial results announcement, 1H26 IDP presentation, 1H26 key financial information xlsx, 1H26 quantitative information xlsx (Pillar 3), 1H26 risk factors, items-impacting-1H26 PDF, 1Q26 Update + IDP, December and March Pillar 3 reports, FY25 annual report). Ben's financial feed (multi-year time series, beta, peer comp) still to come — not blocking.
+
+Before starting the WBC company build, added **methodology §15 "Bank-specific valuation conventions"** as a fork. Industrials methodology (§§2–7) unchanged; banks invoke §15 in place of §§2–4. Key conventions: cost of equity not WACC (no EV→equity bridge); NII = average interest-earning assets × NIM; credit losses are a scenario-conditional primary driver, not a residual; CET1 ratio binds dividend payout and asset growth; ROE fade to Ke for terminal. Schema additions: `bank_specifics.*` on company YAMLs, `bank_archetype.*` on industry YAMLs, `macro_baseline.credit_cycle / cash_rate_path / swap_spreads / housing_market / regulatory` on scenario YAMLs. Architecture spec bumped v0.4 → v0.5 (additive only).
+
+Next: build the bank archetype (australian_major_banks) and the WBC company position via §15 conventions, then financials baseline from the source pack, then per-scenario impact matrix, then Muddle Through valuation workbook.
+
+---
+
+## Previous state of play (as of 16 May 2026)
 
 - Architecture spec **v0.1 frozen** (`design/architecture.md`), tagged in git as `architecture-v0.1`. Sections 1–17 reviewed and updated. Ben's-bot platform-side review (5 May 2026) absorbed; Group 1 changes committed. Plus a new §9.7 review item (#9) added 16 May 2026 capturing the terminal-growth-from-demographic-trajectory principle.
 - Build plan wall chart at `design/build_plan.html` (currently v3).
@@ -174,15 +186,4 @@ A living scratchpad for conversational decisions, current preoccupations, and co
 
 29 May 2026 — Reference texts and style anchors captured (Damodaran, Mercer, Ang, Valuation Matters substack). Style of thinking distilled from KISS principle + control-premium-fallacy posts. Methodology §3.5 citation follow-up parked. Briefing pack for Ben meeting drafted at `analyses/dnl/dnl_briefing_pack_2026-05-29.{docx,pdf}` (committed alongside this update).
 
-28 May 2026 — Single-WACC discipline added (methodology §3.5; architecture spec v0.3.1). DNL scenario comparison rebuilt with constant WACC; comparison vs prior differential-WACC version captured in workbook. All six scenarios for DNL computed: Orderly Convergence AUD 3.72, Muddle Through AUD 3.22, AI Productivity Lag AUD 3.14, Fragmentation AUD 2.36, Disorderly Climate AUD 1.35, Stagflation AUD 1.12. Asymmetry persists (downside compression > upside lift) even without WACC differentials.
-
-25 May 2026 — Equity-bridge and valuation-mechanics methodology added (`design/methodology/equity_bridge_and_valuation_mechanics.md`); architecture spec bumped to v0.3. Substantive methodology decisions captured: scenario → industry → company growth chain replaces opaque baseline; structured equity bridge with anchor-date discipline; restructuring consistency rule; latest-reported share count paired to net debt; statutory + ex-IMIs parallel DCFs; Period A walk-forward + Period B stub + mid-period discounting. DNL Muddle Through workbook rebuilt as the canonical worked example. Ready for Step 6 production translator implementation against the explicit methodology.
-
-Previous updates:
-- 22 May 2026 — Step 5 closed out + IPL → DNL rename + editorial sweep.
-- 17 May 2026 — Step 4 (Formalise data schemas) closed out. All eight layer schemas as pydantic v2 models; JSON Schema exports; tests pass on all six scenario YAMLs (22/22). Ready for Step 5 (Populate first archetype — IPL).
-- 16 May 2026 (later) — Step 3 closed.
-- 16 May 2026 (earlier) — Step 1 and Step 2 closed.
-- 7 May 2026 — initial creation as hedge against chat context-length limits.
-
-Update this file whenever a conversational decision is made that doesn't belong in the architecture spec. Concision matters — this needs to remain skim-readable.
+28 May 2026 — Single-WACC discipline added (methodology §3.5; architecture spec v0.3.1). DNL scenario comparison rebuilt with constant WACC; comparison vs prior differential-WACC version captured in workbook. All six scenarios for DNL computed: Orderly Convergence AUD 3.72, Muddle Through AUD 3.22, AI Productivity Lag AUD 3.14, Fragmentat
