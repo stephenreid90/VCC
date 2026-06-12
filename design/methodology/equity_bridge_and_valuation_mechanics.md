@@ -689,3 +689,334 @@ This gives the data workstream a clear spec ("here's what to ingest per
 company") and the valuation workstream a clear input ("the register is
 what we read").
 
+
+---
+
+## 15. Bank-specific valuation conventions
+
+Added 12 June 2026 as a methodology fork for ADI-regulated banking
+companies. The framework's industrials-oriented core (§§2–7, §10) does
+not transfer cleanly to banks: the FCFF / WACC / EV→equity bridge
+mechanic does not apply, and the revenue / cost / capital structure of
+a bank is materially different from an industrial corporate. This
+section specifies the conventions a bank-style valuation must follow.
+
+The fork is additive. The industrials methodology in §§2–7 is unchanged
+and continues to apply for non-bank companies. Banks invoke §15 instead
+of (not in addition to) §§2–4 for the operating-cash-flow build; §§5–7
+(share-count discipline, IMIs, valuation-date mechanics) remain
+shared discipline.
+
+### 15.1 Scope and rationale
+
+(a) **Applies to**: ASX-listed Australian banks regulated as ADIs under
+APRA Prudential Standards (the Big Four plus regional ADIs such as
+Bendigo and Bank of Queensland). Non-ADI lenders that take wholesale
+funding only (e.g., Latitude, Pepper) are bank-adjacent — assess case by
+case; default to industrials methodology unless the regulated-capital
+discipline binds.
+
+(b) **Why a fork**: a bank's cash flows are intermediated. The
+shareholders' claim is on the residual after depositor and
+debtholder claims at fair value; "enterprise value" before debt
+deduction is not a meaningful intermediate quantity. Net interest
+income substitutes for "revenue × margin"; regulatory capital
+substitutes for the capex constraint; credit losses substitute for
+the gross-margin shock under stress.
+
+(c) **What's retained**: scenario layer (§§1, 2.1), share-count
+discipline (§5), IMIs / one-off handling (§6), and valuation-date
+mechanics (§7) all apply unchanged. The Five Forces spine (§3.3)
+applies with a bank-specific archetype (§15.6 below).
+
+### 15.2 Discount rate — cost of equity, not WACC
+
+(a) **Principle**: bank valuations are conducted entirely on the
+equityholder claim. The discount rate is the cost of equity (Re),
+not WACC. WACC requires a clean separation of equity and debt
+claims at market value; for a bank, the deposit and wholesale-debt
+mix is the production input, not the financing structure.
+
+(b) **CAPM construction**: Re = Rf + β × ERP, identical to §3.5.2
+except β is sourced bank-specific. Defaults:
+   - Risk-free rate: 10-year Australian Commonwealth bond yield (same
+     as §3.5.2).
+   - ERP: Damodaran-style mature-Australia premium (same as §3.5.2).
+   - β: world-index basis where available; otherwise Australian
+     Big-Four aggregate proxy (typical range 0.85–1.00) — the regulated
+     oligopolistic structure tends to produce lower β than global
+     diversified financials. Bank-specific β must be documented in
+     `data/companies/<id>.yaml/normalised_baseline/cost_of_equity_build`.
+
+(c) **Single-Ke discipline**: per §3.5, the cost of equity is held
+constant across scenarios for a single bank. The scenario asymmetry
+is in the cash-flow path (NII, credit losses, capital actions), not
+in the discount rate.
+
+(d) **No WACC computed**: bank workbooks should not include a WACC build
+sheet. The cost-of-equity build replaces it.
+
+### 15.3 Revenue decomposition — NII + non-interest income
+
+(a) **Net interest income (NII)** is the dominant revenue line.
+Decomposed as:
+
+  NII (year t) = Average interest-earning assets (year t) × NIM (year t)
+
+where average interest-earning assets is the simple average of
+opening and closing balances over the year, and NIM is the
+period-average net interest margin (bps on average interest-earning
+assets).
+
+(b) **Volume driver**: average interest-earning assets growth is the
+scenario-conditional driver, decomposed into the major segments
+(housing, business, institutional, deposits/treasury) with each
+mapped to its own macro driver. Housing loan growth maps to housing
+turnover × system-share assumption; business lending maps to non-
+mining business investment; institutional maps to wholesale credit
+issuance volumes; deposits to household savings.
+
+(c) **NIM driver**: NIM is scenario-conditional, decomposed into:
+   - Asset yield: cash rate + lending margin to cost-of-funds.
+   - Funding cost: weighted average of deposit rate + wholesale debt
+     spread.
+   - Hedge contribution: bank-specific structural-hedge income from
+     replicating-portfolio strategies (material for retail-deposit-
+     funded banks).
+   - Mix shift: housing-vs-business segment weights moving over time.
+
+(d) **Non-interest income** decomposed into:
+   - Fee income (lending fees, account-keeping, FX, etc.).
+   - Markets income (treasury trading, FX, derivatives).
+   - Wealth/insurance (where applicable; mostly divested for Big Four
+     except still material at some regionals).
+
+Each non-NII line carries its own scenario translation.
+
+### 15.4 Credit-loss / impairment expense
+
+(a) **Principle**: credit losses are a primary scenario driver for
+banks, not a residual. The credit-loss expense (% of gross loans p.a.)
+is scenario-conditional and explicit in the forecast.
+
+(b) **Through-the-cycle baseline**: each bank carries a normalised
+through-the-cycle credit-loss rate (typical Big Four range 15–25bps
+of gross loans). This is the Muddle Through anchor.
+
+(c) **Stage 1-2-3 mechanics**: expected losses computed under AASB 9
+on a 12-month basis (Stage 1) and lifetime basis (Stage 2-3). Source
+the loss-stage composition from Pillar 3 / financial statements
+(typically Tables CR1, CR3) and forecast stage migration under
+scenario stress.
+
+(d) **Scenario calibration**: credit-loss rates by scenario must
+reference the housing-loan and business-loan loss-given-default
+assumptions in the scenario YAML's `macro_baseline.credit_cycle`
+block. A disorderly-climate scenario, for instance, runs much higher
+losses on stranded-asset business exposures than Muddle Through.
+
+(e) **Specific provisioning vs general overlay**: banks routinely
+carry general-economic-overlay provisions on top of model-based
+expected losses (post-COVID a permanent feature). The methodology
+treats general overlay movements as IMIs (§6) unless the scenario
+itself drives a structural change in the overlay.
+
+### 15.5 Capital constraint — CET1 binds payout and growth
+
+(a) **Principle**: a bank's dividend payout and asset growth are
+constrained by its Common Equity Tier 1 (CET1) capital ratio. The
+ratio must remain above a regulator-set minimum (typically 11.5%
+under APRA's "unquestionably strong" framework, including a
+countercyclical buffer of 1.0%, plus a domestic systemically
+important bank (D-SIB) surcharge of 1.0% for the Big Four) plus
+a management buffer (typically 50–150bps above the minimum).
+
+(b) **The constraint binds two things**:
+   - **Asset growth**: nominal interest-earning asset growth × risk-
+     weight density × CET1 ratio = required CET1 capital generation
+     per year. Banks generate CET1 from retained earnings (cash
+     earnings × (1 − payout ratio)).
+   - **Payout ratio**: the payout ratio is the residual after
+     CET1 requirements are met. A bank running at the CET1 floor
+     under stress must retain more earnings (lower payout) to
+     rebuild capital.
+
+(c) **Forecast mechanics**: each forecast year computes
+   - Cash earnings (NII + non-NII − operating expenses − credit losses − tax)
+   - CET1 generated = cash earnings × (1 − payout ratio target)
+   - Required CET1 = ΔRWA × CET1 target ratio
+   - If generated < required, payout is forced down; if generated >
+     required by a buffer, the excess is returnable (buyback or special).
+
+(d) **Pillar 3 mapping**: the RWA composition and risk weights come
+from Pillar 3 KM1 / OV1 / CR4. Forecast risk-weight density (RWA /
+exposure) holds flat by default; scenario-conditional risk-weight
+movements (e.g., disorderly climate → higher housing risk weights
+under climate-adjusted credit modelling) are captured as a separate
+driver.
+
+(e) **APRA buffer regime**: the methodology assumes the current APRA
+buffer regime continues. Regulatory-change scenarios (e.g., higher
+D-SIB surcharges) are explicitly modelled in the scenario layer's
+`regulatory` block.
+
+### 15.6 Five Forces — bank industry archetype
+
+The Five Forces (§3.3) for a regulated retail-and-business banking
+archetype:
+
+(a) **Buyer power**: LOW (households, SMEs) to MODERATE (corporates).
+Switching costs in transaction banking, mortgage relationships, and
+business banking are high. Mortgage rate sensitivity is asymmetric:
+new business is rate-competitive, back book is sticky.
+
+(b) **Supplier power**: depositors are the primary funding "supplier"
+and have switching options (term deposits vs at-call; one bank vs
+another via comparator sites; broker channel). Wholesale funders
+have credit-spread power but tend to be price-takers across the Big
+Four.
+
+(c) **Threat of new entrants**: LOW (regulatory licensing, capital
+requirements, distribution scale). Fintech entrants are typically
+narrow-product (BNPL, neobank deposits) and have not displaced the
+oligopolistic core.
+
+(d) **Threat of substitutes**: LOW to MODERATE. Non-bank mortgage
+lenders (warehouse-funded) take share when bank credit constraints
+bind; superannuation funds substitute for term deposits over long
+horizons; fintech payments substitute for transaction-account
+revenue but not the funding base.
+
+(e) **Rivalry**: MODERATE. Oligopolistic among the Big Four; price
+discipline holds in benign periods, breaks under share-loss
+pressure (front-book mortgage pricing wars are the canonical
+example). Regional banks and macquarie compete on margin in
+specific segments.
+
+(f) **Company-position decomposition**: each bank's position relative
+to the Big-Four average is decomposed force-by-force per §3.3, with
+quantified impact on volume growth, NIM, or cost-to-income. The
+positions are not symmetric across the Big Four — CBA's deposit
+franchise dominance, Westpac's mortgage-book scale, NAB's business
+banking strength, ANZ's institutional / international footprint each
+manifest differently.
+
+### 15.7 Bank-specific equity adjustments
+
+The §4 equity bridge collapses for banks (no EV→equity step), but
+bank-specific equity-side adjustments still apply:
+
+(a) **AT1 / Tier 1 hybrid securities** (Capital Notes etc.) — sit
+above ordinary equity in the capital stack. Treated as a deduction
+from book equity (and from per-share value) when computing
+ordinary-equity-per-share. Distinct from sub debt (Tier 2), which
+is debt at fair value and does not affect equity per share.
+
+(b) **Deferred tax assets** — banks routinely carry material DTAs
+(loss-recognition timing, expected-loss provisioning). The CET1
+calculation deducts most DTAs from regulatory capital; the
+accounting equity does not. Sanity-check: book equity per share
+vs CET1 + DTA + intangibles per share.
+
+(c) **Software intangibles** — capitalised software typically
+deducted from CET1. Same sanity-check.
+
+(d) **Goodwill** — fully deducted from CET1. Reduces capacity to
+return capital from book equity.
+
+(e) **Capital actions**: announced but not yet completed buybacks
+treated per §5.2 (share-count discipline). Off-market buybacks
+(common for Australian banks for franking-credit reasons) follow the
+same treatment as on-market.
+
+### 15.8 Terminal value — ROE fade to Ke
+
+(a) **Convention**: terminal value for a bank uses a
+Gordon-growth-on-equity formulation:
+
+  TV_equity = Equity_T × (ROE_T − g) / (Ke − g)
+
+where ROE_T is the through-the-cycle terminal ROE and g is the
+terminal asset-growth rate.
+
+(b) **ROE convergence**: terminal ROE should fade to a level
+consistent with the bank's franchise quality. Australian Big Four
+typical range 10–13% through-cycle; regional banks 8–11%. A bank
+sustaining terminal ROE materially above its cost of equity must
+have a defensible competitive advantage (the Big Four oligopoly
+itself qualifies; rebuild has to be re-argued for each).
+
+(c) **Payout sustainability**: terminal payout ratio = 1 − g / ROE_T.
+This ties the terminal growth to retained earnings via the
+sustainable-growth identity. Per §3.5.4 the terminal growth rate
+itself can be scenario-conditional (different macro outlooks → 
+different sustainable growth).
+
+(d) **Capital surplus distribution**: a bank with CET1 above target
+in the terminal period distributes the surplus before computing
+terminal value. The terminal book equity used in TV is the
+capital-target-adjusted figure, not the latest reported.
+
+### 15.9 Schema implications
+
+(a) **New schema fields for `data/companies/<id>.yaml` (banks):**
+   - `bank_specifics.average_interest_earning_assets` (period-anchored)
+   - `bank_specifics.nim_decomposition` (asset yield, funding cost,
+     hedge contribution)
+   - `bank_specifics.credit_loss_through_cycle` (bps p.a. of gross
+     loans)
+   - `bank_specifics.cet1.actual`, `bank_specifics.cet1.target_minimum`,
+     `bank_specifics.cet1.management_buffer`
+   - `bank_specifics.rwa_composition` (housing, business, institutional,
+     other; with risk-weight density per segment)
+   - `bank_specifics.at1_hybrid_outstanding` (AUD m face)
+   - `bank_specifics.dta_balance`, `bank_specifics.software_intangibles`
+   - `normalised_baseline.cost_of_equity_build` (replaces
+     `wacc_build` for banks)
+
+(b) **New schema fields for `data/industries/<id>.yaml` (bank archetype):**
+   - `bank_archetype.regulator` (APRA / RBNZ / etc.)
+   - `bank_archetype.cet1_floor` (regulatory minimum)
+   - `bank_archetype.credit_cycle_anchor` (through-cycle loss rate
+     for the archetype)
+   - `bank_archetype.rwa_density_anchor` (per segment)
+
+(c) **New schema fields for `data/scenarios/<id>.yaml` (banks):**
+   - `macro_baseline.credit_cycle` (housing-loan LGD, business-loan
+     LGD per scenario)
+   - `macro_baseline.cash_rate_path` (RBA cash rate trajectory)
+   - `macro_baseline.swap_spreads` (3M / 5Y swap to bond spread)
+   - `macro_baseline.housing_market` (turnover, price growth)
+   - `macro_baseline.regulatory.cet1_floor_change` (per scenario)
+
+(d) **Translator changes**: bank archetypes invoke
+`translate_to_bank_assumption_set` (new) instead of
+`translate_to_assumption_set` (industrials). The bank translator
+produces a `BankAssumptionSet` with the NII / non-NII / credit-loss
+decomposition.
+
+(e) **DCF engine changes**: bank workbooks use a
+`run_bank_residual_income` (or `run_bank_ddm`) routine in place of
+`run_fcf_dcf`. The routine produces a year-by-year residual-income
+forecast, terminal value via §15.8, and per-share value via §15.7
+adjustments.
+
+### 15.10 Worked example reference
+
+The WBC Muddle Through valuation (build in progress as of 12 June
+2026) is the canonical bank worked example. Each principle in §15 is
+to be implemented and visible in that workbook. The workbook is the
+integration test: if it can't be built from a bank-specific company
+position YAML + scenario YAML + bank industry archetype YAML + this
+methodology, §15 has a gap.
+
+### 15.11 Migration / coexistence note
+
+The industrials methodology in §§2–7 is unchanged. Companies tagged
+`industry_type: "bank"` (or where the industry archetype's
+`archetype_class` field equals `"bank"`) invoke §15. All other
+companies invoke §§2–7 unchanged. The §3.3 Five Forces spine and
+§3.5 single-discount-rate discipline apply to both branches; the §3.6
+tax-rate discipline applies to both (banks have their own statutory
+rate, typically 30%, with the same blended-statutory consistency
+requirement).
