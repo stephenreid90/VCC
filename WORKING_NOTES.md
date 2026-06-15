@@ -36,13 +36,30 @@ A living scratchpad for conversational decisions, current preoccupations, and co
 
 ## Current state of play (as of 12 June 2026)
 
+**15 June 2026 — Ben's WBC financial feed arrived; key calibrations applied.**
+
+Ben's EODHD fundamentals export landed (`data/financials/wbc_eodhd_fundamentals_2026-06-15.csv`). Material calibrations applied to WBC YAMLs and bank archetype:
+
+1. **Equity beta 0.73** — below initial archetype range 0.85-1.00. Cost of equity revised to Re = 4.30% + 0.73 × 5.00% = **7.95%** (vs initial archetype mid-point ~8.93%). 100bps reduction; meaningful upward pressure on Muddle Through fair value. Archetype `cost_of_equity_anchor` beta_range extended to 0.73-1.00 to accommodate.
+2. **Shares outstanding 3,414.9m** verified (was 3,380m placeholder).
+3. **Market reference price AUD 35.32** at feed date 15 June 2026 (was AUD 38.50 placeholder). Sell-side consensus 12-month target AUD 33.45 (~5% below current trading).
+4. **Multi-year net income history** added to `bank_specifics.historical_anchors`: peak FY18 AUD 8.09bn; trough FY20 (COVID) AUD 2.29bn; FY25 AUD 6.91bn; through-cycle 5-yr average AUD 6.45bn.
+5. **FY26 / FY27 consensus** captured: FY26 EPS AUD 2.06 / FY27 EPS AUD 2.18 — usable as Muddle Through market check.
+6. **Book value per share AUD 21.31** (book equity ~AUD 72.8bn).
+
+Outstanding feed requests: peer comp (CBA/NAB/ANZ + Macquarie banking on same metrics) and NIM time series at half-yearly cadence — for next pass.
+
+---
+
 **12 June 2026 — Westpac build kicked off; bank-methodology fork landed first.**
 
 Ben sent the WBC source pack (11 files: 1H26 financial results announcement, 1H26 IDP presentation, 1H26 key financial information xlsx, 1H26 quantitative information xlsx (Pillar 3), 1H26 risk factors, items-impacting-1H26 PDF, 1Q26 Update + IDP, December and March Pillar 3 reports, FY25 annual report). Ben's financial feed (multi-year time series, beta, peer comp) still to come — not blocking.
 
 Before starting the WBC company build, added **methodology §15 "Bank-specific valuation conventions"** as a fork. Industrials methodology (§§2–7) unchanged; banks invoke §15 in place of §§2–4. Key conventions: cost of equity not WACC (no EV→equity bridge); NII = average interest-earning assets × NIM; credit losses are a scenario-conditional primary driver, not a residual; CET1 ratio binds dividend payout and asset growth; ROE fade to Ke for terminal. Schema additions: `bank_specifics.*` on company YAMLs, `bank_archetype.*` on industry YAMLs, `macro_baseline.credit_cycle / cash_rate_path / swap_spreads / housing_market / regulatory` on scenario YAMLs. Architecture spec bumped v0.4 → v0.5 (additive only).
 
-Next: build the bank archetype (australian_major_banks) and the WBC company position via §15 conventions, then financials baseline from the source pack, then per-scenario impact matrix, then Muddle Through valuation workbook.
+WBC v1 baseline committed 12 June 2026 (commit d568262): `data/industries/australian_major_banks.{yaml,md}`, `data/companies/wbc.{yaml,md}`, `data/companies/wbc_documents.yaml`. Calibrated against 1H26 results (anchor date 31 March 2026): CET1 12.42%, NIM 1.89%, AIEA AUD 1,035bn, gross loans AUD 890bn, customer deposits AUD 745bn.
+
+Next: per-scenario impact matrix `data/impact_matrix/by_industry/australian_major_banks.yaml`, then Muddle Through valuation workbook applying §15 conventions.
 
 ---
 
@@ -173,17 +190,4 @@ Next: build the bank archetype (australian_major_banks) and the WBC company posi
 - `f21fb1e` — IPL → DNL first pass (renames + real EODHD financials + per-entity functional currency).
 - `5d55305` — IPL → DNL editorial sweep across spec/build-plan/workshop docs/industry/matrix/scenarios (architecture v0.2 → v0.2.1).
 - `86233ca` — Phase 3.5 smoke-test DCF (translator stub + FCF DCF stub + driver script + findings).
-- **PENDING COMMIT — briefing pack for Ben meeting (29 May 2026).** `analyses/dnl/dnl_briefing_pack_2026-05-29.docx` + `.pdf`. 6 substantive pages + small overflow covering scenarios / Porter / DNL positioning / per-scenario impact / methodology principles. To be committed in the next push.
-- **Tag:** `architecture-v0.1` points at `ec462c5`.
-
----
-
-## Last updated
-
-9 June 2026 — DNL Q1-Q8 review + Five Forces spine for company position + tax-rate consistency. Methodology doc gains sections 3.3 (Five Forces spine), 3.6 (tax discipline), 14 (source-document ingestion). Architecture spec v0.3.1 -> v0.4 (additive). Muddle Through workbook v4 lands per share AUD 3.59 vs market AUD 3.61 -- essentially at market. Framework discriminating power now lives in scenario asymmetry around Muddle Through, not in central-case disagreement with consensus.
-
-29 May 2026 (later) — Gas-contract roll-off overlay added to margin glide path (methodology §3.2.1). DNL workbooks rebuilt as v3: Muddle Through per share AUD 3.22 → AUD 2.90; all scenarios down ~AUD 0.31-0.36. Aligns with substack 'build structural risk into cash flows' discipline.
-
-29 May 2026 — Reference texts and style anchors captured (Damodaran, Mercer, Ang, Valuation Matters substack). Style of thinking distilled from KISS principle + control-premium-fallacy posts. Methodology §3.5 citation follow-up parked. Briefing pack for Ben meeting drafted at `analyses/dnl/dnl_briefing_pack_2026-05-29.{docx,pdf}` (committed alongside this update).
-
-28 May 2026 — Single-WACC discipline added (methodology §3.5; architecture spec v0.3.1). DNL scenario comparison rebuilt with constant WACC; comparison vs prior differential-WACC version captured in workbook. All six scenarios for DNL computed: Orderly Convergence AUD 3.72, Muddle Through AUD 3.22, AI Productivity Lag AUD 3.14, Fragmentat
+- **PENDING COMMIT — briefing pack for Ben meeting (29 May 2026).** `analyses/dnl/dnl_briefing_pack_2026-05-29.docx` + `.pdf`. 6 substantive pages + small overflow covering scenarios / Porter / DNL positioning / per-scenario impact / meth

@@ -213,20 +213,19 @@ documents:
         - data/financials/wbc.yaml (full FY25 baseline)
       methodology_reference: "§14.2(e) — latest annual report; §14.2(h) — sustainability / TCFD section"
 
-  refresh_cadence:
-    next_refresh: "On 1Q27 trading update (Feb 2027) or material announcement"
-    refresh_trigger:
-      - "Quarterly trading update / Pillar 3"
-      - "Half-year results (next: 1H27 results, May 2027)"
-      - "Full-year results (next: FY26 results, Nov 2026)"
-      - "Any > 5% movement materially impacting equity value"
-      - "Regulatory step change (APRA / RBNZ capital framework)"
-
-  notes_for_data_workstream:
-    handoff_status: "Ben provided the source pack 12 June 2026; financial-feed time series (multi-year NIM, expenses, impairment history; equity beta from price; peer comp aggregation) pending."
-    requested_additions:
-      - "5-year time series for NIM, cost-to-income, credit losses, ROE — for trend / normalisation analysis"
-      - "Bloomberg or IRESS consensus estimates for FY27/FY28"
-      - "Equity beta vs ASX200 and vs world-index (MSCI World)"
-      - "Peer comparison data: CBA, NAB, ANZ on the same key metrics"
-      - "Macquarie banking division comparator (where disclosed separately)"
+    - id: wbc_eodhd_fundamentals_2026_06_15
+      title: "WBC EODHD Fundamentals Export (Ben's financial feed)"
+      type: third_party_data_feed
+      reporting_period: 2026-06-15
+      release_date: 2026-06-15
+      filename: wbc_eodhd_fundamentals_2026-06-15.csv
+      location_in_repo: "data/financials/wbc_eodhd_fundamentals_2026-06-15.csv"
+      key_insights:
+        - "Equity beta 0.73 — BELOW archetype range (0.85-1.00). Material calibration input."
+        - "Shares outstanding 3,414,907,347 (3,414.9m exact); verified vs 1H26 accounts."
+        - "Market cap AUD 120,615m at feed date (15 June 2026); implied price AUD 35.32."
+        - "Sell-side consensus target AUD 33.45 (~5% below current trading)."
+        - "Book value per share AUD 21.31; implies book equity ~AUD 72.8bn."
+        - "Trailing PE 17.4; Forward PE 15.6; Forward dividend yield 4.36%."
+        - "10-year net income series: peak FY18 AUD 8.09bn; trough FY20 (COVID) AUD 2.29bn; FY25 actual AUD 6.91bn; through-cycle 5-yr average AUD 6.45bn."
+        - "ROE T

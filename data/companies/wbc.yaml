@@ -496,20 +496,13 @@ company_position:
         Australian transaction balances AUD 149bn provide structural
         funding-cost advantage versus wholesale-funded peers.
 
-  share_statistics:
-    shares_outstanding_anchor_date: 2026-03-31
-    shares_outstanding_millions: 3380
-      # WBC shares outstanding ~3.38bn at 31 March 2026; to be
-      # verified against statutory accounts (Note 14 share capital).
-    market_reference_price_aud: 38.50
-      # Indicative; to be calibrated against Ben's feed.
-    market_reference_date: 2026-06-12
-    indicative_market_cap_aud_m: 130130
-
-  corporate_actions:
-    - action: on_market_buyback
-      status: active
-      announced: 2024-11-04
-      total_announced_aud_m: 1500
-      executed_to_date_aud_m: 581
-      notes: "Per FY25 statement of changes in equity (Note 14)."
+    cost_of_equity_build:
+      # Per methodology §15.2(b). Bank-specific Ke replaces WACC build.
+      # Calibrated against Ben's EODHD feed (15 June 2026); see §14
+      # source-document register.
+      risk_free_rate: 0.0430
+      risk_free_rate_source: "10-year Australian Commonwealth government bond yield, May 2026 (same as §3.5.2)."
+      equity_risk_premium: 0.0500
+      equity_risk_premium_source: "Damodaran-style mature-Australia premium (same as §3.5.2)."
+      beta: 0.73
+      beta_source: "EODHD fundamentals feed, 15 June 2026 (technicals section). Computed against MSCI World / ASX200 blend; below the archetype range 0.85-

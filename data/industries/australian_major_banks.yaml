@@ -307,15 +307,20 @@ industry_archetype:
     cost_of_equity_anchor:
       risk_free_rate: 0.0430
       equity_risk_premium: 0.0500
-      beta_range: [0.85, 1.00]
-      cost_of_equity_range: [0.0855, 0.0930]
+      beta_range: [0.73, 1.00]
+      cost_of_equity_range: [0.0795, 0.0930]
       rationale: >
         Cost-of-equity range for Big Four. Australian government bond
         yield (10y) and Damodaran-style mature-Australia ERP same as
-        §3.5.2. Beta range 0.85-1.00 reflects oligopolistic banking
-        franchise lower volatility than diversified global financials.
-        Single-Ke discipline applies per §15.2(c): the bank-specific
-        Ke is held constant across scenarios.
+        §3.5.2. Beta range updated to 0.73-1.00 following Ben's feed
+        for WBC showing beta of 0.73 (below the initial 0.85 floor) —
+        consistent with WBC's mortgage-book-weighted franchise being
+        defensive relative to global diversified financials. Other
+        Big Four expected to verify in the upper part of the range:
+        ANZ wholesale / institutional exposure suggests beta closer
+        to 1.0; CBA and NAB likely intermediate. Single-Ke discipline
+        applies per §15.2(c): the bank-specific Ke is held constant
+        across scenarios.
 
     terminal_roe_anchor:
       big_four_range: [0.10, 0.13]
@@ -345,9 +350,4 @@ industry_archetype:
       big_four_range: [0.42, 0.50]
       transformation_capacity_bps: 200
       rationale: >
-        Big Four cost-to-income range 42-50% currently. Productivity
-        and technology-investment programs target 200-400bps of
-        improvement over a 3-5 year horizon (CBA leadership reference
-        ~42%, WBC currently mid-pack ~48%). Treated as a
-        transformation overlay (§3.2) where management has committed to
-        specific cost-out targets.
+        Big Four cost-to-income range 42-50% 
