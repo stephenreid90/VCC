@@ -1,0 +1,548 @@
+# Impact matrix for australian_major_banks archetype.
+#
+# One entry per scenario; drivers populated sparsely per architecture spec
+# §10.2 — absent drivers default to neutral / small / not assessed.
+#
+# Bank-specific driver set per methodology §15.3-§15.5:
+#   - system_loan_growth: archetype-level credit growth (housing + business
+#     + institutional, AIEA-weighted)
+#   - nim_change: net interest margin movement vs through-cycle anchor
+#     (1.94% for WBC per bank_specifics.historical_anchors.nim_anchors)
+#   - non_interest_income_growth: fees + markets + treasury combined
+#   - operating_expense_growth: cost growth before scenario-conditional
+#     transformation overlay (which is company-specific)
+#   - credit_loss_rate: bps of average loans (through-cycle ~20bps for
+#     Big Four; WBC anchor 18bps)
+#   - cash_rate_context: RBA cash-rate trajectory (scenario context;
+#     flows into NIM via funding/asset spread dynamics)
+#   - housing_market_context: housing volumes and prices (scenario
+#     context; drives mortgage growth and credit losses)
+#   - terminal_growth_rate: terminal asset book growth p.a.
+#   - terminal_roe: terminal return on equity (cyclically-adjusted)
+#
+# Plus context drivers retained per §3.5 (do NOT flow into Ke):
+#   - risk_free_rate, equity_risk_premium, beta
+#
+# Direction: negative | neutral | positive (3-way per §10.2)
+# Magnitude: small | moderate | large (3-way per §10.2)
+# Confidence: low | moderate | high (joint confidence in direction × magnitude
+#             assuming the scenario plays out per §10.2 pinned definition)
+#
+# Scope: archetype-applicable drivers. Company-specific overrides
+# (e.g. WBC's mortgage-book-weighted vulnerability to housing scenarios)
+# live in the company file's scenario_sensitivity_overrides_global block.
+
+industry: australian_major_banks
+archetype_class: bank
+version: 2026-Q2-v1
+
+matrix:
+
+  # ======================================================================
+  - scenario: muddle_through
+    scenario_version: "2026-Q2-v1"
+    drivers:
+
+      system_loan_growth:
+        direction: neutral
+        magnitude: small
+        confidence: high
+        rationale: >
+          Australian system credit growth tracks nominal GDP — housing
+          ~4-5% p.a., business ~5-7% p.a., institutional flat-to-positive.
+          AIEA-weighted blend approximately 4-5% p.a. for the Big Four.
+          No catalyst for material deviation in either direction.
+
+      nim_change:
+        direction: neutral
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          NIM holds in the FY22-FY25 through-cycle band (193-195bps).
+          Front-book mortgage competition modest; deposit costs benign;
+          replicating-portfolio yields supportive at current rate
+          settings. Treasury & Markets contribution stable at ~13bps.
+
+      non_interest_income_growth:
+        direction: neutral
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Fee income tracks system activity; markets income normal-cycle
+          contribution; treasury contribution stable. No tailwind or
+          headwind specific to non-NII lines.
+
+      operating_expense_growth:
+        direction: neutral
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Inflation absorbed at current pace (~3% wage pressure on
+          ~50% personnel cost base = ~1.5pp cost growth before
+          transformation overlay). Net of transformation glide, banks
+          target flat-to-low cost growth.
+
+      credit_loss_rate:
+        direction: neutral
+        magnitude: small
+        confidence: high
+        rationale: >
+          Credit losses normalise from current benign 10-15bps actual
+          toward the through-cycle anchor (Big Four 15-25bps, WBC
+          18bps). Gradual rise rather than a step change.
+
+      cash_rate_context:
+        direction: neutral
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          RBA cash rate steady at ~4% through the explicit horizon.
+          Modest easing path in line with neutral nominal stance.
+          No NIM pressure from rate moves either way.
+
+      housing_market_context:
+        direction: neutral
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Housing turnover and prices grow at GDP-adjacent rates.
+          No exuberance, no correction. System mortgage growth
+          ~4-5% p.a.
+
+      risk_free_rate:
+        direction: neutral
+        magnitude: small
+        confidence: high
+        rationale: >
+          10-year Commonwealth bond yields anchor around 4.0-4.5%.
+          Baseline against which other scenarios compared. CONTEXT
+          ONLY — does not flow into discount rate per §3.5.
+
+      terminal_growth_rate:
+        direction: neutral
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Terminal asset book growth ~3.5-4.0% (nominal) — long-run
+          Australian credit growth in line with nominal GDP +
+          demographic.
+
+      terminal_roe:
+        direction: neutral
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Terminal ROE converges to the archetype anchor (10-13% Big
+          Four range) — for WBC the franchise-specific anchor sits
+          mid-range at ~10.5%.
+
+  # ======================================================================
+  - scenario: orderly_convergence
+    scenario_version: "2026-Q2-v1"
+    drivers:
+
+      system_loan_growth:
+        direction: positive
+        magnitude: moderate
+        confidence: moderate
+        rationale: >
+          Productivity acceleration and orderly geopolitics drive
+          business confidence; business credit growth lifts to 7-9%
+          p.a.; housing flow remains healthy. AIEA-weighted blend
+          5.5-6.5% p.a.
+
+      nim_change:
+        direction: positive
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Steadier rate environment with reduced front-book mortgage
+          competition (oligopoly discipline holds in benign periods);
+          deposit cost pass-through favourable. NIM up ~5-10bps from
+          anchor toward 200bps.
+
+      non_interest_income_growth:
+        direction: positive
+        magnitude: moderate
+        confidence: moderate
+        rationale: >
+          Markets income lifts on healthy issuance activity; fee
+          income on stronger transaction flows; wealth/insurance
+          residual benefits where retained.
+
+      operating_expense_growth:
+        direction: neutral
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          AI and productivity-driven cost discipline accelerates
+          transformation glide. Cost growth held flat in nominal
+          terms.
+
+      credit_loss_rate:
+        direction: negative
+        magnitude: moderate
+        confidence: moderate
+        rationale: >
+          Benign cycle: actual losses run below through-cycle anchor
+          at 10-15bps. Strong borrower position; low default rates.
+
+      cash_rate_context:
+        direction: neutral
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Cash rate eases modestly toward 3.5% as inflation normalises;
+          NIM benefit from this captured in nim_change positive.
+
+      housing_market_context:
+        direction: positive
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Housing turnover rises 5-7%; price growth 4-6%; healthy
+          mortgage flow without overheating.
+
+      terminal_growth_rate:
+        direction: positive
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Slightly higher terminal real growth (~2.5% real); credit
+          growth supportive.
+
+      terminal_roe:
+        direction: positive
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Productivity lift edges terminal ROE toward upper end of
+          archetype range (~11.5% for WBC).
+
+  # ======================================================================
+  - scenario: stagflation_persists
+    scenario_version: "2026-Q2-v1"
+    drivers:
+
+      system_loan_growth:
+        direction: negative
+        magnitude: moderate
+        confidence: high
+        rationale: >
+          Weak real growth (0.5%) compresses business credit demand;
+          tightening credit policies further constrain. Housing
+          turnover slows materially. AIEA-weighted blend 1-3% p.a.
+
+      nim_change:
+        direction: negative
+        magnitude: moderate
+        confidence: moderate
+        rationale: >
+          The bank-archetype equivalent of "supplier-power blocks pass-
+          through": elevated cash rate at 5.5-6% drives deposit
+          competition (term-deposit rate wars); wholesale spreads widen
+          (+50-100bps); front-book mortgage discounting intensifies as
+          customers refinance for relief. Net -20 to -40bps NIM
+          compression from anchor toward 155-175bps band.
+
+      non_interest_income_growth:
+        direction: negative
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Markets volatility limits trading income; fee income from
+          transaction activity dampens; wealth management exposed to
+          equity-market pressure.
+
+      operating_expense_growth:
+        direction: positive
+        magnitude: moderate
+        confidence: high
+        rationale: >
+          Wage inflation 5%+ persists; tech and compliance cost
+          inflation; transformation glide insufficient to offset.
+          Cost growth +3-5% in nominal terms.
+
+      credit_loss_rate:
+        direction: positive
+        magnitude: large
+        confidence: high
+        rationale: >
+          Cycle stress: actual losses lift to 60-80bps (toward peak-
+          cycle anchor). Mortgage book under serviceability pressure;
+          business book under demand and margin pressure. Stage 2/3
+          migration accelerates.
+
+      cash_rate_context:
+        direction: positive
+        magnitude: moderate
+        confidence: high
+        rationale: >
+          Cash rate held elevated at 5.5-6% to combat inflation; bond
+          curve also higher (+200bps Rf).
+
+      housing_market_context:
+        direction: negative
+        magnitude: moderate
+        confidence: moderate
+        rationale: >
+          Housing turnover -15 to -20%; prices flat to -5%; mortgage
+          serviceability stress.
+
+      risk_free_rate:
+        direction: positive
+        magnitude: moderate
+        confidence: high
+        rationale: >
+          10-year Commonwealth bond yields elevated +200bps to ~6%.
+          CONTEXT ONLY — does not flow into Ke per §3.5.
+
+      equity_risk_premium:
+        direction: positive
+        magnitude: moderate
+        confidence: moderate
+        rationale: >
+          Risk-off conditions widen ERP +50-100bps. CONTEXT ONLY.
+
+      terminal_growth_rate:
+        direction: negative
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Terminal nominal growth depressed by persistent low real
+          growth; even with inflation, asset book growth ~2.5-3%.
+
+      terminal_roe:
+        direction: negative
+        magnitude: moderate
+        confidence: moderate
+        rationale: >
+          Terminal ROE compressed to 8-9% range — toward regional-bank
+          territory. Cost-to-income deteriorates structurally.
+
+  # ======================================================================
+  - scenario: fragmentation
+    scenario_version: "2026-Q2-v1"
+    drivers:
+
+      system_loan_growth:
+        direction: negative
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Trade fragmentation depresses business investment; institutional
+          credit (financial institutions, sovereigns) hit by reduced
+          cross-border flows. Housing relatively insulated. AIEA-
+          weighted blend 3-4% p.a.
+
+      nim_change:
+        direction: neutral
+        magnitude: small
+        confidence: low
+        rationale: >
+          Rate path uncertain — could move either way depending on
+          inflation pass-through from import disruption vs growth
+          drag. Net NIM movement small.
+
+      non_interest_income_growth:
+        direction: negative
+        magnitude: moderate
+        confidence: moderate
+        rationale: >
+          Cross-border markets and FX income compressed; transaction
+          banking fees impacted by reduced trade flows; institutional
+          activity dampened.
+
+      operating_expense_growth:
+        direction: positive
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Inflation flow-through from import disruption raises costs
+          modestly; transformation glide partly offsets.
+
+      credit_loss_rate:
+        direction: positive
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Business book impairments rise (mining services exposed to
+          bloc-trade frictions; manufacturing impacted); housing
+          relatively benign.
+
+      cash_rate_context:
+        direction: positive
+        magnitude: small
+        confidence: low
+        rationale: >
+          Cash rate likely held slightly higher (+50-75bps) due to
+          imported inflation pressure.
+
+      housing_market_context:
+        direction: neutral
+        magnitude: small
+        confidence: low
+        rationale: >
+          Housing market relatively insulated from international trade
+          disruption; demographic-driven flows continue.
+
+      country_risk_premium:
+        direction: positive
+        magnitude: moderate
+        confidence: moderate
+        rationale: >
+          Geopolitical risk premium widens for Australian sovereign
+          and bank credit spreads. CONTEXT ONLY.
+
+      terminal_growth_rate:
+        direction: negative
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Long-run growth dampened by persistent trade frictions;
+          terminal credit growth slightly below baseline.
+
+      terminal_roe:
+        direction: negative
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Slightly compressed terminal ROE — institutional franchise
+          drag and structural risk premium widening.
+
+  # ======================================================================
+  - scenario: disorderly_climate_crystallisation
+    scenario_version: "2026-Q2-v1"
+    drivers:
+
+      system_loan_growth:
+        direction: negative
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Climate-vulnerable mortgage book volumes affected (insurability
+          issues in flood/bushfire zones); coal-exposed and oil-gas
+          business book in managed run-off. Transition-mineral lending
+          partially offsets. Net -50 to -100bps from baseline growth.
+
+      nim_change:
+        direction: neutral
+        magnitude: small
+        confidence: low
+        rationale: >
+          Rate path uncertain — carbon price flow-through into inflation
+          could lift rates; growth drag could lower them. Net NIM
+          movement small.
+
+      non_interest_income_growth:
+        direction: positive
+        magnitude: small
+        confidence: low
+        rationale: >
+          Sustainable finance fee income (green bonds, transition
+          finance arrangements) lifts; offset by transaction activity
+          dampening from broader climate stress.
+
+      operating_expense_growth:
+        direction: positive
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Climate-related compliance and disclosure costs rise;
+          modelling and risk-management investment lifts opex.
+
+      credit_loss_rate:
+        direction: positive
+        magnitude: moderate
+        confidence: moderate
+        rationale: >
+          Transition stress: mining (thermal coal, oil/gas) book
+          impairments lift; climate-vulnerable mortgage book sees
+          targeted defaults. Stage 2/3 migration in affected sectors.
+          Net +30-50bps above through-cycle anchor.
+
+      housing_market_context:
+        direction: negative
+        magnitude: small
+        confidence: low
+        rationale: >
+          Differentiated outcome: climate-vulnerable zones see price
+          declines; resilient zones stable. Net mild negative on
+          aggregate mortgage book.
+
+      terminal_growth_rate:
+        direction: negative
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Climate-adjusted RWA increases reduce capital efficiency;
+          terminal growth dampened ~50bps.
+
+      terminal_roe:
+        direction: negative
+        magnitude: moderate
+        confidence: moderate
+        rationale: >
+          Climate-RWA uplifts compress ROE; ongoing transition costs;
+          terminal ROE toward 8.5-9.5%.
+
+  # ======================================================================
+  - scenario: ai_productivity_lag
+    scenario_version: "2026-Q2-v1"
+    drivers:
+
+      system_loan_growth:
+        direction: neutral
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Slightly subdued credit demand from weaker macro (1.7% GDP);
+          AIEA-weighted blend ~3.5-4.5% p.a. Modestly below Muddle
+          Through.
+
+      nim_change:
+        direction: neutral
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Stable NIM environment — neither benefiting from AI uplift
+          nor pressured by macro stress. Holds at anchor.
+
+      non_interest_income_growth:
+        direction: neutral
+        magnitude: small
+        confidence: low
+        rationale: >
+          Markets income flat; fee income tracks subdued macro.
+
+      operating_expense_growth:
+        direction: negative
+        magnitude: small
+        confidence: low
+        rationale: >
+          Modest AI-driven productivity benefit in back-office processes
+          (-50bps of cost growth vs Muddle Through); mining-services-
+          adjacent banks less exposed than fintech-adjacent companies.
+
+      credit_loss_rate:
+        direction: neutral
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Subdued cycle without acute stress; losses normalise modestly
+          toward through-cycle anchor.
+
+      terminal_growth_rate:
+        direction: negative
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Lower long-run real growth from disappointed productivity
+          path; terminal credit growth dampened ~25-50bps.
+
+      terminal_roe:
+        direction: neutral
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          Modest cost benefit; broadly anchor-consistent.
