@@ -213,19 +213,21 @@ documents:
         - data/financials/wbc.yaml (full FY25 baseline)
       methodology_reference: "§14.2(e) — latest annual report; §14.2(h) — sustainability / TCFD section"
 
-    - id: wbc_eodhd_fundamentals_2026_06_15
-      title: "WBC EODHD Fundamentals Export (Ben's financial feed)"
-      type: third_party_data_feed
+    - id: peer_eodhd_fundamentals_2026_06_15
+      title: "Peer EODHD Fundamentals Exports — CBA, NAB, ANZ, MQG"
+      type: third_party_data_feed_peer_set
       reporting_period: 2026-06-15
       release_date: 2026-06-15
-      filename: wbc_eodhd_fundamentals_2026-06-15.csv
-      location_in_repo: "data/financials/wbc_eodhd_fundamentals_2026-06-15.csv"
+      filenames:
+        - cba_eodhd_fundamentals_2026-06-15.csv
+        - nab_eodhd_fundamentals_2026-06-15.csv
+        - anz_eodhd_fundamentals_2026-06-15.csv
+        - mqg_eodhd_fundamentals_2026-06-15.csv
+      location_in_repo: "data/financials/{cba,nab,anz,mqg}_eodhd_fundamentals_2026-06-15.csv"
       key_insights:
-        - "Equity beta 0.73 — BELOW archetype range (0.85-1.00). Material calibration input."
-        - "Shares outstanding 3,414,907,347 (3,414.9m exact); verified vs 1H26 accounts."
-        - "Market cap AUD 120,615m at feed date (15 June 2026); implied price AUD 35.32."
-        - "Sell-side consensus target AUD 33.45 (~5% below current trading)."
-        - "Book value per share AUD 21.31; implies book equity ~AUD 72.8bn."
-        - "Trailing PE 17.4; Forward PE 15.6; Forward dividend yield 4.36%."
-        - "10-year net income series: peak FY18 AUD 8.09bn; trough FY20 (COVID) AUD 2.29bn; FY25 actual AUD 6.91bn; through-cycle 5-yr average AUD 6.45bn."
-        - "ROE T
+        - "Peer beta dataset: CBA 0.80, NAB 0.72, ANZ 0.57, MQG 0.88 (vs WBC 0.73)"
+        - "ANZ identified as outlier (institutional/international dilution, Suncorp integration)"
+        - "MQG informative-not-comparable (different archetype: markets, asset management)"
+        - "Comparable peer cluster CBA / NAB / WBC: β 0.72-0.80, midpoint 0.75"
+        - "ROE TTM ranking: CBA 13.6% > MQG 11.2% > NAB 9.9% ≈ WBC 9.8% > ANZ 8.2%"
+        - "P/B ranking: CBA 3.45x > MQG 2.56x > NAB 1.85x 

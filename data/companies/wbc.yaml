@@ -497,12 +497,14 @@ company_position:
         funding-cost advantage versus wholesale-funded peers.
 
     cost_of_equity_build:
-      # Per methodology §15.2(b). Bank-specific Ke replaces WACC build.
-      # Calibrated against Ben's EODHD feed (15 June 2026); see §14
-      # source-document register.
+      # Per methodology §15.2(b) and the peer-triangulation discipline at
+      # §15.2(c). Bank-specific Ke replaces WACC build. Calibrated
+      # against Ben's EODHD peer feeds (15 June 2026); see §14 source-
+      # document register.
       risk_free_rate: 0.0430
       risk_free_rate_source: "10-year Australian Commonwealth government bond yield, May 2026 (same as §3.5.2)."
       equity_risk_premium: 0.0500
       equity_risk_premium_source: "Damodaran-style mature-Australia premium (same as §3.5.2)."
-      beta: 0.73
-      beta_source: "EODHD fundamentals feed, 15 June 2026 (technicals section). Computed against MSCI World / ASX200 blend; below the archetype range 0.85-
+
+      beta_measured: 0.73
+      beta_measured_source: "EODHD fundamentals feed, 15 June 2026 (technicals 

@@ -36,6 +36,24 @@ A living scratchpad for conversational decisions, current preoccupations, and co
 
 ## Current state of play (as of 12 June 2026)
 
+**16 June 2026 — Beta-selection principle landed; peer EODHD feeds for CBA / NAB / ANZ / MQG ingested.**
+
+Tara articulated a key methodological principle: measured β carries material statistical noise and should not be used mechanically. The framework should select β via reasoned peer triangulation, in the same spirit as a Five Forces decomposition — catalogue peers, identify outliers, reason about where the subject company should sit relative to peers given franchise mix, then select. The principle is general (applies to industrials at §3.5.2 too) but landed first in methodology **§15.2(c)** as part of the bank-specific cost-of-equity discipline. Both the measured and selected β are documented for transparency.
+
+Peer feeds applied for WBC:
+
+1. Peer beta dataset: CBA 0.80, NAB 0.72, ANZ 0.57, MQG 0.88, WBC 0.73.
+2. ANZ excluded as outlier (institutional / international revenue dilution; Suncorp integration period). MQG excluded as informative-not-comparable (different archetype).
+3. Comparable cluster CBA / NAB / WBC: β 0.72-0.80, midpoint 0.75.
+4. **β_selected for WBC = 0.75** (cluster midpoint); measured 0.73 documented alongside. Re = 4.30% + 0.75 × 5.00% = **8.05%** (vs 7.95% under mechanical use of measured β).
+5. Peer ROE / P/B / forward PE rankings validate franchise hierarchy: CBA > MQG > NAB ≈ WBC > ANZ on ROE; market valuation multiples track this exactly.
+
+Archetype `cost_of_equity_anchor` revised to: measured peer range 0.57-0.88; comparable cluster range 0.72-0.80; anchor selected β 0.75; Re anchor 8.05%. The initial 0.85-1.00 range based on global-diversified-financials default was too high — Australian Big Four oligopoly produces meaningfully lower systematic risk than the global default.
+
+NIM time series: Tara accepted YE basis (5 data points: FY21-FY25) over half-yearly (9 data points). Deferred to next pass — requires AIEA history not in the EODHD feed.
+
+---
+
 **15 June 2026 — Ben's WBC financial feed arrived; key calibrations applied.**
 
 Ben's EODHD fundamentals export landed (`data/financials/wbc_eodhd_fundamentals_2026-06-15.csv`). Material calibrations applied to WBC YAMLs and bank archetype:
@@ -168,26 +186,4 @@ Next: per-scenario impact matrix `data/impact_matrix/by_industry/australian_majo
 
 ---
 
-## Recent commits (reference)
-
-- `b387f1a` — initial architecture spec push (sections 1-17 first cut).
-- `8df0784` — sections 7-11 worked through with Tara.
-- `0b976eb` — Ben's-bot platform-side review absorbed (Group 1 changes).
-- `f62d3ae` — narrative-deliverables convention added; Five Forces question bank started.
-- `9f91be4` — WORKING_NOTES.md created.
-- `ac4e8e7` — Five Forces question bank completed (Supplier, New Entrants, Substitutes, Rivalry).
-- `4616ede` — payor-and-regulator framework v1 draft added.
-- `ec462c5` — editorial sweep + v0.1 freeze (Step 1 closed out).
-- `8e7a51b` — WORKING_NOTES update after Step 1 and Step 2 closed.
-- `a76a9ec` — scenarios workshop prep document.
-- `8cc2527` — response to Ben's `vcc_valuations` rev1 design.
-- `1d3d53b` — Step 3 complete (six scenarios drafted).
-- `35578ea` — Step 4 (pydantic + JSON Schema + tests).
-- `e142f95` — chore: removed accidentally-committed `__pycache__` files.
-- `f682363` — WORKING_NOTES Step 4 update.
-- `dfd1243` — architecture v0.2 (§7.1.1 archetype-granularity principle).
-- Step 5: Phase A `_` (industrial_explosives archetype), Phase B `_` (IPL position + indicative financials), Phase C `dea44c2` (IPL impact matrix), Phase D `_` (IPL per-scenario narratives + thesis). Hash placeholders updated when latest commits drop.
-- `f21fb1e` — IPL → DNL first pass (renames + real EODHD financials + per-entity functional currency).
-- `5d55305` — IPL → DNL editorial sweep across spec/build-plan/workshop docs/industry/matrix/scenarios (architecture v0.2 → v0.2.1).
-- `86233ca` — Phase 3.5 smoke-test DCF (translator stub + FCF DCF stub + driver script + findings).
-- **PENDING COMMIT — briefing pack for Ben meeting (29 May 2026).** `analyses/dnl/dnl_briefing_pack_2026-05-29.docx` + `.pdf`. 6 substantive pages + small overflow covering scenarios / Porter / DNL positioning / per-scenario impact / meth
+## 

@@ -307,47 +307,42 @@ industry_archetype:
     cost_of_equity_anchor:
       risk_free_rate: 0.0430
       equity_risk_premium: 0.0500
-      beta_range: [0.73, 1.00]
-      cost_of_equity_range: [0.0795, 0.0930]
-      rationale: >
-        Cost-of-equity range for Big Four. Australian government bond
-        yield (10y) and Damodaran-style mature-Australia ERP same as
-        §3.5.2. Beta range updated to 0.73-1.00 following Ben's feed
-        for WBC showing beta of 0.73 (below the initial 0.85 floor) —
-        consistent with WBC's mortgage-book-weighted franchise being
-        defensive relative to global diversified financials. Other
-        Big Four expected to verify in the upper part of the range:
-        ANZ wholesale / institutional exposure suggests beta closer
-        to 1.0; CBA and NAB likely intermediate. Single-Ke discipline
-        applies per §15.2(c): the bank-specific Ke is held constant
-        across scenarios.
-
-    terminal_roe_anchor:
-      big_four_range: [0.10, 0.13]
-      regional_banks_range: [0.08, 0.11]
-      rationale: >
-        Through-cycle terminal ROE per §15.8(b). Big Four sustained
-        ROE 10-13% historically; current 10-12%. Regional banks 8-11%
-        (lower scale, higher cost-to-income, sub-D-SIB capital
-        framework). Terminal ROE above cost of equity is sustainable
-        for Big Four given the oligopolistic franchise.
-
-    funding_mix_anchor:
-      retail_deposits: 0.45
-      wholesale_deposits: 0.20
-      senior_unsecured_and_covered: 0.20
-      securitisation: 0.05
-      capital_and_at1: 0.10
-      rationale: >
-        Indicative through-cycle funding mix for a Big Four. Retail
-        deposit ratio (LCR-stable + transaction-account funding) is
-        the dominant resilience metric. Banks with higher retail
-        deposit share (CBA, WBC historically) have a structural
-        cost-of-funds advantage versus more wholesale-funded peers
-        (ANZ institutional book).
-
-    cost_to_income_anchor:
-      big_four_range: [0.42, 0.50]
-      transformation_capacity_bps: 200
-      rationale: >
-        Big Four cost-to-income range 42-50% 
+      beta_range_measured: [0.57, 0.88]
+        # Measured β across the listed peer set (CBA, NAB, WBC, ANZ, MQG)
+        # from EODHD 15 June 2026 feeds.
+      beta_range_comparable_cluster: [0.72, 0.80]
+        # Excluding ANZ (institutional/international outlier at 0.57) and
+        # MQG (different archetype at 0.88). Comparable cluster is the
+        # Big Four retail-and-business-bank franchises.
+      beta_anchor_selected: 0.75
+        # Peer cluster midpoint. Recommended starting point for selected β
+        # under the §15.2(c) peer-triangulation discipline; subject company
+        # is positioned within or near this anchor based on franchise mix.
+      cost_of_equity_range_measured: [0.0715, 0.0870]
+      cost_of_equity_range_comparable: [0.0790, 0.0830]
+      cost_of_equity_anchor_selected: 0.0805
+      peer_beta_dataset_2026_06_15:
+        - bank: CBA
+          beta_measured: 0.80
+          inclusion: comparable_peer
+          notes: "Franchise leader; deposit and digital scale; retail-mortgage-anchored."
+        - bank: NAB
+          beta_measured: 0.72
+          inclusion: comparable_peer
+          notes: "Business-banking leader; retail-and-business mix."
+        - bank: WBC
+          beta_measured: 0.73
+          inclusion: comparable_peer
+          notes: "Mortgage-book scale #2; business-banking rebuild."
+        - bank: ANZ
+          beta_measured: 0.57
+          inclusion: excluded_outlier
+          notes: "Institutional / international revenue dilution; Suncorp integration period disrupting price series. Use peer-implied value for ANZ's own valuation."
+        - bank: MQG
+          beta_measured: 0.88
+          inclusion: informative_not_comparable
+          notes: "Different archetype — markets / asset management / commodities trading dilutes banking comparability."
+      rationale: |
+        Cost-of-equity anchor for Big Four retail-and-business banks.
+        Australian government bond yield (10y) and Damodaran-style
+        matu

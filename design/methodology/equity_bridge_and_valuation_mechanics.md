@@ -742,18 +742,52 @@ except β is sourced bank-specific. Defaults:
    - Risk-free rate: 10-year Australian Commonwealth bond yield (same
      as §3.5.2).
    - ERP: Damodaran-style mature-Australia premium (same as §3.5.2).
-   - β: world-index basis where available; otherwise Australian
-     Big-Four aggregate proxy (typical range 0.85–1.00) — the regulated
-     oligopolistic structure tends to produce lower β than global
-     diversified financials. Bank-specific β must be documented in
-     `data/companies/<id>.yaml/normalised_baseline/cost_of_equity_build`.
+   - β: selected via the peer-triangulation discipline at §15.2(c) below.
+     Bank-specific β must be documented in
+     `data/companies/<id>.yaml/bank_specifics/cost_of_equity_build`.
 
-(c) **Single-Ke discipline**: per §3.5, the cost of equity is held
+(c) **Beta-selection discipline — peer triangulation, not mechanical use
+of measured β.** Measured β carries material statistical noise:
+window-dependent, index-choice-sensitive, regime-shift-affected. The
+framework selects β via reasoned peer triangulation rather than
+mechanically using the subject company's measured β. The procedure:
+
+   1. Catalogue measured β for the subject company plus 3–5 directly
+      comparable peers from the same archetype, with the measurement
+      source (provider, index, window) documented.
+
+   2. Identify outliers and document the structural reason — e.g.,
+      institutional / international revenue dilution; recent corporate
+      action disrupting price relationships; small free float; index
+      weight effects.
+
+   3. Reason about where the subject company's "true" β should sit
+      relative to the comparable peer cluster, using business-mix
+      logic similar to the Five Forces decomposition: defensive
+      franchise lower, cyclical / wholesale exposure higher, mix-shifts
+      toward growth lines or markets income higher, mortgage-book
+      weighting lower.
+
+   4. Select an appropriate β within the comparable-peer-implied range.
+      The selection must be documented in
+      `bank_specifics.cost_of_equity_build.beta_selection_rationale`
+      with the peer table, identified outliers, and the comparison logic.
+
+   5. Both the measured β for the subject company and the selected β
+      are shown alongside each other for transparency. The difference
+      and its rationale are made explicit.
+
+The principle is general — it applies equally to industrials (§3.5.2).
+Future industrials calibrations should be back-applied via peer-
+triangulation against the industry archetype peer set rather than
+relying on the subject company's measured β alone.
+
+(d) **Single-Ke discipline**: per §3.5, the cost of equity is held
 constant across scenarios for a single bank. The scenario asymmetry
 is in the cash-flow path (NII, credit losses, capital actions), not
 in the discount rate.
 
-(d) **No WACC computed**: bank workbooks should not include a WACC build
+(e) **No WACC computed**: bank workbooks should not include a WACC build
 sheet. The cost-of-equity build replaces it.
 
 ### 15.3 Revenue decomposition — NII + non-interest income
@@ -984,39 +1018,4 @@ capital-target-adjusted figure, not the latest reported.
 (c) **New schema fields for `data/scenarios/<id>.yaml` (banks):**
    - `macro_baseline.credit_cycle` (housing-loan LGD, business-loan
      LGD per scenario)
-   - `macro_baseline.cash_rate_path` (RBA cash rate trajectory)
-   - `macro_baseline.swap_spreads` (3M / 5Y swap to bond spread)
-   - `macro_baseline.housing_market` (turnover, price growth)
-   - `macro_baseline.regulatory.cet1_floor_change` (per scenario)
-
-(d) **Translator changes**: bank archetypes invoke
-`translate_to_bank_assumption_set` (new) instead of
-`translate_to_assumption_set` (industrials). The bank translator
-produces a `BankAssumptionSet` with the NII / non-NII / credit-loss
-decomposition.
-
-(e) **DCF engine changes**: bank workbooks use a
-`run_bank_residual_income` (or `run_bank_ddm`) routine in place of
-`run_fcf_dcf`. The routine produces a year-by-year residual-income
-forecast, terminal value via §15.8, and per-share value via §15.7
-adjustments.
-
-### 15.10 Worked example reference
-
-The WBC Muddle Through valuation (build in progress as of 12 June
-2026) is the canonical bank worked example. Each principle in §15 is
-to be implemented and visible in that workbook. The workbook is the
-integration test: if it can't be built from a bank-specific company
-position YAML + scenario YAML + bank industry archetype YAML + this
-methodology, §15 has a gap.
-
-### 15.11 Migration / coexistence note
-
-The industrials methodology in §§2–7 is unchanged. Companies tagged
-`industry_type: "bank"` (or where the industry archetype's
-`archetype_class` field equals `"bank"`) invoke §15. All other
-companies invoke §§2–7 unchanged. The §3.3 Five Forces spine and
-§3.5 single-discount-rate discipline apply to both branches; the §3.6
-tax-rate discipline applies to both (banks have their own statutory
-rate, typically 30%, with the same blended-statutory consistency
-requirement).
+   - `macro_baseline.cash_rate_pat
