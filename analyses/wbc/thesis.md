@@ -1,9 +1,10 @@
-# WBC — Cross-scenario investment thesis (initial sketch)
+# WBC — Cross-scenario investment thesis
 
 **Company:** Westpac Banking Corporation (ASX:WBC)
-**Version:** 2026-Q2-v1 (initial framework view, 16 June 2026 — workbook to follow)
-**Type:** Cross-scenario investment thesis per §16.1 item 6. First worked example under methodology §15 (bank-specific valuation conventions).
+**Version:** 2026-Q2-v2 (refreshed 16 June 2026 with cross-scenario workbook outputs)
+**Type:** Cross-scenario investment thesis per §16.1 item 6. First worked example under methodology §15 (bank-specific valuation conventions) with peer-triangulated β per §3.5.3.
 **Anchor period:** 1H26 results, 31 March 2026.
+**Companion workbooks:** `wbc_muddle_through_valuation_v2.xlsx`, `wbc_scenarios_comparison_v1.xlsx`.
 
 ---
 
@@ -35,25 +36,34 @@ Per `data/companies/wbc.yaml/bank_specifics`:
 | Book value per share | AUD 21.31 | Price-to-book 1.69× |
 | ROE (trailing 12 months, statutory) | 9.8% | Slightly below 10-12% Big Four anchor |
 
-## Where the asymmetry sits (qualitative, pre-workbook)
+## Where the asymmetry sits — cross-scenario distribution
 
-The workbook is not yet built, so the per-share numbers are not finalised. The qualitative directional view, applying the impact matrix at
-`data/impact_matrix/by_industry/australian_major_banks.yaml`:
+Applying the impact matrix at `data/impact_matrix/by_industry/australian_major_banks.yaml` via the WBC valuation engine, the six-scenario per-share distribution:
 
-| Scenario | Expected direction vs market | Dominant driver |
-| --- | --- | --- |
-| Orderly Convergence | Modest upside | Healthy loan growth + NIM ~5-10bps positive + benign credit cycle |
-| Muddle Through (central) | At or near market | Status-quo NIM at anchor; cost glide net of inflation; through-cycle credit losses |
-| AI Productivity Lag | Mild downside | Modest cost benefit insufficient to offset weaker macro demand |
-| Fragmentation | Moderate downside | Institutional/markets income pressure; modest credit losses on business book; rate path uncertain |
-| Disorderly Climate | Material downside | Climate-RWA uplift compresses ROE; transition stress raises credit losses; terminal-growth dampened by capital intensity |
-| Stagflation Persists | Material downside | NIM compression -20 to -40bps + credit losses peak-cycle 60-80bps + operating leverage in cost growth |
+| Scenario | Per share | vs Muddle Through | vs Market (AUD 35.32) | Dominant driver |
+| --- | ---: | ---: | ---: | --- |
+| Orderly Convergence | AUD 35.46 | +17.6% | +0.4% | Healthy loan growth + benign credit cycle + modest NIM uplift |
+| Muddle Through (central) | AUD 30.15 | baseline | −14.6% | Status-quo NIM at anchor; CTI glide; through-cycle credit losses |
+| AI Productivity Lag | AUD 29.75 | −1.3% | −15.8% | Modest cost benefit; weaker macro demand offsets |
+| Fragmentation | AUD 27.29 | −9.5% | −22.7% | Institutional/markets income pressure; modest credit losses on business book |
+| Disorderly Climate | AUD 23.11 | −23.3% | −34.6% | Climate-RWA uplift compresses terminal ROE; transition stress raises credit losses |
+| Stagflation Persists | AUD 20.09 | −33.4% | −43.1% | NIM compression −20bps + credit losses peak-cycle 50bps above anchor + cost-growth operating leverage |
 
-Stagflation Persists is expected to be the worst outcome for WBC — the bank-archetype equivalent of "supplier-power blocks cost pass-through" plays out across three channels simultaneously: NIM compresses on deposit competition and slow front-book repricing; cost growth lifts on wage inflation while transformation glide insufficient; and credit losses lift to peak-cycle territory. The combination compresses both numerator (cash earnings) and the terminal-value multiplier (ROE fade).
+Per-share-value asymmetry:
 
-Disorderly Climate is the second-worst outcome. The mortgage book scale (#2 system) is asymmetric in a climate scenario where APRA RWA models are climate-adjusted upward for vulnerable zones — WBC has more absolute climate-vulnerable mortgage exposure than NAB or ANZ.
+1. Upside (Orderly minus Muddle Through): +AUD 5.31
+2. Downside (Muddle Through minus Stagflation): −AUD 10.07
+3. **Asymmetry ratio: 1.90×** (downside compresses about twice as hard as upside lifts)
 
-Orderly Convergence is the upside scenario but the lift is modest — banks are not torque to upside in the way cyclical industrials are; ROE expansion is capped by the oligopolistic structure that constrains both pricing and downside.
+The 1.90× ratio is materially less than DNL's 4.05× — banks have two structural cushions cyclical industrials lack: (a) the CET1 capital-constraint mechanic flexes payout downward in stress, preserving book equity, which directly anchors terminal value via §15.8; and (b) the oligopolistic structure caps both upside and downside in cash flows, compressing the distribution.
+
+**Orderly Convergence (AUD 35.46) sits essentially at market (AUD 35.32).** This is the framework's defensible interpretation of current pricing: the market is implicitly trading WBC at a successful-transformation outcome, not at the framework's Muddle Through baseline. To converge to market on a Muddle Through cash-flow path, the implied terminal ROE has to be 12.1% — i.e., the market is pricing WBC's transformation overlay closer to franchise-leader (CBA-level) terminal ROE than to the archetype mid-point.
+
+**Stagflation Persists (AUD 20.09, −33% vs Muddle Through) is the binding downside.** The bank-archetype equivalent of "supplier-power blocks cost pass-through" plays out across three channels simultaneously: NIM compresses on deposit competition and slow front-book repricing (−20bps vs anchor); cost growth lifts on wage inflation while transformation glide insufficient (cost-to-income terminal +2pp vs MT); credit losses lift to peak-cycle (+50bps vs through-cycle anchor); terminal ROE compresses to 9.0%. NPAT Y5 drops to AUD 3.7bn vs MT's AUD 8.9bn.
+
+**Disorderly Climate (AUD 23.11, −23% vs MT) is the second-worst.** The mortgage book scale (#2 system) is asymmetric in a climate scenario where APRA RWA models are climate-adjusted upward for vulnerable zones — WBC has more absolute climate-vulnerable mortgage exposure than NAB or ANZ. The transmission is primarily via terminal ROE compression (−1.5pp on climate-RWA uplift) rather than explicit-period cash flow stress.
+
+**Fragmentation (AUD 27.29, −10% vs MT) and AI Productivity Lag (AUD 29.75, −1.3% vs MT)** are softer downsides. Fragmentation hits non-interest income (markets/institutional) more than NII; AI Productivity Lag is close to neutral with modest cost benefit offsetting weaker macro.
 
 ## Three transmission channels that distinguish WBC's scenario exposures (mapped to Five Forces)
 
@@ -112,22 +122,4 @@ Conventional analyst views of WBC typically focus on next-period earnings, NIM t
 
 3. **Credit losses as primary scenario driver** per §15.4, not a residual. Through-cycle 18bps anchor for WBC's mortgage-heavy book; peak-cycle 75bps. Six-scenario dispersion captured.
 
-4. **CET1 capital constraint binding payout under stress** per §15.5. Explicit mechanic in the workbook: cash earnings retained = CET1 generation; ΔRWA × CET1 ratio = required capital; payout ratio is the residual.
-
-5. **Five Forces decomposition for the bank archetype** per §15.6, applied to WBC vs Big Four average: +8bps NIM advantage on supplier-power (retail deposit franchise) — visible in NIM trajectory; −10bps revenue growth on rivalry (cost-to-income gap) — captured as transformation overlay glide rather than structural offset; −5bps growth on business-banking rebuild sub-force.
-
-6. **AT1 hybrid AUD 8.5bn deduction** from per-share ordinary equity per §15.7 — frequently missed in price-to-book valuations.
-
-7. **Terminal value via ROE-fade-to-Ke** per §15.8 with sustainable-growth identity (g = ROE × (1 − payout)). For WBC: terminal ROE 10.5% (Big Four anchor) > Ke 8.05% so positive terminal value generation; sensitivity to terminal ROE assumption is material.
-
-## What's NOT in this thesis yet
-
-The workbook is to come. Once built:
-
-1. Per-scenario per-share value (six values).
-2. Per-share asymmetry quantification (analogous to DNL's 4.05× downside / upside ratio).
-3. Sensitivity to β-selection range (0.72-0.80 = ±5% on Ke).
-4. Sensitivity to through-cycle NIM anchor (1.88-2.00% = ±AUD 3-4 per share).
-5. Sensitivity to terminal ROE assumption (10-12% = ±AUD 5-7 per share).
-6. Bridge from Muddle Through cash-earnings forecast to per-share value via the §15.7 equity bridge.
-7. Market check vs sell-side consensus target (AUD 33.45) and current price (AUD 35.32).
+4. **CET1 capital constraint binding payout under stress** per §15.5. Explicit mechanic 
