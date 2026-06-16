@@ -11,7 +11,11 @@
 
 (b) **Coexistence**: industrials methodology in §§2–7 of methodology doc unchanged. Companies tagged `industry_type: "bank"` (or whose archetype's `archetype_class = "bank"`) invoke §15 in place of §§2–4. Shared discipline retained: §5 share-count, §6 IMIs, §7 valuation-date mechanics, §3.5 single-discount-rate, §3.6 tax-rate consistency.
 
-(c) **First worked example**: WBC Muddle Through build, in progress 12 June 2026.
+(c) **§3.5.3 Beta-selection discipline — peer triangulation** (added 16 June 2026, sub-revision of v0.5 — methodology only). Measured β carries material statistical noise; mechanical use of the subject company's measured β is unsound valuation practice. The framework selects β via reasoned peer triangulation against 3-5 directly comparable peers from the same archetype, with explicit outlier identification and franchise-mix reasoning to place the subject company within the comparable cluster. General principle — applies to industrials and banks. Existing §3.5.3 (User override), §3.5.4 (Exception: terminal growth) and §3.5.5 (Schema implications) renumbered to §3.5.4 / §3.5.5 / §3.5.6 respectively. §15.2(b) now references §3.5.3 rather than restating the discipline. New requirement on company YAMLs: `cost_of_equity_build.beta_selection_rationale` block documenting peer set, outliers, and selection. First worked example: WBC β_selected = 0.75 (CBA / NAB / WBC cluster midpoint), vs measured β = 0.73. ANZ excluded as institutional-dilution outlier; MQG excluded as different-archetype. To be back-applied to DNL on the next industrials refresh.
+
+(d) **Coexistence**: industrials methodology in §§2–7 of methodology doc unchanged. Companies tagged `industry_type: "bank"` (or whose archetype's `archetype_class = "bank"`) invoke §15 in place of §§2–4. Shared discipline retained: §5 share-count, §6 IMIs, §7 valuation-date mechanics, §3.5 single-discount-rate, §3.6 tax-rate consistency, §3.5.3 beta-selection-via-peer-triangulation.
+
+(e) **First worked example**: WBC Muddle Through build, in progress 12 June 2026; peer-triangulation discipline applied 16 June 2026.
 **Migration from v0.1 → v0.2:** Additive change only. New §7.1.1 "Defining archetype granularity" added.
 **Migration from v0.2 → v0.2.1:** Editorial only. Test-company references updated from "IPL" / "Incitec Pivot Limited" to "DNL" / "Dyno Nobel Limited" following the company's March 2025 rename after demerger of the fertilisers business. Ticker now ASX:DNL (was ASX:IPL); ISIN AU0000390544. The "DNL, formerly IPL" historical pointer is retained in §2 item 4. No schema or analytical content changes. Existing v0.1 / v0.2 schemas remain valid.
 **Migration from v0.3 → v0.3.1:** Single-WACC discipline resolution.
@@ -1306,14 +1310,4 @@ The structure of three angles is settled; the techniques inside each are:
 
 ### 16.1 Narrative deliverables
 
-Alongside the structured engine outputs (YAML, JSON, computed numbers), every key analytical component carries a parallel **narrative write-up** — the form an analyst or client can read in prose, not extract from fields. The structured artefacts and the narrative artefacts are two views of the same analysis; the structured ones are the source of truth for ratings, lists, and numbers, and the narrative explains them.
-
-**Mental model.** `data/` carries inputs (structured + the prose description of the input); `analyses/` carries engine outputs made readable.
-
-**The six narrative deliverables and where they live:**
-
-1. **Scenario narrative** — `data/scenarios/<scenario_id>.md`. Per scenario, reused across all companies. Describes the future-world: macro variables, regime characterisation, what gets disrupted, what stays stable, time profile. Sources from §6. Produced during the scenarios workshop (step 3 of the build plan).
-2. **Industry view** — `data/industries/<archetype_id>.md`. Per archetype, reused across all companies in the archetype. Five Forces narrative (industry-level), lifecycle and ROIC durability framing, complementary framework where used (§7.5.1), default driver-range commentary. Sources from §7. Produced during archetype population.
-3. **Company positioning** — `data/companies/<company_id>.md`. Per company. Moat, franchise assets, competitive position, risk exposures, archetype-specific positioning, Five Forces company-side findings (where positioning diverges from the industry pattern). Sources from §8. Produced during company population.
-4. **Scenario impact narrative** — `analyses/<company>/scenarios/<scenario_id>.md`. Per scenario × company, roughly 1–2 pages. "How does this scenario play out for this company." Sources from §10 (impact matrix entries + overrides) and §11 (`AssumptionSet`). The structured `DriverMovementSet` and `AssumptionSet` provide the evidence; this is the readable version.
-5. **Valuation note** — `analyses/<company>/valuations/<scenario_id>.md`. Per scenari
+Alongside the structured engine outputs (YAML, JSON, computed numbers), every key analytical component carries a parallel **narrative write-up** — the form an analyst or client can read in prose, not extract from fields. The structured artefacts and the narrative artefacts are two views of the same analysis; the structured ones are the source of truth for ratings, lists, and numbers, and the narrative explains them

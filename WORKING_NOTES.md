@@ -36,6 +36,16 @@ A living scratchpad for conversational decisions, current preoccupations, and co
 
 ## Current state of play (as of 12 June 2026)
 
+**16 June 2026 (afternoon) — Peer-triangulation principle promoted to general methodology (§3.5.3).**
+
+Following Tara's question on whether the principle should be addressed in the overall methodology, peer-triangulation is now a general discipline at **§3.5.3**, applying to both industrials and banks. The bank-specific statement at §15.2(c) was slimmed to a pointer; §15.2(b) now references §3.5.3 for the procedure. Existing §3.5.3 (User override) and successors renumbered to §3.5.4 / §3.5.5 / §3.5.6. Schema implications updated: company YAMLs MUST carry a `beta_selection_rationale` block per §3.5.3.
+
+DNL's measured β = 0.95 (sourced from world-index AUD-MSCI) was applied without peer triangulation against Orica / MAXAM / Austin Powder. To be back-applied on the next DNL refresh — Australian-listed peer set is thin (Orica is the only ASX-listed direct peer; world-listed peer set adds Yara, ICL, Sasol-explosives flank).
+
+Architecture spec v0.5 migration note (c) records the §3.5.3 addition and the renumbering.
+
+---
+
 **16 June 2026 — Beta-selection principle landed; peer EODHD feeds for CBA / NAB / ANZ / MQG ingested.**
 
 Tara articulated a key methodological principle: measured β carries material statistical noise and should not be used mechanically. The framework should select β via reasoned peer triangulation, in the same spirit as a Five Forces decomposition — catalogue peers, identify outliers, reason about where the subject company should sit relative to peers given franchise mix, then select. The principle is general (applies to industrials at §3.5.2 too) but landed first in methodology **§15.2(c)** as part of the bank-specific cost-of-equity discipline. Both the measured and selected β are documented for transparency.
@@ -173,17 +183,4 @@ Next: per-scenario impact matrix `data/impact_matrix/by_industry/australian_majo
 
 ## Decisions still parked / open
 
-- **Methodology §3.5 citations to add.** When next editing the methodology doc, add explicit citations to Damodaran's "Value of Control" framework and Stephen's substack reasoning on building risk into cash flows rather than into premia. Strengthens the §3.5 single-WACC argument by anchoring it in published work rather than pure finance-theory framing.
- (cross-link to architecture review items)
-
-- **Industry archetype location** (`vcc-valuations` vs platform-level repo) — revisit when other consumers appear. (§5.1 item 8.)
-- **Complementary-framework discipline** (defined enum vs hybrid) — revisit after WBC populated. (§7.7 item 9.)
-- **Step 5 time budget** — revisit after IPL populated against actuals. (§14.3 item 1.)
-- **Stochastic overlay** — deferred per §3 Open Decision.
-- **Probability-weighting (narrowed scope)** — whether engine surfaces an analyst-computed blended scalar as a presented output. (§3 item 3.)
-- **WACC scenario behaviour** — whether components actively move per scenario. Layer 4 keeps the option open; decision deferred to §12 (DCF Engine).
-- **`risk_exposures.fx` placement** — parent / segment / both. (§8.6 item 4.)
-
----
-
-## 
+- **Methodology §3.5 citations to add.** When next editing the methodology doc, add explicit citations to Damodaran's "Value of Control" fra

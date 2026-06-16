@@ -213,6 +213,9 @@ favour of single-WACC discipline.
 
 - One WACC is computed from the `WaccBuild` components at the valuation
   date per §2 (Rf, ERP, β, Rd_pretax, tax, market-value weights).
+- β specifically is selected via the peer-triangulation discipline at
+  §3.5.3 below, not used mechanically from the subject company's measured
+  value.
 - The same WACC is applied to every scenario's explicit-period cash flows
   and to the terminal-value discounting.
 - Impact-matrix rate-driver entries (Rf delta, ERP delta, country risk
@@ -224,7 +227,76 @@ favour of single-WACC discipline.
   **higher interest expense in the P&L of that scenario** (compressing
   NOPAT and FCF), not as a higher discount rate.
 
-### 3.5.3 User override (sensitivity)
+### 3.5.3 Beta-selection discipline — peer triangulation
+
+Measured β carries material statistical noise: window-dependent,
+index-choice-sensitive, regime-shift-affected (a corporate action, a
+material capital-structure change, a market-microstructure event can
+all distort a measured β over the standard estimation window). Mechanical
+use of the subject company's measured β as the CAPM β input is unsound
+valuation practice. The framework selects β via reasoned peer
+triangulation, in the same spirit as the §3.3 Five Forces decomposition —
+the question is not "what does β read as for this ticker" but "where
+should β sit for this company given the comparable peer set and the
+company's franchise positioning within it".
+
+**Procedure (general, applies to industrials and banks):**
+
+1. Catalogue measured β for the subject company plus 3–5 directly
+   comparable peers from the same industry archetype, with measurement
+   source documented (provider, reference index, estimation window).
+
+2. Identify outliers and document the structural reason — e.g.,
+   institutional / international revenue dilution; recent corporate
+   action (acquisition, demerger, capital raising) disrupting price
+   relationships; small free float; index-weight effects; thinly-traded
+   tail.
+
+3. Reason about where the subject company's "true" β should sit relative
+   to the comparable peer cluster, using business-mix logic similar to
+   the Five Forces decomposition. Defensive franchises (regulated
+   oligopoly, sticky customer base, low cyclicality) sit lower; cyclical
+   franchises (commodity exposure, wholesale-funded, gearing-amplified)
+   sit higher; mix shifts toward growth or markets income raise β;
+   mix shifts toward annuity-style revenue lower β.
+
+4. Select an appropriate β within the comparable-peer-implied range.
+   The selection must be documented in the company YAML's cost-of-equity
+   build block (`wacc_build.beta_selection_rationale` for industrials;
+   `bank_specifics.cost_of_equity_build.beta_selection_rationale` for
+   banks) with the peer table, identified outliers, and the comparison
+   logic.
+
+5. Both the measured β for the subject company and the selected β are
+   shown alongside each other for transparency. The difference and its
+   rationale are made explicit. Audit trail intact.
+
+**Coverage:** The discipline applies to every valuation built under this
+methodology. The first worked example is WBC (see
+`data/companies/wbc.yaml` `bank_specifics.cost_of_equity_build`; peer
+set CBA / NAB / WBC clustered at 0.72-0.80, ANZ excluded as
+institutional-dilution outlier, MQG excluded as different-archetype,
+β_selected = 0.75 = cluster midpoint, vs WBC measured 0.73). DNL's
+v4 valuation pre-dates this discipline — β = 0.95 was sourced from
+the world-index AUD-MSCI estimate without peer triangulation against
+Orica / MAXAM / Austin Powder. To be back-applied on the next DNL
+refresh (Australian-listed peer set is thin — Orica is the only
+ASX-listed direct peer; world-listed peer set adds Yara, ICL,
+Sasol-explosives flank).
+
+**Why this matters more for some companies than others.** Mechanical
+β can be tolerable when the subject company is a long-listed, liquid
+large-cap with no recent structural change — measured β is unbiased
+and the standard error is modest. It is materially unsound for
+companies recently demerged (DNL's measured β reflects post-demerger
+trading only), recently acquired into a different mix (ANZ post-
+Suncorp), small-cap thinly-traded, or where the reference index choice
+materially affects the result (world-index vs ASX200 can move β by
+0.1-0.2 for global-revenue companies). The peer-triangulation
+discipline gives a defensible β regardless of these data-quality
+issues at the subject-company level.
+
+### 3.5.4 User override (sensitivity)
 
 The DCF workbook exposes an "Applied WACC" cell. By default this cell is
 formula-linked to the `WaccBuild` components. Users can override the cell
@@ -233,7 +305,7 @@ sensitivity exercise — not a scenario-conditional flow-through. Overrides
 should carry an analyst-facing comment explaining the rationale (e.g.,
 "sensitivity at WACC -100bps to reflect possible re-rating").
 
-### 3.5.4 Exception: terminal growth
+### 3.5.5 Exception: terminal growth
 
 Terminal growth *is* held scenario-conditional and the impact-matrix
 `terminal_growth_rate` delta drivers do flow through.
@@ -246,7 +318,7 @@ implies. Stagflation's terminal economy is structurally weaker than Orderly
 Convergence's; that's a feature of the cash-flow path, not a hidden
 discount-rate adjustment.
 
-### 3.5.5 Schema implications
+### 3.5.6 Schema implications
 
 - Layer 4 driver catalogue retains `risk_free_rate`, `equity_risk_premium`,
   `country_risk_premium`, `beta` drivers. They appear in the impact matrix
@@ -256,7 +328,9 @@ discount-rate adjustment.
   scenario narrative and (optionally) into the interest-expense line of
   the P&L, not the WACC.
 - The `terminal_growth_rate` driver IS scenario-conditional and flows
-  through to the terminal-value calculation per §3.5.4.
+  through to the terminal-value calculation per §3.5.5.
+- Company YAMLs MUST carry a `beta_selection_rationale` block per §3.5.3
+  documenting the peer set, outlier exclusions, and the chosen β.
 
 ---
 
@@ -742,52 +816,22 @@ except β is sourced bank-specific. Defaults:
    - Risk-free rate: 10-year Australian Commonwealth bond yield (same
      as §3.5.2).
    - ERP: Damodaran-style mature-Australia premium (same as §3.5.2).
-   - β: selected via the peer-triangulation discipline at §15.2(c) below.
-     Bank-specific β must be documented in
-     `data/companies/<id>.yaml/bank_specifics/cost_of_equity_build`.
+   - β: selected via the **peer-triangulation discipline at §3.5.3**,
+     which is the general principle applied to both industrials and
+     banks. Bank-specific β must be documented in
+     `data/companies/<id>.yaml/bank_specifics/cost_of_equity_build`
+     with the peer set, outlier identification, and selection
+     rationale per §3.5.3. The bank-archetype peer set is the
+     ASX-listed Big Four (CBA, NAB, WBC, ANZ) plus MQG as informative-
+     not-comparable; ANZ frequently sits as an outlier (institutional /
+     international revenue dilution effects).
 
-(c) **Beta-selection discipline — peer triangulation, not mechanical use
-of measured β.** Measured β carries material statistical noise:
-window-dependent, index-choice-sensitive, regime-shift-affected. The
-framework selects β via reasoned peer triangulation rather than
-mechanically using the subject company's measured β. The procedure:
-
-   1. Catalogue measured β for the subject company plus 3–5 directly
-      comparable peers from the same archetype, with the measurement
-      source (provider, index, window) documented.
-
-   2. Identify outliers and document the structural reason — e.g.,
-      institutional / international revenue dilution; recent corporate
-      action disrupting price relationships; small free float; index
-      weight effects.
-
-   3. Reason about where the subject company's "true" β should sit
-      relative to the comparable peer cluster, using business-mix
-      logic similar to the Five Forces decomposition: defensive
-      franchise lower, cyclical / wholesale exposure higher, mix-shifts
-      toward growth lines or markets income higher, mortgage-book
-      weighting lower.
-
-   4. Select an appropriate β within the comparable-peer-implied range.
-      The selection must be documented in
-      `bank_specifics.cost_of_equity_build.beta_selection_rationale`
-      with the peer table, identified outliers, and the comparison logic.
-
-   5. Both the measured β for the subject company and the selected β
-      are shown alongside each other for transparency. The difference
-      and its rationale are made explicit.
-
-The principle is general — it applies equally to industrials (§3.5.2).
-Future industrials calibrations should be back-applied via peer-
-triangulation against the industry archetype peer set rather than
-relying on the subject company's measured β alone.
-
-(d) **Single-Ke discipline**: per §3.5, the cost of equity is held
+(c) **Single-Ke discipline**: per §3.5, the cost of equity is held
 constant across scenarios for a single bank. The scenario asymmetry
 is in the cash-flow path (NII, credit losses, capital actions), not
 in the discount rate.
 
-(e) **No WACC computed**: bank workbooks should not include a WACC build
+(d) **No WACC computed**: bank workbooks should not include a WACC build
 sheet. The cost-of-equity build replaces it.
 
 ### 15.3 Revenue decomposition — NII + non-interest income
@@ -959,63 +1003,4 @@ deducted from CET1. Same sanity-check.
 return capital from book equity.
 
 (e) **Capital actions**: announced but not yet completed buybacks
-treated per §5.2 (share-count discipline). Off-market buybacks
-(common for Australian banks for franking-credit reasons) follow the
-same treatment as on-market.
-
-### 15.8 Terminal value — ROE fade to Ke
-
-(a) **Convention**: terminal value for a bank uses a
-Gordon-growth-on-equity formulation:
-
-  TV_equity = Equity_T × (ROE_T − g) / (Ke − g)
-
-where ROE_T is the through-the-cycle terminal ROE and g is the
-terminal asset-growth rate.
-
-(b) **ROE convergence**: terminal ROE should fade to a level
-consistent with the bank's franchise quality. Australian Big Four
-typical range 10–13% through-cycle; regional banks 8–11%. A bank
-sustaining terminal ROE materially above its cost of equity must
-have a defensible competitive advantage (the Big Four oligopoly
-itself qualifies; rebuild has to be re-argued for each).
-
-(c) **Payout sustainability**: terminal payout ratio = 1 − g / ROE_T.
-This ties the terminal growth to retained earnings via the
-sustainable-growth identity. Per §3.5.4 the terminal growth rate
-itself can be scenario-conditional (different macro outlooks → 
-different sustainable growth).
-
-(d) **Capital surplus distribution**: a bank with CET1 above target
-in the terminal period distributes the surplus before computing
-terminal value. The terminal book equity used in TV is the
-capital-target-adjusted figure, not the latest reported.
-
-### 15.9 Schema implications
-
-(a) **New schema fields for `data/companies/<id>.yaml` (banks):**
-   - `bank_specifics.average_interest_earning_assets` (period-anchored)
-   - `bank_specifics.nim_decomposition` (asset yield, funding cost,
-     hedge contribution)
-   - `bank_specifics.credit_loss_through_cycle` (bps p.a. of gross
-     loans)
-   - `bank_specifics.cet1.actual`, `bank_specifics.cet1.target_minimum`,
-     `bank_specifics.cet1.management_buffer`
-   - `bank_specifics.rwa_composition` (housing, business, institutional,
-     other; with risk-weight density per segment)
-   - `bank_specifics.at1_hybrid_outstanding` (AUD m face)
-   - `bank_specifics.dta_balance`, `bank_specifics.software_intangibles`
-   - `normalised_baseline.cost_of_equity_build` (replaces
-     `wacc_build` for banks)
-
-(b) **New schema fields for `data/industries/<id>.yaml` (bank archetype):**
-   - `bank_archetype.regulator` (APRA / RBNZ / etc.)
-   - `bank_archetype.cet1_floor` (regulatory minimum)
-   - `bank_archetype.credit_cycle_anchor` (through-cycle loss rate
-     for the archetype)
-   - `bank_archetype.rwa_density_anchor` (per segment)
-
-(c) **New schema fields for `data/scenarios/<id>.yaml` (banks):**
-   - `macro_baseline.credit_cycle` (housing-loan LGD, business-loan
-     LGD per scenario)
-   - `macro_baseline.cash_rate_pat
+treated per §5.2 (share-count discipline). Off-mark
