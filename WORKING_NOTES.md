@@ -36,6 +36,26 @@ A living scratchpad for conversational decisions, current preoccupations, and co
 
 ## Current state of play (as of 12 June 2026)
 
+**16 June 2026 (evening) — WBC NIM YE history FY22-FY25 extracted; historical results pack ingested.**
+
+Tara provided WBC half-year and full-year results announcements covering FY22 through FY25 (plus FY23 via annual report) and MQG FY26 annual report + presentation. Saved to `data/financials/historical/{wbc,mqg}/` and registered in `wbc_documents.yaml` (wbc_historical_results_pack and mqg_fy26_results_pack).
+
+WBC NIM YE history added to `bank_specifics.historical_anchors.nim_history_annual`:
+
+| FY | Group NIM | AIEA avg (AUDm) | Basis |
+| FY22 | 1.93% | 886,971 | Statutory (disclosed) |
+| FY23 | 1.95% | 941,356 | AIEA-weighted half-year average |
+| FY24 | 1.95% | 970,594 | Ex Notable Items (disclosed in FY25 comparative) |
+| FY25 | 1.94% | 1,002,839 | Ex Notable Items (disclosed) |
+
+Through-cycle anchor 1.94% (midpoint of FY22-FY25 range). Current 1H26 NIM 1.89% sits at lower end — front-book mortgage competition. Pre-2022 NIM regime materially higher (1H21 2.06%) — RBA-rate-cycle effect.
+
+Synthesised `nim_anchors` block also added: through-cycle anchor, recent peak (1.97% 2H24), recent trough (1.88% 1H25), long-term pre-2022 baseline (2.06%), with scenario calibration commentary on how NIM should move under Muddle Through, Stagflation, Disorderly Climate.
+
+MQG FY26 results saved for future MQG-Banking segment peer-comp work (currently excluded from peer set as "different archetype" at group level; segment carve-out from these reports addresses the "option 2" Tara discussed).
+
+---
+
 **16 June 2026 (afternoon) — Peer-triangulation principle promoted to general methodology (§3.5.3).**
 
 Following Tara's question on whether the principle should be addressed in the overall methodology, peer-triangulation is now a general discipline at **§3.5.3**, applying to both industrials and banks. The bank-specific statement at §15.2(c) was slimmed to a pointer; §15.2(b) now references §3.5.3 for the procedure. Existing §3.5.3 (User override) and successors renumbered to §3.5.4 / §3.5.5 / §3.5.6. Schema implications updated: company YAMLs MUST carry a `beta_selection_rationale` block per §3.5.3.
@@ -164,23 +184,4 @@ Next: per-scenario impact matrix `data/impact_matrix/by_industry/australian_majo
 ## Key conventions adopted (cross-cutting)
 
 - All ratings use `low | moderate | high` (3-point) — *except* matrix entries: `direction` is 3-way (`negative | neutral | positive`) and `magnitude` is 3-way (`small | moderate | large`); the two are separate fields.
-- Drivers are **nominal in functional currency**; FX appears at consolidation across functional currencies, not as a primary driver inside a segment DCF.
-- Drivers carry `role: primary | derived`. Layer 5 only writes primary drivers; Layer 6 computes derived ones via declared `derivation_formula`.
-- Narrative artefacts and structured artefacts are **paired**; structured fields win as source of truth where prose and structure disagree (per §16.1).
-- File naming: `snake_case` for ids and filenames; `CamelCase` for Python classes.
-- Schema versioning: every schema carries `version`; breaking changes bump major.
-- Override discipline: target ≤20% of cells per company (archetype-tunable); above this, the archetype is mis-specified.
-
----
-
-## Filesystem quirks worth knowing
-
-- `C:\Users\steph\vcc-valuations` is mounted into Claude's sandbox. The mount permits file CREATE but not DELETE for `.git/*.lock` files. Workaround in sandbox: `mv .git/index.lock .git/index.lock.deadN` before retrying the git command. Tara can delete the lock files normally from her own cmd window: `del .git\HEAD.lock` and `del .git\index.lock`.
-- A scratch-clone approach via `/tmp/` has been used in the sandbox for git operations when the mount approach is too painful.
-- A `.github-token` file lives at the repo root and is excluded from git via `.git/info/exclude` (not `.gitignore`, which had unrelated modified state we don't want to touch).
-
----
-
-## Decisions still parked / open
-
-- **Methodology §3.5 citations to add.** When next editing the methodology doc, add explicit citations to Damodaran's "Value of Control" fra
+- Drivers are **nominal in functional currency**; FX appears at consolidation across functional curren
