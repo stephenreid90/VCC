@@ -982,25 +982,172 @@ manifest differently.
 ### 15.7 Bank-specific equity adjustments
 
 The §4 equity bridge collapses for banks (no EV→equity step), but
-bank-specific equity-side adjustments still apply:
+bank-specific equity-side adjustments still apply. The valuation
+output starts at the total value of the equity claim (all-equity-
+holders) per §15.8, then bridges to ordinary-equity-per-share via the
+adjustments below.
 
-(a) **AT1 / Tier 1 hybrid securities** (Capital Notes etc.) — sit
-above ordinary equity in the capital stack. Treated as a deduction
-from book equity (and from per-share value) when computing
-ordinary-equity-per-share. Distinct from sub debt (Tier 2), which
-is debt at fair value and does not affect equity per share.
+**(a) Additional Tier 1 (AT1) hybrid securities** — Capital Notes
+and equivalent perpetual hybrid securities. Listed on ASX. Sit above
+ordinary equity in the capital stack but accounted as equity under
+IFRS / AASB. Treated as a deduction from per-share equity value at
+face value when computing ordinary-equity-per-share. Westpac example:
+~AUD 8.5bn AT1 outstanding (codes WBCPI, WBCPJ, WBCPK, WBCPL etc.),
+each with a defined first-call date and an APRA-controlled conversion
+trigger.
 
-(b) **Deferred tax assets** — banks routinely carry material DTAs
+**(b) Non-controlling interests (NCI)** — equity interests in
+subsidiary entities not held by the parent. Big Four banks typically
+carry small NCI balances (AUD 50-500m range) reflecting minority
+stakes in trust structures, NZ subsidiaries, or Pacific banking
+operations. Treated as a deduction from per-share equity value at
+book value (NCI is part of total book equity but not attributable
+to ordinary shareholders). For Big Four banks NCI is typically
+small enough to be immaterial at the per-share level (~AUD 0.10/
+share) but methodologically must be deducted for consistency with
+the AT1 treatment.
+
+**(c) Subordinated debt (Tier 2) — NOT an equity adjustment.**
+Listed wholesale debt instruments, regulatory-capital-eligible at
+Tier 2. Sit above AT1 in the capital stack (more senior). Big Four
+typically carry AUD 25-40bn of Tier 2 outstanding (WBC at 1H26:
+AUD 33bn). Tier 2 is **debt at fair value** for equity-valuation
+purposes: it does not affect equity per share directly. The funding-
+cost effect of Tier 2 is embedded in NIM via the asset-yield-less-
+funding-cost decomposition (§15.3(c)). A separate equity-bridge
+adjustment for Tier 2 would double-count. The treatment is the same
+as for senior unsecured debt, covered bonds, and securitisation —
+all of which flow through NIM rather than the equity bridge.
+
+**(d) Deferred tax assets** — banks routinely carry material DTAs
 (loss-recognition timing, expected-loss provisioning). The CET1
 calculation deducts most DTAs from regulatory capital; the
-accounting equity does not. Sanity-check: book equity per share
-vs CET1 + DTA + intangibles per share.
+accounting equity does not. Sanity-check only: book equity per
+share versus CET1 + DTA + intangibles per share. Does not adjust
+the per-share value calculation.
 
-(c) **Software intangibles** — capitalised software typically
-deducted from CET1. Same sanity-check.
+**(e) Software intangibles** — capitalised software typically
+deducted from CET1. Same sanity-check treatment as DTAs.
 
-(d) **Goodwill** — fully deducted from CET1. Reduces capacity to
-return capital from book equity.
+**(f) Goodwill** — fully deducted from CET1. Reduces capacity to
+return capital from book equity. Sanity-check treatment.
 
-(e) **Capital actions**: announced but not yet completed buybacks
-treated per §5.2 (share-count discipline). Off-mark
+**(g) Treasury shares and employee share plans** — shares
+repurchased and held in treasury (typically for executive long-term
+incentive grants) are a small negative adjustment to ordinary equity.
+For Big Four banks the amounts are immaterial (~AUD 50-200m, ~AUD
+0.05/share). Treated as a deduction from per-share equity value at
+book value if material. Below a materiality threshold of AUD 0.20/
+share it is noted but not formally bridged.
+
+**(h) Capital actions**: announced but not yet completed buybacks
+treated per §5.2 (share-count discipline). Off-market buybacks
+(common for Australian banks for franking-credit reasons) follow
+the same treatment as on-market. The shares-outstanding denominator
+should be the post-execution number for shares already cancelled,
+with future buyback execution treated as value-neutral per §5.2.
+
+**Equity bridge structure (banks):**
+
+   Total value of equity claim (per §15.8)
+   less: AT1 hybrid outstanding (§15.7(a))
+   less: NCI book value (§15.7(b))
+   less: Treasury shares book value (§15.7(g), if material)
+   = Ordinary equity value
+   ÷ Shares outstanding (post-buyback-to-date per §5.2)
+   = Ordinary equity per share
+
+Tier 2 and senior debt are explicitly NOT in the equity bridge —
+they sit in the asset-side P&L via NIM.
+
+### 15.8 Terminal value — ROE fade to Ke
+
+(a) **Convention**: terminal value for a bank uses a
+Gordon-growth-on-equity formulation:
+
+  TV_equity = Equity_T × (ROE_T − g) / (Ke − g)
+
+where ROE_T is the through-the-cycle terminal ROE and g is the
+terminal asset-growth rate.
+
+(b) **ROE convergence**: terminal ROE should fade to a level
+consistent with the bank's franchise quality. Australian Big Four
+typical range 10–13% through-cycle; regional banks 8–11%. A bank
+sustaining terminal ROE materially above its cost of equity must
+have a defensible competitive advantage (the Big Four oligopoly
+itself qualifies; rebuild has to be re-argued for each).
+
+(c) **Payout sustainability**: terminal payout ratio = 1 − g / ROE_T.
+This ties the terminal growth to retained earnings via the
+sustainable-growth identity. Per §3.5.4 the terminal growth rate
+itself can be scenario-conditional (different macro outlooks → 
+different sustainable growth).
+
+(d) **Capital surplus distribution**: a bank with CET1 above target
+in the terminal period distributes the surplus before computing
+terminal value. The terminal book equity used in TV is the
+capital-target-adjusted figure, not the latest reported.
+
+### 15.9 Schema implications
+
+(a) **New schema fields for `data/companies/<id>.yaml` (banks):**
+   - `bank_specifics.average_interest_earning_assets` (period-anchored)
+   - `bank_specifics.nim_decomposition` (asset yield, funding cost,
+     hedge contribution)
+   - `bank_specifics.credit_loss_through_cycle` (bps p.a. of gross
+     loans)
+   - `bank_specifics.cet1.actual`, `bank_specifics.cet1.target_minimum`,
+     `bank_specifics.cet1.management_buffer`
+   - `bank_specifics.rwa_composition` (housing, business, institutional,
+     other; with risk-weight density per segment)
+   - `bank_specifics.at1_hybrid_outstanding` (AUD m face)
+   - `bank_specifics.dta_balance`, `bank_specifics.software_intangibles`
+   - `normalised_baseline.cost_of_equity_build` (replaces
+     `wacc_build` for banks)
+
+(b) **New schema fields for `data/industries/<id>.yaml` (bank archetype):**
+   - `bank_archetype.regulator` (APRA / RBNZ / etc.)
+   - `bank_archetype.cet1_floor` (regulatory minimum)
+   - `bank_archetype.credit_cycle_anchor` (through-cycle loss rate
+     for the archetype)
+   - `bank_archetype.rwa_density_anchor` (per segment)
+
+(c) **New schema fields for `data/scenarios/<id>.yaml` (banks):**
+   - `macro_baseline.credit_cycle` (housing-loan LGD, business-loan
+     LGD per scenario)
+   - `macro_baseline.cash_rate_path` (RBA cash rate trajectory)
+   - `macro_baseline.swap_spreads` (3M / 5Y swap to bond spread)
+   - `macro_baseline.housing_market` (turnover, price growth)
+   - `macro_baseline.regulatory.cet1_floor_change` (per scenario)
+
+(d) **Translator changes**: bank archetypes invoke
+`translate_to_bank_assumption_set` (new) instead of
+`translate_to_assumption_set` (industrials). The bank translator
+produces a `BankAssumptionSet` with the NII / non-NII / credit-loss
+decomposition.
+
+(e) **DCF engine changes**: bank workbooks use a
+`run_bank_residual_income` (or `run_bank_ddm`) routine in place of
+`run_fcf_dcf`. The routine produces a year-by-year residual-income
+forecast, terminal value via §15.8, and per-share value via §15.7
+adjustments.
+
+### 15.10 Worked example reference
+
+The WBC Muddle Through valuation (build in progress as of 12 June
+2026) is the canonical bank worked example. Each principle in §15 is
+to be implemented and visible in that workbook. The workbook is the
+integration test: if it can't be built from a bank-specific company
+position YAML + scenario YAML + bank industry archetype YAML + this
+methodology, §15 has a gap.
+
+### 15.11 Migration / coexistence note
+
+The industrials methodology in §§2–7 is unchanged. Companies tagged
+`industry_type: "bank"` (or where the industry archetype's
+`archetype_class` field equals `"bank"`) invoke §15. All other
+companies invoke §§2–7 unchanged. The §3.3 Five Forces spine and
+§3.5 single-discount-rate discipline apply to both branches; the §3.6
+tax-rate discipline applies to both (banks have their own statutory
+rate, typically 30%, with the same blended-statutory consistency
+requirement).

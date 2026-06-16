@@ -33,7 +33,7 @@ Per `data/companies/wbc.yaml/bank_specifics`:
 | Market reference price | AUD 35.32 | 15 June 2026; implied market cap AUD 120.6bn |
 | Sell-side consensus 12m target | AUD 33.45 | ~5% below current trading |
 | Book value per share | AUD 21.31 | Price-to-book 1.69× |
-| ROE TTM (statutory) | 9.8% | Slightly below 10-12% Big Four anchor |
+| ROE (trailing 12 months, statutory) | 9.8% | Slightly below 10-12% Big Four anchor |
 
 ## Where the asymmetry sits (qualitative, pre-workbook)
 
