@@ -278,6 +278,53 @@ documents:
         rather than direct group NIM. AIEA-weighted average of 1H23 (1.96%)
         and 2H23 (1.94%) = 1.95%.
 
+    - id: wbc_unite_update_2026_03_26
+      title: "WBC UNITE Update Presentation (26 March 2026)"
+      type: investor_presentation_thematic
+      reporting_period: 2026-03-26
+      release_date: 2026-03-26
+      filename: wbc_unite_update_presentation_2026-03-26.pdf
+      location_in_repo: "data/financials/historical/wbc/wbc_unite_update_presentation_2026-03-26.pdf"
+      pages: 34
+      key_insights:
+        - "UNITE program: WBC's technology re-platforming, product simplification and process streamlining program. 57 initiatives across 10 work packages."
+        - "Stated objective on page 3 (third of three): 'CLOSE CTI RATIO GAP TO PEERS' — explicit peer-gap closure framing from management."
+        - "Investment spend trajectory: FY24 AUD 147m / FY25 AUD 660m / FY26 AUD 850-950m / FY27-FY28 c.40% of total program spend / FY29 lower."
+        - "Total program investment ~AUD 4-5bn over FY24-FY29 (peak years run at c.AUD 2bn p.a. per footnote 2 of page 10)."
+        - "~75% of program spend expensed (hits operating expenses now, not capitalised)."
+        - "Direct annual benefits disclosed at steady state ~AUD 190m p.a.: Mortgage Simplification AUD 70m, One Commercial Bank AUD 40m, One Collections AUD 40m, One Wealth Platform AUD 40m. Plus undisclosed amounts for Digital Banker and further initiatives."
+        - "Implied steady-state benefit by FY30-31 likely AUD 300-400m p.a. when undisclosed Digital Banker + productivity benefits factor in."
+        - "Major work packages complete by FY28-FY29 (Mortgage Simplification, Digital Banker, One Collections complete in FY29; One Commercial Bank completes in FY28)."
+        - "Program status: 8 initiatives complete, 49 remaining as at March 2026."
+        - "Execution model: business led, technology enabled; centralised delivery team; embedded governance."
+      status: read
+      ingested_into:
+        - data/companies/wbc.yaml management_and_governance (UNITE program detail)
+        - analyses/wbc/valuations/wbc_muddle_through_valuation_v3.xlsx Assumptions sheet (peer-gap closure CTI glide calibration)
+        - analyses/wbc/thesis.md (peer-gap closure framing)
+      methodology_reference: |
+        §3.2 Transformation overlay — methodology treats UNITE as the stated mechanism for the peer-gap closure assumption. Per Tara's framing principle (17 June 2026), the framework does not assume the specific UNITE program succeeds; the framework assumes WBC management will progressively close the cost-to-income / return-on-equity gap to peers, with UNITE the most credible disclosed mechanism for doing so.
+        §14.2(g) — investor presentation; thematic / strategic update rather than results disclosure.
+      notes: |
+        Document received from Tara on 17 June 2026 alongside the framing
+        question on the v2 discussion document. Used to:
+
+        1. Calibrate the cost-to-income glide in workbook v3. Glide is
+           back-loaded (FY27-28 keep elevated UNITE spend in opex, FY29-31
+           realise benefits as program completes) reflecting the disclosed
+           spend trajectory and major-work-package completion timing.
+
+        2. Establish the peer-gap-closure framing for the v3 thesis and
+           discussion document. Westpac's own page-3 stated outcome for
+           UNITE is 'CLOSE CTI RATIO GAP TO PEERS' — analyst framing aligns
+           directly with management framing.
+
+        3. Quantify the closure target: WBC v3 assumes CTI from 51.7%
+           (1H26) toward 48% (FY31) — closes approximately half the gap to
+           NAB (43%) and CBA (42%). More aggressive would imply CTI of
+           ~45% but framework treats half-gap-closure as the Muddle Through
+           central case (full closure would be Orderly Convergence).
+
     - id: mqg_fy26_results_pack
       title: "Macquarie Group FY26 Results (Annual Report + Investor Presentation)"
       type: peer_company_results
@@ -346,63 +393,4 @@ documents:
       location_in_repo: "data/financials/wbc_eodhd_fundamentals_2026-06-15.csv"
       key_insights:
         - "Equity beta 0.73 — BELOW archetype range (0.85-1.00). Material calibration input."
-        - "Shares outstanding 3,414,907,347 (3,414.9m exact); verified vs 1H26 accounts."
-        - "Market cap AUD 120,615m at feed date (15 June 2026); implied price AUD 35.32."
-        - "Sell-side consensus target AUD 33.45 (~5% below current trading)."
-        - "Book value per share AUD 21.31; implies book equity ~AUD 72.8bn."
-        - "Trailing PE 17.4; Forward PE 15.6; Forward dividend yield 4.36%."
-        - "10-year net income series: peak FY18 AUD 8.09bn; trough FY20 (COVID) AUD 2.29bn; FY25 actual AUD 6.91bn; through-cycle 5-yr average AUD 6.45bn."
-        - "Return-on-equity (trailing 12 months) 9.8%; slightly below 10-12% Big Four anchor; transformation gap closing path."
-        - "FY26 consensus EPS AUD 2.06 (low 1.95, high 2.12); FY27 EPS AUD 2.18 — used as Muddle Through sanity check."
-        - "Payout ratio actual 0.77 (above 70-75% target in policy); reflects CET1-comfortable position."
-        - "Last 1:1 split 1997-10-17 — no equity-history adjustments needed."
-        - "Beta source: technicals section; computed against blended MSCI World / ASX200."
-      status: read
-      ingested_into:
-        - data/companies/wbc.yaml share_statistics
-        - data/companies/wbc.yaml bank_specifics.cost_of_equity_build
-        - data/companies/wbc.yaml bank_specifics.historical_anchors
-        - data/companies/wbc.yaml capital_allocation (payout-ratio cross-check)
-        - data/industries/australian_major_banks.yaml cost_of_equity_anchor (beta-range update)
-      methodology_reference: "§14.6 — Ben's data workstream feed handoff; §15.2(b) — bank-specific beta is the dominant Ke calibration input."
-      notes: |
-        Ben sent this feed on 15 June 2026 following the 12 June request for
-        time series + beta + peer comp data. EODHD as the source.
-
-        Material updates to the WBC v1 baseline arising from this feed:
-
-        1. Beta calibrated to 0.73 (vs. archetype 0.85-1.00 floor). Cost of
-           equity revised down to 7.95% from initial archetype mid-point ~8.93%.
-           This is a material valuation input — pulls Muddle Through fair value
-           higher than the v1-pre-feed assumption would have produced.
-
-        2. Shares outstanding verified at 3,414.9m (was 3,380m placeholder).
-
-        3. Market reference price AUD 35.32 (was AUD 38.50 placeholder).
-
-        4. Multi-year net income history available for through-cycle normalisation.
-
-        5. Sell-side consensus available for FY26-FY27 as market check.
-
-        Outstanding requests for follow-up feeds:
-        - Peer comparison data: CBA, NAB, ANZ on same key metrics.
-        - Macquarie banking division comparator.
-        - NIM time series at half-year cadence (1H22 onward).
-
-  refresh_cadence:
-    next_refresh: "On 1Q27 trading update (Feb 2027) or material announcement"
-    refresh_trigger:
-      - "Quarterly trading update / Pillar 3"
-      - "Half-year results (next: 1H27 results, May 2027)"
-      - "Full-year results (next: FY26 results, Nov 2026)"
-      - "Any > 5% movement materially impacting equity value"
-      - "Regulatory step change (APRA / RBNZ capital framework)"
-
-  notes_for_data_workstream:
-    handoff_status: "Ben provided the source pack 12 June 2026; financial-feed time series (multi-year NIM, expenses, impairment history; equity beta from price; peer comp aggregation) pending."
-    requested_additions:
-      - "5-year time series for NIM, cost-to-income, credit losses, ROE — for trend / normalisation analysis"
-      - "Bloomberg or IRESS consensus estimates for FY27/FY28"
-      - "Equity beta vs ASX200 and vs world-index (MSCI World)"
-      - "Peer comparison data: CBA, NAB, ANZ on the same key metrics"
-      - "Macquarie banking division comparator (where disclosed separately)"
+  

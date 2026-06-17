@@ -36,6 +36,24 @@ A living scratchpad for conversational decisions, current preoccupations, and co
 
 ## Current state of play (as of 12 June 2026)
 
+**17 June 2026 — WBC v3 reframe: "peer-gap closure" not "transformation"; UNITE evidence; industry+WBC growth decomposition explicit in workbook.**
+
+Tara raised four substantive questions on the v2 WBC discussion document. Three of them surfaced methodology refinements that v3 addresses:
+
+1. **Framing change (semantic but important).** "Transformation" implies a specific announced program. Westpac's UNITE update (26 March 2026 presentation) lists three stated outcomes of which the third is "CLOSE CTI RATIO GAP TO PEERS" — peer-gap framing is Westpac's own language. v3 reframes throughout: framework assumes WBC management will progressively close the cost-to-income / return-on-equity gap to peers; UNITE is the most credible disclosed mechanism but the framework does not depend on the specific program succeeding.
+
+2. **Cost-to-income glide rebuild around UNITE evidence.** UNITE investment trajectory is FY24 AUD 147m → FY25 AUD 660m → FY26 AUD 850-950m → FY27-28 c.40% of total → FY29 lower. ~75% of spend expensed. Direct annual benefits disclosed AUD 190m (Mortgage Simplification 70 + One Commercial Bank 40 + One Collections 40 + One Wealth 40), plus undisclosed Digital Banker + further initiatives. Implied steady-state benefit FY30-31 ~AUD 300-400m p.a. Glide is now back-loaded: FY27-28 keep elevated UNITE spend (flat CTI), FY29-31 benefits emerge (CTI drops from 51.7% to 48.0%). Half of the gap to NAB (43%) and CBA (42%).
+
+3. **Industry growth + WBC offset decomposition NOW EXPLICIT in workbook.** Previously workbook collapsed industry AIEA growth + WBC company offset into a single number. v3 P&L Forecast sheet shows: industry AIEA growth 4.5% (from §3 of discussion doc) less WBC company offset -15bps (Five Forces: rivalry -10bps + business-banking-rebuild -5bps) = WBC AIEA growth 4.35%. Same explicit decomposition for NIM: industry NIM 1.86% + WBC supplier-power offset +8bps (deposit franchise) = WBC NIM anchor 1.94%.
+
+4. **(Deferred to a separate pass)** — Tara also noted the v2 model had no explicit transformation execution cost line. v3 acknowledges the UNITE spend is already in 1H26 base opex. FY27-28 maintaining UNITE spend = no additional execution overlay needed at the equity bridge level (it shows up in higher opex during those years). Methodologically this is "cost in P&L during execution years, benefits in P&L during reaping years" — consistent with §3.2 transformation overlay framing.
+
+Workbook v3 result: AUD 30.08 per share (essentially same as v2 AUD 29.98; 10c uplift). Y1 EPS AUD 2.17 matches consensus FY27 AUD 2.18.
+
+Documents register updated with UNITE presentation. wbc_unite_update_presentation_2026-03-26.pdf saved to data/financials/historical/wbc/.
+
+---
+
 **16 June 2026 (evening) — WBC NIM YE history FY22-FY25 extracted; historical results pack ingested.**
 
 Tara provided WBC half-year and full-year results announcements covering FY22 through FY25 (plus FY23 via annual report) and MQG FY26 annual report + presentation. Saved to `data/financials/historical/{wbc,mqg}/` and registered in `wbc_documents.yaml` (wbc_historical_results_pack and mqg_fy26_results_pack).
@@ -184,4 +202,65 @@ Next: per-scenario impact matrix `data/impact_matrix/by_industry/australian_majo
 ## Key conventions adopted (cross-cutting)
 
 - All ratings use `low | moderate | high` (3-point) — *except* matrix entries: `direction` is 3-way (`negative | neutral | positive`) and `magnitude` is 3-way (`small | moderate | large`); the two are separate fields.
-- Drivers are **nominal in functional currency**; FX appears at consolidation across functional curren
+- Drivers are **nominal in functional currency**; FX appears at consolidation across functional currencies, not as a primary driver inside a segment DCF.
+- Drivers carry `role: primary | derived`. Layer 5 only writes primary drivers; Layer 6 computes derived ones via declared `derivation_formula`.
+- Narrative artefacts and structured artefacts are **paired**; structured fields win as source of truth where prose and structure disagree (per §16.1).
+- File naming: `snake_case` for ids and filenames; `CamelCase` for Python classes.
+- Schema versioning: every schema carries `version`; breaking changes bump major.
+- Override discipline: target ≤20% of cells per company (archetype-tunable); above this, the archetype is mis-specified.
+
+---
+
+## Filesystem quirks worth knowing
+
+- `C:\Users\steph\vcc-valuations` is mounted into Claude's sandbox. The mount permits file CREATE but not DELETE for `.git/*.lock` files. Workaround in sandbox: `mv .git/index.lock .git/index.lock.deadN` before retrying the git command. Tara can delete the lock files normally from her own cmd window: `del .git\HEAD.lock` and `del .git\index.lock`.
+- A scratch-clone approach via `/tmp/` has been used in the sandbox for git operations when the mount approach is too painful.
+- A `.github-token` file lives at the repo root and is excluded from git via `.git/info/exclude` (not `.gitignore`, which had unrelated modified state we don't want to touch).
+
+---
+
+## Decisions still parked / open
+
+- **Methodology §3.5 citations to add.** When next editing the methodology doc, add explicit citations to Damodaran's "Value of Control" framework and Stephen's substack reasoning on building risk into cash flows rather than into premia. Strengthens the §3.5 single-WACC argument by anchoring it in published work rather than pure finance-theory framing.
+ (cross-link to architecture review items)
+
+- **Industry archetype location** (`vcc-valuations` vs platform-level repo) — revisit when other consumers appear. (§5.1 item 8.)
+- **Complementary-framework discipline** (defined enum vs hybrid) — revisit after WBC populated. (§7.7 item 9.)
+- **Step 5 time budget** — revisit after IPL populated against actuals. (§14.3 item 1.)
+- **Stochastic overlay** — deferred per §3 Open Decision.
+- **Probability-weighting (narrowed scope)** — whether engine surfaces an analyst-computed blended scalar as a presented output. (§3 item 3.)
+- **WACC scenario behaviour** — whether components actively move per scenario. Layer 4 keeps the option open; decision deferred to §12 (DCF Engine).
+- **`risk_exposures.fx` placement** — parent / segment / both. (§8.6 item 4.)
+
+---
+
+## Recent commits (reference)
+
+- `b387f1a` — initial architecture spec push (sections 1-17 first cut).
+- `8df0784` — sections 7-11 worked through with Tara.
+- `0b976eb` — Ben's-bot platform-side review absorbed (Group 1 changes).
+- `f62d3ae` — narrative-deliverables convention added; Five Forces question bank started.
+- `9f91be4` — WORKING_NOTES.md created.
+- `ac4e8e7` — Five Forces question bank completed (Supplier, New Entrants, Substitutes, Rivalry).
+- `4616ede` — payor-and-regulator framework v1 draft added.
+- `ec462c5` — editorial sweep + v0.1 freeze (Step 1 closed out).
+- `8e7a51b` — WORKING_NOTES update after Step 1 and Step 2 closed.
+- `a76a9ec` — scenarios workshop prep document.
+- `8cc2527` — response to Ben's `vcc_valuations` rev1 design.
+- `1d3d53b` — Step 3 complete (six scenarios drafted).
+- `35578ea` — Step 4 (pydantic + JSON Schema + tests).
+- `e142f95` — chore: removed accidentally-committed `__pycache__` files.
+- `f682363` — WORKING_NOTES Step 4 update.
+- `dfd1243` — architecture v0.2 (§7.1.1 archetype-granularity principle).
+- Step 5: Phase A `_` (industrial_explosives archetype), Phase B `_` (IPL position + indicative financials), Phase C `dea44c2` (IPL impact matrix), Phase D `_` (IPL per-scenario narratives + thesis). Hash placeholders updated when latest commits drop.
+- `f21fb1e` — IPL → DNL first pass (renames + real EODHD financials + per-entity functional currency).
+- `5d55305` — IPL → DNL editorial sweep across spec/build-plan/workshop docs/industry/matrix/scenarios (architecture v0.2 → v0.2.1).
+- `86233ca` — Phase 3.5 smoke-test DCF (translator stub + FCF DCF stub + driver script + findings).
+- **PENDING COMMIT — briefing pack for Ben meeting (29 May 2026).** `analyses/dnl/dnl_briefing_pack_2026-05-29.docx` + `.pdf`. 6 substantive pages + small overflow covering scenarios / Porter / DNL positioning / per-scenario impact / methodology principles. To be committed in the next push.
+- **Tag:** `architecture-v0.1` points at `ec462c5`.
+
+---
+
+## Last updated
+
+9 June 2026 — DNL Q1-Q8 review + Five Forces spine for company position + tax-rate consistency. Methodology doc gains sections 3.3 (Five Forces spine), 3.6 (tax discipline), 14 (source-document ingestion). Architecture spec v0.3.1 -> v0.4 (add
