@@ -120,27 +120,40 @@ Same principle as revenue growth: base-year margin + transformation overlay + sc
 
 From the financials YAML `normalised_baseline.ebit_margin` (per the smoke-test calibration convention). Source-document referenced; rationale captured.
 
-### 3.2 Transformation / strategic overlay (company-specific)
+### 3.2 Peer-gap closure overlay (company-specific)
 
-A `margin_glide_path` block on the company-position YAML captures known, scheduled margin movement that isn't scenario-conditional:
+**Renamed from "Transformation overlay" at v0.6** following the framing principle Tara articulated 17 June 2026: "transformation" implies a specific announced programme, but the framework's view should not depend on any particular programme succeeding. The analytically honest framing is that **management will work towards closing the profitability gap with peers**; a specific disclosed programme (a stated EBIT ambition, a technology platform investment, a strategic cost-out plan) is treated as the most credible disclosed mechanism for closure, not as the basis of the framework's view.
+
+A `peer_gap_closure_overlay` block (formerly `margin_glide_path`) on the company-position YAML captures known, scheduled margin movement that isn't scenario-conditional:
 
 ```yaml
-margin_glide_path:
-  # Year-by-year delta to base-year margin (bps)
+peer_gap_closure_overlay:
+  # Year-by-year delta to base-year margin (bps); analyst assumes
+  # progressive closure of the gap to peer leaders.
   trajectory:
     - year: 1
       ebit_margin_delta_bps: +50
-      rationale: "FY27: 50% of transformation residual delivered"
+      rationale: "FY27: ~50% of closure residual delivered"
     - year: 2
       ebit_margin_delta_bps: +210
-      rationale: "FY28: transformation complete; aligns to AUD 600m EBIT ambition"
+      rationale: "FY28: peer-gap closure largely complete; aligns to disclosed FY28 ambition"
     - year: 3
       ebit_margin_delta_bps: +260
-      rationale: "FY29 onward: steady-state at completed transformation level"
+      rationale: "FY29 onward: steady-state at closed level"
   cap_at_year_5: true
+  stated_mechanism:
+    name: "<Company programme name>"
+    source_document: "<reference to disclosure>"
+    note: "Cited as the most credible disclosed mechanism; framework does not depend on programme success"
 ```
 
-For DNL the transformation overlay reflects the AUD 300m total EBIT uplift management has communicated, of which 65–75% is in the FY26 base year (per H1 disclosure).
+**Worked examples:**
+
+- **DNL**: peer-gap closure reflects the AUD 300m total EBIT uplift management has communicated, of which 65–75% is in the FY26 base year (per H1 disclosure). Framed as "closing the gap to franchise leader Orica" rather than "the post-demerger transformation succeeding".
+
+- **WBC**: peer-gap closure reflects the cost-to-income glide from 51.7% (1H26) toward 48% (FY31), closing approximately half the gap to NAB (43%) and CBA (42%). Stated mechanism is the UNITE programme; page 3 of Westpac's 26 March 2026 update lists "close cost-to-income ratio gap to peers" as one of three stated outcomes.
+
+**Coexistence with the prior `margin_glide_path` field name**: existing company YAMLs that use `margin_glide_path` continue to validate. New companies use `peer_gap_closure_overlay`. Backport DNL on its next refresh.
 
 ### 3.2.1 Structural-headwind overlay (sister concept)
 
@@ -441,13 +454,23 @@ equity_bridge_adjustments:
 
 The translator emits an error (not warning) if any `equity_bridge_adjustment` lacks an explicit `on_balance_sheet_at_anchor` flag. This is the "don't accidentally double-count" check.
 
-### 4.4 Restructuring-cost consistency rule
+### 4.4 Cost-of-closure consistency rule
 
-**If the forward forecast assumes the benefit of a restructure (lower run-rate cost base, exit from a loss-making business, transformation-programme margin uplift), the equity bridge must include the cash cost of executing the restructure, less any existing provision.**
+**Renamed at v0.6 from "Restructuring-cost consistency rule" to reflect the §3.2 peer-gap closure framing.**
 
-Mechanically: each `transformation_overlay` or `margin_glide_path` entry on the company-position YAML carries a paired `execution_cash_cost` field with the same provisioning treatment as §4.2.
+**If the forward forecast assumes the benefit of peer-gap closure (lower run-rate cost base, margin glide, transformation-programme uplift), the framework must also reflect the cost of executing that closure. The mechanic depends on where the closure cost falls in the company's financial structure:**
 
-For DNL: the AUD 90m of remaining transformation EBIT uplift (assumed in margin glide) has associated cash execution cost. Management's H1 transformation IMI run-rate is ~AUD 4m per half = ~AUD 8m annualised, declining over 2 years. Total remaining cash cost ~AUD 12m. Adjustment to equity: subtract AUD 12m (less anything already provided).
+**(a) P&L-absorbed closure cost.** Where the closure programme's execution spend is recurring through the operating expense base during execution years, no separate equity-bridge line is required. The cost-of-closure consistency rule is honoured via the **time profile of operating expenses**: opex stays elevated during execution years, then drops as benefits emerge. The margin overlay (§3.2) should be back-loaded accordingly to reflect this.
+
+**Worked example: WBC.** UNITE programme spend ~75% expensed through P&L (FY24 AUD 147m → FY26 ~AUD 900m → FY29 lower). Operating expenses stay elevated FY27-FY28 in the explicit forecast; benefits emerge FY29-FY31 as the programme completes. No separate equity-bridge line.
+
+**(b) Upfront one-off closure cost.** Where the closure programme requires an upfront cash outlay not yet absorbed in the run-rate operating base (typical of one-off restructures, exit-from-business-line costs, contingent execution payments), the equity bridge must include the cash cost less any existing provision, treated per §4.2.
+
+**Worked example: DNL.** AUD 90m of remaining transformation EBIT uplift has associated cash execution cost. Management's H1 transformation IMI run-rate is ~AUD 4m per half = ~AUD 8m annualised, declining over 2 years. Total remaining cash cost ~AUD 12m. Adjustment to equity: subtract AUD 12m (less anything already provided).
+
+**Discipline test (auditor-facing):** for any company assuming peer-gap closure benefit, the workbook should be able to point to either (a) elevated opex during execution years in the explicit forecast OR (b) an equity-bridge execution-cost line. Absence of both is a methodology failure.
+
+Mechanically: each `peer_gap_closure_overlay` entry on the company-position YAML carries a paired `execution_cost_treatment` field with two possible values: `p_and_l_absorbed` or `equity_bridge_one_off`. The latter carries the same provisioning treatment as §4.2.
 
 ### 4.5 Bridge presentation
 
@@ -1084,70 +1107,138 @@ itself can be scenario-conditional (different macro outlooks →
 different sustainable growth).
 
 (d) **Capital surplus distribution**: a bank with CET1 above target
-in the terminal period distributes the surplus before computing
-terminal value. The terminal book equity used in TV is the
-capital-target-adjusted figure, not the latest reported.
+in the terminal period distributes the surplus before
+---
 
-### 15.9 Schema implications
+## 11. Workbook construction discipline
 
-(a) **New schema fields for `data/companies/<id>.yaml` (banks):**
-   - `bank_specifics.average_interest_earning_assets` (period-anchored)
-   - `bank_specifics.nim_decomposition` (asset yield, funding cost,
-     hedge contribution)
-   - `bank_specifics.credit_loss_through_cycle` (bps p.a. of gross
-     loans)
-   - `bank_specifics.cet1.actual`, `bank_specifics.cet1.target_minimum`,
-     `bank_specifics.cet1.management_buffer`
-   - `bank_specifics.rwa_composition` (housing, business, institutional,
-     other; with risk-weight density per segment)
-   - `bank_specifics.at1_hybrid_outstanding` (AUD m face)
-   - `bank_specifics.dta_balance`, `bank_specifics.software_intangibles`
-   - `normalised_baseline.cost_of_equity_build` (replaces
-     `wacc_build` for banks)
+Added 17 June 2026 at v0.6 following review feedback that surfaced the same gap twice: workbooks had been collapsing the Step 2 (industry baseline) and Step 3 (company-position offset) layers into a single per-scenario input, breaking traceability from the discussion-document narrative to the workbook cells.
 
-(b) **New schema fields for `data/industries/<id>.yaml` (bank archetype):**
-   - `bank_archetype.regulator` (APRA / RBNZ / etc.)
-   - `bank_archetype.cet1_floor` (regulatory minimum)
-   - `bank_archetype.credit_cycle_anchor` (through-cycle loss rate
-     for the archetype)
-   - `bank_archetype.rwa_density_anchor` (per segment)
+### 11.1 Step 2 → Step 3 traceability requirement
 
-(c) **New schema fields for `data/scenarios/<id>.yaml` (banks):**
-   - `macro_baseline.credit_cycle` (housing-loan LGD, business-loan
-     LGD per scenario)
-   - `macro_baseline.cash_rate_path` (RBA cash rate trajectory)
-   - `macro_baseline.swap_spreads` (3M / 5Y swap to bond spread)
-   - `macro_baseline.housing_market` (turnover, price growth)
-   - `macro_baseline.regulatory.cet1_floor_change` (per scenario)
+**For every driver where the §2-§3 chain produces a company-specific assumption, the workbook MUST show the industry-archetype baseline AND the company-position offset as separate input rows, with the resulting company-specific assumption derived rather than direct-input.**
 
-(d) **Translator changes**: bank archetypes invoke
-`translate_to_bank_assumption_set` (new) instead of
-`translate_to_assumption_set` (industrials). The bank translator
-produces a `BankAssumptionSet` with the NII / non-NII / credit-loss
-decomposition.
+For industrials (using DNL's drivers as exemplar):
+- Industry revenue growth (from §2.2 archetype translation) → shown as input row
+- Less / plus company-position offset (from §2.3 Five Forces decomposition) → shown as input row
+- = Company revenue growth (derived) → shown as bold output row, flowing into the P&L
 
-(e) **DCF engine changes**: bank workbooks use a
-`run_bank_residual_income` (or `run_bank_ddm`) routine in place of
-`run_fcf_dcf`. The routine produces a year-by-year residual-income
-forecast, terminal value via §15.8, and per-share value via §15.7
-adjustments.
+For banks (using WBC's drivers as exemplar):
+- Industry AIEA growth → shown as input row
+- Less company-position offset (Five Forces, e.g., −15bps for WBC) → shown as input row
+- = Company AIEA growth (derived) → shown as bold output row
+- Industry NIM anchor → shown as input row
+- Plus company-position offset (Five Forces, e.g., +8bps for WBC) → shown as input row
+- = Company NIM anchor (derived) → shown as bold output row
 
-### 15.10 Worked example reference
+### 11.2 Discussion-document anchoring
 
-The WBC Muddle Through valuation (build in progress as of 12 June
-2026) is the canonical bank worked example. Each principle in §15 is
-to be implemented and visible in that workbook. The workbook is the
-integration test: if it can't be built from a bank-specific company
-position YAML + scenario YAML + bank industry archetype YAML + this
-methodology, §15 has a gap.
+The discussion-document narrative (§3 of the standard discussion-document structure) tells the reader that "industry growth is X%, company offset is Y, company growth is X+Y". The workbook must implement this verbatim. If the reader opens the workbook and finds a single AIEA-growth-per-scenario input, the methodology chain is broken.
 
-### 15.11 Migration / coexistence note
+### 11.3 What this rule replaces
 
-The industrials methodology in §§2–7 is unchanged. Companies tagged
-`industry_type: "bank"` (or where the industry archetype's
-`archetype_class` field equals `"bank"`) invoke §15. All other
-companies invoke §§2–7 unchanged. The §3.3 Five Forces spine and
-§3.5 single-discount-rate discipline apply to both branches; the §3.6
-tax-rate discipline applies to both (banks have their own statutory
-rate, typically 30%, with the same blended-statutory consistency
-requirement).
+This rule replaces the implicit assumption (that surfaced in DNL v4 and WBC v2) that the analyst would mentally combine industry baseline and company offset before populating a single per-scenario input. The replacement is mechanical: the combination happens in the workbook, visibly.
+
+### 11.4 Backport requirement
+
+DNL workbooks pre-dating this rule (v4 and earlier) collapsed the chain. To be backported on next DNL refresh — analogous to WBC v3 where the rule was first applied.
+
+---
+
+## 14.5.1 Assumption-strength tagging (added v0.6)
+
+Extension to §14.5 (source-citation discipline in deliverables).
+
+Each calibration anchor in the workbook should be tagged with its strength category, distinguishing hard data from analyst judgment:
+
+(a) **`disclosed_management_target`**: anchor pinned to a specific management commitment (e.g., DNL's AUD 600m FY28 EBIT ambition; CBA's stated cost-to-income target where disclosed). Highest confidence; framework's central case calibrates to this directly.
+
+(b) **`computed_from_disclosed_history`**: anchor derived from disclosed historical data via stated calculation (e.g., WBC's 1.94% through-cycle NIM = midpoint of disclosed FY22-FY25 NIM range; DNL's 11.2% normalised EBIT margin = 3-year average of disclosed margins). High confidence; transparent derivation.
+
+(c) **`analyst_judgment_with_rationale`**: anchor based on analyst interpretation of qualitative disclosures, peer comparison, or industry-archetype patterns (e.g., WBC's 200bps cost-to-income glide; DNL's 25% mining-customer share weighting). Medium confidence; the rationale must be documented.
+
+(d) **`default_assumption`**: anchor using the industry-archetype default where no company-specific data exists (e.g., effective tax rate when management hasn't disclosed; through-cycle credit loss anchor where peer-distribution is the only basis). Lowest confidence; flagged for refresh on each company refresh cycle.
+
+Format: append a `[disclosed]`, `[derived]`, `[judgment]`, or `[default]` tag to every anchor in the Assumptions sheet of every workbook, alongside its source citation per §14.5.
+
+This makes audit transparent: a reviewer can identify at a glance which assumptions are hard-data-grounded and which are reasoned, and focus their challenge accordingly.
+
+---
+
+## 16. Interpretive output discipline
+
+Added 17 June 2026 at v0.6 following review feedback on the WBC build that surfaced an interpretive tool the framework had been using implicitly but never codified.
+
+### 16.1 Market-vs-framework gap interpretation
+
+The framework produces a per-share value for each of six scenarios. The Muddle Through central case is typically the comparison point for market price. Where Muddle Through does NOT sit at market, the framework provides a diagnostic:
+
+**Where Muddle Through sits at market** (DNL v4 outcome: AUD 3.59 vs market AUD 3.61, gap −0.5%): the framework agrees with consensus on the central case. The value-add is the **asymmetry exposure** — the spread between Orderly Convergence and Stagflation Persists as the explicit risk distribution, and the asymmetry ratio (downside / upside) as the structural risk metric. Discussion-document framing: "framework's value-add is not in disagreement with consensus on the central case but in the scenario asymmetry around it."
+
+**Where Muddle Through does not sit at market** (WBC v3 outcome: AUD 30.28 vs market AUD 35.32, gap −14.3%): the framework's diagnostic is to identify the closest-to-market scenario from the framework's distribution. If Orderly Convergence sits at market, the analyst can infer the market is implicitly pricing closer to an upside terminal-state assumption. Discussion-document framing: "the framework infers the market is implicitly pricing closer to [closest scenario]; the assumptions that differ between that scenario and the framework central case are [enumerate]."
+
+### 16.2 Structural reason for the gap
+
+When using this diagnostic, the analyst must articulate which specific assumptions differ between the closest-to-market scenario and Muddle Through. For WBC v3 these were:
+
+(a) Terminal return on equity 11.0% (Orderly) versus 10.5% (Muddle Through) — implies more complete peer-gap closure.
+
+(b) Cost-to-income Y5 target 46.0% (Orderly) versus 48.0% (Muddle Through) — implies more aggressive UNITE-mechanism benefit realisation.
+
+(c) Asset growth 6.5% (Orderly) versus 4.5% (Muddle Through) — implies stronger macro / system credit environment.
+
+The market's implicit pricing is NOT a claim about WBC management's intent or about UNITE specifically. It is a structural inference about what scenario terminal economics the market is currently trading.
+
+### 16.3 When the framework central case sits above market
+
+Symmetric treatment: where Muddle Through sits above market, the closest-to-market scenario is on the downside. The market is implicitly pricing closer to that scenario's terminal-state assumptions. The analyst's framework view is materially more positive than consensus — flag this conspicuously and articulate the assumptions that differ.
+
+---
+
+## 16.4 External-facing artefact discipline — acronym sweep
+
+Added 17 June 2026 at v0.6 following Tara's standing rule for the DNL and WBC discussion documents that "all but the most obvious acronyms" should be spelled out for external-facing artefacts.
+
+### Principle
+
+**Internal workbooks** (where the analyst is the primary audience) can use field shorthand: TTM, AIEA, NIM, CET1, RWA, NPAT, AT1, NCI, DM, CTI, etc. These are field-standard and reduce cognitive overhead for an analyst-reader.
+
+**External-facing artefacts** (discussion documents, briefing packs, summary reports — anything addressed to a non-analyst or to an audience whose field background may differ) must spell out all acronyms except the canonical commonly-recognised set: WACC, EBIT, NOPAT, ROE, EPS, DDM, P/B, P/E, IMF, OECD, RBA, APRA, ASX, US, AU, NZ, GDP, AI.
+
+### Standard expansions
+
+For consistency across artefacts, the standard first-use expansions:
+
+| Acronym | Spell-out |
+| TTM | trailing 12 months |
+| AIEA | average interest-earning assets |
+| NIM | net interest margin |
+| CET1 | Common Equity Tier 1 |
+| RWA | risk-weighted assets |
+| NPAT | net profit after tax |
+| AT1 | Additional Tier 1 |
+| NCI | non-controlling interests |
+| D-SIB | domestic systemically important bank |
+| ADI | Authorised Deposit-taking Institution |
+| CTI | cost-to-income |
+| DM | developed-market |
+| CAPM | Capital Asset Pricing Model |
+| ANFO | bulk explosive (ammonium nitrate / fuel oil) |
+| LATAM | Latin America |
+| FMG | Fortescue |
+| TFP | total-factor productivity |
+| FCFF | free cash flow / cash flow |
+| TV | terminal value |
+| DF | discount factor |
+| OCF | operating cash flow |
+| ARO | asset retirement obligation |
+| MT | Muddle Through |
+| Rf | risk-free rate |
+| ERP | equity risk premium |
+
+After first-use expansion the acronym may be used freely.
+
+### Worked examples
+
+- DNL discussion document v6 (9 June 2026): full sweep applied
+- WBC discussion document v2 (17 June 2026): same discipline; CET1, NIM, AIEA, NCI, AT1 spelled out throughout

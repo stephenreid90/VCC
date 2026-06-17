@@ -1,7 +1,7 @@
 # VCC Valuations — Scenario-Based Equity Valuation Module
 ## Architecture & Design Specification
 
-**Version:** 0.5
+**Version:** 0.6
 **Date:** 21 April 2026 (drafted); 7 May 2026 (Ben's-bot review + Group 1 changes; editorial sweep; v0.1 freeze); 17 May 2026 (v0.2: archetype-granularity principle added at §7.1.1); 22 May 2026 (v0.2.1: IPL → DNL rename editorial sweep); 25 May 2026 (v0.3: equity-bridge and valuation-mechanics methodology added); 28 May 2026 (v0.3.1: single-WACC discipline resolved); 9 June 2026 (v0.4: Five-Forces spine for company position §3.3, tax-rate discipline §3.6, source-document ingestion §14); 12 June 2026 (v0.5: bank-specific valuation conventions methodology §15 added).
 **Status:** v0.5. Section-by-section review with Tara complete; Ben's-bot platform-side review (5 May 2026) incorporated; archetype-granularity principle added 17 May 2026; test-company name change IPL → DNL swept through the spec 22 May 2026; equity-bridge methodology added 25 May 2026. Bank-specific methodology fork added 12 June 2026 ahead of WBC build. Subsequent material changes will bump version with a migration note.
 
@@ -16,6 +16,22 @@
 (d) **Coexistence**: industrials methodology in §§2–7 of methodology doc unchanged. Companies tagged `industry_type: "bank"` (or whose archetype's `archetype_class = "bank"`) invoke §15 in place of §§2–4. Shared discipline retained: §5 share-count, §6 IMIs, §7 valuation-date mechanics, §3.5 single-discount-rate, §3.6 tax-rate consistency, §3.5.3 beta-selection-via-peer-triangulation.
 
 (e) **First worked example**: WBC Muddle Through build, in progress 12 June 2026; peer-triangulation discipline applied 16 June 2026.
+
+**Migration from v0.5 → v0.6:** Editorial / discipline-articulation consolidation; six refinements lifted from Tara's DNL and WBC review feedback. Additive only — no schema breaks; existing company YAMLs continue to validate.
+
+(a) **§3.2 Peer-gap closure overlay (renamed from Transformation overlay).** Tara's framing principle (17 June 2026): the framework's view should not depend on any specific announced programme succeeding; the analytically honest framing is that management will work towards closing the profitability gap with peers, with a specific disclosed programme treated as the most credible stated mechanism rather than as the basis of the framework's view. Existing `margin_glide_path` YAML field name continues to validate; new YAML field name `peer_gap_closure_overlay`. DNL backport on next refresh.
+
+(b) **§4.4 Cost-of-closure consistency rule (renamed from Restructuring-cost consistency rule).** Now explicitly distinguishes two valid treatments: (i) P&L-absorbed closure cost where execution spend is in the recurring operating base during execution years (e.g., WBC's UNITE programme expensed through P&L), honoured via the time profile of operating expenses; (ii) upfront one-off closure cost requiring a separate equity-bridge line (e.g., DNL's AUD 12m restructure execution cash). Both worked examples now in the methodology. Auditor-facing discipline test added.
+
+(c) **New §11 Workbook construction discipline.** Requires every workbook to show industry-archetype baseline AND company-position offset as separate input rows, with the resulting company-specific assumption derived rather than direct-input — Step 2 → Step 3 chain visibly implemented rather than mentally combined by the analyst. Replaces the implicit assumption that surfaced in DNL v4 (revenue-growth chain collapsed) and WBC v2 (AIEA and NIM chain collapsed). Backport required for DNL workbooks pre-dating this rule.
+
+(d) **§14.5.1 Assumption-strength tagging.** Each calibration anchor tagged with `[disclosed]` (management target), `[derived]` (from disclosed history via stated calculation), `[judgment]` (analyst interpretation with rationale), or `[default]` (industry-archetype default). Makes audit transparent — a reviewer identifies at a glance which assumptions are hard-data-grounded and which are reasoned.
+
+(e) **New §16 Interpretive output discipline — market-vs-framework gap.** Codifies the diagnostic that has been used implicitly through both DNL and WBC: where Muddle Through sits at market the framework agrees with consensus on the central case and the value-add is asymmetry exposure; where Muddle Through does not sit at market, the closest-to-market scenario is interpreted as the scenario the market is implicitly pricing, and the analyst must articulate the assumptions that differ. Worked examples for both DNL (at-market) and WBC (closest-scenario-to-market is Orderly Convergence) provided.
+
+(f) **§16.4 External-facing artefact discipline — acronym sweep.** Codifies the rule applied through DNL v6 and WBC v2 discussion documents: internal workbooks may use field shorthand (TTM, AIEA, NIM, CET1, etc.); external-facing artefacts spell out all but the canonical commonly-recognised set (WACC, EBIT, ROE, EPS, P/B, RBA, APRA, etc.). Standard expansions table included for consistency.
+
+Cross-cutting principle observed: **all six refinements are discipline / explicit-articulation refinements rather than analytical-substance changes.** No per-share number changes. The methodology becomes more rigorous, more transparent, and more replicable across the next companies (CSL, then beyond).
 **Migration from v0.1 → v0.2:** Additive change only. New §7.1.1 "Defining archetype granularity" added.
 **Migration from v0.2 → v0.2.1:** Editorial only. Test-company references updated from "IPL" / "Incitec Pivot Limited" to "DNL" / "Dyno Nobel Limited" following the company's March 2025 rename after demerger of the fertilisers business. Ticker now ASX:DNL (was ASX:IPL); ISIN AU0000390544. The "DNL, formerly IPL" historical pointer is retained in §2 item 4. No schema or analytical content changes. Existing v0.1 / v0.2 schemas remain valid.
 **Migration from v0.3 → v0.3.1:** Single-WACC discipline resolution.
@@ -1308,6 +1324,4 @@ The structure of three angles is settled; the techniques inside each are:
 3. **File naming.** `snake_case` for ids and filenames; `CamelCase` for Python classes.
 4. **Schema versioning.** Every schema carries a `version` field; breaking changes bump major version and require a migration note in `design/schemas/migrations.md`.
 
-### 16.1 Narrative deliverables
-
-Alongside the structured engine outputs (YAML, JSON, computed numbers), every key analytical component carries a parallel **narrative write-up** — the form an analyst or client can read in prose, not extract from fields. The structured artefacts and the narrative artefacts are two views of the same analysis; the structured ones are the source of truth for ratings, lists, and numbers, and the narrative explains them
+### 16.1 Na

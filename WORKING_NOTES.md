@@ -36,6 +36,35 @@ A living scratchpad for conversational decisions, current preoccupations, and co
 
 ## Current state of play (as of 12 June 2026)
 
+**17 June 2026 (evening) — Methodology v0.6 consolidation: six review-derived refinements lifted.**
+
+Tara asked a meta-question: from her review questions during DNL and WBC, are there methodology questions worth raising. Yes, six surfaced. All six are discipline / explicit-articulation refinements rather than analytical-substance changes; no per-share numbers move. v0.6 (additive only) lands them:
+
+1. **§3.2 renamed to "Peer-gap closure overlay"** (from "Transformation overlay"). Reframed so the methodology view does not depend on any specific announced programme succeeding; the assumption is the closure trajectory, with a specific programme (UNITE for WBC, post-demerger glide for DNL) treated as the most credible stated mechanism. YAML field name `peer_gap_closure_overlay` (new) coexists with `margin_glide_path` (existing) for backward compatibility.
+
+2. **§4.4 renamed to "Cost-of-closure consistency rule"** (from "Restructuring-cost consistency rule") and now distinguishes (a) P&L-absorbed (WBC's UNITE expensed through P&L, time-profile mechanic) versus (b) upfront one-off equity-bridge line (DNL's AUD 12m execution cash). Both worked examples in methodology. Auditor discipline test added.
+
+3. **New §11 Workbook construction discipline** — Step 2 → Step 3 traceability requirement. Every workbook MUST show industry baseline AND company offset as separate rows, with the company-specific assumption derived. Replaces the implicit assumption that the analyst would mentally combine the two layers. DNL backport required (current DNL workbooks collapsed the chain).
+
+4. **§14.5.1 Assumption-strength tagging.** Each calibration anchor tagged `[disclosed]`, `[derived]`, `[judgment]`, or `[default]`. Makes audit transparent — reviewer identifies at a glance which assumptions are hard-data-grounded.
+
+5. **New §16 Interpretive output discipline — market-vs-framework gap.** Codifies the diagnostic the framework has been using implicitly. Where Muddle Through sits at market (DNL) the value-add is asymmetry exposure; where it doesn't (WBC), the closest-to-market scenario is the market's implied pricing, and the analyst articulates which assumptions differ.
+
+6. **§16.4 External-facing artefact discipline — acronym sweep.** Internal workbooks may use shorthand (TTM, AIEA, NIM, CET1); external artefacts spell out all but the canonical commonly-recognised set. Standard expansions table for consistency.
+
+Architecture spec bumped 0.5 → 0.6 with migration note covering all six refinements.
+
+**DNL backports outstanding** (to be done on next DNL refresh):
+- Rename "transformation overlay" → "peer-gap closure" in DNL company YAML, thesis, briefing pack, discussion document where appropriate
+- Rebuild DNL workbook to show industry growth + company offset decomposition explicitly (similar to WBC v3 pattern)
+- Apply β peer-triangulation discipline (already noted earlier)
+
+These would constitute a "DNL v5" pass — methodology-discipline refresh, not analytical-substance change.
+
+**Meta-observation:** Tara's review questions on the first two test companies surfaced these six refinements systematically. The hypothesis is that the third (CSL) and beyond will produce fewer refinements as the methodology hardens — but each new company should be expected to surface at least one or two before the framework is stable.
+
+---
+
 **17 June 2026 — WBC v3 reframe: "peer-gap closure" not "transformation"; UNITE evidence; industry+WBC growth decomposition explicit in workbook.**
 
 Tara raised four substantive questions on the v2 WBC discussion document. Three of them surfaced methodology refinements that v3 addresses:
@@ -221,46 +250,4 @@ Next: per-scenario impact matrix `data/impact_matrix/by_industry/australian_majo
 
 ## Decisions still parked / open
 
-- **Methodology §3.5 citations to add.** When next editing the methodology doc, add explicit citations to Damodaran's "Value of Control" framework and Stephen's substack reasoning on building risk into cash flows rather than into premia. Strengthens the §3.5 single-WACC argument by anchoring it in published work rather than pure finance-theory framing.
- (cross-link to architecture review items)
-
-- **Industry archetype location** (`vcc-valuations` vs platform-level repo) — revisit when other consumers appear. (§5.1 item 8.)
-- **Complementary-framework discipline** (defined enum vs hybrid) — revisit after WBC populated. (§7.7 item 9.)
-- **Step 5 time budget** — revisit after IPL populated against actuals. (§14.3 item 1.)
-- **Stochastic overlay** — deferred per §3 Open Decision.
-- **Probability-weighting (narrowed scope)** — whether engine surfaces an analyst-computed blended scalar as a presented output. (§3 item 3.)
-- **WACC scenario behaviour** — whether components actively move per scenario. Layer 4 keeps the option open; decision deferred to §12 (DCF Engine).
-- **`risk_exposures.fx` placement** — parent / segment / both. (§8.6 item 4.)
-
----
-
-## Recent commits (reference)
-
-- `b387f1a` — initial architecture spec push (sections 1-17 first cut).
-- `8df0784` — sections 7-11 worked through with Tara.
-- `0b976eb` — Ben's-bot platform-side review absorbed (Group 1 changes).
-- `f62d3ae` — narrative-deliverables convention added; Five Forces question bank started.
-- `9f91be4` — WORKING_NOTES.md created.
-- `ac4e8e7` — Five Forces question bank completed (Supplier, New Entrants, Substitutes, Rivalry).
-- `4616ede` — payor-and-regulator framework v1 draft added.
-- `ec462c5` — editorial sweep + v0.1 freeze (Step 1 closed out).
-- `8e7a51b` — WORKING_NOTES update after Step 1 and Step 2 closed.
-- `a76a9ec` — scenarios workshop prep document.
-- `8cc2527` — response to Ben's `vcc_valuations` rev1 design.
-- `1d3d53b` — Step 3 complete (six scenarios drafted).
-- `35578ea` — Step 4 (pydantic + JSON Schema + tests).
-- `e142f95` — chore: removed accidentally-committed `__pycache__` files.
-- `f682363` — WORKING_NOTES Step 4 update.
-- `dfd1243` — architecture v0.2 (§7.1.1 archetype-granularity principle).
-- Step 5: Phase A `_` (industrial_explosives archetype), Phase B `_` (IPL position + indicative financials), Phase C `dea44c2` (IPL impact matrix), Phase D `_` (IPL per-scenario narratives + thesis). Hash placeholders updated when latest commits drop.
-- `f21fb1e` — IPL → DNL first pass (renames + real EODHD financials + per-entity functional currency).
-- `5d55305` — IPL → DNL editorial sweep across spec/build-plan/workshop docs/industry/matrix/scenarios (architecture v0.2 → v0.2.1).
-- `86233ca` — Phase 3.5 smoke-test DCF (translator stub + FCF DCF stub + driver script + findings).
-- **PENDING COMMIT — briefing pack for Ben meeting (29 May 2026).** `analyses/dnl/dnl_briefing_pack_2026-05-29.docx` + `.pdf`. 6 substantive pages + small overflow covering scenarios / Porter / DNL positioning / per-scenario impact / methodology principles. To be committed in the next push.
-- **Tag:** `architecture-v0.1` points at `ec462c5`.
-
----
-
-## Last updated
-
-9 June 2026 — DNL Q1-Q8 review + Five Forces spine for company position + tax-rate consistency. Methodology doc gains sections 3.3 (Five Forces spine), 3.6 (tax discipline), 14 (source-document ingestion). Architecture spec v0.3.1 -> v0.4 (add
+- **Methodology §3.5 citations to add.** When next editing the methodology doc, add explicit citations to Damodaran
