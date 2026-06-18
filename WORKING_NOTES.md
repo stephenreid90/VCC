@@ -33,6 +33,94 @@ A living scratchpad for conversational decisions, current preoccupations, and co
 - **(17 June 2026) Write-up discipline**: include an intuitive narrative description in every company write-up (thesis, discussion document, briefing pack) explaining *why* each scenario produces the per-share number it does. Each scenario gets: macro story → key channels driving the outcome → why the number is what it is. Plus a mental short-cut at the end. Format: a sub-section after the scenario-table introduction, flowing prose.
 
 
+## Current state of play (as of 18 June 2026 — end of long session)
+
+**Session handoff notes.** This session has covered methodology v0.6 consolidation, DNL v5 backport, WBC v3/v4 (workbook + discussion document + scenarios comparison + standing rules), and started CSL v1 (foundation + Muddle Through workbook). If continuing in a new chat, see the "Carrying into next chat" section at the bottom of this file.
+
+### Where everything stands
+
+**Methodology**: v0.6 stable. Six refinements lifted from review-question pattern (peer-gap closure framing, cost-of-closure consistency P&L-vs-bridge distinction, workbook construction discipline §11, assumption-strength tagging §14.5.1, market-vs-framework gap interpretive output §16, acronym sweep discipline §16.4). Architecture spec at v0.6 with full migration note.
+
+**Standing rules now in force** (lines 32-33 in this file):
+1. **Workbook discipline** — all Excel spreadsheets use formulas; inputs on Assumptions sheet in yellow-shaded cells with blue text; output cells link via formulas
+2. **Write-up discipline** — intuitive narrative per scenario in every company write-up; macro story → key channels → why the number is what it is; plus mental short-cut
+
+**DNL (industrial — first test company)**: v5 backport complete (commit `6d060e5`).
+- v0.6 framing applied: "transformation overlay" → "peer-gap closure" in thesis.md and dnl.md
+- β peer-triangulation discipline applied: peer set Orica (~1.05) / Yara (~1.20) / ICL (~1.10) / Sasol excluded (~1.45) / DNL measured 0.36 unreliable; β selected 1.10 (cluster midpoint)
+- Workbook v5 with new "DCF Build-up (v5)" sheet showing explicit Step 2 → Step 3 decomposition (industry growth + company offset; base margin + peer-gap closure + gas roll-off)
+- v4_5forces workbook preserved as audit trail
+- **Outstanding**: discussion document refresh with peer-gap closure framing (cosmetic, only worth doing if Tara re-shares with Sunil); actual EODHD pulls for ORI/YAR/ICL when Ben has time
+
+**WBC (bank — second test company)**: v3/v4 complete (commits `c47c420`, `cfbfdd6`, `939fba3`).
+- All v0.6 standing rules applied
+- Methodology §15 bank fork stable
+- β peer-triangulation: 0.75 selected (CBA/NAB/WBC midpoint); ANZ excluded; MQG informative-not-comparable
+- Discussion v3 includes intuitive narrative per scenario (the example for the standing rule)
+- Workbook v4 is formula-based per standing rule (133 valid formula cells, zero errors)
+- Headline: Muddle Through AUD 30.03 vs market AUD 35.32 (−15%); Orderly AUD 35.84 essentially at market (market is implicitly pricing closer to upside)
+- Asymmetry ratio 1.83× (materially less than DNL's 4.05× — bank capital-constraint payout flex + oligopolistic structure cap both sides)
+- **Outstanding**: nothing critical
+
+**CSL (industrial — third test company, IN PROGRESS)**: foundation + workbook v1 done (commits `f1f3652`, `4fa068b`).
+- Documents register, 3 industry archetypes (plasma_derived_therapies, vaccines, specialty_pharmaceuticals), CSL company position YAML with 3 segments + Five Forces all built
+- Workbook v1 formula-based per standing rule, segment-level forecasts (Behring + Seqirus + Vifor + corporate) aggregating to consolidated NPATA → FCFF → per share
+- USD throughout; AUD translation only at per-share output line
+- β selected 0.85 (peer triangulation: Grifols / Takeda / Sanofi 0.7-0.9 range); measured 0.094 from EODHD unreliable per §3.5.3
+- Peer-gap closure overlay: USD 525m annual savings target by FY27; +250bps Behring margin uplift / +100bps each Seqirus, Vifor by FY31
+- §4.4(b) restructuring cost USD 507m PV deducted in equity bridge
+- FY25 NPATA reconciliation: computed USD 3,130m vs disclosed USD 3,219m (3% gap — sound)
+- **Headline result**: Muddle Through per share USD 164.97 = AUD 249.96 vs market AUD 105.53 = **+137% premium**
+- **This needs review.** Market currently 61% below 52-week high AUD 269. Framework Muddle Through implies the market reset is overdone — but the gap is striking. Per v0.6 §16, market is implicitly pricing a scenario closer to a stress case than to status quo. Sanity-checks worth running:
+  1. Beta — 0.85 may be too low given CSL's 60% drawdown; β = 1.0 → Re = 9.5% → ~USD 145 / AUD 220 still well above market
+  2. Peer-gap closure aggressiveness — +250bps Behring may need a more cautious Muddle Through (closer to +150bps?) with full +250bps in Orderly Convergence
+  3. Beyond v1: assess whether market is pricing a "Stagflation / Disorderly Policy" scenario more like AUD 80-110
+- **Outstanding for CSL v2+**: per-scenario impact matrix; scenarios comparison; thesis (with intuitive narrative per scenario per standing rule); discussion document; **decision on whether to re-anchor v2 with more cautious peer-gap closure for Muddle Through**
+
+### Open methodology questions / decisions pending
+
+1. **CSL peer-gap closure aggressiveness**: is +250bps Behring margin uplift correct for Muddle Through, or should it be more cautious (with full closure as Orderly Convergence)?
+2. **CSL Seqirus demerger**: v1 values pre-demerger consolidated. Post-demerger value-of-stub treatment deferred to v2 sensitivity.
+3. **DNL peer-triangulation refresh**: indicative β values used (Orica 1.05 / Yara 1.20 / ICL 1.10). EODHD pulls on those tickers pending from Ben.
+4. **CSL peer EODHD pulls**: requested from Ben — Grifols, Takeda, Sanofi for triangulation refresh.
+
+### Pending Ben asks (data workstream)
+
+1. EODHD fundamentals exports for DNL peers: Orica (ASX:ORI), Yara (OSLO:YAR), ICL (NYSE:ICL)
+2. EODHD fundamentals exports for CSL peers: Grifols (BME:GRF), Takeda (TSE:4502), Sanofi (Paris:SAN), GSK (LSE:GSK)
+3. WBC NIM half-year-cadence history from FY22 onward (multi-year time series) — deferred from earlier
+4. Macquarie Banking & Financial Services segment carve-out for bank peer set
+
+---
+
+## Carrying into next chat
+
+If this chat session needs to end and you're starting a fresh one, here's how to bring the new Claude up to speed efficiently:
+
+### Opening message for the new chat
+
+A short message like this should be enough — the new Claude reads WORKING_NOTES (which is the bootstrap document) and gets oriented:
+
+> "We're working on the VCC scenario-based equity valuation framework. Read WORKING_NOTES.md first — the 'Current state of play (18 June 2026)' section at the top has the latest. Methodology is at v0.6; DNL backport done; WBC v3 stable; CSL v1 workbook just built and needs sanity-check review (Muddle Through AUD 250 vs market AUD 105, +137% premium — the gap is too large; want to refine Muddle Through assumptions). Standing rules at lines 32-33 of WORKING_NOTES — formula-based workbooks, intuitive narrative per scenario. Push to git happens at cmd in `C:\Users\steph\vcc-valuations` using `git push origin main`."
+
+### Specific tips for continuity
+
+1. **The bootstrap pattern works.** WORKING_NOTES is the authoritative single source for state. Architecture spec is at v0.6; methodology doc is comprehensive. New Claude will pick up the framework conventions by reading those.
+
+2. **Git pushes happen from your cmd, not from Claude.** The sandbox can stage and commit but can't reach github.com. Whenever Claude says "N commits ahead", run `git push origin main` from your terminal.
+
+3. **Use the document discipline you've established.** When Claude proposes a new build, expect: documents register update per §14, source-document key-insights extraction, then YAML + workbook + thesis + discussion document, in that order.
+
+4. **Standing rules are binding.** Any workbook Claude produces should be formula-based with the Assumptions sheet input pattern. Any write-up should include the intuitive per-scenario narrative. Push back if Claude forgets — both rules surfaced from your review feedback and are in WORKING_NOTES.
+
+5. **The "framework vs market" gap is a feature.** For each company, the framework's Muddle Through may sit at market (DNL), below market (WBC), or well above market (CSL v1). Each tells a different analytical story per methodology §16. Be careful: don't reflexively re-tune assumptions to match market. The framework's job is to give a defensible base case; gaps to market are informative outputs, not calibration errors.
+
+6. **What to do next session**: the natural priorities are (a) review CSL v1 Muddle Through assumptions — particularly Behring growth rate and peer-gap closure aggressiveness; (b) build CSL scenarios comparison once Muddle Through is finalised; (c) CSL thesis + discussion document (with intuitive narratives); (d) at some point, the DNL discussion document refresh with peer-gap closure framing if you want to re-share with Sunil.
+
+7. **The repo has 37+ commits ahead of origin.** Push them all before you finish to ensure github mirror is current. Recovery from a lost local will then be straightforward.
+
+---
+
 ## Current state of play (as of 12 June 2026)
 
 **17 June 2026 (evening) — Methodology v0.6 consolidation: six review-derived refinements lifted.**
@@ -197,56 +285,4 @@ Next: per-scenario impact matrix `data/impact_matrix/by_industry/australian_majo
 - **Terminal-growth-from-demographic-trajectory.** Scenario × company × geography-conditional. Even when the 2040s skilled-migration cliff sits beyond the explicit forecast horizon, terminal growth must reflect the demographic-adaptation trajectory. Captured as §9.7 review item 9 in architecture spec (added 16 May 2026).
 - **AI Productivity Lag insight (workshop):** AI doesn't need to deliver economy-wide TFP gains to be useful for labour substitution. Rents capture asymmetric — platform owners win; labour-cost containment in white-collar work is the working channel. China's bipedal-robotics is uniquely advantaged in physical-substitution domains.
 - **DNL Q1-Q8 review + Five Forces spine + tax-rate consistency (9 June 2026).** Substantive day of methodology refinement. (a) Q1-Q8 review fixes: base EBIT corrected to AUD 480m (corporate already in segment guidance per slides 27-28); margin glide reconciled to FY27 exit run rate; OCF run rate AUD 500m (was AUD 290m, depressed by H1 TWC unwind); full Fertilisers separation map per slide 29 added to equity bridge (IPF Distribution +AUD 125m face, Geelong remediation -AUD 35m, Gibson Island -AUD 97m, transaction costs -AUD 11m, PH contingent +AUD 100m face); Period A buyback adjustment removed (value-neutral). (b) WACC discipline: Hamada formula confirmed; world-index basis for beta (DNL beta 0.95 vs 1.15 ASX200); RFR convention is 10Y on-the-run CGS YTM. (c) Tax discipline (methodology section 3.6 new): effective rate (FY26 22.5%) glides linearly to blended statutory (27.5%, computed from jurisdictional weights x statutory rates) over the explicit horizon. Single rate consistency principle: same blended statutory used for terminal operating tax, WACC debt-tax-shield, and Hamada re-levering. (d) Five Forces spine for Step 3 company position (methodology section 3.3 new): per-force traversal (buyer, supplier, new entrants, substitutes, rivalry) with industry rating vs company-relative + mechanism + quantified delta + where_captured. Replaces earlier catch-all 'company offset.' DNL net: -25bps (rivalry/competitive position -30, rivalry/product-mix -10, new entrants/DNEL pipeline +15). (e) Source-document ingestion discipline (methodology section 14 new): standing checklist (investor pres, half-year results, statutory accounts, continuous disclosure, transcripts, sustainability); per-company documents register; refresh cadence; handoff spec for Ben's data workstream. Headline: Muddle Through per share AUD 2.90 (v3) -> AUD 3.59 (v4 with full discipline), essentially at market AUD 3.61. Framework discriminating power now in scenario asymmetry, not in disagreement with consensus on central case. Architecture spec bumped v0.3.1 -> v0.4 (additive only).
-- **Gas-contract roll-off overlay added (29 May 2026).** Tara flagged that the US gas-contract roll-off (2028-2030 window) was narrative-only and the margin glide path actually moved the wrong way (transformation drove margins up through FY31 — exactly when the gas-cost advantage erodes). Resolution: added a structural-headwind overlay to the margin glide of -50/-100/-150bps cumulative in Y3/Y4/Y5, partially offsetting the transformation tailwind. Methodology §3.2.1 captures the concept (sister to transformation overlay). Applied flat across scenarios for this iteration — future refinement could make scenario-conditional (bigger drag under high-gas scenarios like Stagflation/Disorderly Climate). Headline DNL per-share moves: MT AUD 3.22 → AUD 2.90 (vs market AUD 3.61, -20%); Orderly AUD 3.72 → AUD 3.36 (-7%); Stagflation AUD 1.12 → AUD 0.82; all scenarios drop AUD 0.31-0.36/share. Workbooks v3 in analyses/dnl/valuations/. Aligns with substack discipline of building structural risk into cash flows, not hand-waving to terminal state or adjusting WACC.
-- **Reference texts and style anchors (28 May 2026).** Tara's go-to references: (a) Damodaran (Stern website, blog, books — particularly Investment Valuation, Narrative and Numbers, and the 2005 "Value of Control" paper); (b) Mercer's Business Valuation: An Integrated Theory, 3rd Edition (Mercer + Harms, 2021); (c) Clifford Ang's Applied Valuation; (d) Valuation Matters substack at valuationmatters1.substack.com (co-authored Stephen Reid + Tony Carlton). Style of thinking absorbed from KISS principle + control-premium-fallacy posts: (i) build risk and economic content into the cash flows, not into ad-hoc premia or discounts; (ii) "standard" adjustments applied rotely are suspect — case-specific mechanism is required; (iii) KISS / market efficiency / historical premia get arbitraged away; (iv) distinguish measurable from abstract (e.g. takeover premium != control premium); (v) double-counting check is the recurring red flag. The single-WACC discipline (methodology §3.5) is a direct application of (i) and (v).
-- **Single-WACC discipline across scenarios (28 May 2026).** Resolution of the parked §9.7 review item 4 ("WACC scenario behaviour"). WACC is set at the valuation date and held constant across all scenarios. Rationale: each scenario already prices its risk through the cash-flow path; using a higher discount rate in a stress scenario double-counts risk. The marginal investor's required return is set by today's market conditions; it does not change conditional on which future state realises. Scenario rate-driver deltas (Rf, ERP, country risk) are retained in the impact matrix for narrative context but do NOT flow into the DCF discount rate. Terminal growth REMAINS scenario-conditional (it represents a structural economic state, not risk re-pricing). User override of WACC for sensitivity is exposed in the workbook. Captured in methodology §3.5 and architecture spec v0.3.1. Cross-scenario range compressed ~30% under single-WACC vs the earlier differential-WACC approach; asymmetry persists in cash flows alone (downside compression > upside lift). Tara's view: "feels like changing the WACC is double counting risk."
-- **Equity-bridge and valuation-mechanics methodology (25 May 2026).** Following a deep methodology exchange with Tara on the DNL Muddle Through workbook, the following are now baked into the framework via `design/methodology/equity_bridge_and_valuation_mechanics.md` and architecture spec v0.3: (1) revenue growth derived from scenario macro → industry archetype → company position chain (not hardcoded scalar); (2) margin glide path as a structured company-position field; (3) narrow net-debt definition + structured equity-bridge adjustments with on-balance-sheet flag and provided-for-at-anchor tracking; (4) restructuring-cost consistency rule (assume benefit → must assume execution cost); (5) latest reported share count paired to net-debt anchor date (no buyback projection); (6) IMI handling via parallel statutory + ex-IMIs DCFs with per-item context and default-lean taxonomy, user picks central case; (7) explicit valuation date with Period A walk-forward (anchor → valuation), Period B stub line in the DCF (Option X), mid-period discounting from valuation date onward; (8) per-field as_at_date discipline on items where timing matters; (9) governance assessment parked (Tara dislikes ad-hoc alpha-style premia — refer her substack `valuationmatters1.substack.com`). Step 6 production translator + Step 7 production DCF must implement all of this. The DNL Muddle Through workbook serves as the canonical worked example.
-- **Valuation inputs as transparent components, not opaque baselines (24 May 2026).** Following the Phase 3.5 smoke-test calibration pass, valuation inputs that an analyst would reasonably want to challenge or override are exposed as named, overridable component fields rather than as hidden parameters. WACC in particular is now built up component-by-component (Rf, ERP, β, Rd_pretax, tax, market-value weights) via a `WaccBuild` dataclass; the rationale for each component lives next to it in the financials YAML (`normalised_baseline.wacc_build`). This principle carries forward to the Step 7 production DCF engine and is captured in `docs/phase_3_5_findings.md` (Calibration pass section, Design principle adopted).
-- **Disorderly Climate Crystallisation framing:** scenario is about the *crystallisation event*, not about whether climate transition becomes disorderly (it already is, per Tara's workshop point about money-supply / inflation / cost-of-living pressure crushing climate-policy coordination).
-
----
-
-## External dependencies / things we're waiting on
-
-- **Ben's data-sourcing workstream** — base-year financials per company; data feasibility confirmation per schema field; alignment on `financials.yaml` contract.
-- **Scenarios workshop** (Tara to convene) — produces step 3 deliverables: 3–6 named scenarios in YAML + narrative form.
-- **IPL strategist friend** — provides the calibration benchmark for step 8.
-- **PAT permission** — Tara's GitHub fine-grained PAT is currently Contents: Read-only. Sandbox-side push returns 403; Tara pushes from her own cmd window. If she updates the PAT to Read-and-write, sandbox can push directly.
-
----
-
-## Things we considered and rejected (don't relitigate)
-
-- **Streamlit-only UI** — rejected for UX flexibility; subsequently re-decided to embed in VCC dashboard rather than build standalone Vue.
-- **Disruption as a separate lifecycle stage** — rejected; disruption surfaces through Five Forces (entrants + substitutes).
-- **Probability-weighted blended expected value as canonical output** — rejected per §6.2.
-- **IPL as multi-segment** — was true pre-demerger; now single-segment.
-- **Open-ended `complementary_framework` blocks** — rejected; chose defined enum for comparability discipline.
-- **Confidence as a multi-axis field on impact-matrix entries** — kept as single ordinal with pinned meaning ("joint confidence in direction × magnitude assuming the scenario plays out").
-- **Tax aggregation / capex→D&A / WACC computation as "consistency rules" in §11.4** — re-categorised as derivations (deterministic identities) per Ben's bot review; only operating-leverage and terminal-convergence remain as genuine consistency checks.
-
----
-
-## Key conventions adopted (cross-cutting)
-
-- All ratings use `low | moderate | high` (3-point) — *except* matrix entries: `direction` is 3-way (`negative | neutral | positive`) and `magnitude` is 3-way (`small | moderate | large`); the two are separate fields.
-- Drivers are **nominal in functional currency**; FX appears at consolidation across functional currencies, not as a primary driver inside a segment DCF.
-- Drivers carry `role: primary | derived`. Layer 5 only writes primary drivers; Layer 6 computes derived ones via declared `derivation_formula`.
-- Narrative artefacts and structured artefacts are **paired**; structured fields win as source of truth where prose and structure disagree (per §16.1).
-- File naming: `snake_case` for ids and filenames; `CamelCase` for Python classes.
-- Schema versioning: every schema carries `version`; breaking changes bump major.
-- Override discipline: target ≤20% of cells per company (archetype-tunable); above this, the archetype is mis-specified.
-
----
-
-## Filesystem quirks worth knowing
-
-- `C:\Users\steph\vcc-valuations` is mounted into Claude's sandbox. The mount permits file CREATE but not DELETE for `.git/*.lock` files. Workaround in sandbox: `mv .git/index.lock .git/index.lock.deadN` before retrying the git command. Tara can delete the lock files normally from her own cmd window: `del .git\HEAD.lock` and `del .git\index.lock`.
-- A scratch-clone approach via `/tmp/` has been used in the sandbox for git operations when the mount approach is too painful.
-- A `.github-token` file lives at the repo root and is excluded from git via `.git/info/exclude` (not `.gitignore`, which had unrelated modified state we don't want to touch).
-
----
-
-## Decisions still parked / open
-
-- **Methodology §3.5 citations to add.** When next editing the methodology doc, add explicit citations to Damodaran
+- **Gas-contract roll-off overlay added (29 May 2026).** Tara flagged that the US gas-contract roll-off (2028-2030 window) was narrative-only and the margin glide path actually moved the wrong way (transformation drove margins up through FY31 — exactly when the gas-cost advantage erodes). Resolution: added a structural-headwind overlay to the margin glide of -50
