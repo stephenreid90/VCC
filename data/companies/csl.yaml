@@ -1,0 +1,502 @@
+company_position:
+  id: csl
+  name: CSL Limited
+  ticker: ASX:CSL
+  reporting_currency: USD
+  functional_currency: USD
+  functional_currency_rationale: >
+    CSL is a global biotechnology company with consolidated functional
+    currency in US dollars. The parent entity (CSL Limited) is Australian-
+    incorporated and ASX-listed, but the dominant cash-flow currency is
+    USD across the three operating segments: CSL Behring (plasma-derived
+    therapies, global), CSL Seqirus (vaccines, global), and CSL Vifor
+    (renal/cardiology specialty pharmaceuticals). Group reports in USD;
+    per-segment financials disclosed in USD. Share price is in AUD; the
+    framework values in USD and translates to AUD per share at the
+    reporting-date FX rate. The per-entity functional-currency block
+    below records this is the first worked example where the parent
+    itself is USD-functional (vs DNL which is AUD-functional parent with
+    USD-functional US subsidiary).
+
+  # CSL is an industrial corporate (operates, makes profit, distributes /
+  # reinvests) invoking the standard industrials methodology in §§2–7.
+  # NOT a bank — no §15 fork. NOT a property trust — no §17 fork (when
+  # added). Equity bridge per §4; FCFF DCF per §7.
+  industry_type: industrial
+  industry_archetype_consolidated: biopharmaceuticals
+  industry_archetype_by_segment:
+    csl_behring: plasma_derived_therapies
+    csl_seqirus: vaccines
+    csl_vifor: specialty_pharmaceuticals
+  segment_level_valuation: true
+  segment_level_valuation_rationale: >
+    CSL's three operating segments have materially different growth
+    profiles (FY25: Behring +6%, Seqirus +2%, Vifor +8%; 1H26: Behring
+    -7%, Seqirus -2%, Vifor +12%), materially different operating-segment
+    margins (Behring 42%, Seqirus 47%, Vifor 49% in FY25), and distinct
+    peer comp sets. Plus the FY25 results announced intent to demerge
+    CSL Seqirus in FY26 — methodologically necessary to model the
+    segments separately. v1 anchor is pre-demerger consolidated CSL; v2
+    or sensitivity could back out Seqirus as a stub valuation.
+
+  # ---- Consolidated, parent-level blocks ----
+
+  balance_sheet:
+    leverage_posture: moderate
+    net_debt_ebitda: 1.8
+      # FY25 reported leverage 1.8x EBITDA per FY25 presentation page 6
+    liquidity: >
+      Balance sheet has continued to de-lever in FY25 (leverage 1.8x vs
+      ~2.0x prior). Multi-year share buyback reintroduced in FY26;
+      expanded to US$750m at 1H26. Strong free cash flow generation
+      (FY25 US$2,866m, +58%) supports both buyback and ongoing
+      transformation execution costs.
+
+  capital_allocation:
+    dividend_policy: >
+      Progressive dividend policy. FY25 final dividend up 12% on FY24.
+      DPS FY25 US$2.92 (vs US$2.64 FY24). 1H26 interim US$1.30 (flat on
+      1H25). Dividend cover by NPATA-EPS: FY25 ~2.3x; well-covered.
+    buyback_posture: >
+      Multi-year share buyback reintroduced in FY26 — expanded to US$750m
+      announced at 1H26 results. Reflects strong cash flow generation and
+      management view that current share price (50%+ below 52-week high)
+      represents value.
+    m_and_a_posture: >
+      Selectively acquisitive — Vifor acquisition completed August 2022
+      added specialty pharmaceuticals platform. No major M&A appetite
+      under current strategic transformation focus.
+    reinvestment_rate: 0.27
+      # Implied retention rate: 1 - target payout ~73%
+
+  management_and_governance:
+    strategy_quality: high
+    strategy_evidence: >
+      Strategic clarity meaningfully enhanced by FY25 Strategic
+      Transformation announcement: (i) Distinctive Portfolio Development
+      & Commercialisation operating model; (ii) targeting >US$500m
+      annual pre-tax savings by end FY28 (mostly by FY27); (iii) up to
+      15% headcount reduction; (iv) R&D footprint consolidation from
+      11 to 6 sites; (v) closure of 22 underperforming plasma centres
+      in FY26; (vi) disciplined reinvestment of savings into priority
+      growth opportunities; (vii) intent to demerge CSL Seqirus as
+      substantial ASX-listed entity in FY26.
+      Interim CEO Gordon Naylor (former Behring EVP and CFO) executing
+      transformation pending permanent CEO appointment.
+    execution_track_record: high
+    execution_evidence: >
+      Strong long-term track record. Successful integration of Vifor
+      acquisition (FY23 onward). Manufacturing footprint expansion
+      (Rika and iNomi plasma collection programs) progressing on
+      timetable. Horizon 2 yield improvement program executing to plan.
+      1H26 results reflected one-off restructuring impact and government
+      policy headwinds (Medicare Part D ~US$100m on Ig) but FY26
+      guidance maintained.
+
+  esg_and_transition:
+    carbon_intensity: >
+      Lower carbon intensity than industrial peers — pharmaceutical
+      manufacturing is energy-intensive but not emissions-heavy at the
+      scale of mining or industrial chemicals. Disclosure aligned with
+      TCFD recommendations.
+    transition_plan: >
+      Committed to net-zero Scope 1 and 2 by 2050. Investment in
+      renewable energy supply for plasma fractionation facilities.
+    stranded_asset_exposure: >
+      Low. Plasma collection network + fractionation facilities are
+      durable productive assets; vaccine manufacturing infrastructure
+      similar. No fossil-fuel-cycle exposure.
+
+  scenario_sensitivity_overrides_global:
+    healthcare_policy:
+      direction: negative
+      magnitude: moderate
+      rationale: >
+        US Medicare Part D negotiation (2026 onward) and broader drug
+        pricing pressure is the dominant policy risk. 1H26 results
+        showed ~US$100m impact on Ig from Medicare Part D
+        implementation. Future expansion of price negotiation to
+        plasma-derived therapies would be material.
+    currency_translation:
+      direction: low_to_moderate
+      magnitude: low
+      rationale: >
+        USD-functional with global revenue and cost base — natural
+        currency hedge. Translation to AUD at parent level adds
+        per-share volatility but not economic exposure.
+
+  # ---- Segment block (per methodology §11 industry+company decomposition) ----
+
+  segments:
+
+    - segment: csl_behring
+      industry_archetype: plasma_derived_therapies
+      functional_currency: USD
+      revenue_share: 0.717
+        # FY25 segment revenue $11,158m / group $15,558m = 71.7%
+      operating_result_share: 0.689
+        # FY25 segment OR $4,704m / group $6,827m = 68.9%
+      notes: >
+        The flagship segment. Plasma-derived therapies including:
+        Immunoglobulins (Ig — HIZENTRA, PRIVIGEN, ANDEMBRY); Albumin;
+        Haemophilia (HEMGENIX gene therapy); Hereditary Angioedema
+        (ANDEMBRY); Perioperative Bleeding (KCENTRA). Major brands have
+        strong manufacturing moats — plasma collection network scale,
+        fractionation expertise, FDA / EMA / TGA regulatory approval
+        barriers. Patent exposure is limited (manufacturing complexity
+        is the moat).
+
+      market_positions:
+        - market: Global immunoglobulin therapies
+          unit: revenue
+          share: 0.30
+          rank: 1
+          share_trend:
+            direction: stable_to_growing
+            delta_5yr_bps: 100
+            narrative: >
+              Market leader in Ig globally. Capacity expansion via Rika
+              and iNomi plasma collection technology. 1H26 Ig revenue
+              $3,046m (-6% YoY) impacted by Medicare Part D policy
+              change but underlying volumes resilient.
+
+        - market: Global albumin
+          unit: revenue
+          share: 0.25
+          rank: 1
+          share_trend:
+            direction: variable
+            narrative: >
+              Market leader. 1H26 albumin revenue $494m (-27% YoY) impacted
+              by China implementation of policy changes; positive early
+              response from expanded China footprint and Baheal partnership.
+
+        - market: Haemophilia / Gene Therapy
+          unit: revenue
+          share: 0.15
+          rank: 2
+          share_trend:
+            direction: gaining
+            narrative: >
+              HEMGENIX (gene therapy) continued international launches and
+              uptake. Positive 5-year data published in NEJM. Long-tail
+              growth opportunity.
+
+      moat:
+        sources:
+          - manufacturing_complexity
+          - scale_of_plasma_collection_network
+          - regulatory
+          - resource
+          - patent_lifecycle_management
+        durability: high
+        evidence: >
+          Plasma collection network represents 5+ years of capex and
+          regulatory approval to replicate. Fractionation expertise
+          (multi-component separation from human plasma) is
+          manufacturing-intensive and quality-critical. FDA, EMA, TGA
+          regulatory approval barriers are high. Patent exposure
+          relatively low — moat is structural manufacturing /
+          regulatory, not IP-based. Lifecycle management (LCM)
+          extending product life via new indications, formulations,
+          geographic launches — "continuous renewal" not "cliff
+          exposure".
+
+      five_forces_company_position:
+        buyer_power:
+          industry_rating: moderate
+          company_position: at_industry_average
+          mechanism: >
+            Customers are health systems, hospitals, payers (US Medicare,
+            private insurance, EU national systems). High concentration
+            in payer side but plasma-derived therapies are essential and
+            often life-sustaining — relatively price-inelastic in
+            volume terms. Price pressure increasing from US Medicare
+            negotiation.
+          quantified_impact_bps: 0
+
+        supplier_power:
+          industry_rating: moderate
+          company_position: lower_favourable
+          mechanism: >
+            Plasma "suppliers" are individual donors at CSL's plasma
+            collection centres. CSL operates its own collection network
+            (largest globally) — vertical integration reduces supplier
+            power. 22 underperforming centres closing in FY26 reflects
+            management of variable cost structure.
+          quantified_impact_bps: 5
+          capture_location: "Margin trajectory: continued GP% improvement"
+
+        threat_of_new_entrants:
+          industry_rating: low
+          company_position: at_industry_average
+          mechanism: >
+            Same low-entry-rate as the broader plasma-derived therapies
+            archetype — manufacturing scale + plasma collection scale +
+            regulatory licensing. No structural CSL-specific
+            differentiation.
+          quantified_impact_bps: 0
+
+        threat_of_substitutes:
+          industry_rating: low_to_moderate
+          company_position: at_industry_average
+          mechanism: >
+            Few therapeutic substitutes for plasma-derived therapies
+            (recombinant alternatives mostly developed only for
+            haemophilia; biosimilar plasma is technically very
+            difficult). Some substitution risk over long horizon from
+            mRNA / cell therapy / gene therapy alternatives.
+          quantified_impact_bps: 0
+
+        rivalry:
+          industry_rating: moderate
+          company_position: lower_favourable
+          mechanism: >
+            Oligopolistic global industry: CSL (Behring), Grifols,
+            Takeda, Octapharma (private), Kedrion (private). CSL has
+            scale advantage globally — typical largest player by
+            revenue. Translates to lower marginal cost via fractionation
+            scale efficiency.
+          quantified_impact_bps: 10
+          capture_location: "Through-cycle margin advantage vs industry"
+
+      net_company_position_offset_summary:
+        revenue_growth_offset_bps: 0
+        margin_offset_bps: 15
+          # Supplier-power +5 + rivalry-scale +10
+        rationale: >
+          Behring's company position is net favourable on margin
+          (vertical integration + scale) with no material growth offset.
+          Industry-level secular growth (Ig demand, indication
+          expansion) is the dominant driver; CSL captures industry
+          growth plus modest margin advantage.
+
+    - segment: csl_seqirus
+      industry_archetype: vaccines
+      functional_currency: USD
+      revenue_share: 0.139
+        # FY25 $2,166m / $15,558m = 13.9%
+      operating_result_share: 0.150
+        # FY25 OR $1,027m / $6,827m = 15.0%
+      demerger_status: announced_fy26
+      demerger_notes: >
+        Intent to demerge CSL Seqirus as substantial ASX-listed entity in
+        FY26 announced at FY25 results. v1 valuation anchored to
+        consolidated pre-demerger; post-demerger view available as
+        sensitivity.
+      notes: >
+        Vaccines, primarily influenza. Manufacturing scale + regulatory
+        approval barriers + real-world data are the moats. Less protected
+        by structural moats than Behring (vaccine technology is more
+        broadly accessible than plasma fractionation).
+
+      market_positions:
+        - market: Global influenza vaccines
+          unit: revenue
+          share: 0.18
+          rank: 3
+          share_trend:
+            direction: stable
+            narrative: >
+              Top three global influenza vaccine player (with Sanofi,
+              GSK, Pfizer). 1H26 revenue $1,646m (-2% YoY) — stable
+              market with cyclical demand variation by year.
+
+      moat:
+        sources:
+          - manufacturing_complexity
+          - regulatory
+          - real_world_data
+        durability: moderate
+        evidence: >
+          Manufacturing scale and regulatory approval barriers are real
+          but less prohibitive than plasma fractionation. Real-world data
+          on vaccine effectiveness is a meaningful but soft moat.
+
+      five_forces_company_position:
+        # Simplified — Seqirus is being demerged so further
+        # decomposition deferred. Industry-archetype rates apply.
+        buyer_power:
+          industry_rating: moderate
+          company_position: at_industry_average
+        supplier_power:
+          industry_rating: low_to_moderate
+          company_position: at_industry_average
+        threat_of_new_entrants:
+          industry_rating: low_to_moderate
+          company_position: at_industry_average
+        threat_of_substitutes:
+          industry_rating: low_to_moderate
+          company_position: at_industry_average
+          mechanism: >
+            mRNA vaccine platforms (Moderna, BioNTech) increasingly
+            applied to influenza — emerging structural threat though
+            not yet displacement-scale.
+        rivalry:
+          industry_rating: moderate
+          company_position: at_industry_average
+
+    - segment: csl_vifor
+      industry_archetype: specialty_pharmaceuticals
+      functional_currency: USD
+      revenue_share: 0.144
+        # FY25 $2,234m / $15,558m = 14.4%
+      operating_result_share: 0.161
+        # FY25 OR $1,096m / $6,827m = 16.1%
+      acquired: 2022-08
+      notes: >
+        Renal / cardiology / iron deficiency products. Acquired August
+        2022 — integration substantively complete. Growing segment:
+        1H26 revenue +12% vs prior year. Patent exposure higher than
+        Behring or Seqirus (small molecule + biologic mix with
+        conventional patent life), but management emphasises lifecycle
+        management.
+
+      market_positions:
+        - market: Iron deficiency therapies
+          unit: revenue
+          share: 0.20
+          rank: 2
+          share_trend:
+            direction: gaining
+            narrative: >
+              Strong growth (+12% in 1H26). Geographic expansion +
+              indication expansion driving share.
+
+      moat:
+        sources:
+          - patent_protection_with_lcm
+          - real_world_data
+          - commercial_scale
+        durability: moderate
+        evidence: >
+          Smaller / younger franchise than Behring. Patent exposure on
+          some products (small molecule + biologic mix) but management
+          emphasises lifecycle management. Behring + Vifor commercial
+          and medical function integration ongoing per transformation
+          program.
+
+      five_forces_company_position:
+        buyer_power:
+          industry_rating: moderate
+          company_position: at_industry_average
+        supplier_power:
+          industry_rating: low
+          company_position: at_industry_average
+        threat_of_new_entrants:
+          industry_rating: low_to_moderate
+          company_position: at_industry_average
+          mechanism: "Biosimilars / generics depending on product life cycle"
+        threat_of_substitutes:
+          industry_rating: low_to_moderate
+          company_position: at_industry_average
+        rivalry:
+          industry_rating: moderate
+          company_position: at_industry_average
+
+  # ---- Peer-gap closure overlay (per methodology v0.6 §3.2) ----
+
+  peer_gap_closure_overlay:
+    target: "Operating margin and overall opex efficiency from current to ~Big Pharma quality compounders comparator group"
+    stated_mechanism:
+      name: "CSL Strategic Transformation"
+      source_document: "csl_fy25_results_presentation_2025-08-19.pdf, slide 19 (page 20)"
+      note: |
+        Management has explicitly stated annual pre-tax savings of
+        US$500-550m progressively over three years, with majority
+        achieved by end FY27. Specific levers: (i) up to 15% headcount
+        reduction; (ii) R&D footprint 11→6 sites; (iii) optimised R&D
+        expenditure; (iv) streamlined corporate functions; (v)
+        reallocation of plasma collections to efficient centres. Framework
+        does not depend on the specific programme succeeding; the
+        assumption is the closure trajectory toward peer-quality
+        operating-margin levels.
+    quantified_savings_target_usd_m: 525
+    execution_cost_treatment: equity_bridge_one_off
+    execution_cost_pretax_usd_m: 735
+      # Midpoint of $700-770m FY26 pre-tax
+    execution_cost_cash_fy26_usd_m: 425
+      # Midpoint of $400-450m cash FY26
+    execution_cost_cash_fy27_usd_m: 100
+      # ~$100m additional cash in FY27
+    consistency_rule: |
+      Per methodology §4.4(b): equity-bridge treatment for upfront
+      one-off closure cost. AUD-equivalent execution cash cost
+      ~AUD 800m (at AUD/USD 0.66) treated as a deduction in the
+      equity bridge per §15.7-style structure (modified for industrials:
+      cash execution cost less existing provisions).
+
+  # ---- Patent exposure (per methodology §3.2.1) ----
+
+  patent_exposure_overlay:
+    overall_assessment: low_relative_to_pharma_peers
+    overall_assessment_rationale: |
+      CSL has materially less patent-cliff exposure than typical small-
+      molecule pharmaceutical companies. Plasma-derived therapies (72%
+      of revenue) protected by manufacturing complexity + plasma
+      collection scale + regulatory barriers, not by patents. Vaccines
+      (14% of revenue, demerging) protected similarly. Only Vifor
+      (14% of revenue) has more conventional patent exposure but
+      management emphasises lifecycle management (continuous renewal)
+      rather than facing a specific patent cliff.
+
+    by_segment:
+      csl_behring:
+        risk: very_low
+        rationale: "Manufacturing moat, not patent moat. Biosimilars technically very difficult."
+      csl_seqirus:
+        risk: low
+        rationale: "Manufacturing + regulatory moat; mRNA substitution is the long-tail risk."
+      csl_vifor:
+        risk: low_to_moderate
+        rationale: "Small molecule + biologic mix; lifecycle management ongoing"
+
+    treatment_in_model: |
+      No specific patent-cliff overlay required per §3.2.1. Patent risk
+      manifests as a slight negative bias on terminal growth assumption
+      for Vifor specifically; absorbed in scenario differentiation.
+
+  # ---- Share statistics ----
+
+  share_statistics:
+    shares_outstanding_anchor_date: 2025-12-31
+    shares_outstanding_millions: 478.9
+      # 478,911,979 per EODHD verified 15 June 2026
+    shares_outstanding_exact: 478911979
+    market_reference_price_aud: 105.53
+      # = Market cap AUD 50,539m / 478.9m shares; 15 June 2026
+    market_reference_date: 2026-06-15
+    indicative_market_cap_aud_m: 50539
+    market_reference_price_50_day_ma: 115.28
+    market_reference_price_200_day_ma: 161.95
+    market_reference_52_week_low: 90
+    market_reference_52_week_high: 269.15
+    sell_side_consensus_target_aud: 138.58
+      # ~32% above current — broad sell-side view that current price reflects transformation reset
+    book_value_per_share_usd: 54.95
+    forward_pe: 14
+    trailing_pe: 11.95
+    aud_per_usd_fx_assumption: 0.66
+      # Used for AUD/USD translation at the reporting date
+
+  corporate_actions:
+    - action: share_buyback_multi_year
+      status: active
+      announced: 2025-08-19
+      expanded: 2026-02-11
+      total_expanded_to_usd_m: 750
+      notes: "Multi-year share buyback reintroduced FY26; expanded to US$750m at 1H26 results."
+
+    - action: csl_seqirus_demerger
+      status: announced
+      announced: 2025-08-19
+      target_completion: 2026
+      notes: "Intent to demerge CSL Seqirus as substantial ASX-listed entity in FY26."
+
+    - action: strategic_transformation
+      status: in_execution
+      announced: 2025-08-19
+      target_completion: 2028
+      target_savings_usd_m: 525
+      execution_cost_pretax_usd_m: 735
+      notes: "See peer_gap_closure_overlay block above."

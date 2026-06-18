@@ -1,0 +1,68 @@
+industry_archetype:
+  id: specialty_pharmaceuticals
+  name: Specialty Pharmaceuticals (Renal, Cardiology, Iron Deficiency, Rare Disease)
+  version: 2026-Q2-v1
+  archetype_class: biopharmaceutical_specialty
+
+  geography: global
+
+  submarkets:
+    - region: United States
+      weight: 0.45
+
+    - region: Europe + UK
+      weight: 0.30
+
+    - region: Rest of world
+      weight: 0.25
+
+  five_forces:
+    buyer_power:
+      rating: moderate
+      rationale: >
+        Healthcare payer concentration drives material price-negotiation
+        power. Many products have therapeutic alternatives, providing
+        substitution leverage. US Medicare Part D pricing pressure
+        relevant on selected products.
+
+    supplier_power:
+      rating: low
+      rationale: >
+        Active pharmaceutical ingredient (API) suppliers concentrated for
+        some products but generally available. Commodity inputs for most.
+
+    threat_of_new_entrants:
+      rating: low_to_moderate
+      rationale: >
+        Patent protection limits entry during patent life. Post-patent
+        exposure to generics / biosimilars depending on product type.
+        Lifecycle management (LCM — new indications, formulations,
+        delivery forms) extends product life.
+
+    threat_of_substitutes:
+      rating: low_to_moderate
+      rationale: >
+        Therapeutic class alternatives exist for most products. Substitution
+        risk depends on clinical differentiation.
+
+    rivalry:
+      rating: moderate
+      rationale: >
+        Multiple players per therapeutic class. Pricing pressure varies
+        by maturity of product class and number of competitors.
+
+  cyclicality:
+    cycle_length_years: 7
+    current_cycle_phase: mid
+    amplitude: low
+    rationale: >
+      Pharmaceutical demand relatively counter-cyclical. Patent cycle
+      drives revenue stability within product life followed by post-
+      expiry decline (mitigated by LCM).
+
+  input_dependencies:
+    critical_inputs:
+      - "Active pharmaceutical ingredients (API)"
+      - "Excipients and formulation ingredients"
+      - "Specialised manufacturing equipment"
+    supply_risk: low_to_moderate

@@ -1,0 +1,171 @@
+industry_archetype:
+  id: plasma_derived_therapies
+  name: Plasma-Derived Therapies (Immunoglobulins, Albumin, Coagulation Factors, Specialty Products)
+  version: 2026-Q2-v1
+  archetype_class: biopharmaceutical_specialty
+
+  geography: global
+
+  submarkets:
+    - region: United States
+      weight: 0.55
+      notes: >
+        Largest global market for plasma-derived therapies. Most-mature plasma
+        collection infrastructure (paid donor model legally permitted, in
+        contrast to most other jurisdictions). US Medicare Part D (entered
+        force 2026) introduced first-time price negotiation on selected
+        drugs — Ig and certain plasma derivatives in the eligibility scope
+        for future rounds.
+
+    - region: Europe
+      weight: 0.25
+      notes: >
+        Mature market with mixed paid/unpaid donor models. National
+        healthcare systems are dominant payers; pricing controlled. UK,
+        Germany, France, Spain are largest sub-markets. Stable through-cycle
+        volume with mid-single-digit nominal growth.
+
+    - region: Rest of world
+      weight: 0.20
+      notes: >
+        Includes China (growing materially — plasma supply constrained,
+        regulatory framework evolving), Japan, Australia, Latin America.
+        Emerging market with multi-year growth runway as healthcare access
+        expands.
+
+  five_forces:
+    buyer_power:
+      rating: moderate
+      rationale: >
+        Customers are payers (governments, insurance, hospitals). High
+        concentration on payer side gives material price-negotiation
+        power. Offset by essentiality: plasma-derived therapies are often
+        life-sustaining (Ig for immunodeficiency, albumin for critical care,
+        coagulation factors for haemophilia). Volume relatively price-
+        inelastic; pricing pressure manifests in revenue per unit rather
+        than volume. Increasing pressure from US Medicare Part D
+        negotiation.
+
+    supplier_power:
+      rating: low
+      rationale: >
+        Plasma "suppliers" are individual donors at collection centres.
+        The industry runs vertically-integrated collection networks
+        (CSL, Grifols, Takeda). Donor compensation is significant cost but
+        not concentrated. Other inputs (consumables, energy) are commodity-
+        priced. Supplier power overall low.
+
+    threat_of_new_entrants:
+      rating: very_low
+      rationale: >
+        Combination of capital intensity (plasma collection network + multi-
+        billion-dollar fractionation facilities), regulatory licensing
+        (FDA, EMA, TGA approvals take 5-10 years to establish), and
+        manufacturing know-how (plasma fractionation is complex multi-stage
+        process). New large-scale entrant has not emerged in 30+ years.
+
+    threat_of_substitutes:
+      rating: low_to_moderate
+      rationale: >
+        Few therapeutic substitutes. Recombinant alternatives developed
+        only for some products (haemophilia: recombinant FVIII / FIX). For
+        Ig there is no current recombinant substitute at scale.
+        Biosimilars technically very difficult. Long-horizon threats from
+        mRNA / cell therapy / gene therapy emerging but not yet at
+        displacement scale.
+
+    rivalry:
+      rating: moderate
+      rationale: >
+        Oligopolistic: CSL Behring, Grifols, Takeda, Octapharma (private),
+        Kedrion (private), Baxter (US specialty). Top 3 hold ~75% of global
+        market by revenue. Pricing discipline holds within country-specific
+        oligopolies but pricing pressure increases as payers consolidate
+        and negotiate.
+
+  disruption_vectors:
+    - vector: us_medicare_drug_price_negotiation
+      nature: threat
+      incumbency_position: defender
+      time_horizon: "3-7 years"
+      severity: moderate
+      certainty: high
+      description: >
+        US Medicare Part D drug-price negotiation (Inflation Reduction Act
+        2022, first negotiated prices effective 2026) introduces price
+        controls on a rolling list of highest-spend drugs. Plasma-derived
+        therapies (especially Ig) are in scope for future negotiation
+        rounds. Direct revenue impact ~3-5% on negotiated drugs;
+        indirect risk via reference-pricing effects.
+
+    - vector: mrna_vaccine_platform_substitution
+      nature: threat
+      incumbency_position: neutral
+      time_horizon: "5-10 years"
+      severity: low_to_moderate
+      certainty: moderate
+      description: >
+        mRNA platform technology (Moderna, BioNTech, Pfizer) demonstrated
+        rapid vaccine development capability in COVID-19. Long-horizon
+        substitution risk to plasma-derived antibody therapies if mRNA
+        platform extends to passive immunity applications. Currently
+        early stage.
+
+    - vector: plasma_collection_capacity_expansion
+      nature: opportunity
+      incumbency_position: leader
+      time_horizon: "0-5 years"
+      severity: moderate
+      certainty: high
+      description: >
+        Industry leaders (CSL via Rika and iNomi programs, Grifols, Takeda)
+        investing in automated plasma collection technology. Increases
+        yield per donor visit + reduces collection-centre operating cost.
+        Compounds scale advantage of leaders.
+
+    - vector: china_market_evolution
+      nature: opportunity_or_threat
+      incumbency_position: neutral
+      time_horizon: "3-7 years"
+      severity: low_to_moderate
+      certainty: low
+      description: >
+        China healthcare reform evolving. Direct plasma collection
+        restricted; imports the main supply route. CSL Behring's Baheal
+        partnership (announced 2025) extends China commercial footprint.
+        Policy direction uncertain.
+
+  regulatory_regime:
+    primary_regulators:
+      - "US FDA (Food and Drug Administration) — manufacturing approval, marketing approval"
+      - "EU EMA (European Medicines Agency) — manufacturing approval, marketing approval"
+      - "Australian TGA (Therapeutic Goods Administration)"
+      - "Japan PMDA"
+      - "China NMPA"
+    current_pressure: moderate
+    known_step_changes:
+      - "US Medicare Part D negotiated prices effective 2026; rolling list"
+      - "EU pharmaceutical pricing review (ongoing)"
+      - "China plasma import regulation evolution"
+
+  cyclicality:
+    cycle_length_years: 7
+    current_cycle_phase: late_mid
+    amplitude: low
+    rationale: >
+      Plasma-derived therapies demand relatively counter-cyclical / non-
+      cyclical given essentiality. Supply-side cyclicality from plasma
+      collection capacity. Through-cycle growth ~5-7% nominal supported
+      by Ig indication expansion + emerging market access.
+
+  input_dependencies:
+    critical_inputs:
+      - "Human plasma (from paid + unpaid donor networks)"
+      - "Fractionation reagents and consumables"
+      - "Energy (electricity, gas for facilities)"
+      - "Skilled labour (plasma collection technicians, manufacturing scientists)"
+    supply_risk: low_to_moderate
+    rationale: >
+      Plasma supply has been historically constrained — CSL's investment
+      in collection capacity (Rika / iNomi) reflects strategic supply
+      management. Other inputs commodity-priced and freely available.

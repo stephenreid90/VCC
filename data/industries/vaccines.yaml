@@ -1,0 +1,82 @@
+industry_archetype:
+  id: vaccines
+  name: Vaccines (Influenza, Routine Immunisation, Specialty)
+  version: 2026-Q2-v1
+  archetype_class: biopharmaceutical_specialty
+
+  geography: global
+
+  submarkets:
+    - region: United States
+      weight: 0.40
+      notes: >
+        Largest market. Mix of government procurement (Section 317 program,
+        Vaccines for Children) and private market (employer-sponsored
+        insurance, retail pharmacy). Trump administration RFK Jr-era policy
+        creating uncertainty on routine immunisation schedules.
+
+    - region: Europe + UK
+      weight: 0.25
+
+    - region: Rest of world (incl Australia, Asia, Latin America)
+      weight: 0.35
+      notes: >
+        Includes WHO procurement, national immunisation programs, private
+        market in middle-income countries.
+
+  five_forces:
+    buyer_power:
+      rating: moderate
+      rationale: >
+        Concentrated payers (governments, health systems, large employers).
+        Influenza vaccine has annual demand cycle with seasonal procurement.
+        Public-health framing supports volume but pricing pressure
+        material.
+
+    supplier_power:
+      rating: low
+      rationale: >
+        Manufacturing inputs (eggs for traditional vaccines, cell culture
+        media for cell-based, mRNA reagents) generally commodity. Some
+        specialised adjuvant supply constraints but not severe.
+
+    threat_of_new_entrants:
+      rating: low_to_moderate
+      rationale: >
+        Lower entry barriers than plasma-derived therapies but still
+        material. Manufacturing scale + regulatory approval + real-world
+        data + distribution network all required. New entrants in
+        last decade primarily mRNA platforms (Moderna, BioNTech) leveraging
+        COVID-era capability.
+
+    threat_of_substitutes:
+      rating: low_to_moderate
+      rationale: >
+        Influenza vaccine has no true substitute (alternative is no
+        vaccination). Within product category, mRNA-based influenza
+        vaccines emerging as alternative technology.
+
+    rivalry:
+      rating: moderate
+      rationale: >
+        Oligopolistic global structure: CSL Seqirus, Sanofi vaccines, GSK
+        vaccines, Pfizer vaccines, Moderna. Annual procurement cycles
+        create periodic pricing pressure. Strain-matching capability and
+        real-world effectiveness data are key differentiators.
+
+  cyclicality:
+    cycle_length_years: 5
+    current_cycle_phase: mid
+    amplitude: moderate
+    rationale: >
+      Annual seasonal demand cycle. Procurement volumes vary with
+      government decisions year-on-year. mRNA platform emergence is a
+      structural change.
+
+  input_dependencies:
+    critical_inputs:
+      - "Embryonated eggs (traditional manufacturing)"
+      - "Cell culture media (cell-based manufacturing)"
+      - "mRNA reagents (mRNA platforms)"
+      - "Adjuvants"
+    supply_risk: low_to_moderate

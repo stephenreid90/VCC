@@ -1,0 +1,173 @@
+documents:
+  company_id: csl
+  company_name: CSL Limited
+  asx_code: CSL
+  register_maintained_by: claude_via_tara_workstream
+  register_last_updated: 2026-06-18
+  ingestion_pass: 1
+  source_pack_label: "CSL.zip (Tara handoff, 18 June 2026)"
+
+  documents:
+
+    - id: csl_1h26_results_presentation
+      title: "CSL 1H26 Half Year Results Investor Presentation"
+      type: investor_presentation
+      reporting_period: 2025-12-31
+      release_date: 2026-02-11
+      filename: csl_1h26_results_presentation_2026-02-11.pdf
+      location_in_repo: "data/financials/historical/csl/"
+      pages_estimated: 26
+      key_insights:
+        - "1H26 anchor period (HY ending 31 December 2025) — most recent disclosed period"
+        - "Revenue US$8,332m (-4% reported); NPATA US$1,946m (-7%) ex one-off restructuring + impairments US$1,814m"
+        - "Reported NPAT US$401m (-81%) — restructuring charges drove this"
+        - "FY26 full-year guidance maintained: strong 2H driven by Ig, albumin, newly launched products"
+        - "Buyback expanded to US$750m"
+        - "Segment 1H26 growth: CSL Behring -7%, CSL Seqirus -2%, CSL Vifor +12%"
+        - "Segment 1H26 OR margin: Behring 42.8%, Seqirus 53.2%, Vifor 51.5%"
+        - "Government policy changes (Medicare Part D) adversely impacted 1H26"
+        - "Transformation program progressing well — R&D sites consolidating 11→6"
+      status: read
+      ingested_into:
+        - data/companies/csl.yaml bank_specifics — N/A; uses segments block instead
+        - data/financials/csl.yaml normalised_baseline (when populated)
+        - analyses/csl/valuations/csl_muddle_through_valuation_v1.xlsx Assumptions tab (when built)
+
+    - id: csl_fy25_results_presentation
+      title: "CSL FY25 Full Year Results Presentation"
+      type: investor_presentation
+      reporting_period: 2025-06-30
+      release_date: 2025-08-19
+      filename: csl_fy25_results_presentation_2025-08-19.pdf
+      location_in_repo: "data/financials/historical/csl/"
+      pages_estimated: 32
+      key_insights:
+        - "FY25 anchor: Revenue US$15,558m (+5%), NPATA US$3,219m (+14%), ROIC 11.5% (vs 10.5%)"
+        - "Free cash flow US$2,866m (+58%)"
+        - "Two material strategic announcements:"
+        - "  1. Strategic Transformation — annual pre-tax savings >US$500m by end FY28 (most by FY27); up to 15% headcount reduction; R&D footprint 11→6 sites; 22 underperforming plasma centres closed in FY26; one-off pre-tax restructuring US$700-770m (US$400-450m cash) in FY26 plus ~US$100m cash FY27"
+        - "  2. Intent to demerge CSL Seqirus — substantial ASX-listed entity in FY26"
+        - "Segment FY25 revenue / OR margin: Behring $11,158m / 42.2%; Seqirus $2,166m / 47.4%; Vifor $2,234m / 49.1%"
+        - "FY26 guidance: R&D ~US$1.35bn, G&A ~US$1.0bn, capex ~US$800m, tax 18-20%"
+        - "FY25 R&D 8.7% of revenue ($1,359m / $15,558m); R&D treated as steady-share operating commitment"
+      status: read
+      ingested_into:
+        - data/companies/csl.yaml management_and_governance
+        - data/companies/csl.yaml capital_allocation
+        - data/companies/csl.yaml segments
+        - data/financials/csl.yaml normalised_baseline (when populated)
+
+    - id: csl_fy25_statutory_accounts
+      title: "CSL FY25 Statutory Accounts"
+      type: statutory_accounts
+      reporting_period: 2025-06-30
+      release_date: 2025-08-19
+      filename: csl_fy25_statutory_accounts_2025-08-19.pdf
+      location_in_repo: "data/financials/historical/csl/"
+      key_insights:
+        - "Full audited FY25 financial statements"
+        - "Consolidated income statement, balance sheet, cash flow, statement of changes in equity"
+        - "Notes to the accounts: segment reporting, intangibles, goodwill, deferred taxes"
+        - "Per-segment historical data for through-cycle calibration"
+      status: read
+      ingested_into:
+        - data/companies/csl.yaml balance_sheet
+        - data/financials/csl.yaml normalised_baseline
+
+    - id: csl_1h26_statutory_accounts
+      title: "CSL 1H26 Statutory Accounts (Half Year)"
+      type: half_year_statutory_accounts
+      reporting_period: 2025-12-31
+      release_date: 2026-02-11
+      filename: csl_1h26_statutory_accounts_2026-02-11.pdf
+      location_in_repo: "data/financials/historical/csl/"
+      key_insights:
+        - "Audited 1H26 financial statements"
+        - "Bridge from reported NPAT to NPATA via restructuring + impairments + IP amortisation"
+      status: read
+      ingested_into:
+        - data/companies/csl.yaml balance_sheet
+        - data/financials/csl.yaml normalised_baseline
+
+    - id: csl_fy24_statutory_accounts
+      title: "CSL FY24 Statutory Accounts"
+      type: statutory_accounts
+      reporting_period: 2024-06-30
+      release_date: 2024-08-13
+      filename: csl_fy24_statutory_accounts_2024-08-13.pdf
+      location_in_repo: "data/financials/historical/csl/"
+      key_insights:
+        - "FY24 historical baseline (Revenue US$14,800m, NPATA US$2,907m)"
+        - "Historical segment composition for through-cycle calibration"
+      status: read
+
+    - id: csl_fy23_statutory_accounts
+      title: "CSL FY23 Statutory Accounts"
+      type: statutory_accounts
+      reporting_period: 2023-06-30
+      release_date: 2023-08-15
+      filename: csl_fy23_statutory_accounts_2023-08-15.pdf
+      location_in_repo: "data/financials/historical/csl/"
+      key_insights:
+        - "FY23 — first full year post-Vifor acquisition (closed Aug 2022)"
+      status: read
+
+    - id: csl_fy22_statutory_accounts
+      title: "CSL FY22 Statutory Accounts"
+      type: statutory_accounts
+      reporting_period: 2022-06-30
+      release_date: 2022-08-17
+      filename: csl_fy22_statutory_accounts_2022-08-17.pdf
+      location_in_repo: "data/financials/historical/csl/"
+      key_insights:
+        - "FY22 — pre-Vifor acquisition baseline"
+        - "Useful for plasma-derived therapies run-rate pre-acquisition"
+      status: read
+
+    - id: csl_eodhd_fundamentals_2026_06_15
+      title: "CSL EODHD Fundamentals Export (15 June 2026)"
+      type: third_party_data_feed
+      reporting_period: 2026-06-15
+      release_date: 2026-06-15
+      filename: csl_eodhd_fundamentals_2026-06-15.csv
+      location_in_repo: "data/financials/csl_eodhd_fundamentals_2026-06-15.csv"
+      key_insights:
+        - "Market cap AUD 50,539m at feed date (15 June 2026)"
+        - "Shares outstanding 478,911,979 (~479m)"
+        - "Implied price AUD 105.53"
+        - "52-week range AUD 90 - AUD 269 — massive 60% decline from peak"
+        - "200-day MA AUD 161.95 vs current AUD 105 = 35% below trend"
+        - "Sell-side consensus 12-month target AUD 138.58 (32% above current)"
+        - "Beta 0.094 — UNRELIABLE; classic §3.5.3 peer-triangulation case (USD revenue vs AUD ASX-listed share price series)"
+        - "ROE TTM 6.66% — DEPRESSED by 1H26 restructuring; historical normalised ROE ~16-20%"
+        - "Book value per share USD 54.95 — implies book equity ~USD 26.3bn"
+        - "Dividend per share USD 2.92 (FY25 declared)"
+      status: read
+      ingested_into:
+        - data/companies/csl.yaml share_statistics
+        - data/companies/csl.yaml bank_specifics — N/A
+        - data/financials/csl.yaml (when populated)
+      notes: |
+        Beta 0.094 is statistical noise from CSL's particular setup:
+        ASX-listed share price denominated in AUD; financials reported in
+        USD; revenue base global. EODHD beta vs ASX200 picks up FX-decorrelated
+        movement. Mandatory §3.5.3 peer-triangulation case. Peer set:
+        Grifols (Spain), Takeda (Japan plasma + broader), large Australian
+        ASX-listed healthcare-adjacent (Cochlear?) — needs further peer pull.
+
+  refresh_cadence:
+    next_refresh: "On FY26 full-year results (August 2026)"
+    refresh_trigger:
+      - "Half-year results (next: 1H FY27, Feb 2027)"
+      - "Full-year results (next: FY26, August 2026)"
+      - "Material announcements (>5% impact on equity value)"
+      - "Strategic Transformation milestone updates"
+      - "CSL Seqirus demerger completion"
+
+  notes_for_data_workstream:
+    handoff_status: "Tara provided source pack 18 June 2026."
+    requested_additions:
+      - "Quarterly trading updates if disclosed"
+      - "1H26 Investor Day or analyst day decks if held"
+      - "EODHD peer fundamentals exports: Grifols (BME:GRF), Takeda (TSE:4502), Sanofi (Paris:SAN), GSK (LSE:GSK) for triangulation"
+      - "Specific patent expiry profile if disclosed in 20-F or DEF 14A equivalents"
