@@ -28,11 +28,10 @@ A living scratchpad for conversational decisions, current preoccupations, and co
 
 - Number multi-point lists (2 or more items) so she can reply by number. Single-point responses don't need numbering.
 - Plain prose; minimal headers and bullets except where structurally needed.
-- No emojis.
-- Tara is not a developer — explain technical concepts (YAML, git, PATs, etc.) when they come up rather than assume.
-- For git: Tara opens a cmd window in `C:\Users\steph\vcc-valuations` and runs commands there.
+- Australian English.
+- **(17 June 2026) Workbook discipline**: all Excel spreadsheets must use formulas, not Python-computed hard-coded values. Inputs go on a dedicated Assumptions sheet in yellow-shaded cells with blue text; all other cells link to Assumptions via formulas. Goal: Tara can trace, audit, and flex the model.
+- **(17 June 2026) Write-up discipline**: include an intuitive narrative description in every company write-up (thesis, discussion document, briefing pack) explaining *why* each scenario produces the per-share number it does. Each scenario gets: macro story → key channels driving the outcome → why the number is what it is. Plus a mental short-cut at the end. Format: a sub-section after the scenario-table introduction, flowing prose.
 
----
 
 ## Current state of play (as of 12 June 2026)
 
