@@ -162,7 +162,7 @@ Brief positioning-driven view; full per-scenario analysis in `analyses/dnl/scena
 
 | Scenario | DNL outcome (v4 per share) | Dominant driver |
 |---|---:|---|
-| Muddle Through | AUD 3.59 | Status-quo extension; gas-contract roll-off as headwind, transformation as tailwind |
+| Muddle Through | AUD 3.59 | Status-quo extension; gas-contract roll-off as headwind, peer-gap closure as tailwind |
 | Orderly Convergence | AUD 4.16 | Mining capex healthy; transition-mineral demand; modest margin lift |
 | AI Productivity Lag | AUD 3.48 | Modest labour-cost benefit on SG&A; otherwise neutral |
 | Fragmentation | AUD 2.63 | US-Australia bloc-aligned trade exposure; cross-bloc supply chains disrupted |

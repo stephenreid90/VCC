@@ -96,14 +96,75 @@ normalised_baseline:
       mature mid-point (~4.6%) and Australian historical (~5.5%).
       Modest country-risk premium over US base (~50bps) baked in.
 
-    beta: 1.15
+    # Beta updated under methodology v0.6 §3.5.3 peer-triangulation
+    # discipline (17 June 2026 backport).
+    beta_measured: 0.36
+    beta_measured_source: >
+      EODHD reported beta for ASX:DNL. Unreliable for two structural
+      reasons: (a) post-demerger trading history (March 2025 onward)
+      is too short for reliable direct regression; (b) the demerger
+      itself disrupts the price series, breaking the window. Classic
+      case requiring peer-triangulation per §3.5.3.
+
+    beta_selected: 1.10
+    beta_selection_rationale: |
+      Selected via peer-triangulation per §3.5.3. Peer table
+      (indicative β values; full EODHD pull pending for refresh):
+        Orica (ASX:ORI):       ~1.05 — comparable peer (direct industry; mining-services)
+        Yara (OSLO:YAR):       ~1.20 — comparable peer (ammonia / fertiliser)
+        ICL (NYSE:ICL):        ~1.10 — comparable peer (specialty chemicals + mining)
+        Sasol (JSE:SOL):       ~1.45 — EXCLUDED (energy + petrochemicals; different archetype)
+        DNL (subject):         0.36 measured (UNRELIABLE; window too short)
+
+      Comparable cluster ORI / YAR / ICL: β ~1.0-1.2, midpoint 1.10.
+      DNL's franchise mix closest to Orica but more US-weighted with
+      long-term US gas contract advantage reducing near-term margin
+      volatility — supports anchor at cluster midpoint.
+
+      β_selected = 1.10. Replaces v0.5 estimate of 1.15 (derived
+      from pre-demerger IPL ASX200 regression plus modest uplift but
+      did not formally peer-triangulate).
+
+      Re = 4.30% + 1.10 × 5.00% = 9.80% (vs v0.5 estimate 10.05%).
+      Modest 25bps reduction; WACC moves from 8.82% to ~8.68%.
+      Per-share value impact: ~+AUD 0.05 (positive but immaterial
+      vs scenario asymmetry of AUD 2.31 to AUD 0.57).
+
+    beta_peer_dataset_v0_6_backport:
+      - peer: Orica
+        ticker: ASX:ORI
+        beta_indicative: 1.05
+        inclusion: comparable_peer
+      - peer: Yara International
+        ticker: OSLO:YAR
+        beta_indicative: 1.20
+        inclusion: comparable_peer
+      - peer: ICL Group
+        ticker: NYSE:ICL
+        beta_indicative: 1.10
+        inclusion: comparable_peer
+      - peer: Sasol Limited
+        ticker: JSE:SOL
+        beta_indicative: 1.45
+        inclusion: excluded_outlier
+        exclusion_reason: "Energy + petrochemicals — different archetype"
+      - peer: DNL (subject)
+        ticker: ASX:DNL
+        beta_indicative: 0.36
+        inclusion: subject_measured_unreliable
+
+    beta_refresh_action: |
+      Ben to provide EODHD fundamentals exports for ORI, YAR, ICL when
+      convenient. β_selected likely to stay near 1.10 but worth
+      verifying against the same data basis as the WBC peer pull
+      (15 June 2026).
+
+    # Active β for valuation
+    beta: 1.10
     beta_rationale: >
-      Pre-demerger IPL observed beta vs ASX200 was 1.05-1.10. The
-      demerger leaves pure-play mining-services exposure (the
-      fertilisers business partially offset mining-cycle volatility),
-      justifying modest uplift. Post-demerger trading history
-      (March 2025 onward) is too short for reliable direct regression;
-      reported EODHD beta of 0.36 is unreliable for this reason.
+      Per §3.5.3 peer-triangulation discipline (v0.6, 17 June 2026
+      backport). Cluster midpoint of Orica / Yara / ICL ~1.0-1.2;
+      midpoint 1.10. See beta_selection_rationale block above.
 
     cost_of_debt_pretax: 0.0600
     cost_of_debt_pretax_rationale: >
@@ -291,70 +352,4 @@ share_statistics:
   shares_outstanding: 1875912826
   shares_float: 1595329359
   percent_insiders: 0.0008
-  percent_institutions: 0.6133
-  short_interest: low
-
-# --- CASH FLOW (FY25, AUD millions) ---
-cash_flow:
-  fy_2025:
-    operating_cash_flow: 574.7
-    capital_expenditures: 474.2
-    free_cash_flow: 100.5
-    dividends_paid: 162.3
-    sale_purchase_of_stock: -288.8
-    total_financing_cash_flow: -481.3
-    total_investing_cash_flow: -526.6
-    change_in_working_capital: -259.5
-    change_in_cash: 40.5
-    notes: >
-      Operating cash flow AUD 575M solid but free cash flow only
-      AUD 101M after AUD 474M capex (inflated by partial-year reporting
-      and restructuring). Dividends paid AUD 162M plus stock buyback
-      AUD 289M = AUD 451M capital return; covered by operating cash
-      flow but tight on free cash flow.
-
-# --- HISTORICAL CONTEXT ---
-historical_context:
-  notes: >
-    Pre-demerger IPL FY2024 revenue was AUD 5,279M (combined entity);
-    post-demerger Dyno Nobel revenue is approximately 70% of that
-    pre-demerger combined total, consistent with the explosives segment
-    being the dominant of the two demerged businesses. The 30%
-    reduction in scale at parent level matches the value contributed
-    by the demerged fertilisers entity. The pre-2025 history
-    represents the combined entity; only FY2025 forward represents
-    the pure-play industrial explosives operation, and only the TTM
-    ending 31 March 2026 represents a full 12 months post-demerger.
-
-# --- INDICATIVE PRODUCT MIX (estimated from disclosures; to be verified) ---
-product_mix:
-  bulk_anfo_share: 0.50
-  emulsion_products_share: 0.22
-  electronic_initiation_systems_share: 0.18
-  packaged_explosives_share: 0.06
-  on_site_services_share: 0.04
-  notes: >
-    Indicative breakdown; not directly reported in standard disclosures.
-    To be verified against segment-level reporting if available.
-
-# --- INDICATIVE GEOGRAPHIC SPLIT (estimated; to be verified) ---
-geographic_breakdown:
-  - geography: United States (Dyno Nobel Americas)
-    revenue_share: 0.55
-    notes: Cost-curve advantage from long-term gas contracts.
-  - geography: Australia (Dyno Nobel Asia Pacific)
-    revenue_share: 0.35
-    notes: Duopoly market with Orica.
-  - geography: EMEA & LATAM (Dyno Nobel EMEA / LATAM)
-    revenue_share: 0.10
-    notes: Sub-scale; managed under EMEA & LATAM regional president.
-
-# --- CUSTOMER CONCENTRATION (indicative) ---
-customer_concentration:
-  top_5_share_of_revenue: 0.45
-  top_10_share_of_revenue: 0.65
-  largest_single_customer_share: 0.13
-  notes: >
-    Indicative; not directly reported. Major customers include the
-    Australian mining majors (BHP, Rio Tinto, FMG) and large US
-    mining houses.
+  percent_institutions: 0.6

@@ -15,7 +15,7 @@ Post-demerger Dyno Nobel is a pure-play industrial-explosives company with a str
 | Scenario | v4 per share | vs Muddle Through | Dominant driver |
 |---|---:|---:|---|
 | Orderly Convergence | AUD 4.16 | +16% | Mining capex healthy; transition-mineral demand; modest margin lift |
-| Muddle Through (central) | AUD 3.59 | baseline | Status-quo extension; gas roll-off offset by transformation |
+| Muddle Through (central) | AUD 3.59 | baseline | Status-quo extension; gas roll-off offset by peer-gap closure |
 | AI Productivity Lag | AUD 3.48 | -3% | Modest labour-cost benefit on SG&A; otherwise neutral |
 | Fragmentation | AUD 2.63 | -27% | Bloc-aligned trade exposure; supply-chain duplication |
 | Disorderly Climate | AUD 1.44 | -60% | Coal-customer attrition + carbon-cost flow-through + capex |
