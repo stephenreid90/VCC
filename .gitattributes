@@ -1,0 +1,15 @@
+# Normalise line endings. Text files are stored as LF in the repo; Windows
+# working copies are checked out with native (CRLF) endings. After committing
+# this file, run `git add --renormalize .` once to clear the existing churn.
+* text=auto
+
+# Office and image files are binary — never apply line-ending or diff munging.
+*.xlsx binary
+*.xls  binary
+*.xlsm binary
+*.docx binary
+*.pptx binary
+*.pdf  binary
+*.png  binary
+*.jpg  binary
+*.jpeg binary
