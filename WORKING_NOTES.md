@@ -199,6 +199,26 @@ the Muddle Through assumptions, a v3 reforecast, and a process-discipline pass
 6. **Next:** CSL thesis (cross-scenario, per-scenario narratives, §16 premium framing) +
    discussion document — DONE (analyses/csl/thesis.md; csl_discussion_v1_2026-06-25.docx + .pdf).
 
+### v0.7 accepted + DNL B17 + engine plan (25 June 2026, later)
+
+1. **Methodology v0.7 ACCEPTED and folded into architecture.md** (now v0.7). Six
+   process-discipline refinements from the CSL build: §3.7 forecast-trajectory,
+   §16.5 consensus-as-calibration, §11.6 workbook-integrity lint, §4.4.1
+   benefit-funding consistency, §3.5.7 market-implied check, §14.5.2 aggression flag.
+   Proposal file marked ACCEPTED. All additive; no schema breaks.
+2. **Lint (c) backported.** DNL v6 + WBC v4 both lint-clean (exit 0).
+3. **DNL B17 resolved** — "DM real GDP growth" annotated as a context memo (not used
+   in the growth chain, which keys off mining growth B19 + inflation B18); lint now
+   downgrades it to WARN. No valuation change. β decision precedent: keep the framework
+   repeatable, annotate rather than wire-in.
+4. **Engine implementation plan** for steps 6 + 10 written to
+   `design/engine_implementation_plan.md` — FOR APPROVAL. Linkage + assumptions layers,
+   fcf_engine + bank_engine, golden-master tests pinned to the workbook numbers
+   (CSL MT 134.52, WBC 30.03/30.28, DNL 3.59), milestones M0–M5, risks R1–R8. Key open
+   calls: CSL has no impact matrix / financials.yaml (R1); WBC payout oracle 30.03 vs
+   30.28 (R5); terminal-share validator fires structurally on compounders (R3).
+
+
 ---
 
 ## Current state of play (as of 18 June 2026 — end of long session)

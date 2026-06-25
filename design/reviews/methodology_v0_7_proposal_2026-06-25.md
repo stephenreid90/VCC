@@ -1,7 +1,8 @@
 # Methodology v0.7 — Proposal (process discipline from the CSL build)
 
-**Status:** PROPOSAL — pending Stephen's review. Not yet folded into
-`design/architecture.md`. Additive only; no schema breaks anticipated.
+**Status:** ACCEPTED (25 June 2026). Folded into `design/architecture.md` as the
+v0.6 → v0.7 migration note (status bumped to v0.7). Additive only; no schema breaks.
+Lint (c) backported to DNL v6 and WBC v4 (both lint-clean).
 
 **Date:** 25 June 2026.
 
