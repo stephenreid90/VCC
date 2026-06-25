@@ -197,7 +197,7 @@ the Muddle Through assumptions, a v3 reforecast, and a process-discipline pass
    `csl_muddle_through_valuation_v4.xlsx` (v3 + terminal-capex fix; MT 134.52). v2 + v4 are
    the working versions.
 6. **Next:** CSL thesis (cross-scenario, per-scenario narratives, §16 premium framing) +
-   discussion document — in progress.
+   discussion document — DONE (analyses/csl/thesis.md; csl_discussion_v1_2026-06-25.docx + .pdf).
 
 ---
 
