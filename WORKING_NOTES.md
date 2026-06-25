@@ -29,6 +29,89 @@ write-up discipline). Not duplicated here.
 
 ---
 
+## Current state of play (as of 25 June 2026 — CSL consensus + v3 reforecast)
+
+**Session focus.** CSL consensus comparison, an industry-grounded re-challenge of
+the Muddle Through assumptions, a v3 reforecast, and a process-discipline pass
+(v0.7 proposal + a reusable workbook lint).
+
+### What happened
+
+1. **FMP free tier can't cover CSL.** Stephen's free FMP key works for analyst
+   estimates on whitelisted (mainly large-cap US) symbols only; both CSL.AX and
+   the CSLLY ADR return `402 Premium / symbol not available`. The sandbox also
+   blocks the FMP domain directly. Consensus was therefore pulled via the
+   Claude-in-Chrome browser from MarketScreener + Yahoo Finance (16 analysts).
+   For future consensus pulls: use the browser route, not FMP free.
+
+2. **Consensus (16 analysts, USD).** FY26–28 revenue 15,390 / 15,670 / 16,278;
+   normalised EPS FY26 6.28, FY27 6.40. Notably consensus has FY26 revenue −1.1%
+   and EPS −5%, and has been cutting hard (FY26 EPS 6.90 → 6.28 over 90 days; 15
+   downward revisions, 0 up). 12-month target ≈ USD 96.75 (~AUD 136).
+
+3. **v1 vs consensus.** Framework was above consensus on revenue (+6/+9/+10%) and
+   EBIT (+4/+13/+17%), widening through FY28 — divergence in *direction*, not just
+   degree. Added a formula-linked **Consensus comparison** tab (workbook **v2**;
+   consensus figures are yellow inputs on Assumptions, model lines link to
+   Segment Forecasts / Per-Share, diffs are formulas).
+
+4. **Industry-grounded challenge → three fixes (not a re-tune to market).** Going
+   back to the three archetypes and CSL's five-forces position: the long-run
+   thesis is defensible (plasma secular 5–7%, scale-margin edge), but three things
+   were mis-specified — (i) Behring entered as a flat 5% CAGR with no near-term
+   J-curve for the high-certainty Medicare Part D / China trough; (ii) full
+   +250bps peer-gap margin uplift banked alongside the growth the reinvested
+   US$525m funds (double-count); (iii) a hidden terminal inconsistency — the
+   Assumptions sheet stated a 30% terminal EBIT margin but no formula used it, so
+   the model capitalised FY31's ~33.3% peak into perpetuity.
+
+5. **Workbook v3.** Implemented all three: Behring J-curve (FY26 −1% → 5.5% by
+   FY29, as yellow per-year inputs), Behring margin uplift cut to +150bps (full
+   +250 reserved for Orderly Convergence), terminal value rebuilt to bind to the
+   30% margin. **Result: USD 141.78 / AUD 214.82** (was 164.97 / 249.96). Premium
+   to market AUD 105.53 falls from +137% to **+104%**; premium to consensus target
+   from +70.5% to +46.5%. Near-term lines now sit on top of consensus (FY26 EBIT
+   slightly below). **~84% of the USD 23/share fall came from the terminal fix
+   alone** — most of v1's over-valuation was the orphaned terminal margin, not an
+   aggressive growth view. The residual ~+100% premium to market is now genuine
+   through-cycle framework disagreement.
+
+6. **Process discipline (Stephen asked how to do this better generally).**
+   - **v0.7 proposal** at `design/reviews/methodology_v0_7_proposal_2026-06-25.md`
+     — six refinements: §3.7 forecast-trajectory discipline; §16.5 consensus as a
+     calibration input; §11.6 workbook-integrity checks; §4.4.1 benefit-funding
+     consistency; §3.5.7 market-implied cost-of-capital check; §14.5.2 aggression
+     flag. PROPOSAL — pending Stephen's approval; not yet in architecture.md.
+   - **Reusable lint** at `scripts/workbook_lint.py` — orphan-input + terminal-
+     continuity checks. Catches CSL v1 (exit 1: B55 orphan; effective terminal
+     margin 33.3% vs stated 30%); CSL v3 passes (exit 0). Documentation-only
+     anchors (measured beta, FY25 memos) downgraded to warnings.
+
+### Workbook files (analyses/csl/valuations/)
+
+1. `csl_muddle_through_valuation_v1.xlsx` — original (USD 164.97).
+2. `csl_muddle_through_valuation_v2.xlsx` — v1 + Consensus comparison tab.
+3. `csl_muddle_through_valuation_v3.xlsx` — reforecast (USD 141.78 / AUD 214.82).
+
+### Open / Stephen's call
+
+1. **J-curve shape** (FY26 −1% recovering to 5.5%) — Stephen to confirm or flex.
+2. **Whether v3 becomes the working CSL version** or stays a candidate.
+3. **β 0.85 reality check** (sanity-check #1 in earlier notes) — still open; v3
+   leaves Re at 8.75%. A market-implied cross-check would be the §3.5.7 move.
+4. **v0.7 approval** — if accepted, fold into architecture.md as the v0.6 → v0.7
+   migration note and backport the lint to DNL / WBC workbooks.
+
+### Operational notes
+
+1. **Mount write quirk.** The Cowork file-write tool truncated large new files
+   (~8.9KB) mid-write this session; writing sandbox-side and `cp`-ing onto the
+   mount was reliable. Worth knowing for future large script/doc writes.
+2. **Chat-swap protocol agreed.** Swap chats roughly every 20 exchanges; do a
+   full WORKING_NOTES handoff update at the swap (and at every natural milestone).
+
+---
+
 ## Current state of play (as of 18 June 2026 — end of long session)
 
 **Session handoff notes.** This session has covered methodology v0.6 consolidation, DNL v5 backport, WBC v3/v4 (workbook + discussion document + scenarios comparison + standing rules), and started CSL v1 (foundation + Muddle Through workbook). If continuing in a new chat, see the "Carrying into next chat" section at the bottom of this file.
@@ -333,4 +416,4 @@ Next: per-scenario impact matrix `data/impact_matrix/by_industry/australian_majo
 
 ## Decisions still parked / open
 
-- **Methodology §3.5 citations to add.** When next editing the methodology doc, add explicit citations to Damodaran                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+- **Methodology §3.5 citations to add.** When next editing the methodology doc, add explicit citations to Damodaran
