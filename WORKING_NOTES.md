@@ -218,6 +218,27 @@ the Muddle Through assumptions, a v3 reforecast, and a process-discipline pass
    calls: CSL has no impact matrix / financials.yaml (R1); WBC payout oracle 30.03 vs
    30.28 (R5); terminal-share validator fires structurally on compounders (R3).
 
+### CSL is now a first-class data-driven company (25 June 2026, R1 done)
+
+1. **`data/financials/csl.yaml`** authored — USD-functional, segment-level base-year
+   snapshot reverse-engineered from csl_muddle_through_valuation_v4 (group + Behring/
+   Seqirus/Vifor revenue & margins, corporate, capex/D&A/WC, tax, net debt, restructuring,
+   shares, FX, cost-of-equity build with β 0.85 held, terminal margin 30% / g 3% /
+   terminal capex = D&A). Valid YAML.
+2. **Three impact matrices** in `data/impact_matrix/by_industry/`:
+   `plasma_derived_therapies.yaml` (Behring; 21 non-neutral cells), `vaccines.yaml`
+   (Seqirus; 8), `specialty_pharmaceuticals.yaml` (Vifor; 11). Sparse per §10.2;
+   consistent with the csl_scenarios_comparison_v2 driver overrides + thesis channels
+   (margins/policy, not volumes). All three VALIDATE against schemas.linkage.ImpactMatrix.
+3. **Pre-existing discrepancy noted (parked):** `australian_major_banks.yaml` carries extra
+   top-level keys (`archetype_class`, `version`) the strict ImpactMatrix model forbids — it
+   does NOT conform, while industrial_explosives and the three new CSL matrices do. Worth a
+   one-line cleanup later (either relax the schema or strip the keys). Schema test suite: 22 pass.
+4. **Unblocks engine milestone M3** (CSL no longer needs a workbook fixture; it has matrices +
+   financials). Remaining engine open calls: R5 (WBC payout oracle 30.03 vs 30.28), R3
+   (terminal-share validator).
+
+
 
 ---
 

@@ -1,0 +1,342 @@
+# Impact matrix for the plasma_derived_therapies archetype (CSL segment: CSL Behring).
+# Sparse per architecture spec 10.2 — absent drivers default to neutral / small / not assessed.
+# Direction negative|neutral|positive; Magnitude small|moderate|large; Confidence low|moderate|high.
+# Authored 25 June 2026, consistent with csl_scenarios_comparison_v2.xlsx driver overrides
+# and analyses/csl/thesis.md transmission channels. Validated against schemas.linkage.ImpactMatrix.
+
+industry: plasma_derived_therapies
+matrix:
+- scenario: muddle_through
+  scenario_version: 2026-Q2-v1
+  drivers:
+    volume_growth:
+      direction: neutral
+      magnitude: small
+      confidence: moderate
+      rationale: Plasma demand resumes its secular 5-7% path after the near-term Medicare Part D / China
+        trough; baseline anchor.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    gross_margin:
+      direction: neutral
+      magnitude: small
+      confidence: moderate
+      rationale: Scale + vertical plasma-collection integration hold margins; +150bps peer-gap closure
+        phased to FY31. Baseline.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    terminal_growth_rate:
+      direction: neutral
+      magnitude: small
+      confidence: moderate
+      rationale: US nominal-GDP-adjacent 3.0%. Baseline anchor.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    terminal_roic:
+      direction: neutral
+      magnitude: small
+      confidence: moderate
+      rationale: Scale-margin edge sustained into perpetuity (binding 30% terminal margin). Baseline.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    risk_free_rate:
+      direction: neutral
+      magnitude: small
+      confidence: high
+      rationale: USD anchor; baseline. Retained for context only — not flowed to the discount rate (single-WACC,
+        §3.5).
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+- scenario: orderly_convergence
+  scenario_version: 2026-Q2-v1
+  drivers:
+    volume_growth:
+      direction: positive
+      magnitude: small
+      confidence: moderate
+      rationale: Faster exit from the Part D / China trough; benign macro lets secular plasma demand reassert
+        sooner.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    gross_margin:
+      direction: positive
+      magnitude: moderate
+      confidence: moderate
+      rationale: Collection-cost inflation eases, making the full +250bps peer-gap closure credible (vs
+        +150bps base).
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+      quantified_override:
+        min: 0.015
+        mid: 0.025
+        max: 0.03
+    input_cost_pass_through:
+      direction: positive
+      magnitude: small
+      confidence: moderate
+      rationale: US donor-collection wage pressure relaxes; costs comfortably recovered.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    terminal_roic:
+      direction: positive
+      magnitude: small
+      confidence: moderate
+      rationale: Margin durability improves; terminal margin 31.5%.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    terminal_growth_rate:
+      direction: positive
+      magnitude: small
+      confidence: low
+      rationale: 3.25% nominal in a healthy-growth world.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+- scenario: ai_productivity_lag
+  scenario_version: 2026-Q2-v1
+  drivers:
+    sga_pct_revenue:
+      direction: negative
+      magnitude: small
+      confidence: low
+      rationale: White-collar wage containment lowers the G&A / R&D ratio (CSL carries ~USD 1bn G&A +
+        ~USD 1.4bn R&D) — a mild margin tailwind.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    volume_growth:
+      direction: neutral
+      magnitude: small
+      confidence: low
+      rationale: Slightly softer macro, but plasma demand is defensive so the volume effect is negligible.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    terminal_growth_rate:
+      direction: negative
+      magnitude: small
+      confidence: low
+      rationale: Compressing growth multiples pull nominal terminal growth to ~2.875%.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+- scenario: disorderly_climate_crystallisation
+  scenario_version: 2026-Q2-v1
+  drivers:
+    input_cost_pass_through:
+      direction: negative
+      magnitude: moderate
+      confidence: moderate
+      rationale: Carbon-cost pass-through raises energy-intensive fractionation and cold-chain costs faster
+        than they can be recovered.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    gross_margin:
+      direction: negative
+      magnitude: moderate
+      confidence: moderate
+      rationale: Margin compresses on carbon / energy cost; terminal margin 28%.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+      quantified_override:
+        min: -0.02
+        mid: -0.015
+        max: -0.01
+    volume_growth:
+      direction: neutral
+      magnitude: small
+      confidence: moderate
+      rationale: Demand defensive — essential therapies; volumes hold.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    terminal_roic:
+      direction: negative
+      magnitude: small
+      confidence: moderate
+      rationale: Lower sustained margin into perpetuity.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    terminal_growth_rate:
+      direction: negative
+      magnitude: small
+      confidence: low
+      rationale: 2.75% nominal.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+- scenario: fragmentation
+  scenario_version: 2026-Q2-v1
+  drivers:
+    volume_growth:
+      direction: negative
+      magnitude: small
+      confidence: moderate
+      rationale: China immunoglobulin access restricted — the most exposed Behring revenue line in a fragmenting
+        world.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    input_cost_pass_through:
+      direction: negative
+      magnitude: moderate
+      confidence: moderate
+      rationale: Plasma supply-chain localisation (collect-US / distribute-global) raises unit cost.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    gross_margin:
+      direction: negative
+      magnitude: moderate
+      confidence: moderate
+      rationale: Peer-gap closure stalls (uplift to zero) under localisation cost; terminal margin 28.2%.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+      quantified_override:
+        min: -0.018
+        mid: -0.013
+        max: -0.008
+    price_mix:
+      direction: negative
+      magnitude: small
+      confidence: low
+      rationale: Cross-bloc pricing friction.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    terminal_growth_rate:
+      direction: negative
+      magnitude: small
+      confidence: low
+      rationale: 2.75% nominal.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+- scenario: stagflation_persists
+  scenario_version: 2026-Q2-v1
+  drivers:
+    input_cost_pass_through:
+      direction: negative
+      magnitude: large
+      confidence: moderate
+      rationale: US donor-collection wages surge — supplier power at full stretch; costs outrun recovery.
+        The binding margin channel for a defensive franchise.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    gross_margin:
+      direction: negative
+      magnitude: large
+      confidence: moderate
+      rationale: Peer-gap closure reverses; Behring margin runs 150bps below the FY25 base; terminal margin
+        26.5%.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+      quantified_override:
+        min: -0.03
+        mid: -0.025
+        max: -0.018
+    price_mix:
+      direction: negative
+      magnitude: moderate
+      confidence: moderate
+      rationale: Payors press hard on price (Medicare Part D in a fiscally-strained state).
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    volume_growth:
+      direction: neutral
+      magnitude: small
+      confidence: high
+      rationale: Demand inelastic — volumes hold even in recession; the stress is entirely margin.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    terminal_roic:
+      direction: negative
+      magnitude: moderate
+      confidence: moderate
+      rationale: Lowest sustained margin into perpetuity.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    risk_free_rate:
+      direction: positive
+      magnitude: moderate
+      confidence: moderate
+      rationale: Rates rise; retained for context, NOT flowed to the discount rate (single-WACC §3.5).
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'

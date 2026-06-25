@@ -1,0 +1,166 @@
+# Impact matrix for the specialty_pharmaceuticals archetype (CSL segment: Vifor).
+# Sparse per architecture spec 10.2 — absent drivers default to neutral / small / not assessed.
+# Direction negative|neutral|positive; Magnitude small|moderate|large; Confidence low|moderate|high.
+# Authored 25 June 2026, consistent with csl_scenarios_comparison_v2.xlsx driver overrides
+# and analyses/csl/thesis.md transmission channels. Validated against schemas.linkage.ImpactMatrix.
+
+industry: specialty_pharmaceuticals
+matrix:
+- scenario: muddle_through
+  scenario_version: 2026-Q2-v1
+  drivers:
+    volume_growth:
+      direction: neutral
+      magnitude: small
+      confidence: moderate
+      rationale: Iron-deficiency / nephrology franchise growing ~7% CAGR; faster, younger franchise. Baseline.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    gross_margin:
+      direction: neutral
+      magnitude: small
+      confidence: moderate
+      rationale: +100bps peer-gap closure phased. Baseline.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    terminal_roic:
+      direction: neutral
+      magnitude: small
+      confidence: moderate
+      rationale: Patent-cliff / substitution exposure caps sustained returns over the long horizon. Baseline.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+- scenario: orderly_convergence
+  scenario_version: 2026-Q2-v1
+  drivers:
+    volume_growth:
+      direction: positive
+      magnitude: small
+      confidence: low
+      rationale: ~8.5% in a benign macro with smooth indication expansion.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    gross_margin:
+      direction: positive
+      magnitude: small
+      confidence: low
+      rationale: +150bps closure.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+- scenario: ai_productivity_lag
+  scenario_version: 2026-Q2-v1
+  drivers:
+    volume_growth:
+      direction: negative
+      magnitude: small
+      confidence: low
+      rationale: Slightly slower (~6.5%) on softer macro.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    sga_pct_revenue:
+      direction: negative
+      magnitude: small
+      confidence: low
+      rationale: Modest cost containment.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+- scenario: disorderly_climate_crystallisation
+  scenario_version: 2026-Q2-v1
+  drivers:
+    volume_growth:
+      direction: negative
+      magnitude: small
+      confidence: low
+      rationale: Cost environment weighs; ~5%.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    gross_margin:
+      direction: negative
+      magnitude: small
+      confidence: low
+      rationale: Energy / cost pressure.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+- scenario: fragmentation
+  scenario_version: 2026-Q2-v1
+  drivers:
+    volume_growth:
+      direction: negative
+      magnitude: moderate
+      confidence: low
+      rationale: Supply / trade friction; ~5.5%.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    gross_margin:
+      direction: negative
+      magnitude: small
+      confidence: low
+      rationale: Closure stalls.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+- scenario: stagflation_persists
+  scenario_version: 2026-Q2-v1
+  drivers:
+    volume_growth:
+      direction: negative
+      magnitude: moderate
+      confidence: moderate
+      rationale: Slows to ~4% as the macro recesses.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    gross_margin:
+      direction: negative
+      magnitude: moderate
+      confidence: moderate
+      rationale: Cost crush; closure reverses.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    price_mix:
+      direction: negative
+      magnitude: small
+      confidence: low
+      rationale: Payor pricing pressure.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'

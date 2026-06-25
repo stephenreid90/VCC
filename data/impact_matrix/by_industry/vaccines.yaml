@@ -1,0 +1,137 @@
+# Impact matrix for the vaccines archetype (CSL segment: Seqirus).
+# Sparse per architecture spec 10.2 — absent drivers default to neutral / small / not assessed.
+# Direction negative|neutral|positive; Magnitude small|moderate|large; Confidence low|moderate|high.
+# Authored 25 June 2026, consistent with csl_scenarios_comparison_v2.xlsx driver overrides
+# and analyses/csl/thesis.md transmission channels. Validated against schemas.linkage.ImpactMatrix.
+
+industry: vaccines
+matrix:
+- scenario: muddle_through
+  scenario_version: 2026-Q2-v1
+  drivers:
+    volume_growth:
+      direction: neutral
+      magnitude: small
+      confidence: moderate
+      rationale: Mature seasonal influenza-vaccine market; ~2% CAGR baseline.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    gross_margin:
+      direction: neutral
+      magnitude: small
+      confidence: moderate
+      rationale: Stable; +100bps peer-gap closure phased to FY31. Baseline.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+- scenario: orderly_convergence
+  scenario_version: 2026-Q2-v1
+  drivers:
+    volume_growth:
+      direction: positive
+      magnitude: small
+      confidence: low
+      rationale: Slightly higher uptake in a benign macro.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    gross_margin:
+      direction: positive
+      magnitude: small
+      confidence: low
+      rationale: +150bps closure under cost relief.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+- scenario: ai_productivity_lag
+  scenario_version: 2026-Q2-v1
+  drivers:
+    sga_pct_revenue:
+      direction: negative
+      magnitude: small
+      confidence: low
+      rationale: Modest white-collar cost containment.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+- scenario: disorderly_climate_crystallisation
+  scenario_version: 2026-Q2-v1
+  drivers:
+    volume_growth:
+      direction: positive
+      magnitude: moderate
+      confidence: moderate
+      rationale: Pandemic / health-disruption optionality lifts vaccine demand — the portfolio's one genuine
+        offset to a disorderly world.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    gross_margin:
+      direction: positive
+      magnitude: small
+      confidence: low
+      rationale: Favourable demand mix.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+- scenario: fragmentation
+  scenario_version: 2026-Q2-v1
+  drivers:
+    volume_growth:
+      direction: negative
+      magnitude: small
+      confidence: low
+      rationale: Trade friction on cross-border vaccine distribution.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    gross_margin:
+      direction: negative
+      magnitude: small
+      confidence: low
+      rationale: Closure stalls.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+- scenario: stagflation_persists
+  scenario_version: 2026-Q2-v1
+  drivers:
+    gross_margin:
+      direction: negative
+      magnitude: moderate
+      confidence: moderate
+      rationale: Cost inflation; closure reverses (-50bps).
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'
+    volume_growth:
+      direction: neutral
+      magnitude: small
+      confidence: moderate
+      rationale: Defensive demand holds.
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-06-25T00:00:00Z'

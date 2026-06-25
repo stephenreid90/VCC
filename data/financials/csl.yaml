@@ -1,0 +1,232 @@
+# Base-year financial snapshot for CSL Limited (CSL).
+#
+# Three-segment specialty-biopharmaceutical group: CSL Behring (plasma-derived
+# therapies), Seqirus (influenza vaccines), Vifor (iron deficiency / nephrology).
+#
+# Source: disclosed FY25 segment accounts, reverse-engineered from the working
+# valuation workbook csl_muddle_through_valuation_v4.xlsx (terminal-capex-consistent
+# build). Curated 25 June 2026 to make CSL a first-class data-driven company per
+# the engine implementation plan (R1).
+#
+# Reporting / functional currency: USD throughout (segment financials disclosed in
+# USD; the parent is ASX-listed and the share price is AUD). AUD translation is
+# applied ONLY at the per-share output line, at spot FX — never inside a segment DCF.
+# Fiscal year-end: 30 June.
+
+company_id: csl
+fiscal_year: FY2025
+fy_end_date: 2025-06-30
+reporting_currency: USD
+functional_currency: USD
+base_year_status: workbook_reverse_engineered
+data_source: >
+  Disclosed FY25 segment accounts; curated from csl_muddle_through_valuation_v4.xlsx
+  (Muddle Through, terminal capex = D&A). Cross-checked to 16-analyst consensus pulled
+  via MarketScreener + Yahoo Finance (21 June 2026).
+data_generated: 2026-06-25
+last_updated: 2026-06-25
+
+normalised_baseline:
+  # Group revenue (sum of the three segments)
+  group_revenue: 15558.0
+  group_revenue_rationale: >
+    FY25 disclosed group revenue (USD m). Behring 11,158 + Seqirus 2,166 +
+    Vifor 2,234 = 15,558. Group EBIT margin ~27.5% after corporate / R&D.
+
+  # Operating-margin: built at segment level (see segments block); the group
+  # FY25 EBIT margin is a derived memo, not a direct input.
+  group_ebit_margin_fy25: 0.275
+  group_ebit_margin_rationale: >
+    Segment operating result less corporate / unallocated (R&D + G&A + central).
+    Derived; the binding terminal margin is 30.0% (see terminal block).
+
+  # Corporate / unallocated (negative; grows ~0.5%/yr in the explicit period)
+  corporate_unallocated_fy25: -2559.0
+  corporate_unallocated_rationale: >
+    FY25 R&D ~1,359 + G&A ~1,000 + other central ~200. Held as a single
+    corporate line growing 0.5%/yr across the explicit horizon.
+
+  # Reinvestment ratios
+  capex_pct_revenue: 0.045
+  capex_pct_revenue_rationale: >
+    FY26 guidance ~USD 800m on ~USD 15.6bn revenue (~5%); steady-state ~4.5%.
+    Explicit-period capex; intentionally below D&A because Vifor/Behring
+    intangible amortisation legitimately exceeds capex until it runs off.
+
+  da_pct_revenue: 0.06
+  da_pct_revenue_rationale: >
+    Includes amortisation of acquired intangibles (Vifor 2022 acquisition).
+    Exceeds explicit-period capex in the near-to-medium term by design.
+
+  terminal_capex_pct_revenue: 0.06
+  terminal_capex_pct_revenue_rationale: >
+    v4 steady-state reinvestment consistency: terminal capex set EQUAL to D&A.
+    A business growing 3% in perpetuity cannot run capex below depreciation;
+    the intangible-amortisation excess runs off by the terminal. Correcting
+    this trimmed every scenario ~5% (CSL MT USD 141.78 -> 134.52).
+
+  working_capital_change_pct_revenue_change: 0.10
+  working_capital_change_rationale: >
+    Working-capital change as a fraction of the year-on-year revenue change.
+    Plasma inventory and receivables scale modestly with revenue.
+
+  # Tax
+  tax_rate: 0.19
+  tax_rate_rationale: >
+    FY26 guidance 18-20%; 19% mid-point. USD-denominated effective rate. Rises
+    to ~20% under Fragmentation as cross-border structuring efficiencies erode.
+
+  # Balance-sheet anchors
+  net_debt: 9100.0
+  net_debt_rationale: >
+    1H26 close (USD m); ~1.8x EBITDA. Deducted in the equity bridge at anchor.
+
+  restructuring_cash_to_come: 507.0
+  restructuring_cash_to_come_rationale: >
+    FY26-27 restructuring cash, PV at the cost of equity; deducted in the equity
+    bridge per the §4.4 cost-of-closure consistency rule.
+
+  shares_outstanding: 478.9
+  shares_outstanding_rationale: >
+    Million shares; FY25 close. Translation to AUD per-share at spot only.
+
+  # Discount rate — cost-of-equity build (CSL discounts FCFF at the cost of
+  # equity given modest net leverage; single discount rate held across scenarios
+  # per the §3.5 single-WACC discipline).
+  cost_of_equity_build:
+    risk_free_rate: 0.045
+    risk_free_rate_rationale: >
+      10-year US Treasury yield (USD anchor), indicative June 2026 level.
+
+    equity_risk_premium: 0.05
+    equity_risk_premium_rationale: >
+      Damodaran-style mature-market ERP (USD base).
+
+    beta_measured: 0.094
+    beta_measured_source: >
+      EODHD reported beta. UNRELIABLE — CSL's revenue is USD-based while the
+      measured beta regresses an AUD-listed price against an AUD index; the
+      currency/structure mismatch collapses the measured figure. Discarded
+      per §3.5.3; selected via peer triangulation.
+
+    beta_selected: 0.85
+    beta_selection_rationale: |
+      Selected via peer-triangulation per §3.5.3. Defensive-healthcare peer
+      cluster:
+        Grifols (BME:GRF):     ~0.85 — direct plasma peer
+        Takeda (TSE:4502):     ~0.75 — plasma + specialty pharma
+        Sanofi (Paris:SAN):    ~0.90 — large-cap pharma / vaccines
+        CSL (subject):         0.094 measured (UNRELIABLE; currency/structure mismatch)
+
+      Cluster 0.7-0.9; CSL placed at 0.85 — a defensive, essential-therapies
+      franchise. HELD at 0.85 by owner decision (25 June 2026) for a repeatable
+      framework: the §3.5.7 market-implied cross-check shows the market implies
+      beta ~1.7, but the residual premium is retained as an informative §16
+      output, NOT tuned away. See beta_market_implied_note.
+
+    beta_market_implied_note: >
+      §3.5.7 single-lever reverse-DCF on the AUD 105.53 price implies a cost of
+      equity ~13% (beta ~1.7) OR a terminal margin ~13.5% OR perpetual
+      contraction — none plausible alone. Reporting diagnostic only; beta is
+      not adjusted toward it.
+
+    beta_peer_dataset:
+      - peer: Grifols
+        ticker: BME:GRF
+        beta_indicative: 0.85
+        inclusion: comparable_peer
+      - peer: Takeda
+        ticker: TSE:4502
+        beta_indicative: 0.75
+        inclusion: comparable_peer
+      - peer: Sanofi
+        ticker: PAR:SAN
+        beta_indicative: 0.90
+        inclusion: comparable_peer
+      - peer: CSL (subject)
+        ticker: ASX:CSL
+        beta_indicative: 0.094
+        inclusion: subject_measured_unreliable
+
+    beta: 0.85
+    beta_rationale: >
+      Active beta for valuation; cluster placement per beta_selection_rationale.
+
+    # Cost of equity Re = Rf + beta x ERP = 4.50% + 0.85 x 5.00% = 8.75%.
+    computed_cost_of_equity: 0.0875
+    discount_rate_basis: >
+      FCFF discounted at the cost of equity (8.75%) given modest net leverage;
+      single rate held across all six scenarios per §3.5. Terminal growth is
+      scenario-conditional; the discount rate is not.
+
+  # Terminal
+  terminal_ebit_margin: 0.30
+  terminal_ebit_margin_rationale: >
+    BINDING terminal group EBIT margin (v3 fix). Above FY25's ~27.5%, reflecting
+    scale + peer-gap closure held into perpetuity — the rivalry/scale assumption
+    that underwrites the terminal. Scenario-conditional: 31.5% Orderly ->
+    26.5% Stagflation.
+
+  terminal_growth: 0.03
+  terminal_growth_rationale: >
+    US nominal-GDP-adjacent for a global essential-therapies franchise.
+    Scenario-conditional (3.25% Orderly -> 2.75% Fragmentation/Disorderly;
+    held 3.0% nominal in Stagflation).
+
+  # Reference market data
+  market_price_aud: 105.53
+  market_price_rationale: >
+    ~61% below the 52-week high of AUD 269. Implied USD ~69.65 at spot.
+  spot_fx_aud_per_usd: 1.5152
+  consensus_target_usd: 96.75
+  consensus_eps_fy26_usd: 6.28
+
+# --- SEGMENTS (industry+company decomposition per §11) ---
+segments:
+  - segment: csl_behring
+    industry_archetype: plasma_derived_therapies
+    fy25_revenue: 11158.0
+    fy25_or_margin: 0.422
+    revenue_share: 0.717
+    muddle_through_growth_path: [-0.01, 0.025, 0.045, 0.055, 0.055, 0.055]
+    growth_shape: j_curve
+    growth_rationale: >
+      Behring J-curve: FY26 -1% (Medicare Part D + China trough), recovering
+      to the archetype secular 5.5% by FY29. Through-cycle plasma demand 5-7%.
+    margin_uplift_cum_fy31: 0.015
+    margin_uplift_rationale: >
+      +150bps peer-gap closure in Muddle Through; full +250bps reserved for
+      Orderly Convergence (benefit-funding consistency, §4.4.1).
+
+  - segment: csl_seqirus
+    industry_archetype: vaccines
+    fy25_revenue: 2166.0
+    fy25_or_margin: 0.474
+    revenue_share: 0.139
+    muddle_through_cagr: 0.02
+    growth_rationale: >
+      Mature seasonal influenza-vaccine market. Pandemic / health-disruption
+      optionality lifts demand under Disorderly Climate.
+    margin_uplift_cum_fy31: 0.01
+
+  - segment: csl_vifor
+    industry_archetype: specialty_pharmaceuticals
+    fy25_revenue: 2234.0
+    fy25_or_margin: 0.491
+    revenue_share: 0.144
+    muddle_through_cagr: 0.07
+    growth_rationale: >
+      Iron-deficiency / nephrology franchise (acquired 2022). Faster-growing,
+      younger franchise with patent-cliff / substitution exposure over time.
+    margin_uplift_cum_fy31: 0.01
+
+# --- IDENTITY ---
+identity:
+  name: CSL Limited
+  ticker: CSL.AX
+  isin: AU000000CSL8
+  exchange: ASX
+  country: Australia
+  headquarters: "45 Poplar Road, Parkville, VIC 3052, Australia"
+  industry_description: Specialty biopharmaceuticals (plasma, vaccines, nephrology)
+  segments: [CSL Behring, Seqirus, Vifor]
