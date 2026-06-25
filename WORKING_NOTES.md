@@ -240,8 +240,8 @@ the Muddle Through assumptions, a v3 reforecast, and a process-discipline pass
 
 5. **M0 engine decisions settled (25 June 2026, Stephen):** R5 — CET1-binding payout
    is the sounder methodology for financial institutions; **30.28 is the canonical WBC
-   MT bank-engine oracle**; the flat-0.75 MT workbook (30.03) is superseded (note now,
-   optional v5 refresh). R3 — terminal-share validator stays a **non-blocking warning**
+   MT bank-engine oracle**; the flat-0.75 MT workbook (30.03) is superseded — documented note placed on its
+   Cover sheet (rows 16-20); optional v5 binding-payout refresh later. R3 — terminal-share validator stays a **non-blocking warning**
    (do not auto-suppress; would silently change documented numbers). With R1 done, M0 is
    settled — the engine is ready to start at M1 (DNL Muddle Through vertical slice).
 
