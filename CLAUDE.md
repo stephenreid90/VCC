@@ -89,5 +89,8 @@ and audit the draft against it before handing it back.
 - The mount permits file **create but not delete** for `.git/*.lock` files. Sandbox
   workaround: `mv .git/index.lock .git/index.lock.deadN` before retrying. Stephen can
   delete lock files normally from his own cmd window.
-- The GitHub PAT is currently **Contents: Read-only**, so sandbox-side `git push` returns
-  403 — Stephen pushe
+- The GitHub PAT now has **write access** — sandbox-side `git push origin main` works
+  directly from Cowork (verified 25 June 2026; previously the PAT was Contents: Read-only
+  and pushes returned 403). The `.git/*.lock` create-but-not-delete quirk above can still
+  surface during commit/push — move the lock aside (`mv .git/index.lock .git/index.lock.deadN`,
+  and `.git/HEAD.lock` if present) and retry.

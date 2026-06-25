@@ -423,7 +423,7 @@ Next: per-scenario impact matrix `data/impact_matrix/by_industry/australian_majo
 - **Ben's data-sourcing workstream** — base-year financials per company; data feasibility confirmation per schema field; alignment on `financials.yaml` contract.
 - **Scenarios workshop** (Tara to convene) — produces step 3 deliverables: 3–6 named scenarios in YAML + narrative form.
 - **IPL strategist friend** — provides the calibration benchmark for step 8.
-- **PAT permission** — Stephen's GitHub fine-grained PAT is currently Contents: Read-only. Sandbox-side push returns 403; Stephen pushes from his own cmd window. If he updates the PAT to Read-and-write, sandbox can push directly.
+- **PAT permission** — RESOLVED (25 June 2026): the GitHub PAT now has write access; sandbox-side `git push origin main` works directly from Cowork. (The `.git/*.lock` mount quirk can still need a `mv` workaround during push.)
 
 ---
 
