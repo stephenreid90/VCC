@@ -28,8 +28,12 @@ try:
 except ImportError:
     sys.exit("openpyxl is required: pip install openpyxl --break-system-packages")
 
-YELLOW_SUFFIX = "FFF2CC"
-BLUE_SUFFIX = "0066CC"
+# Input cells across the VCC workbook set use two palettes: the CSL/WBC
+# convention (light-yellow FFF2CC fill / 0066CC blue font) and the older DNL
+# convention (FFFF00 fill / 0000FF blue font). Recognise both so the lint does
+# not silently detect zero inputs (and false-pass) on a differently-styled book.
+YELLOW_SUFFIXES = {"FFF2CC", "FFFF00"}
+BLUE_SUFFIXES = {"0066CC", "0000FF"}
 STRUCTURAL_HINTS = ["terminal", "discount", "wacc", "cost of equity", "capex",
     "d&a", "tax rate", "net debt", "shares outstanding", "margin uplift",
     "beta selected", "cagr", "risk-free", "equity risk premium", "growth"]
@@ -48,9 +52,9 @@ def is_input_cell(cell):
     v = cell.value
     if v is None or isinstance(v, str) or not isinstance(v, (int, float)):
         return False
-    fill_yellow = _rgb_tail(cell.fill.fgColor) == YELLOW_SUFFIX
+    fill_yellow = _rgb_tail(cell.fill.fgColor) in YELLOW_SUFFIXES
     font_blue = (cell.font is not None and cell.font.color is not None and
-                 _rgb_tail(cell.font.color) == BLUE_SUFFIX)
+                 _rgb_tail(cell.font.color) in BLUE_SUFFIXES)
     return fill_yellow or font_blue
 
 

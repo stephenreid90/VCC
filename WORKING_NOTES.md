@@ -155,6 +155,25 @@ the Muddle Through assumptions, a v3 reforecast, and a process-discipline pass
 2. **Chat-swap protocol agreed.** Swap chats roughly every 20 exchanges; do a
    full WORKING_NOTES handoff update at the swap (and at every natural milestone).
 
+### Workbook-lint backport + DNL restyle (25 June 2026, later session)
+
+1. **Lint made palette-aware.** `scripts/workbook_lint.py` previously recognised
+   only the CSL/WBC input palette (`FFF2CC`/`0066CC`); on DNL (older `FFFF00`/`0000FF`
+   palette) it detected *zero* inputs and false-passed. Now recognises both palettes.
+   Regression-checked: CSL v1 still trips its terminal-margin ERROR, CSL v3 / WBC pass,
+   DNL now actually inspects its 63 inputs.
+2. **Lint sweep of latest workbooks.** No CSL-style value-distorting orphan in DNL v5
+   or WBC v4 — that bug was unique to CSL v1. WBC's flagged cells are benign (1H26
+   reconciliation anchors + the through-cycle credit-loss anchor B30; credit losses
+   are wired via the per-year path at Assumptions row 50).
+3. **DNL restyled to canonical palette → `dnl_muddle_through_valuation_v6_2026-06-25.xlsx`.**
+   Styling-only (63 inputs recoloured to `FFF2CC`+`0066CC` per standing rule 1); zero
+   value/formula changes vs v5. No analytical content changed.
+4. **OPEN — Stephen's call.** DNL `Assumptions!B17` "DM real GDP growth" (2.0%) is a
+   genuine orphan: the growth chain keys off mining growth + inflation and never uses it.
+   Parked — either wire it in (changes the valuation; methodology call), recolour as
+   non-input context, or annotate and accept. Lint flags it ERROR until resolved.
+
 ---
 
 ## Current state of play (as of 18 June 2026 — end of long session)
@@ -443,22 +462,4 @@ Next: per-scenario impact matrix `data/impact_matrix/by_industry/australian_majo
 
 - All ratings use `low | moderate | high` (3-point) — *except* matrix entries: `direction` is 3-way (`negative | neutral | positive`) and `magnitude` is 3-way (`small | moderate | large`); the two are separate fields.
 - Drivers are **nominal in functional currency**; FX appears at consolidation across functional currencies, not as a primary driver inside a segment DCF.
-- Drivers carry `role: primary | derived`. Layer 5 only writes primary drivers; Layer 6 computes derived ones via declared `derivation_formula`.
-- Narrative artefacts and structured artefacts are **paired**; structured fields win as source of truth where prose and structure disagree (per §16.1).
-- File naming: `snake_case` for ids and filenames; `CamelCase` for Python classes.
-- Schema versioning: every schema carries `version`; breaking changes bump major.
-- Override discipline: target ≤20% of cells per company (archetype-tunable); above this, the archetype is mis-specified.
-
----
-
-## Filesystem quirks worth knowing
-
-- `C:\Users\steph\vcc-valuations` is mounted into Claude's sandbox. The mount permits file CREATE but not DELETE for `.git/*.lock` files. Workaround in sandbox: `mv .git/index.lock .git/index.lock.deadN` before retrying the git command. Stephen can delete the lock files normally from his own cmd window: `del .git\HEAD.lock` and `del .git\index.lock`.
-- A scratch-clone approach via `/tmp/` has been used in the sandbox for git operations when the mount approach is too painful.
-- A `.github-token` file lives at the repo root and is excluded from git via `.git/info/exclude` (not `.gitignore`, which had unrelated modified state we don't want to touch).
-
----
-
-## Decisions still parked / open
-
-- **Methodology §3.5 citations to add.** When next editing the methodology doc, add explicit citations to Damodaran
+- Drivers carry `role: primary | derived`. Layer 5 only writes primary driver
