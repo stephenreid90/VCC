@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VCC scenario valuation — CSL Limited (prototype)</title>
+<style>
+:root{
+  --bg:#faf9f5; --primary:#ffffff; --secondary:#f1efe8; --tertiary:#e8e6dd;
+  --text:#1f1e1b; --text2:#5f5e5a; --text3:#8a8980;
+  --bd:rgba(0,0,0,0.12); --bd2:rgba(0,0,0,0.24); --bdinfo:#378ADD;
+  --info-bg:#E6F1FB; --info-tx:#0C447C;
+  --success-bg:#E1F5EE; --success-tx:#0F6E56;
+  --warning-bg:#FAEEDA; --warning-tx:#854F0B;
+  --danger-bg:#FCEBEB; --danger-tx:#A32D2D;
+  --rmd:8px; --rlg:12px;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#1a1916; --primary:#24231f; --secondary:#2c2b27; --tertiary:#34332e;
+    --text:#f2f1ec; --text2:#b6b4ab; --text3:#88867e; --bd:rgba(255,255,255,0.14); --bd2:rgba(255,255,255,0.26);
+    --info-bg:#0C447C; --info-tx:#B5D4F4; --success-bg:#085041; --success-tx:#9FE1CB;
+    --warning-bg:#633806; --warning-tx:#FAC775; --danger-bg:#791F1F; --danger-tx:#F7C1C1; }
+}
+*{box-sizing:border-box;}
+body{margin:0; background:var(--bg); color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; line-height:1.6;}
+.wrap{max-width:880px; margin:0 auto; padding:24px 20px 60px;}
+.card{background:var(--primary); border:0.5px solid var(--bd); border-radius:var(--rlg);}
+.metric{background:var(--secondary); border-radius:var(--rmd); padding:1rem;}
+button{font:inherit; background:transparent; color:var(--text); border:0.5px solid var(--bd2);
+  border-radius:var(--rmd); padding:5px 10px; cursor:pointer;}
+button:hover{background:var(--secondary);}
+input[type=range]{width:100%; accent-color:var(--bdinfo);}
+table{border-collapse:collapse;}
+a{color:var(--info-tx);}
+.more{color:var(--info-tx); cursor:pointer; font-weight:500;}
+.hd{font-size:14px; font-weight:500;}
+.sub{font-size:11px; color:var(--text3);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div style="display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px; margin-bottom:4px;">
+  <div style="font-size:20px; font-weight:600;">VCC scenario valuation</div>
+  <div style="font-size:13px; color:var(--text2);">CSL Limited · exploring: <span id="selscen" style="color:var(--text); font-weight:500;">Muddle Through</span> · USD, AUD at 0.66</div>
+</div>
+<div class="sub" style="margin-bottom:18px;">Working prototype — interface concept. Muddle Through is calibrated (v3); other scenarios are illustrative placeholders. Reid Advisory, June 2026.</div>
+
+<div id="overlay"></div>
+
+<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:1.5rem;">
+  <div class="metric"><div style="font-size:13px; color:var(--text2);">Value per share</div><div style="font-size:24px; font-weight:600;"><span id="aud">214.82</span><span style="font-size:13px; color:var(--text2);"> AUD</span></div><div style="font-size:12px; color:var(--text3);">USD <span id="usd">141.78</span></div></div>
+  <div class="metric"><div style="font-size:13px; color:var(--text2);">vs market (105.53)</div><div style="font-size:24px; font-weight:600; color:var(--success-tx);" id="vmkt">+104%</div></div>
+  <div class="metric"><div style="font-size:13px; color:var(--text2);">vs average broker (136)</div><div style="font-size:24px; font-weight:600;" id="vcons">+58%</div></div>
+  <div class="metric"><div style="font-size:13px; color:var(--text2);">Terminal % of value</div><div style="font-size:24px; font-weight:600;" id="tshare">76%</div></div>
+</div>
+
+<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1.5rem; margin-bottom:1.5rem;">
+  <div>
+    <div class="hd">Top 5 value drivers <span style="font-weight:400; color:var(--text3); font-size:12px;">— flex to see impact</span></div>
+    <div class="sub" style="margin-bottom:6px;">the 5 biggest movers of 14 inputs · full set under Assumptions</div>
+    <div id="sliders"></div>
+    <div style="display:flex; gap:8px; margin-top:8px;"><button id="reset">↻ reset</button><button id="allassum">all assumptions &amp; rationale</button></div>
+  </div>
+  <div>
+    <div class="hd">Outcomes across scenarios <span style="font-weight:400; color:var(--text3); font-size:12px;">(AUD/share)</span></div>
+    <div class="sub" style="margin-bottom:6px;">click a scenario to explore its build-up</div>
+    <div id="bars"></div>
+    <div class="sub" style="margin-top:6px;"><span style="color:var(--info-tx);">▮</span> Muddle Through (live) · <span style="color:var(--warning-tx);">▮</span> average broker · dashed = market</div>
+  </div>
+</div>
+
+<div style="border-top:0.5px solid var(--bd); padding-top:1rem;">
+  <div class="hd" style="margin-bottom:8px;">Explore the build-up</div>
+  <div id="explore" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;"></div>
+  <div id="panel" class="metric" style="min-height:110px; font-size:13px;"></div>
+</div>
+
+<div class="sub" style="margin-top:28px; border-top:0.5px solid var(--bd); padding-top:12px;">Prototype for discussion. Slider responses are an illustrative approximation, not the production DCF engine. Calibrated figures: CSL Muddle Through v3 (per share USD 141.78 / AUD 214.82).</div>
+
+</div>
+<script>
+(function(){
+  function sendPrompt(t){ toast("In the live tool this would: "+t); }
+  function toast(msg){ var d=document.createElement('div'); d.textContent=msg;
+    d.style.cssText='margin-top:10px; padding:10px 12px; background:var(--info-bg); color:var(--info-tx); border-radius:8px; font-size:13px;';
+    var p=document.getElementById('panel'); p.appendChild(d); setTimeout(function(){ if(d.parentNode)d.parentNode.removeChild(d); },4000); }
+
+  var base={re:8.75, g:3.0, tmargin:30, tax:19, uplift:150};
+  var st=Object.assign({}, base);
+  var defs=[
+    {k:'re', label:'Discount rate (cost of equity)', min:7, max:11, step:0.25, fmt:function(v){return v.toFixed(2)+'%';}},
+    {k:'g', label:'Terminal growth', min:2, max:4, step:0.25, fmt:function(v){return v.toFixed(2)+'%';}},
+    {k:'tmargin', label:'Terminal EBIT margin', min:26, max:34, step:0.5, fmt:function(v){return v.toFixed(1)+'%';}},
+    {k:'tax', label:'Effective tax rate', min:15, max:25, step:0.5, fmt:function(v){return v.toFixed(1)+'%';}},
+    {k:'uplift', label:'Peer-gap margin uplift', min:0, max:300, step:25, fmt:function(v){return Math.round(v)+' bps';}}
+  ];
+  var scen=[
+    {n:'Orderly Convergence', v:275, kind:'up'},
+    {n:'Muddle Through', v:214.82, kind:'live'},
+    {n:'AI Productivity Lag', v:190, kind:'down'},
+    {n:'Fragmentation', v:165, kind:'down'},
+    {n:'Stagflation Persists', v:140, kind:'down'},
+    {n:'Average broker', v:136, kind:'broker'},
+    {n:'Disorderly Climate', v:120, kind:'down'}
+  ];
+  var MKT=105.53, BROKER=136, FX=0.66, SCALE=300, activeIdx=1;
+
+  function compute(){
+    var Re=st.re/100, g=st.g/100, tax=st.tax/100;
+    var taxF=0.88*((1-tax)/(1-0.19))+0.12;
+    var tv=107.75*(st.tmargin/30)*((0.0875-0.03)/(Re-g))*(Math.pow(1.0875,5)/Math.pow(1+Re,5))*taxF;
+    var ex=34.03*(1+(st.uplift/10000-0.015)*4)*taxF;
+    var usd=tv+ex; return {usd:usd, aud:usd/FX, termShare:tv/(tv+ex)};
+  }
+  function render(){
+    var c=compute();
+    document.getElementById('usd').textContent=c.usd.toFixed(2);
+    document.getElementById('aud').textContent=c.aud.toFixed(2);
+    document.getElementById('tshare').textContent=Math.round(c.termShare*100)+'%';
+    var vm=(c.aud/MKT-1)*100, vc=(c.aud/BROKER-1)*100;
+    var em=document.getElementById('vmkt'); em.textContent=(vm>=0?'+':'')+Math.round(vm)+'%'; em.style.color=vm>=0?'var(--success-tx)':'var(--danger-tx)';
+    document.getElementById('vcons').textContent=(vc>=0?'+':'')+Math.round(vc)+'%';
+    scen[1].v=c.aud; drawBars();
+  }
+  function barColor(k){ return k==='live'?'var(--info-bg)':k==='broker'?'var(--warning-bg)':'var(--tertiary)'; }
+  function txtColor(k){ return k==='live'?'var(--info-tx)':k==='broker'?'var(--warning-tx)':'var(--text)'; }
+  function drawBars(){
+    var h='<div style="position:relative;">', mkt=MKT/SCALE*100;
+    scen.forEach(function(s,i){
+      var w=Math.min(100,s.v/SCALE*100), sel=(i===activeIdx);
+      h+='<div data-i="'+i+'" class="scbar" style="display:flex; align-items:center; gap:8px; margin-bottom:5px; cursor:pointer; border-radius:5px; padding:1px 2px; '+(sel?'background:var(--secondary);':'')+'">'
+       +'<div style="width:118px; font-size:12px; color:'+(sel?'var(--text)':'var(--text2)')+'; font-weight:'+(sel?'500':'400')+'; text-align:right; flex:none;">'+s.n+'</div>'
+       +'<div style="flex:1; position:relative; height:19px;">'
+       +'<div style="height:19px; width:'+w+'%; background:'+barColor(s.kind)+'; border-radius:4px; '+(sel?'outline:1.5px solid var(--bdinfo);':'')+'"></div>'
+       +'<div style="position:absolute; top:1px; left:calc('+w+'% + 6px); font-size:12px; font-weight:500; color:'+txtColor(s.kind)+'; white-space:nowrap;">'+s.v.toFixed(0)+'</div>'
+       +'</div></div>';
+    });
+    h+='<div style="position:absolute; left:126px; right:0; top:0; bottom:14px; pointer-events:none;"><div style="position:absolute; left:'+mkt+'%; top:0; bottom:0; border-left:1.5px dashed var(--text2);"></div></div></div>';
+    var bx=document.getElementById('bars'); bx.innerHTML=h;
+    Array.prototype.forEach.call(bx.querySelectorAll('.scbar'),function(el){ el.addEventListener('click',function(){ activeIdx=parseInt(el.getAttribute('data-i')); document.getElementById('selscen').textContent=scen[activeIdx].n; drawBars(); setPanel('world'); markExplore('world'); }); });
+  }
+
+  var sl=document.getElementById('sliders');
+  defs.forEach(function(d){
+    var row=document.createElement('div'); row.style.margin='10px 0';
+    row.innerHTML='<div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:2px;"><span style="color:var(--text2);">'+d.label+'</span><span style="font-weight:500;" id="o_'+d.k+'"></span></div>';
+    var inp=document.createElement('input'); inp.type='range'; inp.min=d.min; inp.max=d.max; inp.step=d.step; inp.value=st[d.k];
+    inp.addEventListener('input',function(){ st[d.k]=parseFloat(inp.value); document.getElementById('o_'+d.k).textContent=d.fmt(st[d.k]); render(); });
+    row.appendChild(inp); sl.appendChild(row); document.getElementById('o_'+d.k).textContent=d.fmt(st[d.k]);
+  });
+  document.getElementById('reset').addEventListener('click',function(){ st=Object.assign({}, base); sl.querySelectorAll('input').forEach(function(inp,i){ inp.value=st[defs[i].k]; document.getElementById('o_'+defs[i].k).textContent=defs[i].fmt(st[defs[i].k]); }); render(); });
+  document.getElementById('allassum').addEventListener('click',function(){ openDetail('assum'); });
+
+  var titles={world:'World scenario',forces:'Company vs industry — Five Forces',position:'Company position',discount:'Discount rate',assum:'Assumptions & rationale',dcf:'DCF build-up'};
+  var snap={
+    world:'<b id="wsnaptitle">Muddle Through</b> — interior, most-likely. Plasma compounds 5–7% through-cycle; Part D and China trough the near term. <span class="more" data-k="world">Learn more →</span>',
+    forces:'<b>CSL vs the plasma-derived-therapies archetype</b>, force by force, with the margin impact of each. <span class="more" data-k="forces">See the comparison →</span>',
+    position:'<b>CSL</b> — Behring 72%, Seqirus 14% (demerging), Vifor 14%. <span class="more" data-k="position">Learn more →</span>',
+    discount:'<b>Cost of equity 8.75%</b> = Rf 4.5% + β 0.85 × ERP 5.0%. <span class="more" data-k="discount">See the build-up →</span>',
+    assum:'<b>Assumptions</b> — each input tagged and rationalised. <span class="more" data-k="assum">See all →</span>',
+    dcf:'<b>FCFF → per share</b> — explicit ~24% + terminal ~76%. <span class="more" data-k="dcf">Open DCF build-up →</span>'
+  };
+  var ex=document.getElementById('explore'); var exBtns={};
+  Object.keys(snap).forEach(function(k){ var b=document.createElement('button'); b.textContent=titles[k]; b.style.fontSize='12px'; b.addEventListener('click',function(){ setPanel(k); markExplore(k); }); ex.appendChild(b); exBtns[k]=b; });
+  function markExplore(k){ Object.keys(exBtns).forEach(function(j){ exBtns[j].style.borderColor='var(--bd2)'; }); if(exBtns[k]) exBtns[k].style.borderColor='var(--bdinfo)'; }
+  function setPanel(k){
+    document.getElementById('panel').innerHTML='<div style="font-weight:500; margin-bottom:4px;">'+titles[k]+'</div><div style="color:var(--text2);">'+snap[k]+'</div>';
+    if(k==='world'){ var t=document.getElementById('wsnaptitle'); if(t) t.textContent=scen[activeIdx].n; }
+    var m=document.querySelector('#panel .more'); if(m){ m.addEventListener('click',function(){ openDetail(m.getAttribute('data-k')); }); }
+  }
+  setPanel('forces'); markExplore('forces');
+
+  function tag(t){ var map={disclosed:'success',derived:'info',judgment:'warning'}; var c=map[t]; return '<span style="font-size:11px; padding:1px 7px; border-radius:6px; background:var(--'+c+'-bg); color:var(--'+c+'-tx);">'+t+'</span>'; }
+  function posBadge(p){ var c=p==='more favourable'?'success':p==='less favourable'?'danger':'tertiary'; var tx=p==='more favourable'?'var(--success-tx)':p==='less favourable'?'var(--danger-tx)':'var(--text2)'; var bg=p==='more favourable'?'var(--success-bg)':p==='less favourable'?'var(--danger-bg)':'var(--secondary)'; return '<span style="font-size:11px; padding:1px 7px; border-radius:6px; background:'+bg+'; color:'+tx+';">'+p+'</span>'; }
+  var assumRows=[['Risk-free rate','4.5%','disclosed','10y US Treasury, mid-2026'],['Equity risk premium','5.0%','judgment','Damodaran-style mature-market ERP'],['Beta (selected)','0.85','judgment','Peers Grifols/Takeda/Sanofi 0.7–0.9; measured 0.094 unreliable'],['Cost of equity Re','8.75%','derived','Rf + β × ERP'],['Behring growth','J-curve to 5.5%','judgment','FY26 −1% trough then archetype 5–7%'],['Peer-gap margin uplift','+150 bps','judgment','Full +250bps reserved for Orderly Convergence'],['Effective tax rate','19%','disclosed','FY26 guidance 18–20%'],['Terminal EBIT margin','30%','judgment','Step below FY31 exit 32% — not the peak'],['Terminal growth g','3.0%','judgment','US nominal GDP-adjacent'],['Net debt (1H26)','USD 9,100m','disclosed','1.8× EBITDA'],['Restructuring PV','USD 507m','derived','FY26 425 + FY27 100, PV at Re'],['Shares','478.9m','disclosed','EODHD 15 Jun 2026']];
+  var narr={
+    'Muddle Through':'<p>The macro backdrop is a structurally resilient US economy, sticky-but-easing inflation, and largely non-cyclical healthcare demand. For CSL the story is <i>recovery deferred, not denied</i>. Plasma demand compounds at the industry through-cycle 5–7%, but the near term absorbs two crystallising headwinds the average broker is fixated on — US Medicare Part D flowing through immunoglobulins, and China&rsquo;s albumin reset. Behring troughs in FY26 then reaccelerates to 5.5%.</p><p><b>Three channels:</b> Behring volume (the moat keeps the policy hit a level-shift, not a trajectory break); peer-gap margin closure (+150bps banked, full +250 reserved for Orderly); and the terminal, capitalised at a disciplined 30% margin.</p><p><b>Why AUD 215?</b> The framework treats the trough as transitory while the broker extrapolates it. The gap is the recovery the market is not yet paying for.</p><p style="background:var(--secondary); border-radius:8px; padding:10px;"><b>Mental short-cut:</b> the broker is pricing the trough; the framework is pricing the recovery.</p>',
+    '_placeholder':'<p>This scenario&rsquo;s narrative is not yet calibrated — CSL&rsquo;s full six-scenario set is still in build. The world-scenario write-up would run to discussion-document length here: macro story → key channels → why the per-share number lands where it does → a mental short-cut.</p><p style="color:var(--text3); font-size:12px;">The per-share bar shown is an illustrative placeholder.</p>'
+  };
+  function detailHTML(k){
+    if(k==='world'){ var nm=scen[activeIdx].n; return '<p style="font-size:12px; color:var(--text3); margin-top:0;">Scenario: '+nm+'</p>'+(narr[nm]||narr['_placeholder']); }
+    if(k==='forces'){
+      var rows=[
+        ['Buyer power','moderate','at industry average','0 bps','Payers (Medicare, EU systems); essentiality keeps volume inelastic; Part D rising'],
+        ['Supplier power','low–moderate','more favourable','+5 bps','Owns its plasma donor network — vertical integration reduces supplier power'],
+        ['New entrants','very low','at industry average','0 bps','5–10yr regulatory approval + multi-bn fractionation capex; no CSL-specific edge'],
+        ['Substitutes','low','at industry average','0 bps','No recombinant Ig at scale; mRNA a long-tail risk for the whole industry'],
+        ['Rivalry','moderate','more favourable','+10 bps','CSL is the scale leader in a CSL/Grifols/Takeda oligopoly — lower marginal cost']
+      ];
+      var h='<p>How CSL sits relative to the plasma-derived-therapies archetype, force by force. Industry rating is the archetype baseline; the badge is CSL&rsquo;s position; the impact is the margin offset it earns.</p>';
+      h+='<table style="width:100%; font-size:13px;"><tr><td class="sub" style="padding:4px 8px 4px 0;">Force</td><td class="sub" style="padding:4px 8px;">Industry</td><td class="sub" style="padding:4px 8px;">CSL vs industry</td><td class="sub" style="padding:4px 8px; text-align:right;">Impact</td></tr>';
+      rows.forEach(function(r){ h+='<tr style="border-top:0.5px solid var(--bd);"><td style="padding:7px 8px 7px 0; font-weight:500; white-space:nowrap; vertical-align:top;">'+r[0]+'</td><td style="padding:7px 8px; color:var(--text2); vertical-align:top;">'+r[1]+'</td><td style="padding:7px 8px; vertical-align:top;">'+posBadge(r[2])+'<div style="color:var(--text2); margin-top:3px; font-size:12px;">'+r[4]+'</div></td><td style="padding:7px 0 7px 8px; text-align:right; font-weight:500; vertical-align:top; white-space:nowrap;">'+r[3]+'</td></tr>'; });
+      h+='</table><div style="margin-top:10px; background:var(--secondary); border-radius:8px; padding:10px;"><b>Net company offset:</b> +15 bps margin (supplier +5, rivalry-scale +10), 0 bps revenue. CSL captures industry growth plus a modest, structural margin edge.</div>';
+      return h;
+    }
+    if(k==='discount'){
+      var h='<p>Single discount rate per valuation, held across scenarios (risk is priced in the cash flows, not the rate).</p><table style="width:100%; font-size:13px;">';
+      [['Risk-free rate (10y UST)','4.50%','disclosed'],['Equity risk premium','5.00%','judgment'],['Beta — selected','0.85','judgment'],['= Cost of equity Re','8.75%','derived']].forEach(function(r){ var b=r[0].indexOf('Cost of equity')>=0; h+='<tr><td style="padding:4px 0; '+(b?'font-weight:500;':'color:var(--text2);')+'">'+r[0]+'</td><td style="text-align:right; padding:4px 8px; '+(b?'font-weight:500;':'')+'">'+r[1]+'</td><td style="padding:4px 0;">'+tag(r[2])+'</td></tr>'; });
+      h+='</table><p style="margin-top:8px;"><b>Beta — peer triangulation.</b> Grifols / Takeda / Sanofi cluster 0.7–0.9; CSL placed at 0.85 on franchise mix. Measured β 0.094 (USD revenue vs AUD ASX series) rejected as unreliable.</p><p style="background:var(--warning-bg); color:var(--warning-tx); border-radius:8px; padding:10px; font-size:12px;"><b>Reality check (§3.5.7):</b> against CSL&rsquo;s 60%+ drawdown, 0.85 may understate systematic risk — worth cross-checking the market-implied cost of capital.</p>';
+      return h;
+    }
+    if(k==='position'){ return '<ul style="padding-left:18px;"><li><b>CSL Behring</b> (72% rev, 42% margin) — plasma moat: manufacturing + donor scale + regulatory. Patent risk very low.</li><li><b>CSL Seqirus</b> (14%, demerging FY26) — influenza vaccines; mRNA the long-tail threat.</li><li><b>CSL Vifor</b> (14%) — specialty pharma; the one segment with conventional patent exposure.</li></ul>'; }
+    if(k==='assum'){ var h='<p>Tags: '+tag('disclosed')+' stated · '+tag('derived')+' calculated · '+tag('judgment')+' analyst call.</p><table style="width:100%; font-size:13px;">'; assumRows.forEach(function(r){ h+='<tr style="border-bottom:0.5px solid var(--bd);"><td style="padding:6px 8px 6px 0; font-weight:500; white-space:nowrap; vertical-align:top;">'+r[0]+'</td><td style="padding:6px 8px; white-space:nowrap; vertical-align:top;">'+r[1]+'</td><td style="padding:6px 8px; vertical-align:top;">'+tag(r[2])+'</td><td style="padding:6px 0; color:var(--text2); vertical-align:top;">'+r[3]+'</td></tr>'; }); return h+'</table>'; }
+    if(k==='dcf'){
+      var yrs=['FY26','FY27','FY28','FY29','FY30','FY31'], rev=[15646,16134,16867,17756,18694,19686], ebit=[4346,4590,4943,5366,5817,6295];
+      var h='<p>USD m. Explicit FCFF (~24% of EV) + terminal (~76%) at a 30% EBIT margin.</p><table style="width:100%; font-size:12px;"><tr><td></td>';
+      yrs.forEach(function(y){ h+='<td style="text-align:right; color:var(--text2); padding:2px 4px;">'+y+'</td>'; }); h+='</tr><tr><td style="color:var(--text2);">Revenue</td>';
+      rev.forEach(function(v){ h+='<td style="text-align:right; padding:2px 4px;">'+v.toLocaleString()+'</td>'; }); h+='</tr><tr><td style="color:var(--text2);">EBIT</td>';
+      ebit.forEach(function(v){ h+='<td style="text-align:right; padding:2px 4px;">'+v.toLocaleString()+'</td>'; }); h+='</tr></table>';
+      var bridge=[['Sum PV explicit FCFF','18,390'],['PV terminal value','59,117'],['Enterprise value','77,507'],['Less: net debt','(9,100)'],['Less: restructuring PV','(507)'],['Equity value','67,900'],['÷ shares (m)','478.9'],['Value per share USD','141.78'],['Value per share AUD','214.82']];
+      h+='<div style="margin-top:10px; border-top:0.5px solid var(--bd); padding-top:8px;"><table style="width:100%; font-size:13px;">';
+      bridge.forEach(function(r){ var b=r[0].indexOf('per share')>=0||r[0]==='Enterprise value'||r[0]==='Equity value'; h+='<tr><td style="padding:3px 0; '+(b?'font-weight:500;':'color:var(--text2);')+'">'+r[0]+'</td><td style="text-align:right; '+(b?'font-weight:500;':'')+'">'+r[1]+'</td></tr>'; }); h+='</table></div>';
+      h+='<button style="margin-top:12px; font-size:13px; padding:6px 12px;" id="dlbtn">⤓ download all scenarios to Excel</button><div style="font-size:11px; color:var(--text3); margin-top:4px;">one tab per scenario</div>';
+      return h;
+    }
+    return '';
+  }
+  function openDetail(k){
+    var ov=document.getElementById('overlay');
+    ov.innerHTML='<div style="min-height:420px; background:rgba(0,0,0,0.45); border-radius:var(--rlg); display:flex; align-items:flex-start; justify-content:center; padding:18px; margin-bottom:1.5rem;"><div class="card" style="padding:1.25rem 1.5rem; width:100%; max-width:620px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><div style="font-size:16px; font-weight:600;">'+titles[k]+'</div><button id="closeov" aria-label="close" style="padding:2px 9px;">×</button></div><div style="font-size:13px; line-height:1.65;">'+detailHTML(k)+'</div></div></div>';
+    document.getElementById('closeov').addEventListener('click',function(){ ov.innerHTML=''; });
+    var dl=document.getElementById('dlbtn'); if(dl) dl.addEventListener('click',function(){ alert('In the live tool this downloads the CSL scenario workbook — one tab per scenario.'); });
+    ov.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+  render();
+})();
+</script>
+</body>
+</html>

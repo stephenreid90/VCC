@@ -29,6 +29,51 @@ write-up discipline). Not duplicated here.
 
 ---
 
+## Interface prototypes (25 June 2026) — CSL, DNL, WBC shareable HTML
+
+**What.** Designed an interactive end-user interface for the scenario valuations and
+delivered three self-contained, offline HTML prototypes in `ui_prototypes/`
+(`csl_`, `dnl_`, `wbc_scenario_interface.html`). For sharing with Ben and iterating.
+Iterated v1→v3 live as inline mockups before locking the design.
+
+**The interface concept (locked with Stephen):**
+1. Headline metric cards: per-share value, vs market, vs average broker, plus a
+   company stat (CSL terminal-% of value; DNL/WBC asymmetry ratio).
+2. "Top 5 value drivers" sliders — the five biggest movers only (not Behring-style
+   near-term growth, which barely moves value), stated as such. Discount rate is a
+   single slider (not beta). Responses are an **illustrative** approximation, not the
+   live DCF engine.
+3. Scenario outcomes bar chart — clickable scenarios that drive the build-up views;
+   an **average broker** bar (Stephen's preferred term over "consensus"); market line.
+4. "Explore the build-up" drill-downs, each with a short snapshot + "learn more" →
+   full view: world-scenario write-up (discussion-doc depth), **company-vs-industry
+   Five Forces** (per-force industry rating vs company position + impact), company
+   position, **discount-rate build-up** (Rf+β×ERP, peer triangulation, §3.5.7 check),
+   **assumptions & rationale** (each input with §14.5.1 [disclosed]/[derived]/[judgment]
+   tag), and a valuation build-up with an **all-scenario Excel download** (one tab per
+   scenario).
+
+**Per company:**
+- CSL — only Muddle Through calibrated (USD 141.78 / AUD 214.82); other five scenarios
+  are placeholders. Hand-built file.
+- DNL — all six scenarios real (Orderly 4.16 → Stagflation 1.28; MT 3.59 at market 3.61;
+  4.05× asymmetry). Industrial: WACC/EV bridge, gas-roll-off lever, −25bps Five Forces.
+- WBC — all six real (Orderly 35.46 → Stagflation 20.09; MT 30.15 vs market 35.32; 1.90×).
+  Bank fork §15: cost-of-equity only, NIM/credit/CET1 build-up. Key story: market is
+  implicitly pricing Orderly Convergence (35.46), not the status-quo base.
+
+**Generator.** `ui_prototypes/_generator/` (`build_cfgs.py` real-data configs +
+`gen_ui.py` common scaffold) reproduces the DNL/WBC files. See its README.
+
+**Open / next on the interface:**
+1. Slider responses are illustrative — wire to the real engine for production.
+2. CSL's other five scenarios need calibrating to make its bars real like DNL/WBC.
+3. Optional: side-drawer instead of inline-overlay for detail views; PPTX export.
+4. The all-scenario Excel download is a real build item (DNL/WBC scenario comparison
+   workbooks already exist; CSL's needs its scenario set first).
+
+---
+
 ## Current state of play (as of 25 June 2026 — CSL consensus + v3 reforecast)
 
 **Session focus.** CSL consensus comparison, an industry-grounded re-challenge of
