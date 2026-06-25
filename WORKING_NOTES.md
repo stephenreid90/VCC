@@ -174,6 +174,31 @@ the Muddle Through assumptions, a v3 reforecast, and a process-discipline pass
    Parked — either wire it in (changes the valuation; methodology call), recolour as
    non-input context, or annotate and accept. Lint flags it ERROR until resolved.
 
+### CSL — five scenarios calibrated + comparison workbook (25 June 2026, later session)
+
+1. **All six CSL scenarios now real** (were placeholders). Calibrated off the v3
+   base as driver overlays. CSL is defensive — scenarios transmit through margins
+   (donor-collection wages, energy/carbon cost, payor pricing) and policy, not
+   volumes — so the spread is narrow: **asymmetry ~1.31x** (vs DNL 4.05x, WBC 1.83x).
+2. **Two corrections this session.** (a) §3.5.7 market-implied reverse-DCF: to justify
+   AUD 105.53 the market needs β≈1.7 / terminal margin ~13% / g negative — none plausible
+   alone, so the gap is a blend (or genuine under-pricing). (b) **Terminal capex = D&A**
+   reinvestment-consistency fix (v1 ran terminal capex 4.5% < D&A 6%, inflating perpetual
+   FCFF). Trims every scenario ~5%.
+3. **Post-fix distribution (USD / AUD):** Orderly 156.61/237.29; **MT 134.52/203.83**
+   (premium to market +104% → **+93%**); AI Lag 131.03/198.53; Disorderly 115.36/174.79;
+   Fragmentation 111.03/168.23; Stagflation 105.53/159.90. All formula-based, lint-clean,
+   reconciled to an independent Python engine.
+4. **Decision (Stephen, 25 June):** hold β 0.85 — wants a *repeatable* framework, not one
+   that needs intervention; the residual premium stands as an informative §16 output ("a
+   cause for curiosity"), to be explained in the thesis, not tuned away.
+5. **Files (analyses/csl/valuations/):** `csl_scenarios_comparison_v1.xlsx` (pre-capex-fix),
+   `csl_scenarios_comparison_v2.xlsx` (terminal capex=D&A + Market-Implied §3.5.7 tab),
+   `csl_muddle_through_valuation_v4.xlsx` (v3 + terminal-capex fix; MT 134.52). v2 + v4 are
+   the working versions.
+6. **Next:** CSL thesis (cross-scenario, per-scenario narratives, §16 premium framing) +
+   discussion document — in progress.
+
 ---
 
 ## Current state of play (as of 18 June 2026 — end of long session)
@@ -441,25 +466,4 @@ Next: per-scenario impact matrix `data/impact_matrix/by_industry/australian_majo
 
 - **Ben's data-sourcing workstream** — base-year financials per company; data feasibility confirmation per schema field; alignment on `financials.yaml` contract.
 - **Scenarios workshop** (Tara to convene) — produces step 3 deliverables: 3–6 named scenarios in YAML + narrative form.
-- **IPL strategist friend** — provides the calibration benchmark for step 8.
-- **PAT permission** — RESOLVED (25 June 2026): the GitHub PAT now has write access; sandbox-side `git push origin main` works directly from Cowork. (The `.git/*.lock` mount quirk can still need a `mv` workaround during push.)
-
----
-
-## Things we considered and rejected (don't relitigate)
-
-- **Streamlit-only UI** — rejected for UX flexibility; subsequently re-decided to embed in VCC dashboard rather than build standalone Vue.
-- **Disruption as a separate lifecycle stage** — rejected; disruption surfaces through Five Forces (entrants + substitutes).
-- **Probability-weighted blended expected value as canonical output** — rejected per §6.2.
-- **IPL as multi-segment** — was true pre-demerger; now single-segment.
-- **Open-ended `complementary_framework` blocks** — rejected; chose defined enum for comparability discipline.
-- **Confidence as a multi-axis field on impact-matrix entries** — kept as single ordinal with pinned meaning ("joint confidence in direction × magnitude assuming the scenario plays out").
-- **Tax aggregation / capex→D&A / WACC computation as "consistency rules" in §11.4** — re-categorised as derivations (deterministic identities) per Ben's bot review; only operating-leverage and terminal-convergence remain as genuine consistency checks.
-
----
-
-## Key conventions adopted (cross-cutting)
-
-- All ratings use `low | moderate | high` (3-point) — *except* matrix entries: `direction` is 3-way (`negative | neutral | positive`) and `magnitude` is 3-way (`small | moderate | large`); the two are separate fields.
-- Drivers are **nominal in functional currency**; FX appears at consolidation across functional currencies, not as a primary driver inside a segment DCF.
-- Drivers carry `role: primary | derived`. Layer 5 only writes primary driver
+- **IPL strategist friend** — provides the cali
