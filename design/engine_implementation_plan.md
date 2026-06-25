@@ -202,14 +202,14 @@ Dependencies: M1 -> M2 -> {M3, M4} (M3 better next, exercises segment aggregatio
   Recommend (a), scoped explicitly.
 - **R2 — Multi-archetype company.** The loader must resolve per-segment archetype -> per-segment matrix
   for CSL. Low technical risk; a loader generalisation to confirm.
-- **R3 — Terminal-share validator fires structurally on long-duration compounders** (CSL 73-77%, DNL
+- **R3 — Terminal-share validator fires structurally on long-duration compounders. DECIDED 25 June 2026 (Stephen): keep it a NON-BLOCKING warning that triggers a sensitivity pass; do not auto-suppress.** (CSL 73-77%, DNL
   72-80%). Keep it a NON-blocking warning triggering a sensitivity pass; do NOT auto-extend horizon or
   auto-fade ROIC to suppress it (that would silently change the documented numbers). The phase-3.5
   10-year / explicit-fade mitigations stay OPTIONAL modes, not defaults.
 - **R4 — Segment detail: encode vs parameterise.** Encode segments and per-year vectors as DATA
   (`AssumptionCell.mid` is already a per-year list); phasing is a time-profile selection, not hardcoded
   `/6`; the corporate line growth is a parameterised driver, not a constant.
-- **R5 — WBC payout oracle: 30.03 (flat 0.75) vs 30.28 (CET1-solved).** The engine should implement the
+- **R5 — WBC payout oracle: 30.03 (flat 0.75) vs 30.28 (CET1-solved). DECIDED 25 June 2026 (Stephen): the CET1-binding mechanic is the sounder methodology for financial institutions; 30.28 is the canonical bank-engine acceptance number. The flat-0.75 MT valuation workbook (30.03) is a superseded artefact — to be noted as such, and optionally refreshed to a v5 binding-payout build.** The engine should implement the
   CET1 constraint (§15.5), so its natural oracle is 30.28; the 30.03 workbook is a simplified earlier
   artefact. Confirm 30.28 as the acceptance number, and whether to refresh the MT valuation workbook to
   match or keep both with a documented ~0.8% reconciliation.
