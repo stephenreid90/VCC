@@ -20,8 +20,13 @@ Two workstreams, in order:
 1. **Build out the user interface.** Stephen has many ideas for the scenario-valuation
    interface. Start from the three prototypes in `ui_prototypes/`
    (`csl_`/`dnl_`/`wbc_scenario_interface.html`) and the locked concept in the "Interface
-   prototypes" section below. First move: hear Stephen's ideas, then iterate the prototypes
-   live. Note: CSL now has a full six-scenario set (`csl_scenarios_comparison_v2.xlsx` +
+   prototypes" section below. **Stephen's full 10-point UI brief + all design decisions are captured in
+   `design/ui_design_brief.md` (25 June 2026) — read that first for this workstream.** It turns the
+   interface from an illustrative viewer into a live modelling workbench (user-defined scenarios,
+   per-input overrides, faithful browser-side reduced-form, Excel formula-workbook download, a
+   cost-of-capital/beta workbench, deeper content from data/scenarios|industries|companies, and
+   discount-rate theory from the IERs now in `design/reference/discount_rate_iers/`). First move:
+   iterate the prototypes live against the brief. Note: CSL now has a full six-scenario set (`csl_scenarios_comparison_v2.xlsx` +
    thesis + discussion doc), so its interface bars can be made real like DNL/WBC (the
    csl_ prototype still shows only Muddle Through calibrated with placeholders).
 
