@@ -13,6 +13,35 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 
 ---
 
+## Next session focus (fresh chat — opened after 25 June 2026)
+
+Two workstreams, in order:
+
+1. **Build out the user interface.** Stephen has many ideas for the scenario-valuation
+   interface. Start from the three prototypes in `ui_prototypes/`
+   (`csl_`/`dnl_`/`wbc_scenario_interface.html`) and the locked concept in the "Interface
+   prototypes" section below. First move: hear Stephen's ideas, then iterate the prototypes
+   live. Note: CSL now has a full six-scenario set (`csl_scenarios_comparison_v2.xlsx` +
+   thesis + discussion doc), so its interface bars can be made real like DNL/WBC (the
+   csl_ prototype still shows only Muddle Through calibrated with placeholders).
+
+2. **Decide the programming boundary — where AI/analyst judgment enters vs where it is
+   mechanical.** After the UI, work through `design/engine_implementation_plan.md` (steps
+   6+10) and mark each part as deterministic code or human/AI judgment. Rough seed:
+   *mechanical* = derivations/identities, discounting, segment aggregation, consistency
+   checks, the workbook lint; *judgment/AI* = scenario calibration, Five Forces positioning,
+   driver direction×magnitude×confidence, the narratives. This decision shapes how the
+   `linkage/` + `assumptions/` layers get built.
+
+**State at handoff (main f9d2b02, all pushed):** CSL finished to WBC parity; methodology
+at **v0.7** (accepted, folded into architecture.md); engine implementation plan written and
+**M0 settled** (R1 done — CSL `financials.yaml` + 3 impact matrices authored; R5 — CET1-binding
+payout, canonical WBC MT oracle **30.28**; R3 — terminal-share validator stays a non-blocking
+warning). Engine **not yet coded** — M1 (DNL Muddle Through vertical slice, oracle AUD 3.59) is
+the first build when chosen. β held at 0.85 for CSL by decision (repeatable framework).
+
+---
+
 ## Who and what
 
 Owner, people, repo, and test companies now live in `CLAUDE.md`. Volatile note kept here:
