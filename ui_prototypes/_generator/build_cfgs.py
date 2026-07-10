@@ -86,6 +86,7 @@ CSL_DID = {
 dnl = {
  "company":"Dyno Nobel Limited (ASX:DNL)","companyShort":"DNL","ccy":"AUD","ccynote":"AUD · WACC-based DCF",
  "dp":2,"market":3.61,"broker":3.61,"scale":4.6,"liveIdx":2,"activeIdx":2,
+ "richbook":True,"shares":1884,"netDebt":1300,
  "mklab":"vs market (3.61)","brlab":"vs broker target (3.61)","metric4":{"label":"Asymmetry (down/up)","value":"4.05×"},
  "pvsub":"","topnote":"Working prototype — all six scenarios calibrated (v4). Slider responses are an illustrative approximation, not the production DCF engine. Reid Advisory, June 2026.",
  "footnote":"Prototype for discussion. Calibrated central case: DNL Muddle Through AUD 3.59 (market AUD 3.61). Per-scenario figures from dnl_scenarios_comparison_v4.",
@@ -310,5 +311,7 @@ csl = {
 import beta_data
 dnl["beta"]=beta_data.DNL; wbc["beta"]=beta_data.WBC; csl["beta"]=beta_data.CSL
 
-json.dump({"dnl":dnl,"wbc":wbc,"csl":csl}, open('/tmp/cfgs.json','w'), ensure_ascii=False)
+import os as _os
+_CFGP=_os.path.join(_os.path.dirname(_os.path.abspath(__file__)),'cfgs_gen.json')
+json.dump({"dnl":dnl,"wbc":wbc,"csl":csl}, open(_CFGP,'w'), ensure_ascii=False)
 print("cfgs.json written")

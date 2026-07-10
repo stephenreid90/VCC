@@ -242,6 +242,108 @@ wired, snapshot no longer referenced. DOM reviewed, not browser-tested here (Chr
 **Still outstanding (post-swap):** Excel formula-workbook download (stub); real EODHD data behind the β
 workbench (replace beta_data mock). Iteration ~13 — swapping chats now.
 
+## UI — DNL rich formula-workbook: DCF + discount build + comps/β/stats + charts (10 July 2026)
+
+Stephen's brief: the Excel download should show *all* the numeric analysis, formula-driven — a DCF to
+equity per scenario, discount-rate build-ups, comparables/betas/stats/charts. Decisions (via
+AskUserQuestion): **hybrid** fidelity, **all four** sheet types, **DNL first**. WBC/CSL keep the simple
+book until their bank/FX templates are built (gated on a new `richbook` cfg flag; only DNL has it).
+
+**What the DNL download now contains** (`DNL_scenarios.xlsx`, all formula-driven, yellow/blue inputs):
+1. **Assumptions** — global inputs (Rf/ERP/α, shares 1884, net debt 1300, reduced-form calibration, WACC
+   weights, market/broker).
+2. **Comparables & Beta** — peers from `cfg.beta` (mock): levered β, tax, D/E → **Hamada unlever/relever**
+   (formula) columns; **subject β = median of selected levered** betas (1.10, matches the UI default,
+   relever-off); a **regression block** (26 points) with native **SLOPE / RSQ / STEYX-based SE(β) / t(β vs 1)**
+   formulas; and a **native scatter chart with linear trendline**.
+3. **Discount rate** — Re = Rf + β×ERP + α (β links to the comps median) → **Re 9.80%**, then
+   WACC = Re×wE + after-tax Kd×(1−wE) → **WACC 8.624%** (matches the notes). Scenarios discount at their
+   assessed rate by default; this β-driven WACC is the labelled alternative.
+4. **DCF to equity per scenario** (one tab each) — explicit 5-year FCFF cascade (solve-F1 construction) →
+   PV explicit + PV terminal → **EV → net-debt bridge → equity → ÷ shares → per share**, plus an implied
+   P&L block. Built **reduced-form-consistent**: it **reconstructs EV and ties EXACTLY to the UI headline**
+   (Muddle Through EV 8,064 → 3.59; all six scenarios tie, EV-check Δ = 0.0000).
+5. **Summary** — every scenario value linked to its DCF tab, + β/Re/WACC/market/broker.
+
+**Engine additions.** The inline writer gained **native scatter-chart support** (chart/drawing parts, rels,
+content-types, linear trendline). New shared module `dnl_rich.js` (→ `DNLRICH`) alongside `vcc_book.js`
+(simple, → `VCCBOOK`) and the chart-capable `xlsx_writer.js` (→ `VCCXLSX`). `vccDownload` branches:
+`CFG.richbook && CFG.beta` → DNLRICH, else the simple book.
+
+**Verification (strong).** LibreOffice headless recalc: all 6 DCF tabs reconstruct EV and tie to the UI
+numbers (Δ 0.0000); β 1.10 / Re 9.80 / WACC 8.624; regression stats compute (n26, β1.051, R²0.618,
+SE0.169, t(βvs1)0.303 — "not distinguishable from 1", matching the UI); Hamada unlever/relever correct
+(Orica 1.05→βu 0.798→relever 0.955); no error cells; all XML well-formed; scatter chart survives LO;
+apostrophe/edge-char safe. **End-to-end re-run from the shipped `dnl_scenario_interface.html` CFG** (not just
+the /tmp source) reproduces the tie-out. (Not opened in real Excel here — Stephen to eyeball the download.)
+
+**Hybrid design note (how it upgrades).** The DCF path is a reduced-form-consistent reconstruction (F1 solved
+so the explicit stream reproduces the anchor×ratio EV), *not* the audited 3-statement model. The sheet
+**layout** mirrors the real `dnl_muddle_through_valuation_v4.xlsx` (Assumptions → WACC → DCF → Equity bridge),
+so when the DCF engine (M1+) lands, its per-scenario projection lines swap into the same cells without
+changing structure — same mock-now/real-later pattern as the β workbench.
+
+**Also fixed:** the recurring `/tmp/cfgs.json` permission collision — `build_cfgs.py` now dumps, and
+`gen_ui.py` reads, a **script-local `cfgs_gen.json`** (cwd-independent, falls back to /tmp), so a
+prior session's file can no longer block regeneration.
+
+**Next (WBC/CSL rich templates):** bank archetype (cost of equity, ROE fade to Ke, CET1-binding payout, no
+EV bridge — a dividend/excess-return build, not FCFF→EV) and CSL (FCFF at CoE with USD→AUD 0.66). Then real
+EODHD data behind the β workbench. Iteration ~19 this chat — **swap chats now.**
+
+## UI — Excel formula-workbook download shipped (10 July 2026, fresh chat)
+
+
+The stub `#dlbtn` now downloads a **real, self-contained formula workbook** — no libraries, works offline
+from the single HTML file (chose the inline browser writer over the Python side, per Stephen: keeps "HTML is
+the contract").
+
+**What it produces.** `<TICKER>_scenarios.xlsx`, built live from the current in-browser state (so it
+**captures your edits** — overridden world cases and user scenarios included). Structure:
+1. **Assumptions** sheet — the reduced-form baseline (base value, reference Re/g/margin/tax/x0, wTerm, x
+   sensitivity, market & broker), all in **yellow-fill / blue-font input cells**.
+2. **One tab per editable scenario** — the five value-material inputs + anchor as yellow inputs; then
+   term / margin / tax / x factors → reduced-form ratio → **value per share, all by formula** linking back
+   to Assumptions (`=$B$3*B17`, cross-sheet `'Assumptions'!$B$12`, etc.). Honours workbook-discipline
+   (formulas not hard-coded values; baseline separate from scenario inputs; value derived).
+3. **Summary** — every scenario value linked to its tab by formula, + market/broker reference lines.
+
+**How it's built.** Two shared JS modules inlined into the generator's SCAFFOLD: `VCCXLSX` (CRC32 +
+store-only ZIP + minimal OOXML — inlineStr text, number/formula cells, 5-style sheet incl. yellow/blue
+input style, `fullCalcOnLoad`) and `VCCBOOK` (maps live CFG state → sheets, mirrors gen_ui's reduced-form
+for cached values). Both live in `_generator/xlsx_writer.js` + `vcc_book.js` conceptually but are inlined
+verbatim into `gen_ui.py` (byte-parity verified against the node-tested source).
+
+**Verification (strong — actually recalculated).** Built workbooks from all three real CFGs; opened in
+**openpyxl** (structurally valid, value cells are formulas not constants, inputs carry FFFFF2CC fill /
+FF0000CC font); then **LibreOffice headless recalc** (`--calc`, fullCalcOnLoad) reproduced **every one of
+the 18 scenario tabs to the exact UI number** (DNL 4.16/3.59/3.48/2.63/1.44/1.28; WBC 35.46/30.15/…/20.09;
+CSL 237.29/203.83/…/159.90). Override test: MT +1% Re → 3.59→3.16 (down, correct); a user "bull case" +0.5%
+g → 3.86 (up); Summary cross-sheet links (incl. a spaced sheet name) resolve. All three HTML: CFG still
+parses as valid JSON; stub/alert gone; `vccDownload` wired to `#dlbtn` in both openDetail and openAll.
+(Browser click-to-save not exercised — Chrome tool won't open file://; Stephen to eyeball the actual
+download.)
+
+**Sandbox quirk noted:** `/tmp/cfgs.json` is owned by a prior session's uid (nobody) and sticky `/tmp`
+blocks overwrite/rm, so `build_cfgs.py` errors on its `json.dump`. Existing file is current and valid, so
+`gen_ui.py` runs fine against it — but a future sandbox session may need to dump cfgs to a fresh path. Edits
+built sandbox-side + `cp`'d to the mount (truncation quirk avoided).
+
+**Excel-repair fix (same session):** Excel (stricter than LibreOffice) stripped the Summary's
+cross-sheet formula when a user-scenario name contained an apostrophe — the quote in
+`'Bob's case'!$B$18` closes early. Fixed in `vcc_book.js`: `refName()` doubles apostrophes
+(`'Bob''s case'!`), and `sanitize()` strips edge apostrophes plus the illegal `[]:*?/\` set from
+tab names. Re-verified via LibreOffice recalc across all three + a torture-test of names (`&`,
+quotes, brackets, edge/inner apostrophes): every Summary link resolves and all XML parts are
+well-formed. Also relabelled the explore heading → "Explore the build-up for the selected
+scenario". gen_ui.py rebuilt deterministically from the pristine original (xlsx + fix + label).
+Iteration ~9.
+
+**Remaining UI:**
+ real **EODHD data** behind the β workbench (replace `beta_data.py` mock — needs Ben's
+feed/sample); the "advanced / show all inputs" long tail. Local main still needs `git push origin main`
+from Stephen's terminal. Iteration ~7 this fresh chat.
+
 ## Who and what
 
 Owner, people, repo, and test companies now live in `CLAUDE.md`. Volatile note kept here:
@@ -732,15 +834,4 @@ Next: per-scenario impact matrix `data/impact_matrix/by_industry/australian_majo
 - **DNL Q1-Q8 review + Five Forces spine + tax-rate consistency (9 June 2026).** Substantive day of methodology refinement. (a) Q1-Q8 review fixes: base EBIT corrected to AUD 480m (corporate already in segment guidance per slides 27-28); margin glide reconciled to FY27 exit run rate; OCF run rate AUD 500m (was AUD 290m, depressed by H1 TWC unwind); full Fertilisers separation map per slide 29 added to equity bridge (IPF Distribution +AUD 125m face, Geelong remediation -AUD 35m, Gibson Island -AUD 97m, transaction costs -AUD 11m, PH contingent +AUD 100m face); Period A buyback adjustment removed (value-neutral). (b) WACC discipline: Hamada formula confirmed; world-index basis for beta (DNL beta 0.95 vs 1.15 ASX200); RFR convention is 10Y on-the-run CGS YTM. (c) Tax discipline (methodology section 3.6 new): effective rate (FY26 22.5%) glides linearly to blended statutory (27.5%, computed from jurisdictional weights x statutory rates) over the explicit horizon. Single rate consistency principle: same blended statutory used for terminal operating tax, WACC debt-tax-shield, and Hamada re-levering. (d) Five Forces spine for Step 3 company position (methodology section 3.3 new): per-force traversal (buyer, supplier, new entrants, substitutes, rivalry) with industry rating vs company-relative + mechanism + quantified delta + where_captured. Replaces earlier catch-all 'company offset.' DNL net: -25bps (rivalry/competitive position -30, rivalry/product-mix -10, new entrants/DNEL pipeline +15). (e) Source-document ingestion discipline (methodology section 14 new): standing checklist (investor pres, half-year results, statutory accounts, continuous disclosure, transcripts, sustainability); per-company documents register; refresh cadence; handoff spec for Ben's data workstream. Headline: Muddle Through per share AUD 2.90 (v3) -> AUD 3.59 (v4 with full discipline), essentially at market AUD 3.61. Framework discriminating power now in scenario asymmetry, not in disagreement with consensus on central case. Architecture spec bumped v0.3.1 -> v0.4 (additive only).
 - **Gas-contract roll-off overlay added (29 May 2026).** Tara flagged that the US gas-contract roll-off (2028-2030 window) was narrative-only and the margin glide path actually moved the wrong way (transformation drove margins up through FY31 — exactly when the gas-cost advantage erodes). Resolution: added a structural-headwind overlay to the margin glide of -50/-100/-150bps cumulative in Y3/Y4/Y5, partially offsetting the transformation tailwind. Methodology §3.2.1 captures the concept (sister to transformation overlay). Applied flat across scenarios for this iteration — future refinement could make scenario-conditional (bigger drag under high-gas scenarios like Stagflation/Disorderly Climate). Headline DNL per-share moves: MT AUD 3.22 → AUD 2.90 (vs market AUD 3.61, -20%); Orderly AUD 3.72 → AUD 3.36 (-7%); Stagflation AUD 1.12 → AUD 0.82; all scenarios drop AUD 0.31-0.36/share. Workbooks v3 in analyses/dnl/valuations/. Aligns with substack discipline of building structural risk into cash flows, not hand-waving to terminal state or adjusting WACC.
 - **Reference texts and style anchors (28 May 2026).** Tara's go-to references: (a) Damodaran (Stern website, blog, books — particularly Investment Valuation, Narrative and Numbers, and the 2005 "Value of Control" paper); (b) Mercer's Business Valuation: An Integrated Theory, 3rd Edition (Mercer + Harms, 2021); (c) Clifford Ang's Applied Valuation; (d) Valuation Matters substack at valuationmatters1.substack.com (co-authored Stephen Reid + Tony Carlton). Style of thinking absorbed from KISS principle + control-premium-fallacy posts: (i) build risk and economic content into the cash flows, not into ad-hoc premia or discounts; (ii) "standard" adjustments applied rotely are suspect — case-specific mechanism is required; (iii) KISS / market efficiency / historical premia get arbitraged away; (iv) distinguish measurable from abstract (e.g. takeover premium != control premium); (v) double-counting check is the recurring red flag. The single-WACC discipline (methodology §3.5) is a direct application of (i) and (v).
-- **Single-WACC discipline across scenarios (28 May 2026).** Resolution of the parked §9.7 review item 4 ("WACC scenario behaviour"). WACC is set at the valuation date and held constant across all scenarios. Rationale: each scenario already prices its risk through the cash-flow path; using a higher discount rate in a stress scenario double-counts risk. The marginal investor's required return is set by today's market conditions; it does not change conditional on which future state realises. Scenario rate-driver deltas (Rf, ERP, country risk) are retained in the impact matrix for narrative context but do NOT flow into the DCF discount rate. Terminal growth REMAINS scenario-conditional (it represents a structural economic state, not risk re-pricing). User override of WACC for sensitivity is exposed in the workbook. Captured in methodology §3.5 and architecture spec v0.3.1. Cross-scenario range compressed ~30% under single-WACC vs the earlier differential-WACC approach; asymmetry persists in cash flows alone (downside compression > upside lift). Tara's view: "feels like changing the WACC is double counting risk."
-- **Equity-bridge and valuation-mechanics methodology (25 May 2026).** Following a deep methodology exchange with Tara on the DNL Muddle Through workbook, the following are now baked into the framework via `design/methodology/equity_bridge_and_valuation_mechanics.md` and architecture spec v0.3: (1) revenue growth derived from scenario macro → industry archetype → company position chain (not hardcoded scalar); (2) margin glide path as a structured company-position field; (3) narrow net-debt definition + structured equity-bridge adjustments with on-balance-sheet flag and provided-for-at-anchor tracking; (4) restructuring-cost consistency rule (assume benefit → must assume execution cost); (5) latest reported share count paired to net-debt anchor date (no buyback projection); (6) IMI handling via parallel statutory + ex-IMIs DCFs with per-item context and default-lean taxonomy, user picks central case; (7) explicit valuation date with Period A walk-forward (anchor → valuation), Period B stub line in the DCF (Option X), mid-period discounting from valuation date onward; (8) per-field as_at_date discipline on items where timing matters; (9) governance assessment parked (Tara dislikes ad-hoc alpha-style premia — refer her substack `valuationmatters1.substack.com`). Step 6 production translator + Step 7 production DCF must implement all of this. The DNL Muddle Through workbook serves as the canonical worked example.
-- **Valuation inputs as transparent components, not opaque baselines (24 May 2026).** Following the Phase 3.5 smoke-test calibration pass, valuation inputs that an analyst would reasonably want to challenge or override are exposed as named, overridable component fields rather than as hidden parameters. WACC in particular is now built up component-by-component (Rf, ERP, β, Rd_pretax, tax, market-value weights) via a `WaccBuild` dataclass; the rationale for each component lives next to it in the financials YAML (`normalised_baseline.wacc_build`). This principle carries forward to the Step 7 production DCF engine and is captured in `docs/phase_3_5_findings.md` (Calibration pass section, Design principle adopted).
-- **Disorderly Climate Crystallisation framing:** scenario is about the *crystallisation event*, not about whether climate transition becomes disorderly (it already is, per Tara's workshop point about money-supply / inflation / cost-of-living pressure crushing climate-policy coordination).
-
----
-
-## External dependencies / things we're waiting on
-
-- **Ben's data-sourcing workstream** — base-year financials per company; data feasibility confirmation per schema field; alignment on `financials.yaml` contract.
-- **Scenarios workshop** (Tara to convene) — produces step 3 deliverables: 3–6 named scenarios in YAML + narrative form.
-- **IPL strategist friend** — provides the cali
+- **Single-WACC discipline across scenarios (28 May 2026).** Resolution of the parked §9.7 review item 4 ("WACC scenario behaviour"). WACC is set at the valuation date and held constant across all scenarios. Rationale: each scenario already prices its risk through the cash-flow path; using a higher discount rate in a stress scenario double-counts risk. The marginal investor's required return is set by today's market conditions; it does not change conditional on which future state realises. Scenario rate-driver deltas (Rf, ERP, country risk) are retained in the impact matrix for narrative context but do NOT flow into the DCF discount rate. Terminal growth REMAINS scenario-conditional (it represents a structural economic state, not risk re-prici

@@ -56,7 +56,7 @@ details.thy .thybody{padding:2px 12px 11px 22px; font-size:12.5px;}
     <div class="sub" style="margin-top:6px;"><span style="color:var(--info-tx);">▮</span> Muddle Through · <span style="color:var(--user-tx);">▮</span> your scenarios · <span style="color:var(--warning-tx);">▮</span> average broker · dashed = market</div></div>
 </div>
 <div style="border-top:0.5px solid var(--bd); padding-top:1rem;">
-  <div class="hd" style="margin-bottom:8px;">Explore the build-up</div>
+  <div class="hd" style="margin-bottom:8px;">Explore the build-up for the selected scenario</div>
   <div id="explore" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;"></div>
   <div id="panel"></div>
   <div id="detail"></div></div>
@@ -64,6 +64,457 @@ details.thy .thybody{padding:2px 12px 11px 22px; font-size:12.5px;}
 </div>
 <script>
 var CFG=__CFG__;
+
+/* ===== VCC self-contained xlsx writer (store-zip + minimal OOXML) =====
+   Shared by the browser download and the node test. Browser/Node commons only:
+   Uint8Array, DataView, TextEncoder. No external libs. */
+var VCCXLSX=(function(){
+  var enc=new TextEncoder();
+  function u8(s){ return enc.encode(s); }
+  function concat(arrs){ var n=0,i; for(i=0;i<arrs.length;i++)n+=arrs[i].length; var out=new Uint8Array(n),o=0;
+    for(i=0;i<arrs.length;i++){ out.set(arrs[i],o); o+=arrs[i].length; } return out; }
+  // CRC32
+  var CRC=(function(){ var t=new Uint32Array(256); for(var n=0;n<256;n++){ var c=n; for(var k=0;k<8;k++){ c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1); } t[n]=c>>>0; } return t; })();
+  function crc32(buf){ var c=0xFFFFFFFF; for(var i=0;i<buf.length;i++){ c=CRC[(c^buf[i])&0xFF]^(c>>>8); } return (c^0xFFFFFFFF)>>>0; }
+  // store-only ZIP
+  function zip(files){ // files: [{name, data:Uint8Array}]
+    var local=[], central=[], offset=0;
+    var dt=0x0021, tm=0; // fixed 1980-01-01
+    for(var i=0;i<files.length;i++){ var f=files[i], name=u8(f.name), data=f.data, crc=crc32(data);
+      var lh=new Uint8Array(30+name.length), dv=new DataView(lh.buffer);
+      dv.setUint32(0,0x04034b50,true); dv.setUint16(4,20,true); dv.setUint16(6,0,true); dv.setUint16(8,0,true);
+      dv.setUint16(10,tm,true); dv.setUint16(12,dt,true); dv.setUint32(14,crc,true);
+      dv.setUint32(18,data.length,true); dv.setUint32(22,data.length,true);
+      dv.setUint16(26,name.length,true); dv.setUint16(28,0,true); lh.set(name,30);
+      local.push(lh); local.push(data);
+      var ch=new Uint8Array(46+name.length), cv=new DataView(ch.buffer);
+      cv.setUint32(0,0x02014b50,true); cv.setUint16(4,20,true); cv.setUint16(6,20,true); cv.setUint16(8,0,true);
+      cv.setUint16(10,0,true); cv.setUint16(12,tm,true); cv.setUint16(14,dt,true); cv.setUint32(16,crc,true);
+      cv.setUint32(20,data.length,true); cv.setUint32(24,data.length,true); cv.setUint16(28,name.length,true);
+      cv.setUint16(30,0,true); cv.setUint16(32,0,true); cv.setUint16(34,0,true); cv.setUint16(36,0,true);
+      cv.setUint32(38,0,true); cv.setUint32(42,offset,true); ch.set(name,46);
+      central.push(ch); offset+=lh.length+data.length; }
+    var cd=concat(central), cdOff=offset;
+    var eocd=new Uint8Array(22), ev=new DataView(eocd.buffer);
+    ev.setUint32(0,0x06054b50,true); ev.setUint16(4,0,true); ev.setUint16(6,0,true);
+    ev.setUint16(8,files.length,true); ev.setUint16(10,files.length,true);
+    ev.setUint32(12,cd.length,true); ev.setUint32(16,cdOff,true); ev.setUint16(20,0,true);
+    return concat(local.concat([cd,eocd])); }
+
+  function xmlEsc(s){ return (''+s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function colLetter(n){ var s=''; n++; while(n>0){ var m=(n-1)%26; s=String.fromCharCode(65+m)+s; n=(n-m-1)/26|0; } return s; }
+
+  // cell: {t:'s',v} text | {t:'n',v} number | {t:'f',f,v} formula(+cached) ; optional s:styleIdx
+  function cellXml(addr,c){ var s=(c.s!==undefined)?(' s="'+c.s+'"'):'';
+    if(c.t==='s'){ return '<c r="'+addr+'"'+s+' t="inlineStr"><is><t xml:space="preserve">'+xmlEsc(c.v)+'</t></is></c>'; }
+    if(c.t==='f'){ var cv=(c.v!==undefined&&c.v!==null&&isFinite(c.v))?('<v>'+c.v+'</v>'):''; return '<c r="'+addr+'"'+s+'><f>'+xmlEsc(c.f)+'</f>'+cv+'</c>'; }
+    if(c.t==='n'){ var val=(c.v===undefined||c.v===null||!isFinite(c.v))?0:c.v; return '<c r="'+addr+'"'+s+'><v>'+val+'</v></c>'; }
+    return '<c r="'+addr+'"'+s+'/>'; }
+
+  function sheetXml(rows){ var body='';
+    for(var r=0;r<rows.length;r++){ var row=rows[r]||[]; var cells='';
+      for(var col=0;col<row.length;col++){ var c=row[col]; if(c===null||c===undefined) continue; cells+=cellXml(colLetter(col)+(r+1),c); }
+      body+='<row r="'+(r+1)+'">'+cells+'</row>'; }
+    return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'+
+      '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><cols><col min="1" max="1" width="34" customWidth="1"/><col min="2" max="6" width="15" customWidth="1"/></cols><sheetData>'+body+'</sheetData></worksheet>'; }
+
+  var STYLES='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'+
+    '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'+
+    '<numFmts count="2"><numFmt numFmtId="164" formatCode="0.00"/><numFmt numFmtId="165" formatCode="0.0%"/></numFmts>'+
+    '<fonts count="3"><font><sz val="11"/><name val="Calibri"/></font>'+
+    '<font><b/><sz val="11"/><name val="Calibri"/></font>'+
+    '<font><color rgb="FF0000CC"/><sz val="11"/><name val="Calibri"/></font></fonts>'+
+    '<fills count="3"><fill><patternFill patternType="none"/></fill>'+
+    '<fill><patternFill patternType="gray125"/></fill>'+
+    '<fill><patternFill patternType="solid"><fgColor rgb="FFFFF2CC"/></patternFill></fill></fills>'+
+    '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>'+
+    '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'+
+    // 0 default, 1 bold, 2 input(yellow+blue), 3 percent, 4 bold-2dp value
+    '<cellXfs count="5">'+
+    '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'+
+    '<xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/>'+
+    '<xf numFmtId="0" fontId="2" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/>'+
+    '<xf numFmtId="165" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>'+
+    '<xf numFmtId="164" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1" applyNumberFormat="1"/>'+
+    '</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+
+
+  // ---- scatter chart parts (one linear-trendline scatter per chart) ----
+  function chartXml(ch){ // ch:{title,xtitle,ytitle,series:[{name,xref,yref}],trendline}
+    var ser='';
+    for(var i=0;i<ch.series.length;i++){ var sp=ch.series[i];
+      ser+='<c:ser><c:idx val="'+i+'"/><c:order val="'+i+'"/>'+
+        '<c:tx><c:v>'+xmlEsc(sp.name)+'</c:v></c:tx>'+
+        '<c:spPr><a:ln w="0"><a:noFill/></a:ln><a:effectLst/></c:spPr>'+
+        '<c:marker><c:symbol val="circle"/><c:size val="5"/></c:marker>'+
+        (ch.trendline?'<c:trendline><c:spPr><a:ln w="12700"><a:solidFill><a:srgbClr val="C00000"/></a:solidFill></a:ln></c:spPr><c:trendlineType val="linear"/><c:dispRSqr val="1"/><c:dispEq val="1"/></c:trendline>':'')+
+        '<c:xVal><c:numRef><c:f>'+xmlEsc(sp.xref)+'</c:f></c:numRef></c:xVal>'+
+        '<c:yVal><c:numRef><c:f>'+xmlEsc(sp.yref)+'</c:f></c:numRef></c:yVal>'+
+        '<c:smooth val="0"/></c:ser>'; }
+    return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'+
+      '<c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'+
+      '<c:chart><c:title><c:tx><c:rich><a:bodyPr/><a:p><a:r><a:t>'+xmlEsc(ch.title||'')+'</a:t></a:r></a:p></c:rich></c:tx><c:overlay val="0"/></c:title><c:autoTitleDeleted val="0"/>'+
+      '<c:plotArea><c:layout/><c:scatterChart><c:scatterStyle val="marker"/><c:varyColors val="0"/>'+ser+
+      '<c:axId val="111111111"/><c:axId val="222222222"/></c:scatterChart>'+
+      '<c:valAx><c:axId val="111111111"/><c:scaling><c:orientation val="minMax"/></c:scaling><c:delete val="0"/><c:axPos val="b"/><c:title><c:tx><c:rich><a:bodyPr/><a:p><a:r><a:t>'+xmlEsc(ch.xtitle||'')+'</a:t></a:r></a:p></c:rich></c:tx><c:overlay val="0"/></c:title><c:crossAx val="222222222"/></c:valAx>'+
+      '<c:valAx><c:axId val="222222222"/><c:scaling><c:orientation val="minMax"/></c:scaling><c:delete val="0"/><c:axPos val="l"/><c:title><c:tx><c:rich><a:bodyPr/><a:p><a:r><a:t>'+xmlEsc(ch.ytitle||'')+'</a:t></a:r></a:p></c:rich></c:tx><c:overlay val="0"/></c:title><c:crossAx val="111111111"/></c:valAx>'+
+      '</c:plotArea><c:legend><c:legendPos val="b"/><c:overlay val="0"/></c:legend><c:plotVisOnly val="1"/></c:chart></c:chartSpace>'; }
+  function drawingXml(ch,cidx){ var a=ch.anchor||{c1:3,r1:1,c2:11,r2:20};
+    return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'+
+      '<xdr:wsDr xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'+
+      '<xdr:twoCellAnchor><xdr:from><xdr:col>'+a.c1+'</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>'+a.r1+'</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:from>'+
+      '<xdr:to><xdr:col>'+a.c2+'</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>'+a.r2+'</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:to>'+
+      '<xdr:graphicFrame macro=""><xdr:nvGraphicFramePr><xdr:cNvPr id="'+(cidx+1)+'" name="Chart '+(cidx+1)+'"/><xdr:cNvGraphicFramePr/></xdr:nvGraphicFramePr>'+
+      '<xdr:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/></xdr:xfrm>'+
+      '<a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/chart"><c:chart xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" r:id="rId1"/></a:graphicData></a:graphic>'+
+      '</xdr:graphicFrame><xdr:clientData/></xdr:twoCellAnchor></xdr:wsDr>'; }
+
+  function build(sheets){ // sheets: [{name, rows}]
+    var ct='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'+
+      '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'+
+      '<Default Extension="xml" ContentType="application/xml"/>'+
+      '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'+
+      '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>';
+    for(var i=0;i<sheets.length;i++){ ct+='<Override PartName="/xl/worksheets/sheet'+(i+1)+'.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'; }
+    // chart/drawing content types
+    var _ci=0;
+    for(var si2=0; si2<sheets.length; si2++){ if(sheets[si2].chart){ _ci++;
+      ct+='<Override PartName="/xl/charts/chart'+_ci+'.xml" ContentType="application/vnd.openxmlformats-officedocument.drawingml.chart+xml"/>';
+      ct+='<Override PartName="/xl/drawings/drawing'+_ci+'.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/>'; } }
+    ct+='</Types>';
+    var rootRels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>';
+    var wbSheets='', wbRels='';
+    for(var j=0;j<sheets.length;j++){ var sid=j+1; wbSheets+='<sheet name="'+xmlEsc(sheets[j].name)+'" sheetId="'+sid+'" r:id="rId'+sid+'"/>';
+      wbRels+='<Relationship Id="rId'+sid+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet'+sid+'.xml"/>'; }
+    var stylesRid=sheets.length+1;
+    wbRels+='<Relationship Id="rId'+stylesRid+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>';
+    var workbook='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>'+wbSheets+'</sheets><calcPr fullCalcOnLoad="1"/></workbook>';
+    var wbRelsXml='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+wbRels+'</Relationships>';
+    var files=[ {name:'[Content_Types].xml',data:u8(ct)}, {name:'_rels/.rels',data:u8(rootRels)},
+      {name:'xl/workbook.xml',data:u8(workbook)}, {name:'xl/_rels/workbook.xml.rels',data:u8(wbRelsXml)},
+      {name:'xl/styles.xml',data:u8(STYLES)} ];
+    var ci=0;
+    for(var s=0;s<sheets.length;s++){ var sx=sheetXml(sheets[s].rows);
+      if(sheets[s].chart){ ci++;
+        sx=sx.replace('</worksheet>','<drawing r:id="rId1"/></worksheet>').replace('<worksheet ','<worksheet xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" ');
+        files.push({name:'xl/charts/chart'+ci+'.xml', data:u8(chartXml(sheets[s].chart))});
+        files.push({name:'xl/drawings/drawing'+ci+'.xml', data:u8(drawingXml(sheets[s].chart,ci))});
+        files.push({name:'xl/drawings/_rels/drawing'+ci+'.xml.rels', data:u8('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart" Target="../charts/chart'+ci+'.xml"/></Relationships>')});
+        files.push({name:'xl/worksheets/_rels/sheet'+(s+1)+'.xml.rels', data:u8('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing" Target="../drawings/drawing'+ci+'.xml"/></Relationships>')});
+      }
+      files.push({name:'xl/worksheets/sheet'+(s+1)+'.xml', data:u8(sx)}); }
+    return zip(files); }
+
+  return { build:build, colLetter:colLetter };
+})();
+if(typeof module!=='undefined'&&module.exports){ module.exports=VCCXLSX; }
+
+/* ===== VCC workbook builder (shared: browser download + node test) =====
+   Turns live scenario state into a formula workbook honouring workbook-discipline:
+   yellow/blue input cells, an Assumptions baseline sheet, every other cell a formula. */
+var VCCBOOK=(function(){
+  // styles: 0 default, 1 bold, 2 input(yellow+blue), 3 percent, 4 bold-value
+  var S_BOLD=1, S_IN=2, S_PCT=3, S_VAL=4;
+  function T(v,s){ return {t:'s',v:v,s:s}; }
+  function N(v,s){ return {t:'n',v:v,s:s}; }
+  function F(f,v,s){ return {t:'f',f:f,v:v,s:s}; }
+  function sanitize(name,used){ var n=(''+name).replace(/[\[\]\:\*\?\/\\]/g,' ').replace(/^'+|'+$/g,'').slice(0,28).trim();
+    n=n.replace(/^'+|'+$/g,'').trim()||'Sheet';
+    var base=n,i=2; while(used[n.toLowerCase()]){ n=(base.slice(0,26)+' '+i); i++; } used[n.toLowerCase()]=1; return n; }
+
+  // mirror of gen_ui reduced-form (cached values only)
+  function reduced(cp,vals){ var Re=vals.re/100,g=vals.g/100,m=vals.m,tax=vals.tax/100,x=vals[cp.xKey];
+    var term=Math.pow((cp.re0-cp.g0)/(Re-g),cp.wTerm), mf=m/cp.m0, tf=(1-tax)/(1-cp.tax0), xf=1+(x-cp.x0)*cp.xk;
+    return {term:term,mf:mf,tf:tf,xf:xf,ratio:term*mf*tf*xf}; }
+
+  function build(state){
+    var cp=state.cp, sl=state.sliders, ccy=state.ccy, cs=state.companyShort;
+    var sReByKey={}; sl.forEach(function(s){ sReByKey[s.k]=s; });
+    var xKey=cp.xKey, xLab=sReByKey[xKey].label, mLab=sReByKey.m.label;
+    function refName(n){ return "'"+(''+n).replace(/'/g,"''")+"'"; } // double '' per Excel formula-language
+    function A(sheet,cell){ return refName(sheet)+'!'+cell; }
+    var AS='Assumptions';
+    var editable=state.scenarios.filter(function(sc){ return sc.kind!=='broker'; });
+    var used={};
+
+    // ----- Assumptions (baseline / reference inputs) -----
+    var arows=[];
+    arows.push([T('Assumptions — reduced-form baseline',S_BOLD)]);
+    arows.push([T('Yellow cells are inputs. Scenario tabs derive each value from these baselines plus the scenario’s own inputs, entirely by formula.')]);
+    arows.push([T('Company'), T(cs,S_IN)]);
+    arows.push([]);
+    arows.push([T('Parameter',S_BOLD), T('Value',S_BOLD)]);
+    arows.push([T('Reduced-form base value ('+ccy+')'), N(cp.base,S_IN)]);      // B6
+    arows.push([T('Reference discount rate (%)'), N(cp.re0*100,S_IN)]);          // B7
+    arows.push([T('Reference terminal growth (%)'), N(cp.g0*100,S_IN)]);         // B8
+    arows.push([T('Reference '+mLab), N(cp.m0,S_IN)]);                           // B9
+    arows.push([T('Reference tax rate (%)'), N(cp.tax0*100,S_IN)]);              // B10
+    arows.push([T('Reference '+xLab), N(cp.x0,S_IN)]);                           // B11
+    arows.push([T('Terminal exponent (wTerm)'), N(cp.wTerm,S_IN)]);             // B12
+    arows.push([T(xLab+' sensitivity (per unit)'), N(cp.xk,S_IN)]);             // B13
+    arows.push([]);
+    arows.push([T('Market price ('+ccy+')'), N(state.market,S_IN)]);            // B15
+    arows.push([T('Broker target ('+ccy+')'), N(state.broker,S_IN)]);           // B16
+    var sheets=[{name:AS,rows:arows}];
+
+    // ----- one sheet per editable scenario -----
+    var sheetNames=[];
+    editable.forEach(function(sc){
+      var nm=sanitize(sc.n,used); sheetNames.push({name:nm, sc:sc});
+      var v=sc.vals, r=reduced(cp,v);
+      var kindTxt=(sc.kind==='user')?'Your scenario':(sc.kind==='live')?'Assessed case (Muddle Through)':'Assessed case';
+      var rows=[];
+      rows.push([T(sc.n,S_BOLD)]);                                              // 1
+      rows.push([T(kindTxt+' — yellow cells are inputs; everything below is a formula.')]); // 2
+      rows.push([T('Anchor — assessed value ('+ccy+')'), N(sc.anchor,S_IN)]); // 3  B3
+      rows.push([]);                                                            // 4
+      rows.push([T('Input',S_BOLD), T('Value',S_BOLD)]);                        // 5
+      rows.push([T('Discount rate (%)'), N(v.re,S_IN)]);                        // 6  B6
+      rows.push([T('Terminal growth (%)'), N(v.g,S_IN)]);                       // 7  B7
+      rows.push([T(mLab), N(v.m,S_IN)]);                                        // 8  B8
+      rows.push([T('Tax rate (%)'), N(v.tax,S_IN)]);                            // 9  B9
+      rows.push([T(xLab), N(v[xKey],S_IN)]);                                    // 10 B10
+      rows.push([]);                                                            // 11
+      rows.push([T('Derived (linked by formula)',S_BOLD)]);                     // 12
+      rows.push([T('Terminal factor'),
+        F('(('+A(AS,'$B$7')+'/100-'+A(AS,'$B$8')+'/100)/($B$6/100-$B$7/100))^'+A(AS,'$B$12'), r.term)]); // 13 B13
+      rows.push([T('Margin factor'), F('$B$8/'+A(AS,'$B$9'), r.mf)]);           // 14 B14
+      rows.push([T('Tax factor'), F('(1-$B$9/100)/(1-'+A(AS,'$B$10')+'/100)', r.tf)]); // 15 B15
+      rows.push([T(xLab+' factor'), F('1+($B$10-'+A(AS,'$B$11')+')*'+A(AS,'$B$13'), r.xf)]); // 16 B16
+      rows.push([T('Reduced-form ratio'), F('B13*B14*B15*B16', r.ratio)]);      // 17 B17
+      rows.push([T('Value per share ('+ccy+')',S_BOLD), F('$B$3*B17', sc.anchor*r.ratio, S_VAL)]); // 18 B18
+      rows.push([T('vs market'), F('B18/'+A(AS,'$B$15')+'-1', sc.anchor*r.ratio/state.market-1, S_PCT)]); // 19
+      rows.push([T('vs broker'), F('B18/'+A(AS,'$B$16')+'-1', sc.anchor*r.ratio/state.broker-1, S_PCT)]); // 20
+      sheets.push({name:nm,rows:rows});
+    });
+
+    // ----- Summary (links every scenario value by formula) -----
+    var srows=[];
+    srows.push([T('Scenario values — '+cs,S_BOLD)]);
+    srows.push([T('Each value links to its scenario tab by formula; edit inputs there and this updates.')]);
+    srows.push([]);
+    srows.push([T('Scenario',S_BOLD), T('Value ('+ccy+')',S_BOLD), T('vs market',S_BOLD), T('vs broker',S_BOLD)]);
+    sheetNames.forEach(function(o){ var v=o.sc.vals, r=reduced(cp,v), val=o.sc.anchor*r.ratio;
+      srows.push([ T(o.sc.n), F(A(o.name,'$B$18'), val, S_VAL),
+        F(A(o.name,'$B$19'), val/state.market-1, S_PCT), F(A(o.name,'$B$20'), val/state.broker-1, S_PCT) ]); });
+    srows.push([]);
+    srows.push([T('Market price'), F(A(AS,'$B$15'), state.market, S_VAL)]);
+    srows.push([T('Broker target'), F(A(AS,'$B$16'), state.broker, S_VAL)]);
+    sheets.push({name:'Summary',rows:srows});
+
+    return sheets;
+  }
+  return { build:build };
+})();
+if(typeof module!=='undefined'&&module.exports){ module.exports=VCCBOOK; }
+
+/* ===== DNL rich formula-workbook: DCF-to-equity + discount build + comps/beta/stats/chart =====
+   Hybrid: reduced-form-consistent explicit DCF that ties EXACTLY to the UI headline,
+   real Hamada unlever/relever + native regression stats + scatter chart from cfg.beta (mock).
+   All formula-driven. Shared by browser download + node test. */
+var DNLRICH=(function(){
+  var S_BOLD=1,S_IN=2,S_PCT=3,S_VAL=4;
+  function T(v,s){return {t:'s',v:v,s:s};}
+  function N(v,s){return {t:'n',v:v,s:s};}
+  function Ff(f,s){return {t:'f',f:f,s:s};}      // formula, no cache (fullCalcOnLoad recalcs)
+  function q(n){return "'"+(''+n).replace(/'/g,"''")+"'";}
+  function reduced(cp,v){var Re=v.re/100,g=v.g/100,m=v.m,tax=v.tax/100,x=v[cp.xKey];
+    var term=Math.pow((cp.re0-cp.g0)/(Re-g),cp.wTerm);return {ratio:term*(m/cp.m0)*((1-tax)/(1-cp.tax0))*(1+(x-cp.x0)*cp.xk)};}
+  function sanitize(name,used){var n=(''+name).replace(/[\[\]\:\*\?\/\\]/g,' ').replace(/^'+|'+$/g,'').slice(0,28).trim()||'Sheet';
+    while(used[n.toLowerCase()]){n=n.slice(0,26)+' 2';} used[n.toLowerCase()]=1;return n;}
+
+  function build(state){
+    var cp=state.cp, B=state.beta, ccy=state.ccy, cs=state.companyShort;
+    var AS='Assumptions', CB='Comparables & Beta', DR='Discount rate';
+    var idx=B.indexDefault, win=B.windowDefault;
+    var editable=state.scenarios.filter(function(s){return s.kind!=='broker';});
+    var sheets=[];
+
+    // ---------- Assumptions ----------
+    var a=[];
+    a.push([T('Assumptions — global inputs (yellow) · DNL',S_BOLD)]);
+    a.push([T('Every other sheet links here by formula. MOCK cost-of-capital data via the beta workbench.')]);
+    a.push([T('Company'),T(cs,S_IN)]);
+    a.push([]);
+    a.push([T('Market inputs',S_BOLD)]);
+    a.push([T('Risk-free rate (%)'),N(B.rf,S_IN)]);            //B6
+    a.push([T('Equity risk premium (%)'),N(B.erp,S_IN)]);      //B7
+    a.push([T('Alpha (%)'),N(B.alpha,S_IN)]);                  //B8
+    a.push([]);
+    a.push([T('Balance-sheet anchors',S_BOLD)]);
+    a.push([T('Shares on issue (m)'),N(state.shares,S_IN)]);   //B11
+    a.push([T('Net debt ('+ccy+' m)'),N(state.netDebt,S_IN)]); //B12
+    a.push([]);
+    a.push([T('Reduced-form calibration (base)',S_BOLD)]);
+    a.push([T('Base value ('+ccy+')'),N(cp.base,S_IN)]);       //B15
+    a.push([T('Reference discount rate (%)'),N(cp.re0*100,S_IN)]); //B16
+    a.push([T('Reference terminal growth (%)'),N(cp.g0*100,S_IN)]);//B17
+    a.push([T('Reference EBIT margin (%)'),N(cp.m0,S_IN)]);    //B18
+    a.push([T('Reference tax (%)'),N(cp.tax0*100,S_IN)]);      //B19
+    a.push([T('Reference gas drag (bps)'),N(cp.x0,S_IN)]);     //B20
+    a.push([T('Terminal exponent wTerm'),N(cp.wTerm,S_IN)]);   //B21
+    a.push([T('Gas sensitivity xk'),N(cp.xk,S_IN)]);           //B22
+    a.push([]);
+    a.push([T('WACC weights (DNL)',S_BOLD)]);
+    a.push([T('Equity weight wE'),N(B.toDiscount.wE,S_IN)]);   //B25
+    a.push([T('After-tax cost of debt (%)'),N(B.toDiscount.kdAfterTax,S_IN)]); //B26
+    a.push([T('Statutory tax (%)'),N(B.subject.tax*100,S_IN)]);//B27
+    a.push([]);
+    a.push([T('Market price ('+ccy+')'),N(state.market,S_IN)]);//B29
+    a.push([T('Broker target ('+ccy+')'),N(state.broker,S_IN)]);//B30
+    sheets.push({name:AS,rows:a});
+
+    // ---------- Comparables & Beta ----------
+    var comps=B.comparables;
+    var c=[];
+    c.push([T('Comparables & beta — '+idx+', '+win+'  (MOCK data)',S_BOLD)]);
+    c.push([T('Subject β = median of selected LEVERED betas (matches the UI default). Unlever/relever columns (Hamada) show the alternative at the lower DNL gearing. MOCK data — replace with EODHD.')]);
+    c.push([T('Subject tax (%)'),N(B.subject.tax*100,S_IN),T('Subject D/E'),N(B.subject.de,S_IN)]); //B3, D3
+    c.push([]);
+    c.push([T('Peer',S_BOLD),T('Levered β',S_BOLD),T('Tax',S_BOLD),T('D/E',S_BOLD),T('Unlevered β',S_BOLD),T('Relever @DNL',S_BOLD),T('Selected',S_BOLD)]); //row5
+    var firstDataRow=6, selRows=[];
+    comps.forEach(function(cm,i){ var r=firstDataRow+i; var bl=cm.data[idx][win].beta;
+      if(cm.selected) selRows.push(r);
+      c.push([ T(cm.name), N(bl,S_IN), N(cm.tax,S_IN), N(cm.gearingDE,S_IN),
+        Ff('B'+r+'/(1+(1-C'+r+')*D'+r+')'),                       // unlevered
+        Ff('E'+r+'*(1+(1-$B$3/100)*$D$3)'),                        // relever @ DNL
+        T(cm.selected?'Yes':'No') ]); });
+    var medRow=firstDataRow+comps.length+1; // one blank then median
+    c.push([]);
+    c.push([T('Subject β (median of selected levered — UI default, relever off)',S_BOLD),
+      Ff('MEDIAN('+selRows.map(function(r){return 'B'+r;}).join(',')+')',S_VAL)]); // B{medRow}
+    // relevered-at-DNL median shown in the note is the alternative (Hamada, lower gearing)
+    c.push([]);
+    // regression detail — first selected peer
+    var refPeer=comps[0]; var pts=refPeer.data[idx][win].points;
+    var statHdr=medRow+2;
+    c.push([T('Regression — '+refPeer.name+' ('+win+' returns vs '+idx+')',S_BOLD)]); // row statHdr
+    var ptHdr=statHdr+1;
+    c.push([T('index return',S_BOLD),T('stock return',S_BOLD),null,T('Statistic',S_BOLD),T('Value',S_BOLD)]); // row ptHdr
+    var p0=ptHdr+1, pN=p0+pts.length-1;
+    var xr=q(CB)+'!$A$'+p0+':$A$'+pN, yr=q(CB)+'!$B$'+p0+':$B$'+pN;
+    for(var i=0;i<pts.length;i++){ var row=[N(pts[i][0]),N(pts[i][1])];
+      if(i===0){ row.push(null,T('n'),Ff('COUNT($B$'+p0+':$B$'+pN+')')); }
+      else if(i===1){ row.push(null,T('β (slope)'),Ff('SLOPE($B$'+p0+':$B$'+pN+',$A$'+p0+':$A$'+pN+')')); }
+      else if(i===2){ row.push(null,T('R²'),Ff('RSQ($B$'+p0+':$B$'+pN+',$A$'+p0+':$A$'+pN+')')); }
+      else if(i===3){ row.push(null,T('SE(β)'),Ff('STEYX($B$'+p0+':$B$'+pN+',$A$'+p0+':$A$'+pN+')/(STDEV($A$'+p0+':$A$'+pN+')*SQRT(E'+p0+'-1))')); }
+      else if(i===4){ row.push(null,T('t(β vs 1)'),Ff('(E'+(ptHdr+2)+'-1)/E'+(ptHdr+4))); }
+      c.push(row); }
+    var compSheet={name:CB,rows:c, chart:{ title:refPeer.name+' β regression (MOCK)', xtitle:idx+' return', ytitle:refPeer.name+' return',
+      trendline:true, series:[{name:refPeer.name, xref:xr, yref:yr}], anchor:{c1:6,r1:statHdr-1,c2:14,r2:statHdr+19} }};
+    sheets.push(compSheet);
+
+    // ---------- Discount rate ----------
+    var d=[];
+    d.push([T('Discount-rate build — WACC (DNL)',S_BOLD)]);
+    d.push([T('Re = Rf + β×ERP + α; WACC = Re×wE + after-tax Kd×(1−wE). β links to the comps median.')]);
+    d.push([T('Risk-free rate (%)'),Ff(q(AS)+'!$B$6')]);          //B3
+    d.push([T('Equity risk premium (%)'),Ff(q(AS)+'!$B$7')]);     //B4
+    d.push([T('Subject β'),Ff(q(CB)+'!$B$'+medRow)]);             //B5
+    d.push([T('Alpha (%)'),Ff(q(AS)+'!$B$8')]);                   //B6
+    d.push([T('Cost of equity Re (%)',S_BOLD),Ff('B3+B5*B4+B6',S_VAL)]); //B7
+    d.push([]);
+    d.push([T('Equity weight wE'),Ff(q(AS)+'!$B$25')]);           //B9
+    d.push([T('After-tax cost of debt (%)'),Ff(q(AS)+'!$B$26')]); //B10
+    d.push([T('WACC (%)',S_BOLD),Ff('B7*B9+B10*(1-B9)',S_VAL)]);  //B11
+    d.push([]);
+    d.push([T('Scenarios discount at their assessed rate (default '+ (cp.re0*100).toFixed(2) +'%). This β-driven WACC is the alternative — set a scenario’s discount rate to it to apply.')]);
+    sheets.push({name:DR,rows:d});
+
+    // ---------- DCF per scenario ----------
+    var used={}; ['assumptions','comparables & beta','discount rate','summary'].forEach(function(n){used[n]=1;});
+    var scenSheetNames=[];
+    editable.forEach(function(sc){ var nm=sanitize(sc.n,used); scenSheetNames.push({name:nm,sc:sc}); var v=sc.vals;
+      var s=[];
+      s.push([T(sc.n,S_BOLD)]);
+      s.push([T('Explicit 5-year FCFF DCF, reduced-form-consistent (reconstructs EV, ties to the headline). '+ccy+' m unless noted.')]);
+      s.push([]);
+      s.push([]);
+      s.push([T('Scenario inputs',S_BOLD)]);
+      s.push([T('Discount rate Re (%)'),N(v.re,S_IN)]);   //B6
+      s.push([T('Terminal growth g (%)'),N(v.g,S_IN)]);   //B7
+      s.push([T('EBIT margin (%)'),N(v.m,S_IN)]);         //B8
+      s.push([T('Tax rate (%)'),N(v.tax,S_IN)]);          //B9
+      s.push([T('Gas roll-off (bps)'),N(v[cp.xKey],S_IN)]);//B10
+      s.push([T('Near-term FCFF growth (%)'),N(5,S_IN)]);  //B11
+      s.push([T('Reinvestment rate (%)'),N(25,S_IN)]);     //B12
+      s.push([T('Anchor — assessed value ('+ccy+')'),N(sc.anchor,S_IN)]); //B13
+      s.push([]);
+      s.push([T('Reduced-form headline',S_BOLD)]);         //row15
+      s.push([T('Terminal factor'),Ff('(('+q(AS)+'!$B$16/100-'+q(AS)+'!$B$17/100)/(B6/100-B7/100))^'+q(AS)+'!$B$21')]); //B16
+      s.push([T('Margin factor'),Ff('B8/'+q(AS)+'!$B$18')]);   //B17
+      s.push([T('Tax factor'),Ff('(1-B9/100)/(1-'+q(AS)+'!$B$19/100)')]); //B18
+      s.push([T('Gas factor'),Ff('1+(B10-'+q(AS)+'!$B$20)*'+q(AS)+'!$B$22')]); //B19
+      s.push([T('Reduced-form ratio'),Ff('B16*B17*B18*B19')]); //B20
+      s.push([T('Headline value per share ('+ccy+')',S_BOLD),Ff('B13*B20',S_VAL)]); //B21
+      s.push([T('Equity value ('+ccy+' m)'),Ff('B21*'+q(AS)+'!$B$11')]); //B22
+      s.push([T('Enterprise value ('+ccy+' m)'),Ff('B22+'+q(AS)+'!$B$12')]); //B23
+      s.push([]);
+      s.push([T('Explicit FCFF DCF (5-year, end-period; reconstructs EV)',S_BOLD)]); //row25
+      // denominator: sum_{t=1..5}(1+gr)^(t-1)/(1+re)^t + terminal
+      var den="1/(1+B6/100)^1+(1+B11/100)/(1+B6/100)^2+(1+B11/100)^2/(1+B6/100)^3+(1+B11/100)^3/(1+B6/100)^4+(1+B11/100)^4/(1+B6/100)^5+(1+B11/100)^4*(1+B7/100)/((B6/100-B7/100)*(1+B6/100)^5)";
+      s.push([T('PV-factor denominator'),Ff(den)]);   //B26
+      s.push([T('FCFF year 1 ('+ccy+' m)'),Ff('B23/B26')]); //B27
+      s.push([]);
+      s.push([T('Year',S_BOLD),T('FCFF',S_BOLD),T('PV factor',S_BOLD),T('PV',S_BOLD)]); //row29
+      var yrs=['FY27','FY28','FY29','FY30','FY31'];
+      for(var t=0;t<5;t++){ var rr=30+t;
+        s.push([T(yrs[t]),Ff('$B$27*(1+$B$11/100)^'+t),Ff('1/(1+$B$6/100)^'+(t+1)),Ff('B'+rr+'*C'+rr)]); }
+      s.push([T('Terminal value ('+ccy+' m)'),Ff('B34*(1+$B$7/100)/($B$6/100-$B$7/100)')]); //B35
+      s.push([T('PV of explicit FCFF'),Ff('SUM(D30:D34)')]); //B36
+      s.push([T('PV of terminal value'),Ff('B35/(1+$B$6/100)^5')]); //B37
+      s.push([T('Enterprise value (check)',S_BOLD),Ff('B36+B37',S_VAL)]); //B38
+      s.push([T('Less: net debt'),Ff('-'+q(AS)+'!$B$12')]); //B39
+      s.push([T('Equity value'),Ff('B38+B39')]); //B40
+      s.push([T('÷ shares (m)'),Ff(q(AS)+'!$B$11')]); //B41
+      s.push([T('Value per share ('+ccy+')',S_BOLD),Ff('B40/B41',S_VAL)]); //B42
+      s.push([T('Check: EV(check) − headline EV (≈0)'),Ff('B38-B23')]); //B43
+      s.push([]);
+      s.push([T('Implied P&L (illustrative)',S_BOLD)]); //row45
+      s.push([T('Year',S_BOLD),T('FCFF',S_BOLD),T('Implied EBIT',S_BOLD),T('Implied revenue',S_BOLD)]); //row46
+      for(var t2=0;t2<5;t2++){ var fr=30+t2;
+        s.push([T(yrs[t2]),Ff('B'+fr),Ff('B'+fr+'/((1-$B$9/100)*(1-$B$12/100))'),Ff('C'+(47+t2)+'/($B$8/100)')]); }
+      sheets.push({name:nm,rows:s});
+    });
+
+    // ---------- Summary ----------
+    var su=[];
+    su.push([T('Scenario values — '+cs,S_BOLD)]);
+    su.push([T('Per-share links to each DCF tab (cell B42). Discount build on the "Discount rate" tab; comps on "Comparables & Beta".')]);
+    su.push([]);
+    su.push([T('Scenario',S_BOLD),T('Value ('+ccy+')',S_BOLD),T('vs market',S_BOLD),T('vs broker',S_BOLD)]);
+    scenSheetNames.forEach(function(o){ su.push([ T(o.sc.n),
+      Ff(q(o.name)+'!$B$42',S_VAL),
+      Ff(q(o.name)+'!$B$42/'+q(AS)+'!$B$29-1',S_PCT),
+      Ff(q(o.name)+'!$B$42/'+q(AS)+'!$B$30-1',S_PCT) ]); });
+    su.push([]);
+    su.push([T('Subject β (comps median)'),Ff(q(CB)+'!$B$'+medRow,S_VAL)]);
+    su.push([T('Cost of equity Re (%)'),Ff(q(DR)+'!$B$7',S_VAL)]);
+    su.push([T('WACC (%)'),Ff(q(DR)+'!$B$11',S_VAL)]);
+    su.push([T('Market price'),Ff(q(AS)+'!$B$29',S_VAL)]);
+    su.push([T('Broker target'),Ff(q(AS)+'!$B$30',S_VAL)]);
+    sheets.push({name:'Summary',rows:su});
+
+    return sheets;
+  }
+  return {build:build};
+})();
+if(typeof module!=='undefined'&&module.exports){module.exports=DNLRICH;}
+
+
+// ===== VCC formula-workbook download (self-contained; DNL gets the rich book) =====
+function vccDownload(){ try{
+  var st={cp:CFG.cp,sliders:CFG.sliders,ccy:CFG.ccy,dp:CFG.dp,companyShort:CFG.companyShort,market:CFG.market,broker:CFG.broker,scenarios:CFG.scenarios};
+  var sheets;
+  if(CFG.richbook && CFG.beta){ st.beta=CFG.beta; st.shares=CFG.shares; st.netDebt=CFG.netDebt; sheets=DNLRICH.build(st); }
+  else { sheets=VCCBOOK.build(st); }
+  var bytes=VCCXLSX.build(sheets);
+  var blob=new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  var url=URL.createObjectURL(blob), a=document.createElement('a');
+  a.href=url; a.download=CFG.companyShort+'_scenarios.xlsx'; document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(url); if(a.parentNode) a.parentNode.removeChild(a); },1500);
+}catch(e){ alert('Workbook export failed: '+(e&&e.message?e.message:e)); } }
+
 (function(){
   var LS='vcc_ws_'+CFG.companyShort;
   var applyGlobal=false;
@@ -160,7 +611,7 @@ var CFG=__CFG__;
     var d=document.getElementById('detail'); var h='';
     Object.keys(CFG.titles).forEach(function(k){ h+='<div class="detailcard"><h4 style="margin-bottom:8px;">'+CFG.titles[k]+'</h4><div>'+detailHTML(k)+'</div></div>'; });
     d.innerHTML=h; wireEditable('assum',d); wireEditable('forces',d); wireEditable('discount',d);
-    var dl=d.querySelector('#dlbtn'); if(dl) dl.addEventListener('click',function(){ alert('In the live tool this downloads the '+CFG.companyShort+' scenario workbook — one tab per scenario (coming soon).'); });
+    var dl=d.querySelector('#dlbtn'); if(dl) dl.addEventListener('click',function(){ vccDownload(); });
     d.scrollIntoView({behavior:'smooth', block:'nearest'}); }
 
   function esc(t){ return (''+t).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
@@ -192,7 +643,7 @@ var CFG=__CFG__;
       return head+CFG.detail.assum; }
     if(k==='dcf'){ var h='<p>'+CFG.dcfIntro+'</p>';
       CFG.dcfRows.forEach(function(r){ if(r[2]){ h+='<details class="thy"><summary style="display:flex; justify-content:space-between; align-items:center;"><span>'+r[0]+'</span><span style="font-weight:600; margin-left:auto;">'+r[1]+'</span></summary><div class="thybody">'+r[2]+'</div></details>'; } else { h+='<div style="display:flex; justify-content:space-between; padding:8px 10px; margin-top:5px; font-weight:600; border-top:1px solid var(--bd2);"><span>'+r[0]+'</span><span>'+r[1]+'</span></div>'; } });
-      return h+'<button style="margin-top:12px; font-size:13px; padding:6px 12px;" id="dlbtn">⤓ download all scenarios to Excel</button><div style="font-size:11px; color:var(--text3); margin-top:4px;">one tab per scenario</div>'; }
+      return h+'<button style="margin-top:12px; font-size:13px; padding:6px 12px;" id="dlbtn">⤓ download all scenarios to Excel</button><div style="font-size:11px; color:var(--text3); margin-top:4px;">formula workbook · DCF to equity, discount build, comparables/β &amp; charts (DNL) · includes your edits</div>'; }
     if(k==='discount'){ return CFG.detail.discount + (CFG.beta? '<div style="margin-top:14px;"><button id="openbw" style="font-size:13px; padding:6px 12px;">β / cost-of-capital workbench →</button><div id="bwrap" style="margin-top:10px;"></div></div>' : ''); }
     return CFG.detail[k]||''; }
   function wireEditable(k,d){
@@ -203,7 +654,7 @@ var CFG=__CFG__;
   function openDetail(k,skipScroll){ var d=document.getElementById('detail');
     d.innerHTML='<div class="detailcard"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><h4>'+CFG.titles[k]+'</h4><button id="closeov" aria-label="close" style="padding:2px 9px;">×</button></div><div>'+detailHTML(k)+'</div></div>';
     document.getElementById('closeov').addEventListener('click',function(){ d.innerHTML=''; });
-    var dl=document.getElementById('dlbtn'); if(dl) dl.addEventListener('click',function(){ alert('In the live tool this downloads the '+CFG.companyShort+' scenario workbook — one tab per scenario (coming soon).'); });
+    var dl=document.getElementById('dlbtn'); if(dl) dl.addEventListener('click',function(){ vccDownload(); });
     wireEditable(k,d); if(!skipScroll) d.scrollIntoView({behavior:'smooth', block:'nearest'}); }
 
   // ---- Workstream D: cost-of-capital / beta workbench (MOCK data via CFG.beta) ----
@@ -345,7 +796,9 @@ def assum_table(rows):
     return h+'</table>'
 
 OUTDIR=os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-CFGS=json.load(open('/tmp/cfgs.json'))
+import os as _os
+_CFGP=_os.path.join(_os.path.dirname(_os.path.abspath(__file__)),'cfgs_gen.json')
+CFGS=json.load(open(_CFGP if _os.path.exists(_CFGP) else '/tmp/cfgs.json'))
 for key,cfg in CFGS.items():
     cfg['detail']={
         'forces': forces_table(cfg['_forces']['intro'], cfg['_forces']['rows'], cfg['_forces']['net']),
