@@ -169,6 +169,37 @@ browser-tested (the Chrome tool here won't open local file:// paths — Stephen 
 needs an inlined xlsx writer to stay self-contained, or the Python side) and the "advanced / show all inputs"
 long tail. Then the real EODHD data behind D. Iteration count ~9 this session.
 
+## UI — points 2, 3, 4 reworked per Stephen's feedback (10 July 2026)
+
+Stephen's clarifications drove a core-engine unification (commit follows).
+
+**Point 4 "take it all the way" — every scenario is now editable, anchored at its assessed value.**
+Rebuilt the model: each scenario (our six world cases *and* user scenarios) carries its own editable input
+set (`vals`) and an `anchor` = its assessed value; its bar = `anchor × reduced-form-ratio(vals)`, where
+ratio = 1 at the assessed defaults. So you can override *anything* on a per-scenario basis, or globally via
+the "apply to all editable scenarios" toggle; **↻ reset restores the assessed case**. Overridden scenarios
+get a ✎ marker on their bar and an "you've adjusted this case — value now X vs assessed Y" note. Built-in
+scenarios are no longer read-only — the assessed cases are just the defaults. Broker stays a reference line.
+World-case overrides + user scenarios persist per company in localStorage (`vcc_ws_<TICKER>`).
+
+**Point 2 — per-scenario cost of capital.** The β workbench's "apply to the discount-rate slider" now writes
+to the *active* scenario's discount rate (Re/WACC), so each scenario can carry its own cost-of-capital build.
+
+**Point 3 — Five Forces impact restated honestly.** Replaced the single editable "Impact (yours)" column
+(which confusingly implied a flow it didn't have) with: the **assessed** impact column, plus a **per-scenario
+override matrix** (a column per editable scenario, each cell editable, defaulting to the assessed impact).
+Explicit note that the company-vs-industry position is structural (same across world cases) and that in this
+prototype the bars come from the calibrated/reduced-form cases — a future engine will make these impacts flow.
+
+Verified in node: valid JSON; ratio(defaults)=1 so every assessed anchor is preserved (MT 3.59 / Stagflation
+1.28 etc.); per-scenario edit moves only that scenario (Stagflation +1% Re → 1.28→1.13); global propagates;
+no leftover state vars; 51 functions/file, consistent. DOM reviewed, not browser-tested here.
+
+**Still open (Stephen's list):** 8(e) free-text "add any comparable" + "search wider" (he couldn't find the
+existing add-behind-find-more; wants free-text + broader search); deepen DNL/WBC **company position** from
+data/companies (point 9); the **Excel formula-workbook download**; real EODHD data behind the β workbench.
+Iteration count ~11 — a chat swap is due within a couple more exchanges.
+
 ## Who and what
 
 Owner, people, repo, and test companies now live in `CLAUDE.md`. Volatile note kept here:
