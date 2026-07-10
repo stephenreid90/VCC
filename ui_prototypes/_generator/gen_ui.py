@@ -58,7 +58,7 @@ details.thy .thybody{padding:2px 12px 11px 22px; font-size:12.5px;}
 <div style="border-top:0.5px solid var(--bd); padding-top:1rem;">
   <div class="hd" style="margin-bottom:8px;">Explore the build-up</div>
   <div id="explore" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;"></div>
-  <div id="panel" class="metric" style="min-height:110px; font-size:13px;"></div>
+  <div id="panel"></div>
   <div id="detail"></div></div>
 <div class="sub" id="footnote" style="margin-top:28px; border-top:0.5px solid var(--bd); padding-top:12px;"></div>
 </div>
@@ -122,10 +122,10 @@ var CFG=__CFG__;
     Array.prototype.forEach.call(bx.querySelectorAll('.delu'),function(el){ el.addEventListener('click',function(ev){ ev.stopPropagation(); delScenario(el.getAttribute('data-uid')); }); });
   }
 
-  function selectBar(i){ CFG.activeIdx=i; var sc=CFG.scenarios[i];
+  function selectScenario(i){ CFG.activeIdx=i; var sc=CFG.scenarios[i];
     if(sc.kind!=='broker'){ st=sc.vals; slidersEnabled(true); syncSliders(); } else { slidersEnabled(false); }
-    document.getElementById('selscen').textContent=sc.n; updateEditingUI(); updateCards(sc.v); drawBars();
-    setPanel('world'); markExplore('world'); }
+    document.getElementById('selscen').textContent=sc.n; updateEditingUI(); updateCards(sc.v); drawBars(); }
+  function selectBar(i){ selectScenario(i); markExplore('world'); openDetail('world'); }
 
   // sliders (edit the active scenario's vals)
   var st=defaultVals();
@@ -150,14 +150,18 @@ var CFG=__CFG__;
     CFG.scenarios.push(sc); saveLS(); selectBar(CFG.scenarios.length-1); });
   function delScenario(id){ CFG.scenarios=CFG.scenarios.filter(function(sc){ return sc.uid!==id; }); if(CFG.activeIdx>=CFG.scenarios.length) CFG.activeIdx=0; saveLS(); selectBar(CFG.activeIdx); }
 
-  // explore
+  // explore — clicking a tab opens the detailed content directly (no brief snapshot)
   var ex=document.getElementById('explore'); var exBtns={};
-  Object.keys(CFG.titles).forEach(function(k){ var b=document.createElement('button'); b.textContent=CFG.titles[k]; b.style.fontSize='12px'; b.addEventListener('click',function(){ setPanel(k); markExplore(k); }); ex.appendChild(b); exBtns[k]=b; });
-  function markExplore(k){ Object.keys(exBtns).forEach(function(j){ exBtns[j].style.borderColor='var(--bd2)'; }); if(exBtns[k]) exBtns[k].style.borderColor='var(--bdinfo)'; }
-  function setPanel(k){ var d=document.getElementById('detail'); if(d) d.innerHTML='';
-    document.getElementById('panel').innerHTML='<div style="font-weight:500; margin-bottom:4px;">'+CFG.titles[k]+'</div><div style="color:var(--text2);">'+CFG.snap[k]+'</div>';
-    if(k==='world'){ var t=document.getElementById('wsnaptitle'); if(t) t.textContent=activeScen().n; }
-    var m=document.querySelector('#panel .more'); if(m){ m.addEventListener('click',function(){ openDetail(m.getAttribute('data-k')); }); } }
+  Object.keys(CFG.titles).forEach(function(k){ var b=document.createElement('button'); b.textContent=CFG.titles[k]; b.style.fontSize='12px'; b.addEventListener('click',function(){ markExplore(k); openDetail(k); }); ex.appendChild(b); exBtns[k]=b; });
+  var allBtn=document.createElement('button'); allBtn.textContent='⊕ open all'; allBtn.style.fontSize='12px'; allBtn.addEventListener('click',function(){ openAll(); }); ex.appendChild(allBtn);
+  function markExplore(k){ Object.keys(exBtns).forEach(function(j){ exBtns[j].style.borderColor='var(--bd2)'; }); allBtn.style.borderColor='var(--bd2)'; if(exBtns[k]) exBtns[k].style.borderColor='var(--bdinfo)'; document.getElementById('panel').innerHTML=''; }
+  function setPanel(k){ markExplore(k); openDetail(k); }
+  function openAll(){ Object.keys(exBtns).forEach(function(j){ exBtns[j].style.borderColor='var(--bd2)'; }); allBtn.style.borderColor='var(--bdinfo)'; document.getElementById('panel').innerHTML='';
+    var d=document.getElementById('detail'); var h='';
+    Object.keys(CFG.titles).forEach(function(k){ h+='<div class="detailcard"><h4 style="margin-bottom:8px;">'+CFG.titles[k]+'</h4><div>'+detailHTML(k)+'</div></div>'; });
+    d.innerHTML=h; wireEditable('assum',d); wireEditable('forces',d); wireEditable('discount',d);
+    var dl=d.querySelector('#dlbtn'); if(dl) dl.addEventListener('click',function(){ alert('In the live tool this downloads the '+CFG.companyShort+' scenario workbook — one tab per scenario (coming soon).'); });
+    d.scrollIntoView({behavior:'smooth', block:'nearest'}); }
 
   function esc(t){ return (''+t).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
   function editableInputsTable(){ var h='<table style="width:100%; font-size:13px;">';
@@ -186,7 +190,9 @@ var CFG=__CFG__;
     if(k==='assum'){ var lab=activeScen().n; var head='';
       if(activeScen().kind!=='broker'){ head='<div style="border:0.5px solid var(--bd); border-left:2.5px solid var(--user-tx); border-radius:8px; padding:11px 13px; margin-bottom:12px;"><div style="font-weight:600; margin-bottom:2px;">Your inputs — '+lab+'</div><div class="sub" style="margin-bottom:8px;">the value-material inputs; type to override (syncs with the sliders and the live value). The full assumption set is below.</div>'+editableInputsTable()+'</div>'; }
       return head+CFG.detail.assum; }
-    if(k==='dcf'){ return CFG.dcf+'<button style="margin-top:12px; font-size:13px; padding:6px 12px;" id="dlbtn">⤓ download all scenarios to Excel</button><div style="font-size:11px; color:var(--text3); margin-top:4px;">one tab per scenario</div>'; }
+    if(k==='dcf'){ var h='<p>'+CFG.dcfIntro+'</p>';
+      CFG.dcfRows.forEach(function(r){ if(r[2]){ h+='<details class="thy"><summary style="display:flex; justify-content:space-between; align-items:center;"><span>'+r[0]+'</span><span style="font-weight:600; margin-left:auto;">'+r[1]+'</span></summary><div class="thybody">'+r[2]+'</div></details>'; } else { h+='<div style="display:flex; justify-content:space-between; padding:8px 10px; margin-top:5px; font-weight:600; border-top:1px solid var(--bd2);"><span>'+r[0]+'</span><span>'+r[1]+'</span></div>'; } });
+      return h+'<button style="margin-top:12px; font-size:13px; padding:6px 12px;" id="dlbtn">⤓ download all scenarios to Excel</button><div style="font-size:11px; color:var(--text3); margin-top:4px;">one tab per scenario</div>'; }
     if(k==='discount'){ return CFG.detail.discount + (CFG.beta? '<div style="margin-top:14px;"><button id="openbw" style="font-size:13px; padding:6px 12px;">β / cost-of-capital workbench →</button><div id="bwrap" style="margin-top:10px;"></div></div>' : ''); }
     return CFG.detail[k]||''; }
   function wireEditable(k,d){
@@ -194,11 +200,11 @@ var CFG=__CFG__;
     if(k==='forces'){ var es=editableScens(); Array.prototype.forEach.call(d.querySelectorAll('.fm'),function(inp){ inp.addEventListener('change',function(){ var sc=es[+inp.getAttribute('data-si')]; if(!sc) return; sc.forces=sc.forces||{}; sc.forces[+inp.getAttribute('data-i')]=inp.value; sc.v=scVal(sc); saveLS(); drawBars(); }); }); }
     if(k==='discount'){ var ob=d.querySelector('#openbw'); if(ob) ob.addEventListener('click',function(){ bwInit(); bwRender(d.querySelector('#bwrap')); ob.style.display='none'; }); }
   }
-  function openDetail(k){ var d=document.getElementById('detail');
+  function openDetail(k,skipScroll){ var d=document.getElementById('detail');
     d.innerHTML='<div class="detailcard"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><h4>'+CFG.titles[k]+'</h4><button id="closeov" aria-label="close" style="padding:2px 9px;">×</button></div><div>'+detailHTML(k)+'</div></div>';
     document.getElementById('closeov').addEventListener('click',function(){ d.innerHTML=''; });
     var dl=document.getElementById('dlbtn'); if(dl) dl.addEventListener('click',function(){ alert('In the live tool this downloads the '+CFG.companyShort+' scenario workbook — one tab per scenario (coming soon).'); });
-    wireEditable(k,d); d.scrollIntoView({behavior:'smooth', block:'nearest'}); }
+    wireEditable(k,d); if(!skipScroll) d.scrollIntoView({behavior:'smooth', block:'nearest'}); }
 
   // ---- Workstream D: cost-of-capital / beta workbench (MOCK data via CFG.beta) ----
   var BW=CFG.beta; var bs=null;
@@ -227,6 +233,10 @@ var CFG=__CFG__;
     bs.comps.push({name:cd.name,ticker:cd.ticker,why:cd.why||'Added by you.',tax:(cd.tax!=null?cd.tax:0.30),gearingDE:(cd.gearingDE!=null?cd.gearingDE:0),_sel:true,_added:true,_data:data}); }
   function candRow(cd,cls,i){ return '<div style="display:flex; gap:8px; align-items:flex-start; margin-bottom:7px;"><button class="'+cls+'" data-i="'+i+'" '+(cd.addable===false?'disabled title="privately held — no listed beta"':'')+' style="font-size:11px; padding:2px 8px; flex:none;">+ add</button><div style="font-size:12.5px;"><b>'+cd.name+'</b> <span class="sub">'+cd.ticker+' · \u03b2\u2248'+cd.betaHint.toFixed(2)+'</span><div style="color:var(--text2);">'+cd.why+'</div></div></div>'; }
   function numField(id,label,v,step){ return '<div><div class="sub">'+label+'</div><input type="number" id="'+id+'" value="'+v+'" step="'+step+'" style="width:74px; font:inherit; padding:3px 6px; border:0.5px solid var(--bd2); border-radius:6px; background:var(--primary); color:var(--text);"></div>'; }
+  function betaStats(pts){ var n=pts.length, mx=0, my=0; pts.forEach(function(p){ mx+=p[0]; my+=p[1]; }); mx/=n; my/=n;
+    var sxx=0,sxy=0,syy=0; pts.forEach(function(p){ var dx=p[0]-mx, dy=p[1]-my; sxx+=dx*dx; sxy+=dx*dy; syy+=dy*dy; });
+    var b=sxy/sxx, a=my-b*mx, ssr=0; pts.forEach(function(p){ var e=p[1]-(a+b*p[0]); ssr+=e*e; });
+    var r2=1-ssr/syy, se=Math.sqrt((ssr/(n-2))/sxx); return {b:b, r2:r2, se:se, t0:b/se, t1:(b-1)/se, n:n}; }
   function scatterSVG(c){ var pts=pointsOf(c), b=betaOf(c), W=400,H=210,pad=24;
     var xs=pts.map(function(p){return p[0];}), ys=pts.map(function(p){return p[1];});
     var xmax=Math.max.apply(null,xs.map(Math.abs))*1.12||0.05, ymax=Math.max.apply(null,ys.map(Math.abs))*1.12||0.05;
@@ -261,7 +271,8 @@ var CFG=__CFG__;
       if(bs.showWider && BW.candidates2){ h+='<div style="margin-top:6px;"><div class="sub" style="margin-bottom:6px;">Broader search — adjacent names with a weaker but arguable rationale:</div>'; BW.candidates2.forEach(function(cd,i){ h+=candRow(cd,'bw_add2',i); }); h+='</div>'; }
       h+='</div></div>'; } h+='</div>';
     var pc=bs.comps.filter(function(c){return c.name===bs.plot;})[0];
-    if(pc){ h+='<div style="margin-top:12px;"><div class="hd" style="margin-bottom:4px;">Beta regression — '+pc.name+' vs '+bs.idx+' <span class="sub">('+bs.win+')</span></div>'+scatterSVG(pc)+'</div>'; }
+    if(pc){ var stt=betaStats(pointsOf(pc)), sig=Math.abs(stt.t1)>2, verdict=sig?('<b style="color:'+(stt.b>1?'var(--danger-tx)':'var(--info-tx)')+';">significantly '+(stt.b>1?'above':'below')+' 1</b>'):'<b>not distinguishable from 1</b>';
+      h+='<div style="margin-top:12px;"><div class="hd" style="margin-bottom:4px;">Beta regression — '+pc.name+' vs '+bs.idx+' <span class="sub">('+bs.win+')</span></div>'+scatterSVG(pc)+'<div class="sub" style="margin-top:5px; line-height:1.55;">n='+stt.n+' &middot; R\u00b2 '+stt.r2.toFixed(2)+' &middot; SE(\u03b2) '+stt.se.toFixed(2)+' &middot; t(\u03b2 vs 0) '+stt.t0.toFixed(1)+' &middot; <b>t(\u03b2 vs 1) '+stt.t1.toFixed(1)+'</b> &rarr; \u03b2 is '+verdict+' at ~95%.</div></div>'; }
     h+='<div style="margin-top:12px; background:var(--secondary); border-radius:8px; padding:11px 13px;">';
     h+='<div style="font-size:13px;">Selected peers ('+selectedComps().length+'): median levered β <b>'+agg.medL.toFixed(2)+'</b>'+(BW.bank?'':' · median unlevered <b>'+agg.medU.toFixed(2)+'</b>')+'</div>';
     h+='<div style="font-size:13px; margin-top:4px;">→ subject β <b>'+agg.beta.toFixed(2)+'</b>'+(bs.relever?(' (relevered at D/E '+bs.targetDE+')'):'')+' · documented judgment '+BW.subject.selectedBeta.toFixed(2)+'</div>';
@@ -289,7 +300,7 @@ var CFG=__CFG__;
   }
 
   // init
-  selectBar(CFG.activeIdx);
+  selectScenario(CFG.activeIdx);
   document.getElementById('topnote').innerHTML=CFG.topnote;
   document.getElementById('footnote').innerHTML=CFG.footnote;
   document.getElementById('mklab').textContent=CFG.mklab;
@@ -297,7 +308,7 @@ var CFG=__CFG__;
   document.getElementById('m4lab').textContent=CFG.metric4.label;
   document.getElementById('m4val').textContent=CFG.metric4.value;
   if(CFG.pvsub) document.getElementById('pvsub').textContent=CFG.pvsub;
-  setPanel('forces'); markExplore('forces');
+  markExplore('forces'); openDetail('forces', true);
 })();
 </script></body></html>"""
 

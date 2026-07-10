@@ -144,6 +144,13 @@ dnl = {
    ["Shares","1,884m","disclosed","Latest reported, paired to net-debt anchor"]],
  "dcf": bridge([["Enterprise value (DCF)","8,064"],["Less: net debt","(1,300)"],["Equity value","6,764"],["÷ shares (m)","1,884"],["Value per share AUD","3.59"]],
    "AUD m. Five-year FCFF (stub + FY27–FY31), single WACC ~8.7%, terminal g 2.5%, with the gas roll-off built into the margin path. Per-scenario detail in dnl_scenarios_comparison_v4."),
+ "dcfIntro":"AUD m. Click any line to see its make-up. Five-year FCFF (stub + FY27\u2013FY31), single WACC ~8.7%, terminal g 2.5%, gas roll-off in the margin path.",
+ "dcfRows":[
+   ["Enterprise value (DCF)","8,064","Sum of five years of free cash flow to the firm (stub + FY27\u2013FY31) discounted at WACC ~8.7%, plus a Gordon-growth terminal value at g 2.5%. FCFF is built from a normalised EBIT margin of 13.5% (with the \u221250 / \u2212100 / \u2212150 bps gas roll-off in the margin path), blended tax 27.5%, and steady-state reinvestment. Full per-scenario build in the dnl_scenarios_comparison_v4 workbook."],
+   ["Less: net debt","(1,300)","Narrow, normalised steady-state net debt: gross borrowings less cash and short-term investments (FY25 liquidity ~AUD 647m = AUD 207m cash + AUD 440m short-term investments). Excludes leases per the narrow definition, and is paired to the latest reported share count."],
+   ["Equity value","6,764","Enterprise value 8,064 less net debt 1,300. Post-demerger equity-bridge adjustments (IPF distribution +125, Geelong remediation \u221235, Gibson Island \u221297, transaction costs \u221211, PH contingent +100) broadly net out and are absorbed into the normalised net-debt anchor."],
+   ["\u00f7 shares (m)","1,884","Latest reported shares on issue, paired to the net-debt anchor date; no buyback projection is modelled (value-neutral)."],
+   ["Value per share AUD","3.59",""]],
  "worldDesc": WORLD_DESC, "_drtheory": drtheory(DNL_DID)
 }
 
@@ -209,6 +216,15 @@ wbc = {
    ["AT1 hybrids","AUD 8,522m","disclosed","Deducted from ordinary equity"]],
  "dcf": bridge([["Through-cycle NIM","1.94%"],["Through-cycle credit loss","18 bps"],["Cost-to-income","51.7%"],["Terminal ROE → Ke","fade to 8.05%"],["Ordinary equity value (post-AT1)","~102,960"],["÷ shares (m)","3,414.9"],["Value per share AUD","30.15"]],
    "AUD m. Bank valuation (methodology §15): cost of equity 8.05%, ROE fade to Ke for terminal — no WACC / EV bridge. CET1 binds payout under stress. Per-scenario detail in wbc_scenarios_comparison_v2."),
+ "dcfIntro":"AUD m. Click any line to see its make-up. Bank valuation (methodology \u00a715): cost of equity 8.05%, ROE fade to Ke for terminal \u2014 no WACC / EV bridge; CET1 binds payout under stress.",
+ "dcfRows":[
+   ["Through-cycle NIM","1.94%","FY22\u2013FY25 disclosed NIM range midpoint, decomposed as industry AIEA NIM 1.86% + WBC deposit-franchise supplier-power offset +8 bps (AUD 149bn non-interest-bearing transaction deposits act as a funding-cost floor)."],
+   ["Through-cycle credit loss","18 bps","Low end of the Big Four 15\u201325 bps range given the mortgage-heavy book. Benign 1H26 actual is ~10 bps; the peak-cycle (Stagflation) assumption is ~75 bps."],
+   ["Cost-to-income","51.7%","1H26 actual, ~10pp above CBA (~42%) and NAB (~43%). The UNITE glide is assumed to close about half the gap, toward ~45% by FY29."],
+   ["Terminal ROE \u2192 Ke","fade to 8.05%","Return on equity fades to the cost of equity for terminal value (\u00a715.8). A market-implied terminal ROE of ~12.1% would be required to justify the current share price."],
+   ["Ordinary equity value (post-AT1)","~102,960","Equity cash flows discounted at Ke 8.05% with CET1-binding payout under stress; AT1 hybrids of AUD 8,522m are deducted from ordinary equity."],
+   ["\u00f7 shares (m)","3,414.9","EODHD-verified shares on issue."],
+   ["Value per share AUD","30.15",""]],
  "worldDesc": WORLD_DESC, "_drtheory": drtheory(WBC_DID)
 }
 
@@ -277,6 +293,17 @@ csl = {
    ["Shares","478.9m","disclosed","EODHD, 15 Jun 2026"]],
  "dcf": bridge([["Sum PV explicit FCFF (FY27–FY31)","18,390"],["PV of terminal value","55,640"],["Enterprise value","74,029"],["Less: net debt","(9,100)"],["Less: restructuring PV","(507)"],["Equity value","64,422"],["÷ shares (m)","478.9"],["Value per share USD","134.52"],["Value per share AUD (×1.5152)","203.83"]],
    "USD m. Five-year FCFF (FY27–FY31) plus terminal, discounted at the 8.75% cost of equity with mid-period discounting. Terminal binds to a 30% EBIT margin with terminal capex = D&amp;A (75% of value). Per-scenario detail in csl_scenarios_comparison_v2."),
+ "dcfIntro":"USD m. Click any line to see its make-up. Five-year FCFF (FY27\u2013FY31) + terminal, discounted at the 8.75% cost of equity with mid-period discounting; terminal binds to a 30% EBIT margin with terminal capex = D&amp;A.",
+ "dcfRows":[
+   ["Sum PV explicit FCFF (FY27\u2013FY31)","18,390","Five years of FCFF discounted at the 8.75% cost of equity with mid-period discounting. FCFF derives from group EBIT rising 4,346 \u2192 6,295 (USD m), less tax at 19% and reinvestment, with the Behring J-curve (\u22121% \u2192 5.5%) and +150 bps peer-gap margin uplift."],
+   ["PV of terminal value","55,640","Gordon-growth terminal at g 3%, terminal EBIT margin 30% (binding, not the FY31 peak), terminal capex = D&amp;A; discounted at 8.75%. This is ~75% of enterprise value."],
+   ["Enterprise value","74,029","PV of explicit FCFF 18,390 + PV of terminal value 55,640."],
+   ["Less: net debt","(9,100)","1H26 net debt of ~USD 9,100m (~1.8x EBITDA), de-levering."],
+   ["Less: restructuring PV","(507)","Present value of Strategic Transformation cash costs (FY26 425 + FY27 100) discounted at Re; the \u00a74.4(b) cost-of-closure consistency deduction."],
+   ["Equity value","64,422","Enterprise value 74,029 less net debt 9,100 less restructuring PV 507."],
+   ["\u00f7 shares (m)","478.9","EODHD, 15 Jun 2026."],
+   ["Value per share USD","134.52",""],
+   ["Value per share AUD (\u00d71.5152)","203.83","USD 134.52 \u00d7 1.5152 (AUD per USD; = 0.66 USD per AUD)."]],
  "worldDesc": WORLD_DESC, "_drtheory": drtheory(CSL_DID)
 }
 

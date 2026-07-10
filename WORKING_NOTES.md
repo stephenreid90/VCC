@@ -219,6 +219,29 @@ Verified: valid JSON, positions render 9/9/6 bullets, candidates2 + free-text + 
 **Remaining UI:** the **Excel formula-workbook download** (still a stub); real **EODHD data** behind the β workbench
 (replace beta_data mock). Iteration ~12 — swap chats now / next exchange.
 
+## UI — pre-swap polish: build-up drill-downs, open-all, no-snapshot, beta stats (10 July 2026)
+
+Four asks from Stephen before the chat swap:
+1. **Valuation build-up drill-downs.** Each line of the DCF/valuation build-up is now a click-to-expand
+   `<details>` showing its make-up: EV → PV explicit FCFF + PV terminal (+ the driver inputs); net debt →
+   the balance-sheet items and equity-bridge adjustments; equity value → the arithmetic; etc. Structured
+   `dcfRows`/`dcfIntro` per company in build_cfgs (DNL 5 rows, WBC 7, CSL 9), rendered as disclosure rows.
+2. **"⊕ open all" tab** in Explore the Build-up — renders every section stacked (each in its own card) and
+   wires all the interactive bits (editable assumptions, forces matrix, β workbench opener).
+3. **Snapshot removed.** Clicking an Explore tab now goes straight to the detailed content (no brief
+   overview first); `#panel` slimmed to a bare div; `setPanel` is now just markExplore+openDetail; init and
+   bar-select open detail directly (init without auto-scroll via a skipScroll arg on openDetail).
+4. **Beta regression stats.** Under each scatterplot: n, R², SE(β), t(β vs 0), and — the one Stephen wanted —
+   **t(β vs 1)** with a verdict ("significantly above/below 1" vs "not distinguishable from 1" at ~95%).
+   Computed live from the stored points. Sample reads: Orica β 1.05 / R² 0.62 / t(β vs 1) 0.3 (not distinct
+   from 1); CBA 0.80 / R² 0.37 / t −0.9; Grifols 0.85 / R² 0.37 / t −0.7. Realistic beta-regression numbers.
+
+Verified in node across all three: valid JSON, dcfRows render as drill-downs, open-all + betaStats + skipScroll
+wired, snapshot no longer referenced. DOM reviewed, not browser-tested here (Chrome tool won't open file://).
+
+**Still outstanding (post-swap):** Excel formula-workbook download (stub); real EODHD data behind the β
+workbench (replace beta_data mock). Iteration ~13 — swapping chats now.
+
 ## Who and what
 
 Owner, people, repo, and test companies now live in `CLAUDE.md`. Volatile note kept here:
