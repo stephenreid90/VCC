@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import json, re, sys
+import json, re, sys, os
 
 SCAFFOLD = r"""<!DOCTYPE html>
 <html lang="en">
@@ -21,6 +21,15 @@ input[type=range]{width:100%; accent-color:var(--bdinfo);}
 table{border-collapse:collapse;}
 .more{color:var(--info-tx); cursor:pointer; font-weight:500;}
 .hd{font-size:14px; font-weight:500;} .sub{font-size:11px; color:var(--text3);}
+.detailcard{background:var(--primary); border:0.5px solid var(--bd); border-left:2.5px solid var(--bdinfo); border-radius:var(--rmd); padding:1rem 1.15rem; margin-top:10px; font-size:13px; line-height:1.65;}
+.detailcard h4{margin:0; font-size:15px; font-weight:600;}
+details.thy{border:0.5px solid var(--bd); border-radius:var(--rmd); margin-top:7px; background:var(--secondary);}
+details.thy>summary{cursor:pointer; padding:7px 10px; font-size:12.5px; font-weight:500; list-style:none;}
+details.thy>summary::-webkit-details-marker{display:none;}
+details.thy>summary::before{content:"\25B8"; color:var(--text3); display:inline-block; width:1em;}
+details.thy[open]>summary::before{content:"\25BE";}
+details.thy .thybody{padding:2px 12px 11px 22px; font-size:12.5px;}
+.thytag{font-size:10.5px; font-weight:600; letter-spacing:.03em; text-transform:uppercase;}
 </style></head>
 <body><div class="wrap">
 <div style="display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px; margin-bottom:4px;">
@@ -28,7 +37,6 @@ table{border-collapse:collapse;}
   <div style="font-size:13px; color:var(--text2);">__COMPANY__ · exploring: <span id="selscen" style="color:var(--text); font-weight:500;"></span> · __CCYNOTE__</div>
 </div>
 <div class="sub" id="topnote" style="margin-bottom:18px;"></div>
-<div id="overlay"></div>
 <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:1.5rem;">
   <div class="metric"><div style="font-size:13px; color:var(--text2);">Value per share</div><div style="font-size:24px; font-weight:600;"><span id="pv"></span><span style="font-size:13px; color:var(--text2);"> __CCY__</span></div><div style="font-size:12px; color:var(--text3);" id="pvsub"></div></div>
   <div class="metric"><div style="font-size:13px; color:var(--text2);" id="mklab"></div><div style="font-size:24px; font-weight:600;" id="vmkt"></div></div>
@@ -48,7 +56,8 @@ table{border-collapse:collapse;}
 <div style="border-top:0.5px solid var(--bd); padding-top:1rem;">
   <div class="hd" style="margin-bottom:8px;">Explore the build-up</div>
   <div id="explore" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;"></div>
-  <div id="panel" class="metric" style="min-height:110px; font-size:13px;"></div></div>
+  <div id="panel" class="metric" style="min-height:110px; font-size:13px;"></div>
+  <div id="detail"></div></div>
 <div class="sub" id="footnote" style="margin-top:28px; border-top:0.5px solid var(--bd); padding-top:12px;"></div>
 </div>
 <script>
@@ -95,27 +104,31 @@ var CFG=__CFG__;
     row.appendChild(inp); sl.appendChild(row); document.getElementById('o_'+s.k).textContent=fmt(s,st[s.k]);
   });
   document.getElementById('reset').addEventListener('click',function(){ CFG.sliders.forEach(function(s){ st[s.k]=s.def; }); sl.querySelectorAll('input').forEach(function(inp,i){ inp.value=st[CFG.sliders[i].k]; document.getElementById('o_'+CFG.sliders[i].k).textContent=fmt(CFG.sliders[i],st[CFG.sliders[i].k]); }); render(); });
-  document.getElementById('allassum').addEventListener('click',function(){ openDetail('assum'); });
+  document.getElementById('allassum').addEventListener('click',function(){ setPanel('assum'); markExplore('assum'); openDetail('assum'); });
 
   var ex=document.getElementById('explore'); var exBtns={};
   Object.keys(CFG.titles).forEach(function(k){ var b=document.createElement('button'); b.textContent=CFG.titles[k]; b.style.fontSize='12px'; b.addEventListener('click',function(){ setPanel(k); markExplore(k); }); ex.appendChild(b); exBtns[k]=b; });
   function markExplore(k){ Object.keys(exBtns).forEach(function(j){ exBtns[j].style.borderColor='var(--bd2)'; }); if(exBtns[k]) exBtns[k].style.borderColor='var(--bdinfo)'; }
   function setPanel(k){
+    var d=document.getElementById('detail'); if(d) d.innerHTML='';
     document.getElementById('panel').innerHTML='<div style="font-weight:500; margin-bottom:4px;">'+CFG.titles[k]+'</div><div style="color:var(--text2);">'+CFG.snap[k]+'</div>';
     if(k==='world'){ var t=document.getElementById('wsnaptitle'); if(t) t.textContent=CFG.scenarios[CFG.activeIdx].n; }
     var m=document.querySelector('#panel .more'); if(m){ m.addEventListener('click',function(){ openDetail(m.getAttribute('data-k')); }); }
   }
   function detailHTML(k){
-    if(k==='world'){ var nm=CFG.scenarios[CFG.activeIdx].n; return '<p style="font-size:12px; color:var(--text3); margin-top:0;">Scenario: '+nm+'</p>'+(CFG.narr[nm]||CFG.narr._placeholder); }
+    if(k==='world'){ var nm=CFG.scenarios[CFG.activeIdx].n;
+      var wd=(CFG.worldDesc&&CFG.worldDesc[nm])?'<div class="thytag" style="color:var(--text3); margin:0 0 4px;">The world</div>'+CFG.worldDesc[nm]:'';
+      var cn='<div class="thytag" style="color:var(--text3); margin:14px 0 4px;">What it means for '+CFG.companyShort+'</div>'+(CFG.narr[nm]||CFG.narr._placeholder);
+      return wd+cn; }
     if(k==='dcf'){ return CFG.dcf+'<button style="margin-top:12px; font-size:13px; padding:6px 12px;" id="dlbtn">⤓ download all scenarios to Excel</button><div style="font-size:11px; color:var(--text3); margin-top:4px;">one tab per scenario</div>'; }
     return CFG.detail[k]||'';
   }
   function openDetail(k){
-    var ov=document.getElementById('overlay');
-    ov.innerHTML='<div style="min-height:420px; background:rgba(0,0,0,0.45); border-radius:var(--rlg); display:flex; align-items:flex-start; justify-content:center; padding:18px; margin-bottom:1.5rem;"><div class="card" style="padding:1.25rem 1.5rem; width:100%; max-width:620px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><div style="font-size:16px; font-weight:600;">'+CFG.titles[k]+'</div><button id="closeov" aria-label="close" style="padding:2px 9px;">×</button></div><div style="font-size:13px; line-height:1.65;">'+detailHTML(k)+'</div></div></div>';
-    document.getElementById('closeov').addEventListener('click',function(){ ov.innerHTML=''; });
+    var d=document.getElementById('detail');
+    d.innerHTML='<div class="detailcard"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><h4>'+CFG.titles[k]+'</h4><button id="closeov" aria-label="close" style="padding:2px 9px;">×</button></div><div>'+detailHTML(k)+'</div></div>';
+    document.getElementById('closeov').addEventListener('click',function(){ d.innerHTML=''; });
     var dl=document.getElementById('dlbtn'); if(dl) dl.addEventListener('click',function(){ alert('In the live tool this downloads the '+CFG.companyShort+' scenario workbook — one tab per scenario.'); });
-    ov.scrollIntoView({behavior:'smooth', block:'start'});
+    d.scrollIntoView({behavior:'smooth', block:'nearest'});
   }
   document.getElementById('selscen').textContent=CFG.scenarios[CFG.liveIdx].n;
   document.getElementById('topnote').innerHTML=CFG.topnote;
@@ -138,27 +151,40 @@ def posbadge(p):
     else: bg,tx='var(--secondary)','var(--text2)'
     return '<span style="font-size:11px; padding:1px 7px; border-radius:6px; background:%s; color:%s;">%s</span>'%(bg,tx,p)
 def forces_table(intro, rows, net):
-    h='<p>%s</p><table style="width:100%%; font-size:13px;"><tr><td class="sub" style="padding:4px 8px 4px 0;">Force</td><td class="sub" style="padding:4px 8px;">Industry</td><td class="sub" style="padding:4px 8px;">Company vs industry</td><td class="sub" style="padding:4px 0; text-align:right;">Impact</td></tr>'%intro
+    # rows: [force, industry_rating, industry_rationale, position, impact, mechanism]
+    h='<p>%s</p><table style="width:100%%; font-size:13px;"><tr><td class="sub" style="padding:4px 8px 4px 0;">Force</td><td class="sub" style="padding:4px 8px;">Industry (rating &amp; why)</td><td class="sub" style="padding:4px 8px;">Company vs industry</td><td class="sub" style="padding:4px 0; text-align:right;">Impact</td></tr>'%intro
     for r in rows:
-        h+='<tr style="border-top:0.5px solid var(--bd);"><td style="padding:7px 8px 7px 0; font-weight:500; white-space:nowrap; vertical-align:top;">%s</td><td style="padding:7px 8px; color:var(--text2); vertical-align:top;">%s</td><td style="padding:7px 8px; vertical-align:top;">%s<div style="color:var(--text2); margin-top:3px; font-size:12px;">%s</div></td><td style="padding:7px 0 7px 8px; text-align:right; font-weight:500; vertical-align:top; white-space:nowrap;">%s</td></tr>'%(r[0],r[1],posbadge(r[2]),r[4],r[3])
+        h+='<tr style="border-top:0.5px solid var(--bd);"><td style="padding:7px 8px 7px 0; font-weight:500; white-space:nowrap; vertical-align:top;">%s</td><td style="padding:7px 8px; vertical-align:top; max-width:220px;"><span style="font-weight:500;">%s</span><div style="color:var(--text2); margin-top:2px; font-size:12px;">%s</div></td><td style="padding:7px 8px; vertical-align:top;">%s<div style="color:var(--text2); margin-top:3px; font-size:12px;">%s</div></td><td style="padding:7px 0 7px 8px; text-align:right; font-weight:500; vertical-align:top; white-space:nowrap;">%s</td></tr>'%(r[0],r[1],r[2],posbadge(r[3]),r[5],r[4])
     h+='</table><div style="margin-top:10px; background:var(--secondary); border-radius:8px; padding:10px;"><b>Net company offset:</b> %s</div>'%net
     return h
+def dr_theory_html(rows):
+    # rows: [label, proper, ier, did]
+    h='<div style="margin-top:12px; border-top:0.5px solid var(--bd); padding-top:10px;"><div class="hd" style="margin-bottom:2px;">Practical theory — the proper approach vs what we did</div><div class="sub" style="margin-bottom:6px;">click any element; IER evidence from the four independent expert reports in <code>design/reference/discount_rate_iers/</code></div>'
+    for r in rows:
+        h+='<details class="thy"><summary>%s</summary><div class="thybody">'%r[0]
+        h+='<div class="thytag" style="color:var(--success-tx);">The proper approach</div><div style="margin:2px 0 8px;">%s</div>'%r[1]
+        h+='<div class="thytag" style="color:var(--info-tx);">What the IERs show</div><div style="margin:2px 0 8px; color:var(--text2);">%s</div>'%r[2]
+        h+='<div class="thytag" style="color:var(--warning-tx);">What we did (VCC)</div><div style="margin:2px 0 0;">%s</div>'%r[3]
+        h+='</div></details>'
+    return h+'</div>'
+
 def assum_table(rows):
     h='<p>Tags: %s stated · %s calculated · %s analyst call.</p><table style="width:100%%; font-size:13px;">'%(tag('disclosed'),tag('derived'),tag('judgment'))
     for r in rows:
         h+='<tr style="border-bottom:0.5px solid var(--bd);"><td style="padding:6px 8px 6px 0; font-weight:500; white-space:nowrap; vertical-align:top;">%s</td><td style="padding:6px 8px; white-space:nowrap; vertical-align:top;">%s</td><td style="padding:6px 8px; vertical-align:top;">%s</td><td style="padding:6px 0; color:var(--text2); vertical-align:top;">%s</td></tr>'%(r[0],r[1],tag(r[2]),r[3])
     return h+'</table>'
 
+OUTDIR=os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 CFGS=json.load(open('/tmp/cfgs.json'))
 for key,cfg in CFGS.items():
     cfg['detail']={
         'forces': forces_table(cfg['_forces']['intro'], cfg['_forces']['rows'], cfg['_forces']['net']),
         'position': cfg['_position'],
-        'discount': cfg['_discount'],
+        'discount': cfg['_discount'] + dr_theory_html(cfg.get('_drtheory', [])),
         'assum': assum_table(cfg['_assum'])
     }
-    for kk in ['_forces','_position','_discount','_assum']: cfg.pop(kk)
+    for kk in ['_forces','_position','_discount','_assum','_drtheory']: cfg.pop(kk, None)
     html=SCAFFOLD.replace('__CFG__', json.dumps(cfg)).replace('__COMPANY__', cfg['company']).replace('__CCYNOTE__', cfg['ccynote']).replace('__CCY__', cfg['ccy'])
-    out='/sessions/sharp-gallant-ramanujan/mnt/vcc-valuations/ui_prototypes/%s_scenario_interface.html'%key
+    out=os.path.join(OUTDIR, '%s_scenario_interface.html'%key)
     open(out,'w',encoding='utf-8').write(html)
     print('wrote',out,len(html),'bytes')

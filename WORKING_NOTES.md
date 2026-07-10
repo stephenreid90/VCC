@@ -47,6 +47,61 @@ the first build when chosen. β held at 0.85 for CSL by decision (repeatable fra
 
 ---
 
+## UI build — Workstreams A + C done (10 July 2026)
+
+First live iteration of the modelling-workbench brief (`design/ui_design_brief.md`). Did the two
+low-risk workstreams (A layout + C content) and folded CSL into the generator; **B and D not started**
+(next). Everything runs through the shared generator now.
+
+### Architecture decision (Claude's call, Stephen delegated it)
+**Evolved the shared generator and folded CSL in** — rejected hand-editing three HTML files. The brief's
+trajectory (shared reduced-form calculator, user scenarios, beta workbench) is mostly *shared engine* +
+*per-company data*, which is exactly what `_generator/` separates. "HTML is the contract" still holds:
+the generated HTML is the self-contained spec; the generator keeps three instances in sync. CSL was the
+last hand-built divergence — now gone.
+
+### What changed
+1. **A — detail renders inline.** The dark full-page modal (`#overlay` at top) is removed. "Learn more →"
+   and the explore tabs now expand the full detail in a `.detailcard` **directly below the panel, in
+   place** (`#detail`), scrolling gently (`block:'nearest'`). This is the editing-surface pattern for B.
+2. **C6 — longer world-scenario descriptions.** Shared `WORLD_DESC` (6 scenarios, from `data/scenarios/*.md`)
+   now heads the world detail as "The world", with the company transmission narrative under "What it means
+   for X".
+3. **C7 — richer Five Forces.** Each force now shows the **industry-level rating + one-line rationale**
+   (from `data/industries/*.yaml`) alongside the company-vs-industry position and impact. `forces_table`
+   rows are now 6-element: `[force, ind_rating, ind_rationale, position, impact, mechanism]`.
+4. **C9 — discount-rate theory click-throughs (the flagship of C).** Seven native `<details>` panels
+   (Rf, ERP, beta, cost of debt, gearing, gamma, WACC-vs-CoE), each with **proper approach / what the IERs
+   show / what we did (VCC)**. Grounded in the four IERs in `design/reference/discount_rate_iers/`
+   (Oil Search/Santos, Woodside/BHP Petroleum, Universal Coal — real concluded WACCs quoted; Realm is a
+   *supplementary* IER with no CAPM build-up, so used only for method/control-premium points).
+5. **CSL bars made real.** CSL's six scenarios are now live from v4 / comparison v2 (AUD, USD-functional
+   model at 0.66): Orderly 237.29 / **MT 203.83** / AI Lag 198.53 / Disorderly 174.79 / Fragmentation
+   168.23 / Stagflation 159.90; broker bar 136 sits **below all six** (the §16 puzzle, on purpose).
+   Market 105.53; terminal-% 75%; asymmetry 1.31×. Replaces the stale v3 placeholders (141.78/214.82).
+   CSL discounts FCFF at cost-of-equity 8.75% (not a WACC) — flagged in its theory panels as a simplification.
+
+### Verification (all pass)
+Each generated HTML's embedded `CFG` parses as valid JSON (so the browser parses it); the browser-side
+reduced-form reproduces each Muddle Through base **exactly** at default sliders (DNL 3.59, WBC 30.15,
+CSL 203.83); 7 theory panels + 6 world descriptions + industry-forces column + all-real narratives present
+in all three; inline `#detail` present, dark modal gone. Numbers traced to the workbooks/thesis by two
+research subagents. (Browser visual check not done — the Chrome tool forces https:// and won't open local
+file:// paths; Stephen to eyeball on review.)
+
+### Mount-truncation quirk bit hard this session
+The Cowork file-write tool truncated **both** `build_cfgs.py` and `gen_ui.py` mid-write (at ~18KB / line
+119 and line 163 respectively) — the WORKING_NOTES 25-June quirk. Recovered by keeping the clean disk head
+and appending the remainder via a quoted bash heredoc to `/tmp`, compile-checking, then `cp`-ing onto the
+mount. **Lesson for large source edits: build sandbox-side + cp, don't trust large mount writes.**
+
+### Next on the UI (unchanged order): B then D
+- **B** — user-defined scenarios ("+" bar), per-input overrides everywhere (global value + per-scenario
+  override), editable Impact column on forces, editable assumptions, faithful browser-side reduced-form,
+  Excel formula-workbook download, localStorage persistence. The `#detail` panels are now the editing surface.
+- **D** — the beta/cost-of-capital workbench (the flagship; EODHD JSON data-contract; the AI-vs-mechanical
+  boundary decision). The discount-theory panels + CSL's correct-currency-index point set this up.
+
 ## Who and what
 
 Owner, people, repo, and test companies now live in `CLAUDE.md`. Volatile note kept here:
