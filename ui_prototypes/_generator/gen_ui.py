@@ -159,11 +159,11 @@ def forces_table(intro, rows, net):
     return h
 def dr_theory_html(rows):
     # rows: [label, proper, ier, did]
-    h='<div style="margin-top:12px; border-top:0.5px solid var(--bd); padding-top:10px;"><div class="hd" style="margin-bottom:2px;">Practical theory — the proper approach vs what we did</div><div class="sub" style="margin-bottom:6px;">click any element; IER evidence from the four independent expert reports in <code>design/reference/discount_rate_iers/</code></div>'
+    h='<div style="margin-top:12px; border-top:0.5px solid var(--bd); padding-top:10px;"><div class="hd" style="margin-bottom:2px;">Practical theory — the proper approach vs what we did</div><div class="sub" style="margin-bottom:6px;">click any element to compare the textbook approach with what this valuation did</div>'
     for r in rows:
         h+='<details class="thy"><summary>%s</summary><div class="thybody">'%r[0]
         h+='<div class="thytag" style="color:var(--success-tx);">The proper approach</div><div style="margin:2px 0 8px;">%s</div>'%r[1]
-        h+='<div class="thytag" style="color:var(--info-tx);">What the IERs show</div><div style="margin:2px 0 8px; color:var(--text2);">%s</div>'%r[2]
+        h+='<div class="thytag" style="color:var(--info-tx);">In market practice</div><div style="margin:2px 0 8px; color:var(--text2);">%s</div>'%r[2]
         h+='<div class="thytag" style="color:var(--warning-tx);">What we did (VCC)</div><div style="margin:2px 0 0;">%s</div>'%r[3]
         h+='</div></details>'
     return h+'</div>'

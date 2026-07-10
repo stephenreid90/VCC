@@ -30,27 +30,28 @@ WORLD_DESC = {
 # ---- Shared discount-rate theory (proper approach + IER evidence). Per-company "what we did" supplied separately. ----
 DR_PROPER = [
  ("rf","Risk-free rate",
-  "A long-dated government bond yield in the cash-flow currency, ideally matched to the horizon/duration of the cash flows. Experts split between the deep, liquid 10-year benchmark and a term-matched long bond for very long-life assets; a single YTM is only an average and distorts NPV when the curve is steep. Most take a recent spot rate rather than a normalised one.",
-  "Grant Samuel (Oil Search) used <b>1.6%</b> — the 10-year US Treasury yield — calling it &lsquo;the standard benchmark used in practice&rsquo; while conceding a 30-year &lsquo;would be a better benchmark for longer-term cash flows&rsquo;. KPMG (Woodside) used the spot 20-year UST (2.3%) and interpolated shorter yields to each project&rsquo;s cessation date. Deloitte (Universal Coal) used a five-day average of the 20-year UST (1.12%)."),
+  "A long-dated government bond yield in the cash-flow currency, ideally matched to the horizon/duration of the cash flows. Practice splits between the deep, liquid 10-year benchmark and a term-matched long bond for very long-life assets; a single YTM is only an average and distorts NPV when the curve is steep. Most take a recent spot rate rather than a normalised one.",
+  "In practice, valuers use a recent spot yield on a long government bond in the cash-flow currency — most commonly the 10-year, though some duration-match to 20 or 30-year bonds for very long-life assets. Normalising the rate is debated but usually set aside in favour of a current market yield."),
  ("erp","Equity risk premium",
-  "The unobservable expected excess return of equities over the risk-free asset, estimated from long-run historical premia, forward-looking/implied models, or surveys — none theoretically superior. Australian expert convention has settled near 6.0%, while acknowledging large statistical error.",
-  "All three full IERs used <b>6.0%</b>. Grant Samuel notes it is &lsquo;similar to that used by a wide variety of analysts, practitioners and regulators (typically 5–7%)&rsquo;, makes &lsquo;no explicit allowance for dividend imputation&rsquo;, and that the true figure for a measured 6% premium plausibly lies in a 2–10% band at 95% confidence. KPMG and Deloitte both adopted 6.0%."),
+  "The unobservable expected excess return of equities over the risk-free asset, estimated from long-run historical premia, forward-looking/implied models, or surveys — none theoretically superior. Convention has settled near 6.0%, while acknowledging large statistical error.",
+  "Independent experts and practitioners typically adopt a market risk premium around <b>6.0%</b> (a 5–7% range is common), close to updated long-run historical estimates. The estimate carries very wide statistical error — the true premium behind a measured 6% could plausibly sit anywhere in a 2–10% band — and Australian practice usually makes no explicit imputation adjustment inside it."),
  ("beta","Beta",
   "Raw single-stock regression beta is noisy and window-dependent, so triangulate from a comparable set: unlever peer equity betas to asset betas and re-lever to a target structure, and/or use adjusted (mean-reverting) or fundamental betas. Index choice (local vs global) and estimation window materially change the answer.",
-  "Grant Samuel is clearest on the noise: Oil Search&rsquo;s measured beta &lsquo;has varied between 0.79 and 2.67&rsquo; over four years (2.63 vs 1.72 vs 2.04 across providers), with standard errors ~0.28–0.49; it adopted <b>1.3–1.4</b> from a ~20-company table and quoted advice that mechanical de-/re-levering is a &lsquo;worthless pursuit of spurious precision&rsquo;. KPMG used adjusted betas vs the MSCI ACWI; Deloitte found only one peer statistically meaningful."),
+  "Standard practice is to triangulate from a comparable set rather than trust a single regression: a subject&rsquo;s measured beta can swing widely across data providers and estimation windows (often anywhere from ~0.8 to ~2.7 for the same company), so experts lean on adjusted / fundamental betas and peer clusters, and treat mechanical unlever / relever with caution."),
  ("debt","Cost of debt / debt margin",
   "Risk-free rate plus a debt margin set by the company&rsquo;s (or comparable-set) credit rating, referencing traded corporate-bond spreads over sovereigns at matching tenor; use a target rating consistent with the assumed gearing, not just the current coupon.",
-  "Grant Samuel used <b>4.6%</b> = a 3% margin over the risk-free rate, benchmarked to Santos&rsquo;s BBB rating, RBA-published BBB spreads (~160bps at 10y) and a recent Santos 10-year bond at 3.649%. KPMG used BBB energy-sector USD spreads. Deloitte used 10.0–11.5% (ZAR), a 3.5–5.0% margin over JIBAR."),
+  "Cost of debt is normally built as the risk-free rate plus a credit-rating-based margin — a BBB issuer&rsquo;s traded spread over the sovereign at matching tenor, using a target rating consistent with the assumed gearing rather than the current coupon. Margins of ~1.5–3% over the risk-free rate are typical for investment-grade names."),
  ("gearing","Gearing / capital-structure weights",
   "Weight equity and debt at market value, using a target/through-cycle structure informed by the subject&rsquo;s own gearing plus the comparable-set average, rather than a single spot snapshot (which is volatile and often inconsistent with the betas measured over the same window).",
-  "Grant Samuel used <b>15–25% debt / 75–85% equity</b> &lsquo;based on market values (not book values)&rsquo; from a five-year peer gearing table. KPMG varied D/(D+E) by asset class (25% upstream → 55% processing). Deloitte used 20% debt, &lsquo;having regard to comparable companies&rsquo;."),
+  "Weights are taken at <b>market value</b> on a target / through-cycle basis, informed by the comparable-set average rather than a single spot snapshot — commonly 15–25% debt for capital-light industrials, higher for infrastructure-like assets."),
  ("gamma","Gamma / imputation credits",
   "Australia&rsquo;s dividend-imputation system gives resident investors franking credits; some argue these should be captured via a &lsquo;gamma&rsquo; factor (contested, ~0.25–0.65). Regulators such as the AER apply it through the tax line.",
-  "Grant Samuel gives the definitive treatment and <b>rejects it</b>: &lsquo;it is not appropriate to allow for dividend imputation for business valuation purposes… the underlying concept of gamma is flawed… there is no direct evidence that imputation credits are factored into market prices&rsquo;. Credit value is effectively binary (100% domestic / 0% foreign), so a weighted-average gamma ~0.5 is unsound. KPMG and Deloitte (USD/ZAR contexts) applied none."),
+  "Whether to capture franking credits (via a &lsquo;gamma&rsquo; factor, contested at ~0.25–0.65) is heavily debated. Many independent valuers decline to adjust for imputation in a business-valuation context, arguing credit value is effectively binary across the shareholder base (full value to some domestic investors, nil to foreign ones) and not reliably priced by the market."),
  ("wacc","WACC vs cost of equity",
   "For an industrial/miner, discount ungeared after-tax cash flows at a WACC, then bridge enterprise value to equity via net debt. For a bank, debt is raw material (deposits/wholesale funding are operating inputs), so discount cash flows to equity at the cost of equity directly — a WACC/EV bridge is wrong.",
-  "All three full IERs are industrials/resources and apply a WACC to &lsquo;expected future ungeared after-tax cash flows&rsquo; (Grant Samuel), with concluded WACCs of <b>7.9–9.0%</b> (Oil Search/Santos), 7.5–8.7% by project class (Woodside/BHP Petroleum) and 16–19% (Universal Coal, ZAR). None is a bank — the bank exception is our own §15 addition."),
+  "Industrials and miners are valued by discounting ungeared after-tax cash flows at a WACC and bridging to equity via net debt; concluded WACCs for mature resource / industrial businesses commonly land around 7–9% (higher in higher-risk jurisdictions). Banks are the exception — deposits and wholesale funding are operating inputs, so bank cash flows are discounted to equity at the cost of equity directly, with no WACC / EV bridge."),
 ]
+
 def drtheory(did):
     return [[lbl, proper, ier, did.get(k, '&mdash;')] for (k, lbl, proper, ier) in DR_PROPER]
 
@@ -60,7 +61,7 @@ DNL_DID = {
  "beta":"Peer triangulation, rejecting the measured <b>0.36</b> (unreliable post-demerger): Orica ~1.05 / Yara ~1.20 / ICL ~1.10 cluster (Sasol 1.45 excluded) → selected <b>1.10</b>.",
  "debt":"<b>6.00%</b> pre-tax = an AUD investment-grade BBB-tier spread (~170bps) over the 10-year sovereign; after-tax 6.00% × (1−0.30) = 4.20%.",
  "gearing":"Market-value weights <b>E/V 79% / D/V 21%</b> (equity = 1,884m shares × AUD 3.61; debt = reported net debt). Market-value basis using reported net debt.",
- "gamma":"Not applied — consistent with Grant Samuel&rsquo;s reasoning, and with our ERP making no explicit imputation allowance.",
+ "gamma":"Not applied — consistent with the standard business-valuation view, and with our ERP making no explicit imputation allowance.",
  "wacc":"<b>WACC ≈ 8.68%</b> (Re 9.80% at β 1.10; 79% equity + 21% debt at 4.20% after-tax). Held constant across scenarios (§3.5).",
 }
 WBC_DID = {
@@ -69,7 +70,7 @@ WBC_DID = {
  "beta":"Peer triangulation: CBA 0.80 / NAB 0.72 / WBC 0.73 cluster → <b>0.75</b>; ANZ 0.57 excluded as an institutional-dilution outlier, MQG 0.88 a different archetype. Measured 0.73 documented alongside.",
  "debt":"Not applicable — a bank is discounted at cost of equity, with deposits and wholesale funding treated as operating inputs, not financing (§15).",
  "gearing":"Not applicable — no WACC / EV bridge for a bank.",
- "gamma":"Not applied — consistent with Grant Samuel&rsquo;s reasoning and our imputation-neutral ERP.",
+ "gamma":"Not applied — consistent with the standard business-valuation view and our imputation-neutral ERP.",
  "wacc":"<b>Cost of equity 8.05%</b> (Rf 4.30% + β 0.75 × ERP 5.0%), held constant across scenarios, no WACC/EV bridge — the bank convention (§15).",
 }
 CSL_DID = {
