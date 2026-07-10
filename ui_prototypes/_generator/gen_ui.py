@@ -47,7 +47,8 @@ details.thy .thybody{padding:2px 12px 11px 22px; font-size:12.5px;}
   <div><div class="hd">Top 5 value drivers <span style="font-weight:400; color:var(--text3); font-size:12px;">— flex to see impact</span></div>
     <div class="sub" style="margin-bottom:6px;">illustrative response · full set under Assumptions</div>
     <div id="sliders"></div>
-    <div style="display:flex; gap:8px; margin-top:8px;"><button id="reset">↻ reset</button><button id="allassum">all assumptions &amp; rationale</button></div></div>
+    <div style="display:flex; gap:8px; margin-top:8px;"><button id="reset">↻ reset</button><button id="allassum">all assumptions &amp; rationale</button></div>
+    <label style="display:flex; align-items:center; gap:6px; margin-top:8px; font-size:12px; color:var(--text2); cursor:pointer;"><input type="checkbox" id="applyall" style="accent-color:var(--bdinfo);"> apply input changes to <b>&nbsp;all editable scenarios&nbsp;</b> (global), not just this one</label></div>
   <div><div class="hd">Outcomes across scenarios <span style="font-weight:400; color:var(--text3); font-size:12px;">(__CCY__/share)</span></div>
     <div class="sub" style="margin-bottom:6px;">click a scenario to explore its build-up</div>
     <div id="bars"></div>
@@ -68,6 +69,7 @@ var CFG=__CFG__;
   var liveVals={}; CFG.sliders.forEach(function(s){ liveVals[s.k]=s.def; });
   var st=liveVals;                 // working slider state = current target's vals (by reference)
   var target='live';               // 'live' | user-id | null (read-only built-in)
+  var applyGlobal=false;
   var user=loadUser();
   user.forEach(function(u){ CFG.scenarios.push({n:u.name, v:0, kind:'user', uid:u.id}); });
 
@@ -75,6 +77,7 @@ var CFG=__CFG__;
   function saveUser(){ try{ localStorage.setItem(LSKEY, JSON.stringify(user)); }catch(e){} }
   function findUser(id){ for(var i=0;i<user.length;i++){ if(user[i].id===id) return user[i]; } return null; }
   function scenByUid(id){ for(var i=0;i<CFG.scenarios.length;i++){ if(CFG.scenarios[i].uid===id) return CFG.scenarios[i]; } return null; }
+  function sliderByKey(k){ for(var i=0;i<CFG.sliders.length;i++){ if(CFG.sliders[i].k===k) return CFG.sliders[i]; } return null; }
   function activeScen(){ return CFG.scenarios[CFG.activeIdx]; }
 
   function fmt(s,v){ return v.toFixed(s.dec)+s.suf; }
@@ -85,6 +88,20 @@ var CFG=__CFG__;
   }
   function compute(){ return computeVals(st); }
   user.forEach(function(u){ var sc=scenByUid(u.id); if(sc) sc.v=computeVals(u.vals); });
+
+  // apply one input change to every editable scenario (global mode)
+  function propagate(k,v){
+    liveVals[k]=v; CFG.scenarios[CFG.liveIdx].v=computeVals(liveVals);
+    user.forEach(function(u){ u.vals[k]=v; var sc=scenByUid(u.id); if(sc) sc.v=computeVals(u.vals); });
+    saveUser();
+  }
+  // set input k=v on the current target, honouring the global toggle; refresh sliders + bars
+  function setInput(k,v){
+    st[k]=v;
+    if(applyGlobal){ propagate(k,v); }
+    else if(target!=='live'){ var u=findUser(target); if(u){ u.vals=st; saveUser(); } }
+    syncSliders(); render();
+  }
 
   function updateCards(v){
     var sc=activeScen(); var show=(v!==undefined && v!==null)?v:sc.v;
@@ -136,27 +153,28 @@ var CFG=__CFG__;
     var row=document.createElement('div'); row.style.margin='10px 0';
     row.innerHTML='<div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:2px;"><span style="color:var(--text2);">'+s.label+'</span><span style="font-weight:500;" id="o_'+s.k+'"></span></div>';
     var inp=document.createElement('input'); inp.type='range'; inp.min=s.min; inp.max=s.max; inp.step=s.step; inp.value=st[s.k];
-    inp.addEventListener('input',function(){ st[s.k]=parseFloat(inp.value); document.getElementById('o_'+s.k).textContent=fmt(s,st[s.k]); render(); });
+    inp.addEventListener('input',function(){ setInput(s.k, parseFloat(inp.value)); });
     row.appendChild(inp); sl.appendChild(row); inputs[s.k]=inp;
     document.getElementById('o_'+s.k).textContent=fmt(s,st[s.k]);
   });
-  function syncSliders(){ CFG.sliders.forEach(function(s){ inputs[s.k].value=st[s.k]; document.getElementById('o_'+s.k).textContent=fmt(s,st[s.k]); }); }
+  function syncSliders(){ CFG.sliders.forEach(function(s){ inputs[s.k].value=st[s.k]; var o=document.getElementById('o_'+s.k); if(o) o.textContent=fmt(s,st[s.k]); }); }
   function slidersEnabled(on){ sl.style.opacity=on?'1':'0.45'; sl.style.pointerEvents=on?'auto':'none'; }
 
   function updateEditingUI(){
     var e=document.getElementById('editing'); if(!e) return; var sc=activeScen();
     if(target==='live') e.innerHTML='editing <b>Muddle Through</b> (live)';
     else if(target===null) e.innerHTML='exploring <b>'+sc.n+'</b> — read-only; pick Muddle Through or a user scenario to edit inputs';
-    else e.innerHTML='editing your scenario <b>'+sc.n+'</b> — flex the inputs; changes save in this browser';
+    else e.innerHTML='editing your scenario <b>'+sc.n+'</b> — changes save in this browser';
   }
 
   document.getElementById('reset').addEventListener('click',function(){ if(target===null) return; CFG.sliders.forEach(function(s){ st[s.k]=s.def; }); if(target!=='live'){ var u=findUser(target); if(u){ u.vals=st; saveUser(); } } syncSliders(); render(); });
   document.getElementById('allassum').addEventListener('click',function(){ setPanel('assum'); markExplore('assum'); openDetail('assum'); });
+  document.getElementById('applyall').addEventListener('change',function(){ applyGlobal=this.checked; });
   document.getElementById('addscen').addEventListener('click',function(){
     var name=prompt('Name your scenario (starts from Muddle Through, then flex the inputs):','My scenario '+(user.length+1));
     if(!name) return; name=(''+name).slice(0,40);
     var vals={}; CFG.sliders.forEach(function(s){ vals[s.k]=s.def; });
-    var id='u'+Date.now(); user.push({id:id,name:name,vals:vals}); saveUser();
+    var id='u'+Date.now(); user.push({id:id,name:name,vals:vals,forces:{}}); saveUser();
     CFG.scenarios.push({n:name, v:computeVals(vals), kind:'user', uid:id});
     selectBar(CFG.scenarios.length-1);
   });
@@ -176,26 +194,55 @@ var CFG=__CFG__;
     if(k==='world'){ var t=document.getElementById('wsnaptitle'); if(t) t.textContent=activeScen().n; }
     var m=document.querySelector('#panel .more'); if(m){ m.addEventListener('click',function(){ openDetail(m.getAttribute('data-k')); }); }
   }
+
+  function posb(p){ var bg,tx; if(p==='more favourable'){bg='var(--success-bg)';tx='var(--success-tx)';} else if(p==='less favourable'){bg='var(--danger-bg)';tx='var(--danger-tx)';} else {bg='var(--secondary)';tx='var(--text2)';} return '<span style="font-size:11px; padding:1px 7px; border-radius:6px; background:'+bg+'; color:'+tx+';">'+p+'</span>'; }
+  function esc(t){ return (''+t).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+  function editableInputsTable(){
+    var h='<table style="width:100%; font-size:13px;">';
+    CFG.sliders.forEach(function(s){
+      h+='<tr><td style="padding:4px 8px 4px 0; color:var(--text2);">'+s.label+'</td><td style="padding:4px 0; text-align:right; white-space:nowrap;"><input class="assumInp" data-k="'+s.k+'" type="number" min="'+s.min+'" max="'+s.max+'" step="'+s.step+'" value="'+st[s.k]+'" style="width:82px; text-align:right; font:inherit; padding:2px 6px; border:0.5px solid var(--bd2); border-radius:6px; background:var(--primary); color:var(--text);"> <span class="sub">'+(s.suf.trim()||'')+'</span></td></tr>';
+    });
+    return h+'</table>';
+  }
+  function interactiveForces(sc){
+    var u=findUser(sc.uid); u.forces=u.forces||{}; var fd=CFG.forcesData;
+    var h='<p>'+fd.intro+'</p><p class="sub" style="margin-top:-4px;">The <b>Impact</b> column is editable for your scenario — record how you think each force shifts under it. (Annotation for now; the production engine will feed these into the number.)</p><table style="width:100%; font-size:13px;"><tr><td class="sub" style="padding:4px 8px 4px 0;">Force</td><td class="sub" style="padding:4px 8px;">Industry (rating &amp; why)</td><td class="sub" style="padding:4px 8px;">Company vs industry</td><td class="sub" style="padding:4px 0; text-align:right;">Impact (yours)</td></tr>';
+    fd.rows.forEach(function(r,i){ var imp=(u.forces[i]!==undefined)?u.forces[i]:r[4];
+      h+='<tr style="border-top:0.5px solid var(--bd);"><td style="padding:7px 8px 7px 0; font-weight:500; white-space:nowrap; vertical-align:top;">'+r[0]+'</td><td style="padding:7px 8px; vertical-align:top; max-width:220px;"><span style="font-weight:500;">'+r[1]+'</span><div style="color:var(--text2); margin-top:2px; font-size:12px;">'+r[2]+'</div></td><td style="padding:7px 8px; vertical-align:top;">'+posb(r[3])+'<div style="color:var(--text2); margin-top:3px; font-size:12px;">'+r[5]+'</div></td><td style="padding:7px 0 7px 8px; text-align:right; vertical-align:top;"><input class="forceInp" data-i="'+i+'" value="'+esc(imp)+'" style="width:92px; text-align:right; font:inherit; font-size:12px; padding:2px 6px; border:0.5px solid var(--bd2); border-radius:6px; background:var(--primary); color:var(--text);"></td></tr>';
+    });
+    return h+'</table><div style="margin-top:10px; background:var(--secondary); border-radius:8px; padding:10px;"><b>Baseline net offset:</b> '+fd.net+'</div>';
+  }
   function userWorldHTML(sc){
     var u=findUser(sc.uid); var rows='';
     CFG.sliders.forEach(function(s){ var uv=u.vals[s.k], dv=s.def, chg=(uv!==dv);
       rows+='<tr style="border-top:0.5px solid var(--bd);"><td style="padding:5px 8px 5px 0; color:var(--text2);">'+s.label+'</td><td style="padding:5px 8px; text-align:right; '+(chg?'font-weight:600;':'color:var(--text3);')+'">'+fmt(s,uv)+'</td><td style="padding:5px 0; text-align:right; color:var(--text3);">'+(chg?('was '+fmt(s,dv)):'—')+'</td></tr>'; });
     var vm=(sc.v/CFG.market-1)*100;
-    return '<p style="margin-top:0;">Your own scenario, starting from Muddle Through and re-priced live by the browser-side reduced-form. Value <b>'+CFG.ccy+' '+sc.v.toFixed(CFG.dp)+'</b> ('+(vm>=0?'+':'')+vm.toFixed(0)+'% vs market).</p><table style="width:100%; font-size:13px;"><tr><td class="sub" style="padding:2px 8px 2px 0;">Input</td><td class="sub" style="padding:2px 8px; text-align:right;">Your value</td><td class="sub" style="padding:2px 0; text-align:right;">vs MT</td></tr>'+rows+'</table><p class="sub" style="margin-top:8px;">Coming next: per-input overrides on the Five Forces and Assumptions tabs, and an Excel download of your scenario as a formula workbook.</p>';
+    return '<p style="margin-top:0;">Your own scenario, starting from Muddle Through and re-priced live by the browser-side reduced-form. Value <b>'+CFG.ccy+' '+sc.v.toFixed(CFG.dp)+'</b> ('+(vm>=0?'+':'')+vm.toFixed(0)+'% vs market).</p><table style="width:100%; font-size:13px;"><tr><td class="sub" style="padding:2px 8px 2px 0;">Input</td><td class="sub" style="padding:2px 8px; text-align:right;">Your value</td><td class="sub" style="padding:2px 0; text-align:right;">vs MT</td></tr>'+rows+'</table><p class="sub" style="margin-top:8px;">Edit these on the <b>Assumptions</b> tab (or the sliders), and the Five Forces impacts on the <b>Five Forces</b> tab. Excel download of your scenario as a formula workbook is coming next.</p>';
   }
   function detailHTML(k){
     if(k==='world'){ var sc=activeScen(); if(sc.kind==='user'){ return userWorldHTML(sc); } var nm=sc.n;
       var wd=(CFG.worldDesc&&CFG.worldDesc[nm])?'<div class="thytag" style="color:var(--text3); margin:0 0 4px;">The world</div>'+CFG.worldDesc[nm]:'';
       var cn='<div class="thytag" style="color:var(--text3); margin:14px 0 4px;">What it means for '+CFG.companyShort+'</div>'+(CFG.narr[nm]||CFG.narr._placeholder);
       return wd+cn; }
+    if(k==='forces'){ var scf=activeScen(); if(scf.kind==='user'){ return interactiveForces(scf); } return CFG.detail.forces; }
+    if(k==='assum'){ var head='';
+      if(target!==null){ var lab=(target==='live')?'Muddle Through (live)':activeScen().n;
+        head='<div style="border:0.5px solid var(--bd); border-left:2.5px solid var(--user-tx); border-radius:8px; padding:11px 13px; margin-bottom:12px;"><div style="font-weight:600; margin-bottom:2px;">Your inputs — '+lab+'</div><div class="sub" style="margin-bottom:8px;">the value-material inputs; type to override (syncs with the sliders and the live value). The full assumption set is below.</div>'+editableInputsTable()+'</div>'; }
+      return head+CFG.detail.assum; }
     if(k==='dcf'){ return CFG.dcf+'<button style="margin-top:12px; font-size:13px; padding:6px 12px;" id="dlbtn">⤓ download all scenarios to Excel</button><div style="font-size:11px; color:var(--text3); margin-top:4px;">one tab per scenario</div>'; }
     return CFG.detail[k]||'';
+  }
+  function wireEditable(k,d){
+    if(k==='assum'){ Array.prototype.forEach.call(d.querySelectorAll('.assumInp'),function(inp){ inp.addEventListener('change',function(){ var key=inp.getAttribute('data-k'); var s=sliderByKey(key); var v=parseFloat(inp.value); if(isNaN(v)){ inp.value=st[key]; return; } v=Math.max(s.min,Math.min(s.max,v)); inp.value=v; setInput(key,v); }); }); }
+    if(k==='forces'){ Array.prototype.forEach.call(d.querySelectorAll('.forceInp'),function(inp){ inp.addEventListener('change',function(){ var i=+inp.getAttribute('data-i'); var u=findUser(target); if(!u) return; u.forces=u.forces||{}; u.forces[i]=inp.value; saveUser(); }); }); }
   }
   function openDetail(k){
     var d=document.getElementById('detail');
     d.innerHTML='<div class="detailcard"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><h4>'+CFG.titles[k]+'</h4><button id="closeov" aria-label="close" style="padding:2px 9px;">×</button></div><div>'+detailHTML(k)+'</div></div>';
     document.getElementById('closeov').addEventListener('click',function(){ d.innerHTML=''; });
     var dl=document.getElementById('dlbtn'); if(dl) dl.addEventListener('click',function(){ alert('In the live tool this downloads the '+CFG.companyShort+' scenario workbook — one tab per scenario (coming in the next increment).'); });
+    wireEditable(k,d);
     d.scrollIntoView({behavior:'smooth', block:'nearest'});
   }
 
@@ -254,6 +301,7 @@ for key,cfg in CFGS.items():
         'discount': cfg['_discount'] + dr_theory_html(cfg.get('_drtheory', [])),
         'assum': assum_table(cfg['_assum'])
     }
+    cfg['forcesData']=cfg['_forces']
     for kk in ['_forces','_position','_discount','_assum','_drtheory']: cfg.pop(kk, None)
     html=SCAFFOLD.replace('__CFG__', json.dumps(cfg)).replace('__COMPANY__', cfg['company']).replace('__CCYNOTE__', cfg['ccynote']).replace('__CCY__', cfg['ccy'])
     out=os.path.join(OUTDIR, '%s_scenario_interface.html'%key)

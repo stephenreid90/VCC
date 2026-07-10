@@ -123,9 +123,16 @@ Model: `target` = 'live' | user-id | null; sliders always drive the current edit
 holds Muddle Through so switching targets preserves each scenario's edits. Verified in node: CFG parses as
 valid JSON, reduced-form reproduces each base exactly, and moves correctly (+1% Re lowers, +0.5% g raises).
 
-**Still on B (increment 2, next):** per-input overrides on the Five Forces (editable Impact column) and
-the full Assumptions list; a global-vs-per-scenario switch for discount-rate components; the "advanced /
-show all inputs" long tail; the Excel formula-workbook download; then **D** (beta workbench).
+**B increment 2 done (10 July 2026):** the value-material inputs are now editable from the
+**Assumptions** tab as typed number fields (two-way synced with the sliders and the live value); the
+**Five Forces Impact column is editable** for user scenarios (stored per scenario as an annotation — flagged
+as not-yet-feeding-the-number until the engine lands); and a **"apply to all editable scenarios (global)"**
+toggle lets an input change hit every reduced-form scenario at once or just the selected one (points 3, 4-at-Re-level,
+5). Verified in node: global propagation hits all editable scenarios, per-scenario overrides stay isolated,
+directions correct. Structured `forcesData` now shipped in each CFG so the interactive forces table can rebuild client-side.
+
+**Still on B (increment 3, next):** the Excel formula-workbook download; component-level discount-rate overrides + the "advanced / show all
+inputs" long tail; then **D** (beta workbench).
 
 ### Iteration tracking
 Stephen wants to swap chats ~every 20 iterations. Rough count this session: ~6 exchanges in.
