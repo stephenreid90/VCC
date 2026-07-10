@@ -204,7 +204,7 @@ var CFG=__CFG__;
   var BW=CFG.beta; var bs=null;
   function bwInit(){
     bs={ idx:BW.indexDefault, win:BW.windowDefault, rf:BW.rf, erp:BW.erp, alpha:BW.alpha,
-         relever:false, targetDE:(BW.subject.de||0), showCand:false, comps:BW.comparables.slice(), plot:null };
+         relever:false, targetDE:(BW.subject.de||0), showCand:false, showWider:false, comps:BW.comparables.slice(), plot:null };
     bs.comps.forEach(function(c){ c._sel=c.selected; });
     var f=bs.comps.filter(function(c){return c._sel;})[0]; bs.plot=f?f.name:(bs.comps[0]&&bs.comps[0].name);
   }
@@ -222,9 +222,10 @@ var CFG=__CFG__;
   function reOf(beta){ return bs.rf + beta*bs.erp + bs.alpha; }
   function impliedDiscount(re){ var t=BW.toDiscount; return (t.mode==='wacc')?(t.wE*re+(1-t.wE)*t.kdAfterTax):re; }
   function jsScatter(beta){ var pts=[]; for(var i=0;i<26;i++){ var x=(Math.random()-0.5)*0.05; pts.push([Math.round(x*1e4)/1e4, Math.round((beta*x+(Math.random()-0.5)*0.016)*1e4)/1e4]); } return pts; }
-  function addCand(i){ var cd=BW.candidates[i]; if(cd.addable===false) return;
+  function addCandObj(cd){ if(cd.addable===false) return;
     var data={}; BW.indices.forEach(function(ix){ data[ix]={}; BW.windows.forEach(function(w){ data[ix][w]={beta:cd.betaHint, points:jsScatter(cd.betaHint)}; }); });
-    bs.comps.push({name:cd.name,ticker:cd.ticker,why:cd.why,tax:cd.tax,gearingDE:cd.gearingDE,_sel:true,_added:true,_data:data}); }
+    bs.comps.push({name:cd.name,ticker:cd.ticker,why:cd.why||'Added by you.',tax:(cd.tax!=null?cd.tax:0.30),gearingDE:(cd.gearingDE!=null?cd.gearingDE:0),_sel:true,_added:true,_data:data}); }
+  function candRow(cd,cls,i){ return '<div style="display:flex; gap:8px; align-items:flex-start; margin-bottom:7px;"><button class="'+cls+'" data-i="'+i+'" '+(cd.addable===false?'disabled title="privately held — no listed beta"':'')+' style="font-size:11px; padding:2px 8px; flex:none;">+ add</button><div style="font-size:12.5px;"><b>'+cd.name+'</b> <span class="sub">'+cd.ticker+' · \u03b2\u2248'+cd.betaHint.toFixed(2)+'</span><div style="color:var(--text2);">'+cd.why+'</div></div></div>'; }
   function numField(id,label,v,step){ return '<div><div class="sub">'+label+'</div><input type="number" id="'+id+'" value="'+v+'" step="'+step+'" style="width:74px; font:inherit; padding:3px 6px; border:0.5px solid var(--bd2); border-radius:6px; background:var(--primary); color:var(--text);"></div>'; }
   function scatterSVG(c){ var pts=pointsOf(c), b=betaOf(c), W=400,H=210,pad=24;
     var xs=pts.map(function(p){return p[0];}), ys=pts.map(function(p){return p[1];});
@@ -252,9 +253,13 @@ var CFG=__CFG__;
       h+='<tr style="border-top:0.5px solid var(--bd);"><td style="padding:6px 4px 6px 0; vertical-align:top;"><input type="checkbox" class="bw_sel" data-ci="'+ci+'" '+(c._sel?'checked':'')+'></td><td style="padding:6px 8px 6px 0;">'+c.name+' <span class="sub">'+c.ticker+'</span>'+(c._added?' <span class="sub" style="color:var(--user-tx);">added</span>':'')+'<details class="thy" style="margin-top:4px;"><summary>why comparable</summary><div class="thybody">'+c.why+'</div></details></td><td style="padding:6px 8px; text-align:right; '+(c._sel?'font-weight:600;':'color:var(--text3);')+'">'+bl.toFixed(2)+'</td><td style="padding:6px 8px; text-align:right; color:var(--text2);">'+(BW.bank?'—':bu.toFixed(2))+'</td><td style="padding:6px 0; text-align:right; vertical-align:top;"><button class="bw_plot" data-name="'+c.name+'" style="font-size:11px; padding:2px 7px; '+(bs.plot===c.name?'border-color:var(--bdinfo);':'')+'">plot</button></td></tr>'; });
     h+='</table>';
     h+='<div style="margin-top:8px;"><button id="bw_find" style="font-size:12px;">'+(bs.showCand?'− hide candidates':'✦ find more comparables')+'</button>';
-    if(bs.showCand){ h+='<div style="margin-top:8px; border:0.5px dashed var(--bd2); border-radius:8px; padding:8px 10px;"><div class="sub" style="margin-bottom:6px;">Suggested by the &lsquo;find comparables&rsquo; step — the analyst / AI-judgment part; each comes with a rationale to accept or reject:</div>';
-      BW.candidates.forEach(function(cd,i){ h+='<div style="display:flex; gap:8px; align-items:flex-start; margin-bottom:7px;"><button class="bw_add" data-i="'+i+'" '+(cd.addable===false?'disabled title="privately held — no listed beta"':'')+' style="font-size:11px; padding:2px 8px; flex:none;">+ add</button><div style="font-size:12.5px;"><b>'+cd.name+'</b> <span class="sub">'+cd.ticker+' · β≈'+cd.betaHint.toFixed(2)+'</span><div style="color:var(--text2);">'+cd.why+'</div></div></div>'; });
-      h+='</div>'; } h+='</div>';
+    if(bs.showCand){ h+='<div style="margin-top:8px; border:0.5px dashed var(--bd2); border-radius:8px; padding:8px 10px;">';
+      h+='<div class="sub" style="margin-bottom:4px;">Add any company you consider comparable, even if it is not listed here:</div><div style="display:flex; gap:6px; align-items:flex-end; flex-wrap:wrap; margin-bottom:10px;"><div><div class="sub">Name</div><input id="bw_cn" placeholder="company" style="width:120px; font:inherit; font-size:12px; padding:2px 6px; border:0.5px solid var(--bd2); border-radius:5px; background:var(--primary); color:var(--text);"></div><div><div class="sub">Ticker</div><input id="bw_ct" placeholder="TICK" style="width:74px; font:inherit; font-size:12px; padding:2px 6px; border:0.5px solid var(--bd2); border-radius:5px; background:var(--primary); color:var(--text);"></div><div><div class="sub">β (est.)</div><input id="bw_cb" type="number" step="0.05" value="1.00" style="width:64px; font:inherit; font-size:12px; padding:2px 6px; border:0.5px solid var(--bd2); border-radius:5px; background:var(--primary); color:var(--text);"></div><button id="bw_cadd" style="font-size:11px;">+ add</button></div>';
+      h+='<div class="sub" style="margin-bottom:6px;">Suggested by the &lsquo;find comparables&rsquo; step — the analyst / AI-judgment part; each comes with a rationale to accept or reject:</div>';
+      BW.candidates.forEach(function(cd,i){ h+=candRow(cd,'bw_add',i); });
+      h+='<div style="margin-top:8px;"><button id="bw_wider" style="font-size:12px;">'+(bs.showWider?'− hide wider search':'⌕ search wider')+'</button>';
+      if(bs.showWider && BW.candidates2){ h+='<div style="margin-top:6px;"><div class="sub" style="margin-bottom:6px;">Broader search — adjacent names with a weaker but arguable rationale:</div>'; BW.candidates2.forEach(function(cd,i){ h+=candRow(cd,'bw_add2',i); }); h+='</div>'; }
+      h+='</div></div>'; } h+='</div>';
     var pc=bs.comps.filter(function(c){return c.name===bs.plot;})[0];
     if(pc){ h+='<div style="margin-top:12px;"><div class="hd" style="margin-bottom:4px;">Beta regression — '+pc.name+' vs '+bs.idx+' <span class="sub">('+bs.win+')</span></div>'+scatterSVG(pc)+'</div>'; }
     h+='<div style="margin-top:12px; background:var(--secondary); border-radius:8px; padding:11px 13px;">';
@@ -276,7 +281,10 @@ var CFG=__CFG__;
     Array.prototype.forEach.call(cont.querySelectorAll('.bw_sel'),function(cb){ cb.addEventListener('change',function(){ bs.comps[+cb.getAttribute('data-ci')]._sel=cb.checked; bwRender(cont); }); });
     Array.prototype.forEach.call(cont.querySelectorAll('.bw_plot'),function(b){ b.addEventListener('click',function(){ bs.plot=b.getAttribute('data-name'); bwRender(cont); }); });
     on('bw_find','click',function(){ bs.showCand=!bs.showCand; bwRender(cont); });
-    Array.prototype.forEach.call(cont.querySelectorAll('.bw_add'),function(b){ b.addEventListener('click',function(){ addCand(+b.getAttribute('data-i')); bwRender(cont); }); });
+    on('bw_wider','click',function(){ bs.showWider=!bs.showWider; bwRender(cont); });
+    on('bw_cadd','click',function(){ var cn=cont.querySelector('#bw_cn'), ct=cont.querySelector('#bw_ct'), cb=cont.querySelector('#bw_cb'); var nm=cn?cn.value:'', bv=cb?parseFloat(cb.value):NaN; if(!nm||isNaN(bv)){ alert('Enter a name and an estimated beta.'); return; } addCandObj({name:nm, ticker:(ct&&ct.value)||'—', why:'Added by you as a comparable.', betaHint:bv, tax:0.30, gearingDE:0, addable:true}); bwRender(cont); });
+    Array.prototype.forEach.call(cont.querySelectorAll('.bw_add'),function(b){ b.addEventListener('click',function(){ addCandObj(BW.candidates[+b.getAttribute('data-i')]); bwRender(cont); }); });
+    Array.prototype.forEach.call(cont.querySelectorAll('.bw_add2'),function(b){ b.addEventListener('click',function(){ addCandObj(BW.candidates2[+b.getAttribute('data-i')]); bwRender(cont); }); });
     on('bw_apply','click',function(){ var a=activeScen(); if(a.kind==='broker'){ alert('Select an editable scenario first.'); return; } var s=sliderByKey('re'); var v=impliedDiscount(reOf(aggBeta().beta)); v=Math.max(s.min,Math.min(s.max,v)); setInput('re',v); syncSliders(); alert('Applied — discount rate set to '+v.toFixed(2)+'% for '+a.n+'.'); });
   }
 

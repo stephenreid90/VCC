@@ -51,6 +51,11 @@ DNL = {
    _cand("Enaex", "ENAEX.SN", "Chilean explosives pure-play — strong conceptual comp, but thin cross-listing liquidity.", 0.25, 0.50, 1.10),
    _cand("Austin Powder", "(private)", "Direct US explosives peer but privately held — no listed beta available.", 0.30, 0.60, 1.20),
  ],
+  "candidates2": [
+   _cand("CF Industries", "CF", "US nitrogen / ammonia major — an input-cost proxy rather than an explosives peer, so a weaker read.", 0.24, 0.35, 0.95),
+   _cand("Nutrien", "NTR", "Ag-inputs giant with ammonia exposure; diversified well beyond explosives, arguable at best.", 0.25, 0.40, 1.10),
+   _cand("Incitec Pivot Fertilisers", "IPF.AX", "The demerged sibling — same heritage, but a fertiliser demand driver, not mining explosives.", 0.28, 0.45, 0.90),
+  ],
 }
 
 WBC = {
@@ -71,6 +76,11 @@ WBC = {
    _cand("Bendigo & Adelaide", "BEN.AX", "Regional; smaller, different funding mix and cost base.", 0.30, 0.0, 0.70),
    _cand("Bank of Queensland", "BOQ.AX", "Regional outlier; higher funding cost, structurally lower ROE.", 0.30, 0.0, 0.68),
  ],
+  "candidates2": [
+   _cand("Suncorp Group", "SUN.AX", "Bank + general insurance; post-bank-sale mix muddies the read, but a listed Australian financial.", 0.30, 0.0, 0.85),
+   _cand("Judo Bank", "JDO.AX", "SME-focused challenger; higher growth and risk profile, weakly comparable.", 0.30, 0.0, 1.10),
+   _cand("Virgin Money UK", "VMUK", "UK mid-tier bank; different market and rate cycle, adjacent-only.", 0.25, 0.0, 1.20),
+  ],
 }
 
 CSL = {
@@ -90,6 +100,11 @@ CSL = {
    _cand("Roche", "ROG.SW", "Diagnostics + pharma; defensive, high-quality comparator.", 0.19, 0.25, 0.70),
    _cand("Octapharma", "(private)", "Direct plasma peer but privately held — no listed beta.", 0.22, 0.60, 0.80),
  ],
+  "candidates2": [
+   _cand("argenx", "ARGX", "Immunology / autoimmune biotech; overlaps CSL Behring&rsquo;s therapeutic areas but pre-scale and higher beta.", 0.15, 0.10, 0.95),
+   _cand("AstraZeneca", "AZN.L", "Large-cap pharma incl. rare-disease (Alexion); defensive but very diversified.", 0.18, 0.25, 0.70),
+   _cand("Biotest", "BIO3.DE", "European plasma small-cap; direct model overlap but thin liquidity.", 0.28, 0.55, 0.80),
+  ],
 }
 
 BETA = {"dnl": DNL, "wbc": WBC, "csl": CSL}

@@ -200,6 +200,25 @@ existing add-behind-find-more; wants free-text + broader search); deepen DNL/WBC
 data/companies (point 9); the **Excel formula-workbook download**; real EODHD data behind the β workbench.
 Iteration count ~11 — a chat swap is due within a couple more exchanges.
 
+## UI — 8(e) free-text/wider comparables + 9 deepened positions (10 July 2026)
+
+**8(e).** β workbench now lets you **add any company you name** (free-text name / ticker / estimated β → synthetic
+scatter, selected) — addressing "I couldn't find where to just add a company". Plus a **"search wider"** button
+revealing a second, broader candidate tier (`candidates2` in beta_data, ~3 adjacent names per company with weaker
+rationales) alongside the original "find more comparables". `addCand` generalised to `addCandObj(cd)`; shared
+`candRow` renderer. Still mock data.
+
+**9.** DNL and WBC **company position** deepened from data/companies (9 sourced bullets each, was 4/3): DNL adds the
+switching-cost moat (200+ on-site units, ~78% contracted), Orica peer-gap arithmetic, product/customer mix,
+Louisiana execution weakness, and full balance sheet (2.12x ND/EBITDA, liquidity, payout); WBC adds segment mix
+(consumer/business/institutional/NZ), the +8bps deposit edge, ROE-drag decomposition, full capital stack (Total
+Capital 21.5%, AT1 8.5bn, RWA 458bn), credit anchors and dividend/buyback specifics. CSL position already deep (6).
+
+Verified: valid JSON, positions render 9/9/6 bullets, candidates2 + free-text + wider all wired, files close.
+
+**Remaining UI:** the **Excel formula-workbook download** (still a stub); real **EODHD data** behind the β workbench
+(replace beta_data mock). Iteration ~12 — swap chats now / next exchange.
+
 ## Who and what
 
 Owner, people, repo, and test companies now live in `CLAUDE.md`. Volatile note kept here:
