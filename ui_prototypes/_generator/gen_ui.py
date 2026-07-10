@@ -230,11 +230,13 @@ var CFG=__CFG__;
       if(target!==null){ var lab=(target==='live')?'Muddle Through (live)':activeScen().n;
         head='<div style="border:0.5px solid var(--bd); border-left:2.5px solid var(--user-tx); border-radius:8px; padding:11px 13px; margin-bottom:12px;"><div style="font-weight:600; margin-bottom:2px;">Your inputs — '+lab+'</div><div class="sub" style="margin-bottom:8px;">the value-material inputs; type to override (syncs with the sliders and the live value). The full assumption set is below.</div>'+editableInputsTable()+'</div>'; }
       return head+CFG.detail.assum; }
+    if(k==='discount'){ return CFG.detail.discount + (CFG.beta? '<div style="margin-top:14px;"><button id="openbw" style="font-size:13px; padding:6px 12px;">\u03b2 / cost-of-capital workbench \u2192</button><div id="bwrap" style="margin-top:10px;"></div></div>' : ''); }
     if(k==='dcf'){ return CFG.dcf+'<button style="margin-top:12px; font-size:13px; padding:6px 12px;" id="dlbtn">⤓ download all scenarios to Excel</button><div style="font-size:11px; color:var(--text3); margin-top:4px;">one tab per scenario</div>'; }
     return CFG.detail[k]||'';
   }
   function wireEditable(k,d){
     if(k==='assum'){ Array.prototype.forEach.call(d.querySelectorAll('.assumInp'),function(inp){ inp.addEventListener('change',function(){ var key=inp.getAttribute('data-k'); var s=sliderByKey(key); var v=parseFloat(inp.value); if(isNaN(v)){ inp.value=st[key]; return; } v=Math.max(s.min,Math.min(s.max,v)); inp.value=v; setInput(key,v); }); }); }
+    if(k==='discount'){ var ob=d.querySelector('#openbw'); if(ob) ob.addEventListener('click',function(){ bwInit(); bwRender(d.querySelector('#bwrap')); ob.style.display='none'; }); }
     if(k==='forces'){ Array.prototype.forEach.call(d.querySelectorAll('.forceInp'),function(inp){ inp.addEventListener('change',function(){ var i=+inp.getAttribute('data-i'); var u=findUser(target); if(!u) return; u.forces=u.forces||{}; u.forces[i]=inp.value; saveUser(); }); }); }
   }
   function openDetail(k){
@@ -244,6 +246,86 @@ var CFG=__CFG__;
     var dl=document.getElementById('dlbtn'); if(dl) dl.addEventListener('click',function(){ alert('In the live tool this downloads the '+CFG.companyShort+' scenario workbook — one tab per scenario (coming in the next increment).'); });
     wireEditable(k,d);
     d.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+
+  // ---- Workstream D: cost-of-capital / beta workbench (MOCK data via CFG.beta) ----
+  var BW=CFG.beta; var bs=null;
+  function bwInit(){
+    bs={ idx:BW.indexDefault, win:BW.windowDefault, rf:BW.rf, erp:BW.erp, alpha:BW.alpha,
+         relever:false, targetDE:(BW.subject.de||0), showCand:false, comps:BW.comparables.slice(), plot:null };
+    bs.comps.forEach(function(c){ c._sel=c.selected; });
+    var f=bs.comps.filter(function(c){return c._sel;})[0]; bs.plot=f?f.name:(bs.comps[0]&&bs.comps[0].name);
+  }
+  function betaOf(c){ var d=c._added?c._data:c.data; return d[bs.idx][bs.win].beta; }
+  function pointsOf(c){ var d=c._added?c._data:c.data; return d[bs.idx][bs.win].points; }
+  function unlev(bl,tax,de){ return bl/(1+(1-tax)*de); }
+  function relev(bu,tax,de){ return bu*(1+(1-tax)*de); }
+  function median(a){ if(!a.length) return 0; var b=a.slice().sort(function(x,y){return x-y;}); var m=Math.floor(b.length/2); return b.length%2?b[m]:(b[m-1]+b[m])/2; }
+  function selectedComps(){ return bs.comps.filter(function(c){return c._sel;}); }
+  function aggBeta(){ var sc=selectedComps(); if(!sc.length) return {beta:0,medL:0,medU:0};
+    var medL=median(sc.map(function(c){return betaOf(c);}));
+    var medU=median(sc.map(function(c){return unlev(betaOf(c),c.tax,c.gearingDE);}));
+    var beta=bs.relever?relev(medU,BW.subject.tax,bs.targetDE):medL;
+    return {beta:beta, medL:medL, medU:medU}; }
+  function reOf(beta){ return bs.rf + beta*bs.erp + bs.alpha; }
+  function impliedDiscount(re){ var t=BW.toDiscount; return (t.mode==='wacc')?(t.wE*re+(1-t.wE)*t.kdAfterTax):re; }
+  function jsScatter(beta){ var pts=[]; for(var i=0;i<26;i++){ var x=(Math.random()-0.5)*0.05; pts.push([Math.round(x*1e4)/1e4, Math.round((beta*x+(Math.random()-0.5)*0.016)*1e4)/1e4]); } return pts; }
+  function addCand(i){ var cd=BW.candidates[i]; if(cd.addable===false) return;
+    var data={}; BW.indices.forEach(function(ix){ data[ix]={}; BW.windows.forEach(function(w){ data[ix][w]={beta:cd.betaHint, points:jsScatter(cd.betaHint)}; }); });
+    bs.comps.push({name:cd.name,ticker:cd.ticker,why:cd.why,tax:cd.tax,gearingDE:cd.gearingDE,_sel:true,_added:true,_data:data}); }
+  function numField(id,label,v,step){ return '<div><div class="sub">'+label+'</div><input type="number" id="'+id+'" value="'+v+'" step="'+step+'" style="width:74px; font:inherit; padding:3px 6px; border:0.5px solid var(--bd2); border-radius:6px; background:var(--primary); color:var(--text);"></div>'; }
+  function scatterSVG(c){ var pts=pointsOf(c), b=betaOf(c), W=400,H=210,pad=24;
+    var xs=pts.map(function(p){return p[0];}), ys=pts.map(function(p){return p[1];});
+    var xmax=Math.max.apply(null,xs.map(Math.abs))*1.12||0.05, ymax=Math.max.apply(null,ys.map(Math.abs))*1.12||0.05;
+    function X(x){ return pad+(x+xmax)/(2*xmax)*(W-2*pad); } function Y(y){ return H-pad-(y+ymax)/(2*ymax)*(H-2*pad); }
+    var mx=xs.reduce(function(a,b){return a+b;},0)/xs.length, my=ys.reduce(function(a,b){return a+b;},0)/ys.length;
+    var s='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%; max-width:440px; background:var(--primary); border:0.5px solid var(--bd); border-radius:8px;">';
+    s+='<line x1="'+X(-xmax)+'" y1="'+Y(0)+'" x2="'+X(xmax)+'" y2="'+Y(0)+'" stroke="var(--bd2)" stroke-width="0.5"/>';
+    s+='<line x1="'+X(0)+'" y1="'+Y(-ymax)+'" x2="'+X(0)+'" y2="'+Y(ymax)+'" stroke="var(--bd2)" stroke-width="0.5"/>';
+    s+='<line x1="'+X(-xmax)+'" y1="'+Y(my+b*(-xmax-mx))+'" x2="'+X(xmax)+'" y2="'+Y(my+b*(xmax-mx))+'" stroke="var(--bdinfo)" stroke-width="1.5"/>';
+    pts.forEach(function(p){ s+='<circle cx="'+X(p[0])+'" cy="'+Y(p[1])+'" r="2.4" fill="var(--user-tx)" opacity="0.75"/>'; });
+    s+='<text x="'+(W-pad)+'" y="18" text-anchor="end" font-size="12" fill="var(--text2)">slope β = '+b.toFixed(2)+'</text>';
+    s+='<text x="'+(W-pad)+'" y="'+(H-6)+'" text-anchor="end" font-size="9" fill="var(--text3)">index return →</text></svg>'; return s; }
+  function bwRender(cont){ if(!cont) return;
+    var agg=aggBeta(), re=reOf(agg.beta), disc=impliedDiscount(re), t=BW.toDiscount, h='';
+    h+='<div style="background:var(--warning-bg); color:var(--warning-tx); border-radius:8px; padding:8px 10px; font-size:12px; margin-bottom:10px;"><b>Mock data.</b> Betas and scatter points are synthetic placeholders shaped like the eventual EODHD feed (peer price series + indices + gearing/tax). To be sourced from Ben&rsquo;s pipeline.</div>';
+    h+='<div style="display:flex; flex-wrap:wrap; gap:12px 18px; align-items:flex-end; margin-bottom:12px;">'+numField('bw_rf','Risk-free %',bs.rf,0.05)+numField('bw_erp','ERP %',bs.erp,0.05)+numField('bw_alpha','Alpha %',bs.alpha,0.1);
+    h+='<div><div class="sub">Index</div><select id="bw_idx" style="font:inherit; padding:3px 6px; border:0.5px solid var(--bd2); border-radius:6px; background:var(--primary); color:var(--text);">'+BW.indices.map(function(ix){return '<option'+(ix===bs.idx?' selected':'')+'>'+ix+'</option>';}).join('')+'</select></div>';
+    h+='<div><div class="sub">Estimation window</div>'+BW.windows.map(function(w){return '<button class="bw_win" data-w="'+w+'" style="font-size:12px; margin-right:4px; '+(w===bs.win?'border-color:var(--bdinfo); color:var(--info-tx);':'')+'">'+w+'</button>';}).join('')+'</div></div>';
+    if(!BW.bank){ h+='<label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text2); margin-bottom:10px; flex-wrap:wrap;"><input type="checkbox" id="bw_relev" '+(bs.relever?'checked':'')+'> unlever peers → relever at subject gearing D/E <input type="number" id="bw_de" value="'+bs.targetDE+'" step="0.05" min="0" '+(bs.relever?'':'disabled')+' style="width:64px; font:inherit; padding:2px 6px; border:0.5px solid var(--bd2); border-radius:6px; background:var(--primary); color:var(--text);"></label>'; }
+    else { h+='<div class="sub" style="margin-bottom:10px;">Relevering is not applied to banks — beta is used directly (deposits/wholesale funding are operating inputs, not financing).</div>'; }
+    h+='<table style="width:100%; font-size:13px;"><tr><td class="sub"></td><td class="sub" style="padding:2px 8px 2px 0;">Comparable</td><td class="sub" style="padding:2px 8px; text-align:right;">Levered β</td><td class="sub" style="padding:2px 8px; text-align:right;">Unlevered β</td><td class="sub"></td></tr>';
+    h+='<tr style="border-top:0.5px solid var(--bd);"><td></td><td style="padding:6px 8px 6px 0;"><b>'+BW.subject.name+'</b> <span class="sub">'+BW.subject.ticker+' · subject</span><div class="sub" style="color:var(--danger-tx);">'+BW.subject.measuredNote+'</div></td><td style="padding:6px 8px; text-align:right; font-weight:600;">'+BW.subject.selectedBeta.toFixed(2)+'</td><td style="padding:6px 8px; text-align:right; color:var(--text3);">'+(BW.bank?'—':unlev(BW.subject.selectedBeta,BW.subject.tax,BW.subject.de).toFixed(2))+'</td><td></td></tr>';
+    bs.comps.forEach(function(c,ci){ var bl=betaOf(c), bu=unlev(bl,c.tax,c.gearingDE);
+      h+='<tr style="border-top:0.5px solid var(--bd);"><td style="padding:6px 4px 6px 0; vertical-align:top;"><input type="checkbox" class="bw_sel" data-ci="'+ci+'" '+(c._sel?'checked':'')+'></td><td style="padding:6px 8px 6px 0;">'+c.name+' <span class="sub">'+c.ticker+'</span>'+(c._added?' <span class="sub" style="color:var(--user-tx);">added</span>':'')+'<details class="thy" style="margin-top:4px;"><summary>why comparable</summary><div class="thybody">'+c.why+'</div></details></td><td style="padding:6px 8px; text-align:right; '+(c._sel?'font-weight:600;':'color:var(--text3);')+'">'+bl.toFixed(2)+'</td><td style="padding:6px 8px; text-align:right; color:var(--text2);">'+(BW.bank?'—':bu.toFixed(2))+'</td><td style="padding:6px 0; text-align:right; vertical-align:top;"><button class="bw_plot" data-name="'+c.name+'" style="font-size:11px; padding:2px 7px; '+(bs.plot===c.name?'border-color:var(--bdinfo);':'')+'">plot</button></td></tr>'; });
+    h+='</table>';
+    h+='<div style="margin-top:8px;"><button id="bw_find" style="font-size:12px;">'+(bs.showCand?'− hide candidates':'✦ find more comparables')+'</button>';
+    if(bs.showCand){ h+='<div style="margin-top:8px; border:0.5px dashed var(--bd2); border-radius:8px; padding:8px 10px;"><div class="sub" style="margin-bottom:6px;">Suggested by the &lsquo;find comparables&rsquo; step — the analyst / AI-judgment part; each comes with a rationale to accept or reject:</div>';
+      BW.candidates.forEach(function(cd,i){ h+='<div style="display:flex; gap:8px; align-items:flex-start; margin-bottom:7px;"><button class="bw_add" data-i="'+i+'" '+(cd.addable===false?'disabled title="privately held — no listed beta"':'')+' style="font-size:11px; padding:2px 8px; flex:none;">+ add</button><div style="font-size:12.5px;"><b>'+cd.name+'</b> <span class="sub">'+cd.ticker+' · β≈'+cd.betaHint.toFixed(2)+'</span><div style="color:var(--text2);">'+cd.why+'</div></div></div>'; });
+      h+='</div>'; } h+='</div>';
+    var pc=bs.comps.filter(function(c){return c.name===bs.plot;})[0];
+    if(pc){ h+='<div style="margin-top:12px;"><div class="hd" style="margin-bottom:4px;">Beta regression — '+pc.name+' vs '+bs.idx+' <span class="sub">('+bs.win+')</span></div>'+scatterSVG(pc)+'</div>'; }
+    h+='<div style="margin-top:12px; background:var(--secondary); border-radius:8px; padding:11px 13px;">';
+    h+='<div style="font-size:13px;">Selected peers ('+selectedComps().length+'): median levered β <b>'+agg.medL.toFixed(2)+'</b>'+(BW.bank?'':' · median unlevered <b>'+agg.medU.toFixed(2)+'</b>')+'</div>';
+    h+='<div style="font-size:13px; margin-top:4px;">→ subject β <b>'+agg.beta.toFixed(2)+'</b>'+(bs.relever?(' (relevered at D/E '+bs.targetDE+')'):'')+' · documented judgment '+BW.subject.selectedBeta.toFixed(2)+'</div>';
+    h+='<div style="font-size:13px; margin-top:4px;">→ R<sub>e</sub> = '+bs.rf.toFixed(2)+'% + β×'+bs.erp.toFixed(2)+'%'+(bs.alpha?(' + α '+bs.alpha.toFixed(2)+'%'):'')+' = <b>'+re.toFixed(2)+'%</b>'+(t.mode==='wacc'?(' → implied '+t.label+' <b>'+disc.toFixed(2)+'%</b>'):'')+'</div>';
+    h+='<button id="bw_apply" style="margin-top:8px; font-size:12px;">apply to the discount-rate slider ('+disc.toFixed(2)+'%)</button></div>';
+    cont.innerHTML=h; bwWire(cont);
+  }
+  function bwWire(cont){
+    function on(id,ev,fn){ var e=cont.querySelector('#'+id); if(e) e.addEventListener(ev,fn); }
+    on('bw_rf','change',function(){ bs.rf=parseFloat(this.value)||0; bwRender(cont); });
+    on('bw_erp','change',function(){ bs.erp=parseFloat(this.value)||0; bwRender(cont); });
+    on('bw_alpha','change',function(){ bs.alpha=parseFloat(this.value)||0; bwRender(cont); });
+    on('bw_idx','change',function(){ bs.idx=this.value; bwRender(cont); });
+    Array.prototype.forEach.call(cont.querySelectorAll('.bw_win'),function(b){ b.addEventListener('click',function(){ bs.win=b.getAttribute('data-w'); bwRender(cont); }); });
+    on('bw_relev','change',function(){ bs.relever=this.checked; bwRender(cont); });
+    on('bw_de','change',function(){ bs.targetDE=parseFloat(this.value)||0; bwRender(cont); });
+    Array.prototype.forEach.call(cont.querySelectorAll('.bw_sel'),function(cb){ cb.addEventListener('change',function(){ bs.comps[+cb.getAttribute('data-ci')]._sel=cb.checked; bwRender(cont); }); });
+    Array.prototype.forEach.call(cont.querySelectorAll('.bw_plot'),function(b){ b.addEventListener('click',function(){ bs.plot=b.getAttribute('data-name'); bwRender(cont); }); });
+    on('bw_find','click',function(){ bs.showCand=!bs.showCand; bwRender(cont); });
+    Array.prototype.forEach.call(cont.querySelectorAll('.bw_add'),function(b){ b.addEventListener('click',function(){ addCand(+b.getAttribute('data-i')); bwRender(cont); }); });
+    on('bw_apply','click',function(){ if(target===null){ alert('Pick Muddle Through or a user scenario first, then apply.'); return; } var s=sliderByKey('re'); var v=impliedDiscount(reOf(aggBeta().beta)); v=Math.max(s.min,Math.min(s.max,v)); setInput('re',v); alert('Applied — discount rate set to '+v.toFixed(2)+'% for '+(target==='live'?'Muddle Through':'your scenario')+'.'); });
   }
 
   // init

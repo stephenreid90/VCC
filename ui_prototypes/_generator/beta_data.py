@@ -1,0 +1,95 @@
+# -*- coding: utf-8 -*-
+"""MOCKED cost-of-capital / beta data contract for the UI beta workbench (Workstream D).
+Deterministic synthetic scatter points whose OLS slope matches the stored beta, so the
+scatterplot and the beta are mutually consistent. This is a PLACEHOLDER: the real version
+must come from Ben's EODHD pipeline (EOD price series per peer + index, plus gearing/tax
+for unlevering). Shape here is the spec that pipeline must reproduce."""
+import random
+
+def _scatter(beta, n, sigma_i, sigma_e, seed):
+    r = random.Random(seed); raw = []
+    for _ in range(n):
+        xi = r.gauss(0, sigma_i); yi = beta*xi + r.gauss(0, sigma_e)
+        raw.append([xi, yi])
+    mx = sum(p[0] for p in raw)/n; my = sum(p[1] for p in raw)/n
+    cov = sum((p[0]-mx)*(p[1]-my) for p in raw); var = sum((p[0]-mx)**2 for p in raw)
+    slope = cov/var
+    # rescale y so the OLS slope equals the target beta exactly (keeps scatter, fixes slope)
+    k = beta/slope
+    pts = [[round(x, 4), round(my + k*(y-my), 4)] for x, y in raw]
+    return round(beta, 3), pts
+
+def _comp(name, ticker, why, tax, de, betas, selected, seed):
+    data = {}; s = seed
+    for idx, (bw, bm) in betas.items():
+        sw, pw = _scatter(bw, 26, 0.020, 0.020, s); s += 1
+        sm, pm = _scatter(bm, 40, 0.045, 0.040, s); s += 1
+        data[idx] = {"weekly · 2y": {"beta": sw, "points": pw},
+                     "monthly · 4y": {"beta": sm, "points": pm}}
+    return {"name": name, "ticker": ticker, "why": why, "tax": tax, "gearingDE": de,
+            "selected": selected, "data": data}
+
+def _cand(name, ticker, why, tax, de, hint):
+    return {"name": name, "ticker": ticker, "why": why, "tax": tax, "gearingDE": de,
+            "betaHint": hint, "addable": "private" not in ticker.lower()}
+
+DNL = {
+ "mock": True, "subject": {"name": "Dyno Nobel", "ticker": "DNL.AX", "selectedBeta": 1.10, "tax": 0.275, "de": 0.27,
+   "measuredNote": "Measured β 0.36 (post-demerger, world-index AUD series) — too short and noisy to use."},
+ "rf": 4.30, "erp": 5.00, "alpha": 0.0,
+ "indices": ["S&P/ASX 200", "MSCI World"], "indexDefault": "S&P/ASX 200",
+ "windows": ["weekly · 2y", "monthly · 4y"], "windowDefault": "weekly · 2y",
+ "toDiscount": {"mode": "wacc", "wE": 0.79, "kdAfterTax": 4.20, "label": "WACC"},
+ "comparables": [
+   _comp("Orica", "ORI.AX", "Only ASX-listed direct explosives peer; near-identical mining-customer mix and ammonium-nitrate feedstock exposure.", 0.30, 0.45, {"S&P/ASX 200": (1.05, 1.02), "MSCI World": (1.15, 1.10)}, True, 101),
+   _comp("Yara International", "YAR.OL", "Global nitrogen / AN major; shares the ammonia-cost driver, though a broader fertiliser mix dilutes the explosives read.", 0.24, 0.35, {"S&P/ASX 200": (1.20, 1.18), "MSCI World": (1.25, 1.22)}, True, 111),
+   _comp("ICL Group", "ICL", "Specialty minerals plus AN; similar cyclical mining-demand beta.", 0.23, 0.40, {"S&P/ASX 200": (1.10, 1.08), "MSCI World": (1.12, 1.10)}, True, 121),
+   _comp("Sasol", "SOL.JO", "Explosives via BME but dominated by energy / chemicals and highly geared — excluded as an outlier.", 0.28, 0.80, {"S&P/ASX 200": (1.45, 1.40), "MSCI World": (1.50, 1.45)}, False, 131),
+ ],
+ "candidates": [
+   _cand("AECI", "AFE.JO", "African explosives + chemicals; smaller and less liquid, similar mining exposure.", 0.28, 0.55, 1.15),
+   _cand("Enaex", "ENAEX.SN", "Chilean explosives pure-play — strong conceptual comp, but thin cross-listing liquidity.", 0.25, 0.50, 1.10),
+   _cand("Austin Powder", "(private)", "Direct US explosives peer but privately held — no listed beta available.", 0.30, 0.60, 1.20),
+ ],
+}
+
+WBC = {
+ "mock": True, "subject": {"name": "Westpac", "ticker": "WBC.AX", "selectedBeta": 0.75, "tax": 0.30, "de": 0.0,
+   "measuredNote": "Measured β 0.73 (documented alongside; used as a cross-check, not mechanically)."},
+ "rf": 4.30, "erp": 5.00, "alpha": 0.0,
+ "indices": ["S&P/ASX 200", "MSCI World"], "indexDefault": "S&P/ASX 200",
+ "windows": ["weekly · 2y", "monthly · 4y"], "windowDefault": "weekly · 2y",
+ "toDiscount": {"mode": "coe", "label": "cost of equity"},
+ "bank": True,
+ "comparables": [
+   _comp("CommBank", "CBA.AX", "Largest Australian major; same four-pillars oligopoly, premium franchise and funding.", 0.30, 0.0, {"S&P/ASX 200": (0.80, 0.82), "MSCI World": (0.85, 0.86)}, True, 201),
+   _comp("NAB", "NAB.AX", "Business-bank-tilted major; closest ROE and balance-sheet-mix comparator to WBC.", 0.30, 0.0, {"S&P/ASX 200": (0.72, 0.74), "MSCI World": (0.78, 0.79)}, True, 211),
+   _comp("ANZ", "ANZ.AX", "Institutional / international revenue dilution lowers systematic risk — excluded as an outlier.", 0.30, 0.0, {"S&P/ASX 200": (0.57, 0.60), "MSCI World": (0.62, 0.64)}, False, 221),
+   _comp("Macquarie", "MQG.AX", "Different archetype (capital markets / asset management) — informative, not comparable.", 0.30, 0.0, {"S&P/ASX 200": (0.88, 0.90), "MSCI World": (0.95, 0.96)}, False, 231),
+ ],
+ "candidates": [
+   _cand("Bendigo & Adelaide", "BEN.AX", "Regional; smaller, different funding mix and cost base.", 0.30, 0.0, 0.70),
+   _cand("Bank of Queensland", "BOQ.AX", "Regional outlier; higher funding cost, structurally lower ROE.", 0.30, 0.0, 0.68),
+ ],
+}
+
+CSL = {
+ "mock": True, "subject": {"name": "CSL", "ticker": "CSL.AX", "selectedBeta": 0.85, "tax": 0.19, "de": 0.35,
+   "measuredNote": "Measured β 0.094 — an AUD-listed price regressed against an AUD index for a USD-earning business. Switch the index to S&P 500 / MSCI World to see the correct-currency calculation."},
+ "rf": 4.50, "erp": 5.00, "alpha": 0.0,
+ "indices": ["S&P 500", "MSCI World"], "indexDefault": "S&P 500",
+ "windows": ["weekly · 2y", "monthly · 4y"], "windowDefault": "weekly · 2y",
+ "toDiscount": {"mode": "coe", "label": "cost of equity"},
+ "comparables": [
+   _comp("Grifols", "GRF", "Closest plasma pure-play; same donor-collection + fractionation model and end markets.", 0.22, 0.90, {"S&P 500": (0.85, 0.88), "MSCI World": (0.80, 0.82)}, True, 301),
+   _comp("Takeda", "4502.T", "Plasma via Baxalta plus broad pharma; a partial but relevant comp.", 0.20, 0.50, {"S&P 500": (0.75, 0.78), "MSCI World": (0.72, 0.74)}, True, 311),
+   _comp("Sanofi", "SAN.PA", "Large-cap pharma with immunology overlap; a defensive-beta anchor.", 0.21, 0.30, {"S&P 500": (0.80, 0.82), "MSCI World": (0.78, 0.80)}, True, 321),
+ ],
+ "candidates": [
+   _cand("GSK", "GSK.L", "Vaccines overlap with Seqirus; broader pharma portfolio.", 0.21, 0.40, 0.75),
+   _cand("Roche", "ROG.SW", "Diagnostics + pharma; defensive, high-quality comparator.", 0.19, 0.25, 0.70),
+   _cand("Octapharma", "(private)", "Direct plasma peer but privately held — no listed beta.", 0.22, 0.60, 0.80),
+ ],
+}
+
+BETA = {"dnl": DNL, "wbc": WBC, "csl": CSL}

@@ -280,5 +280,8 @@ csl = {
  "worldDesc": WORLD_DESC, "_drtheory": drtheory(CSL_DID)
 }
 
+import beta_data
+dnl["beta"]=beta_data.DNL; wbc["beta"]=beta_data.WBC; csl["beta"]=beta_data.CSL
+
 json.dump({"dnl":dnl,"wbc":wbc,"csl":csl}, open('/tmp/cfgs.json','w'), ensure_ascii=False)
 print("cfgs.json written")

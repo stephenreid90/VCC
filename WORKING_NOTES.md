@@ -137,6 +137,38 @@ inputs" long tail; then **D** (beta workbench).
 ### Iteration tracking
 Stephen wants to swap chats ~every 20 iterations. Rough count this session: ~6 exchanges in.
 
+## Workstream D — beta / cost-of-capital workbench (10 July 2026, MOCK data)
+
+Built the flagship module against a **mocked EODHD-shaped JSON contract** (Stephen: mock for now, source
+from Ben's pipeline in time). The contract lives in `ui_prototypes/_generator/beta_data.py` and ships inside
+each CFG as `cfg.beta`; the synthetic scatter points are rescaled so each point cloud's OLS slope equals the
+stored beta exactly, so scatter and beta are mutually consistent. **This JSON shape is the spec the real
+pipeline must reproduce.**
+
+Opened from the Discount-rate detail ("β / cost-of-capital workbench →"). Covers Stephen's 8(a)–(k):
+Rf/ERP/alpha inputs (a,j); per-comparable levered+unlevered betas and the subject (b,k); "why comparable"
+expanders (c); add from a candidate pool (d) and "find more comparables" with rationale-to-accept (e, the
+AI/judgment step); select/deselect checkboxes (f); index selector — ASX 200 / MSCI World, or S&P 500 / World
+for CSL (g); a scatterplot with regression line per comparable (h); weekly·2y vs monthly·4y estimation-window
+toggle (i); unlever→relever at a target D/E (k, hidden for banks). Aggregates selected peers → median levered
+(or relevered) β → Re = Rf + β×ERP + α → implied WACC (DNL) or cost of equity (WBC/CSL), with an **"apply to
+the discount-rate slider"** button that closes the loop into the reduced-form value. Prominent **MOCK DATA**
+banner throughout.
+
+This is the tangible place the **AI-vs-mechanical boundary** lands: the regression, unlever/relever and
+aggregation are *mechanical*; comparable selection + "find more comparables" rationales are *judgment/AI*.
+CSL's subject row carries the measured-β 0.094 note with the steer to switch the index to S&P 500 / MSCI World
+— the correct-currency point, made visible.
+
+Verified in node: full CFG (incl. beta + all scatter points) parses as valid JSON; peer-median → Re → implied
+discount math correct (DNL median β 1.10 → WACC 8.62%; WBC 0.76 → Re 8.10%; CSL 0.80 → Re 8.50%, each shown
+against the documented judgment β); scatter slopes equal stored betas. DOM interactions reviewed, not
+browser-tested (the Chrome tool here won't open local file:// paths — Stephen to eyeball).
+
+**Outstanding on the UI:** the **Excel formula-workbook download** (B increment 3 — still a stub button;
+needs an inlined xlsx writer to stay self-contained, or the Python side) and the "advanced / show all inputs"
+long tail. Then the real EODHD data behind D. Iteration count ~9 this session.
+
 ## Who and what
 
 Owner, people, repo, and test companies now live in `CLAUDE.md`. Volatile note kept here:
