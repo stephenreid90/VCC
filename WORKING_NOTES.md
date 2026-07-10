@@ -102,6 +102,34 @@ mount. **Lesson for large source edits: build sandbox-side + cp, don't trust lar
 - **D** — the beta/cost-of-capital workbench (the flagship; EODHD JSON data-contract; the AI-vs-mechanical
   boundary decision). The discount-theory panels + CSL's correct-currency-index point set this up.
 
+## UI feedback + Workstream B increment 1 (10 July 2026, same session)
+
+### Feedback applied
+**Discount-rate theory panels degeneralised.** Stephen: the IERs were his private good-practice
+reference, not to be cited in the UI. Middle panel relabelled "In market practice" (was "What the IERs
+show"); all report/firm/deal names removed (Grant Samuel, KPMG, Deloitte, Oil Search/Santos, Woodside/BHP,
+Universal Coal, Realm) — substance and representative ranges kept. Verified zero proper-noun leaks in all
+three HTML. Commit `534f4d5`.
+
+### B increment 1 — user-defined scenarios (the workbench spine)
+**"+ add your scenario"** now works: clones Muddle Through's inputs, user names it, a new **user-coloured
+bar** appears, and the top-5 value drivers flex it live via the browser-side reduced-form. Selecting a user
+bar loads its inputs into the sliders and the metric cards; a "×" deletes it. **Persisted in localStorage**
+per company (`vcc_userscen_<TICKER>`). Built-in scenarios stay read-only (their values are workbook figures,
+not reduced-form) — selecting one greys the sliders with an "exploring … read-only" note. The world-detail
+for a user scenario shows a live overrides-vs-MT table.
+
+Model: `target` = 'live' | user-id | null; sliders always drive the current editable target; `liveVals`
+holds Muddle Through so switching targets preserves each scenario's edits. Verified in node: CFG parses as
+valid JSON, reduced-form reproduces each base exactly, and moves correctly (+1% Re lowers, +0.5% g raises).
+
+**Still on B (increment 2, next):** per-input overrides on the Five Forces (editable Impact column) and
+the full Assumptions list; a global-vs-per-scenario switch for discount-rate components; the "advanced /
+show all inputs" long tail; the Excel formula-workbook download; then **D** (beta workbench).
+
+### Iteration tracking
+Stephen wants to swap chats ~every 20 iterations. Rough count this session: ~6 exchanges in.
+
 ## Who and what
 
 Owner, people, repo, and test companies now live in `CLAUDE.md`. Volatile note kept here:

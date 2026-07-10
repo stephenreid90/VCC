@@ -8,8 +8,8 @@ SCAFFOLD = r"""<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VCC scenario valuation — __COMPANY__ (prototype)</title>
 <style>
-:root{ --bg:#faf9f5; --primary:#fff; --secondary:#f1efe8; --tertiary:#e8e6dd; --text:#1f1e1b; --text2:#5f5e5a; --text3:#8a8980; --bd:rgba(0,0,0,0.12); --bd2:rgba(0,0,0,0.24); --bdinfo:#378ADD; --info-bg:#E6F1FB; --info-tx:#0C447C; --success-bg:#E1F5EE; --success-tx:#0F6E56; --warning-bg:#FAEEDA; --warning-tx:#854F0B; --danger-bg:#FCEBEB; --danger-tx:#A32D2D; --rmd:8px; --rlg:12px; }
-@media (prefers-color-scheme: dark){ :root{ --bg:#1a1916; --primary:#24231f; --secondary:#2c2b27; --tertiary:#34332e; --text:#f2f1ec; --text2:#b6b4ab; --text3:#88867e; --bd:rgba(255,255,255,0.14); --bd2:rgba(255,255,255,0.26); --info-bg:#0C447C; --info-tx:#B5D4F4; --success-bg:#085041; --success-tx:#9FE1CB; --warning-bg:#633806; --warning-tx:#FAC775; --danger-bg:#791F1F; --danger-tx:#F7C1C1; } }
+:root{ --bg:#faf9f5; --primary:#fff; --secondary:#f1efe8; --tertiary:#e8e6dd; --text:#1f1e1b; --text2:#5f5e5a; --text3:#8a8980; --bd:rgba(0,0,0,0.12); --bd2:rgba(0,0,0,0.24); --bdinfo:#378ADD; --info-bg:#E6F1FB; --info-tx:#0C447C; --success-bg:#E1F5EE; --success-tx:#0F6E56; --warning-bg:#FAEEDA; --warning-tx:#854F0B; --danger-bg:#FCEBEB; --danger-tx:#A32D2D; --user-bg:#ECE6FA; --user-tx:#5B3FA8; --rmd:8px; --rlg:12px; }
+@media (prefers-color-scheme: dark){ :root{ --bg:#1a1916; --primary:#24231f; --secondary:#2c2b27; --tertiary:#34332e; --text:#f2f1ec; --text2:#b6b4ab; --text3:#88867e; --bd:rgba(255,255,255,0.14); --bd2:rgba(255,255,255,0.26); --info-bg:#0C447C; --info-tx:#B5D4F4; --success-bg:#085041; --success-tx:#9FE1CB; --warning-bg:#633806; --warning-tx:#FAC775; --danger-bg:#791F1F; --danger-tx:#F7C1C1; --user-bg:#3A2E63; --user-tx:#C9B8F2; } }
 *{box-sizing:border-box;}
 body{margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; line-height:1.6;}
 .wrap{max-width:880px; margin:0 auto; padding:24px 20px 60px;}
@@ -51,7 +51,8 @@ details.thy .thybody{padding:2px 12px 11px 22px; font-size:12.5px;}
   <div><div class="hd">Outcomes across scenarios <span style="font-weight:400; color:var(--text3); font-size:12px;">(__CCY__/share)</span></div>
     <div class="sub" style="margin-bottom:6px;">click a scenario to explore its build-up</div>
     <div id="bars"></div>
-    <div class="sub" style="margin-top:6px;"><span style="color:var(--info-tx);">▮</span> Muddle Through (live) · <span style="color:var(--warning-tx);">▮</span> average broker · dashed = market</div></div>
+    <div style="display:flex; align-items:center; gap:10px; margin-top:8px; flex-wrap:wrap;"><button id="addscen" style="font-size:12px;">+ add your scenario</button><span class="sub" id="editing"></span></div>
+    <div class="sub" style="margin-top:6px;"><span style="color:var(--info-tx);">▮</span> Muddle Through (live) · <span style="color:var(--user-tx);">▮</span> your scenarios · <span style="color:var(--warning-tx);">▮</span> average broker · dashed = market</div></div>
 </div>
 <div style="border-top:0.5px solid var(--bd); padding-top:1rem;">
   <div class="hd" style="margin-bottom:8px;">Explore the build-up</div>
@@ -63,60 +64,127 @@ details.thy .thybody{padding:2px 12px 11px 22px; font-size:12.5px;}
 <script>
 var CFG=__CFG__;
 (function(){
-  var st={}; CFG.sliders.forEach(function(s){ st[s.k]=s.def; });
+  var LSKEY='vcc_userscen_'+CFG.companyShort;
+  var liveVals={}; CFG.sliders.forEach(function(s){ liveVals[s.k]=s.def; });
+  var st=liveVals;                 // working slider state = current target's vals (by reference)
+  var target='live';               // 'live' | user-id | null (read-only built-in)
+  var user=loadUser();
+  user.forEach(function(u){ CFG.scenarios.push({n:u.name, v:0, kind:'user', uid:u.id}); });
+
+  function loadUser(){ try{ return JSON.parse(localStorage.getItem(LSKEY))||[]; }catch(e){ return []; } }
+  function saveUser(){ try{ localStorage.setItem(LSKEY, JSON.stringify(user)); }catch(e){} }
+  function findUser(id){ for(var i=0;i<user.length;i++){ if(user[i].id===id) return user[i]; } return null; }
+  function scenByUid(id){ for(var i=0;i<CFG.scenarios.length;i++){ if(CFG.scenarios[i].uid===id) return CFG.scenarios[i]; } return null; }
+  function activeScen(){ return CFG.scenarios[CFG.activeIdx]; }
+
   function fmt(s,v){ return v.toFixed(s.dec)+s.suf; }
-  function val(k){ return st[k]; }
-  function compute(){
-    var p=CFG.cp, Re=val('re')/100, g=val('g')/100, m=val('m'), tax=val('tax')/100, x=val(p.xKey);
+  function computeVals(vals){
+    var p=CFG.cp, Re=vals.re/100, g=vals.g/100, m=vals.m, tax=vals.tax/100, x=vals[p.xKey];
     var term=Math.pow((p.re0-p.g0)/(Re-g), p.wTerm);
-    var primary=p.base*term*(m/p.m0)*((1-tax)/(1-p.tax0))*(1+(x-p.x0)*p.xk);
-    return primary;
+    return p.base*term*(m/p.m0)*((1-tax)/(1-p.tax0))*(1+(x-p.x0)*p.xk);
   }
-  function render(){
-    var v=compute();
-    document.getElementById('pv').textContent=v.toFixed(CFG.dp);
-    var vm=(v/CFG.market-1)*100, vb=(v/CFG.broker-1)*100;
+  function compute(){ return computeVals(st); }
+  user.forEach(function(u){ var sc=scenByUid(u.id); if(sc) sc.v=computeVals(u.vals); });
+
+  function updateCards(v){
+    var sc=activeScen(); var show=(v!==undefined && v!==null)?v:sc.v;
+    document.getElementById('pv').textContent=show.toFixed(CFG.dp);
+    var vm=(show/CFG.market-1)*100, vb=(show/CFG.broker-1)*100;
     var em=document.getElementById('vmkt'); em.textContent=(vm>=0?'+':'')+vm.toFixed(0)+'%'; em.style.color=vm>=0?'var(--success-tx)':'var(--danger-tx)';
     document.getElementById('vbr').textContent=(vb>=0?'+':'')+vb.toFixed(0)+'%';
-    CFG.scenarios[CFG.liveIdx].v=v; drawBars();
   }
-  function barColor(k){ return k==='live'?'var(--info-bg)':k==='broker'?'var(--warning-bg)':'var(--tertiary)'; }
-  function txtColor(k){ return k==='live'?'var(--info-tx)':k==='broker'?'var(--warning-tx)':'var(--text)'; }
+  function render(){
+    if(target===null){ updateCards(); drawBars(); return; }
+    var v=compute();
+    var sc=(target==='live')?CFG.scenarios[CFG.liveIdx]:scenByUid(target);
+    if(sc) sc.v=v;
+    if(target!=='live'){ var u=findUser(target); if(u){ u.vals=st; saveUser(); } }
+    updateCards(v); drawBars();
+  }
+
+  function barColor(k){ return k==='live'?'var(--info-bg)':k==='broker'?'var(--warning-bg)':k==='user'?'var(--user-bg)':'var(--tertiary)'; }
+  function txtColor(k){ return k==='live'?'var(--info-tx)':k==='broker'?'var(--warning-tx)':k==='user'?'var(--user-tx)':'var(--text)'; }
   function drawBars(){
     var h='<div style="position:relative;">', mkt=CFG.market/CFG.scale*100;
     CFG.scenarios.forEach(function(s,i){
-      var w=Math.min(100,s.v/CFG.scale*100), sel=(i===CFG.activeIdx);
-      h+='<div data-i="'+i+'" class="scbar" style="display:flex; align-items:center; gap:8px; margin-bottom:5px; cursor:pointer; border-radius:5px; padding:1px 2px; '+(sel?'background:var(--secondary);':'')+'">'
-       +'<div style="width:122px; font-size:12px; color:'+(sel?'var(--text)':'var(--text2)')+'; font-weight:'+(sel?'500':'400')+'; text-align:right; flex:none;">'+s.n+'</div>'
+      var w=Math.max(0,Math.min(100,s.v/CFG.scale*100)), sel=(i===CFG.activeIdx);
+      var del=(s.kind==='user')?'<span class="delu" data-uid="'+s.uid+'" title="delete scenario" style="cursor:pointer; color:var(--text3); padding:0 3px;">×</span>':'';
+      h+='<div class="scbar" data-i="'+i+'" style="display:flex; align-items:center; gap:8px; margin-bottom:5px; cursor:pointer; border-radius:5px; padding:1px 2px; '+(sel?'background:var(--secondary);':'')+'">'
+       +'<div style="width:122px; font-size:12px; color:'+(sel?'var(--text)':'var(--text2)')+'; font-weight:'+(sel?'500':'400')+'; text-align:right; flex:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">'+del+s.n+'</div>'
        +'<div style="flex:1; position:relative; height:19px;"><div style="height:19px; width:'+w+'%; background:'+barColor(s.kind)+'; border-radius:4px; '+(sel?'outline:1.5px solid var(--bdinfo);':'')+'"></div>'
        +'<div style="position:absolute; top:1px; left:calc('+w+'% + 6px); font-size:12px; font-weight:500; color:'+txtColor(s.kind)+'; white-space:nowrap;">'+s.v.toFixed(CFG.dp)+'</div></div></div>';
     });
     h+='<div style="position:absolute; left:130px; right:0; top:0; bottom:14px; pointer-events:none;"><div style="position:absolute; left:'+mkt+'%; top:0; bottom:0; border-left:1.5px dashed var(--text2);"></div></div></div>';
     var bx=document.getElementById('bars'); bx.innerHTML=h;
-    Array.prototype.forEach.call(bx.querySelectorAll('.scbar'),function(el){ el.addEventListener('click',function(){ CFG.activeIdx=parseInt(el.getAttribute('data-i')); document.getElementById('selscen').textContent=CFG.scenarios[CFG.activeIdx].n; drawBars(); setPanel('world'); markExplore('world'); }); });
+    Array.prototype.forEach.call(bx.querySelectorAll('.scbar'),function(el){ el.addEventListener('click',function(){ selectBar(parseInt(el.getAttribute('data-i'))); }); });
+    Array.prototype.forEach.call(bx.querySelectorAll('.delu'),function(el){ el.addEventListener('click',function(ev){ ev.stopPropagation(); delScenario(el.getAttribute('data-uid')); }); });
   }
-  var sl=document.getElementById('sliders');
+
+  function selectBar(i){
+    CFG.activeIdx=i; var sc=CFG.scenarios[i];
+    if(sc.kind==='live'){ target='live'; st=liveVals; slidersEnabled(true); syncSliders(); }
+    else if(sc.kind==='user'){ target=sc.uid; st=findUser(sc.uid).vals; slidersEnabled(true); syncSliders(); }
+    else { target=null; slidersEnabled(false); }
+    document.getElementById('selscen').textContent=sc.n;
+    updateEditingUI(); updateCards(); drawBars();
+    setPanel('world'); markExplore('world');
+  }
+
+  // sliders
+  var sl=document.getElementById('sliders'); var inputs={};
   CFG.sliders.forEach(function(s){
     var row=document.createElement('div'); row.style.margin='10px 0';
     row.innerHTML='<div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:2px;"><span style="color:var(--text2);">'+s.label+'</span><span style="font-weight:500;" id="o_'+s.k+'"></span></div>';
     var inp=document.createElement('input'); inp.type='range'; inp.min=s.min; inp.max=s.max; inp.step=s.step; inp.value=st[s.k];
     inp.addEventListener('input',function(){ st[s.k]=parseFloat(inp.value); document.getElementById('o_'+s.k).textContent=fmt(s,st[s.k]); render(); });
-    row.appendChild(inp); sl.appendChild(row); document.getElementById('o_'+s.k).textContent=fmt(s,st[s.k]);
+    row.appendChild(inp); sl.appendChild(row); inputs[s.k]=inp;
+    document.getElementById('o_'+s.k).textContent=fmt(s,st[s.k]);
   });
-  document.getElementById('reset').addEventListener('click',function(){ CFG.sliders.forEach(function(s){ st[s.k]=s.def; }); sl.querySelectorAll('input').forEach(function(inp,i){ inp.value=st[CFG.sliders[i].k]; document.getElementById('o_'+CFG.sliders[i].k).textContent=fmt(CFG.sliders[i],st[CFG.sliders[i].k]); }); render(); });
-  document.getElementById('allassum').addEventListener('click',function(){ setPanel('assum'); markExplore('assum'); openDetail('assum'); });
+  function syncSliders(){ CFG.sliders.forEach(function(s){ inputs[s.k].value=st[s.k]; document.getElementById('o_'+s.k).textContent=fmt(s,st[s.k]); }); }
+  function slidersEnabled(on){ sl.style.opacity=on?'1':'0.45'; sl.style.pointerEvents=on?'auto':'none'; }
 
+  function updateEditingUI(){
+    var e=document.getElementById('editing'); if(!e) return; var sc=activeScen();
+    if(target==='live') e.innerHTML='editing <b>Muddle Through</b> (live)';
+    else if(target===null) e.innerHTML='exploring <b>'+sc.n+'</b> — read-only; pick Muddle Through or a user scenario to edit inputs';
+    else e.innerHTML='editing your scenario <b>'+sc.n+'</b> — flex the inputs; changes save in this browser';
+  }
+
+  document.getElementById('reset').addEventListener('click',function(){ if(target===null) return; CFG.sliders.forEach(function(s){ st[s.k]=s.def; }); if(target!=='live'){ var u=findUser(target); if(u){ u.vals=st; saveUser(); } } syncSliders(); render(); });
+  document.getElementById('allassum').addEventListener('click',function(){ setPanel('assum'); markExplore('assum'); openDetail('assum'); });
+  document.getElementById('addscen').addEventListener('click',function(){
+    var name=prompt('Name your scenario (starts from Muddle Through, then flex the inputs):','My scenario '+(user.length+1));
+    if(!name) return; name=(''+name).slice(0,40);
+    var vals={}; CFG.sliders.forEach(function(s){ vals[s.k]=s.def; });
+    var id='u'+Date.now(); user.push({id:id,name:name,vals:vals}); saveUser();
+    CFG.scenarios.push({n:name, v:computeVals(vals), kind:'user', uid:id});
+    selectBar(CFG.scenarios.length-1);
+  });
+  function delScenario(id){
+    user=user.filter(function(u){ return u.id!==id; }); saveUser();
+    CFG.scenarios=CFG.scenarios.filter(function(sc){ return sc.uid!==id; });
+    if(target===id){ selectBar(CFG.liveIdx); } else { if(CFG.activeIdx>=CFG.scenarios.length) CFG.activeIdx=CFG.liveIdx; drawBars(); }
+  }
+
+  // explore
   var ex=document.getElementById('explore'); var exBtns={};
   Object.keys(CFG.titles).forEach(function(k){ var b=document.createElement('button'); b.textContent=CFG.titles[k]; b.style.fontSize='12px'; b.addEventListener('click',function(){ setPanel(k); markExplore(k); }); ex.appendChild(b); exBtns[k]=b; });
   function markExplore(k){ Object.keys(exBtns).forEach(function(j){ exBtns[j].style.borderColor='var(--bd2)'; }); if(exBtns[k]) exBtns[k].style.borderColor='var(--bdinfo)'; }
   function setPanel(k){
     var d=document.getElementById('detail'); if(d) d.innerHTML='';
     document.getElementById('panel').innerHTML='<div style="font-weight:500; margin-bottom:4px;">'+CFG.titles[k]+'</div><div style="color:var(--text2);">'+CFG.snap[k]+'</div>';
-    if(k==='world'){ var t=document.getElementById('wsnaptitle'); if(t) t.textContent=CFG.scenarios[CFG.activeIdx].n; }
+    if(k==='world'){ var t=document.getElementById('wsnaptitle'); if(t) t.textContent=activeScen().n; }
     var m=document.querySelector('#panel .more'); if(m){ m.addEventListener('click',function(){ openDetail(m.getAttribute('data-k')); }); }
   }
+  function userWorldHTML(sc){
+    var u=findUser(sc.uid); var rows='';
+    CFG.sliders.forEach(function(s){ var uv=u.vals[s.k], dv=s.def, chg=(uv!==dv);
+      rows+='<tr style="border-top:0.5px solid var(--bd);"><td style="padding:5px 8px 5px 0; color:var(--text2);">'+s.label+'</td><td style="padding:5px 8px; text-align:right; '+(chg?'font-weight:600;':'color:var(--text3);')+'">'+fmt(s,uv)+'</td><td style="padding:5px 0; text-align:right; color:var(--text3);">'+(chg?('was '+fmt(s,dv)):'—')+'</td></tr>'; });
+    var vm=(sc.v/CFG.market-1)*100;
+    return '<p style="margin-top:0;">Your own scenario, starting from Muddle Through and re-priced live by the browser-side reduced-form. Value <b>'+CFG.ccy+' '+sc.v.toFixed(CFG.dp)+'</b> ('+(vm>=0?'+':'')+vm.toFixed(0)+'% vs market).</p><table style="width:100%; font-size:13px;"><tr><td class="sub" style="padding:2px 8px 2px 0;">Input</td><td class="sub" style="padding:2px 8px; text-align:right;">Your value</td><td class="sub" style="padding:2px 0; text-align:right;">vs MT</td></tr>'+rows+'</table><p class="sub" style="margin-top:8px;">Coming next: per-input overrides on the Five Forces and Assumptions tabs, and an Excel download of your scenario as a formula workbook.</p>';
+  }
   function detailHTML(k){
-    if(k==='world'){ var nm=CFG.scenarios[CFG.activeIdx].n;
+    if(k==='world'){ var sc=activeScen(); if(sc.kind==='user'){ return userWorldHTML(sc); } var nm=sc.n;
       var wd=(CFG.worldDesc&&CFG.worldDesc[nm])?'<div class="thytag" style="color:var(--text3); margin:0 0 4px;">The world</div>'+CFG.worldDesc[nm]:'';
       var cn='<div class="thytag" style="color:var(--text3); margin:14px 0 4px;">What it means for '+CFG.companyShort+'</div>'+(CFG.narr[nm]||CFG.narr._placeholder);
       return wd+cn; }
@@ -127,10 +195,12 @@ var CFG=__CFG__;
     var d=document.getElementById('detail');
     d.innerHTML='<div class="detailcard"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><h4>'+CFG.titles[k]+'</h4><button id="closeov" aria-label="close" style="padding:2px 9px;">×</button></div><div>'+detailHTML(k)+'</div></div>';
     document.getElementById('closeov').addEventListener('click',function(){ d.innerHTML=''; });
-    var dl=document.getElementById('dlbtn'); if(dl) dl.addEventListener('click',function(){ alert('In the live tool this downloads the '+CFG.companyShort+' scenario workbook — one tab per scenario.'); });
+    var dl=document.getElementById('dlbtn'); if(dl) dl.addEventListener('click',function(){ alert('In the live tool this downloads the '+CFG.companyShort+' scenario workbook — one tab per scenario (coming in the next increment).'); });
     d.scrollIntoView({behavior:'smooth', block:'nearest'});
   }
-  document.getElementById('selscen').textContent=CFG.scenarios[CFG.liveIdx].n;
+
+  // init
+  document.getElementById('selscen').textContent=CFG.scenarios[CFG.activeIdx].n;
   document.getElementById('topnote').innerHTML=CFG.topnote;
   document.getElementById('footnote').innerHTML=CFG.footnote;
   document.getElementById('mklab').textContent=CFG.mklab;
@@ -138,6 +208,7 @@ var CFG=__CFG__;
   document.getElementById('m4lab').textContent=CFG.metric4.label;
   document.getElementById('m4val').textContent=CFG.metric4.value;
   if(CFG.pvsub) document.getElementById('pvsub').textContent=CFG.pvsub;
+  updateEditingUI(); slidersEnabled(true);
   setPanel('forces'); markExplore('forces'); render();
 })();
 </script></body></html>"""
