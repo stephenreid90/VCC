@@ -19,7 +19,7 @@ def _scatter(beta, n, sigma_i, sigma_e, seed):
     pts = [[round(x, 4), round(my + k*(y-my), 4)] for x, y in raw]
     return round(beta, 3), pts
 
-def _comp(name, ticker, why, tax, de, betas, selected, seed):
+def _comp(name, ticker, why, tax, de, betas, selected, seed, det=None, mfin=None):
     data = {}; s = seed
     for idx, (bw, bm) in betas.items():
         sw, pw = _scatter(bw, 26, 0.020, 0.020, s); s += 1
@@ -27,24 +27,25 @@ def _comp(name, ticker, why, tax, de, betas, selected, seed):
         data[idx] = {"weekly · 2y": {"beta": sw, "points": pw},
                      "monthly · 4y": {"beta": sm, "points": pm}}
     return {"name": name, "ticker": ticker, "why": why, "tax": tax, "gearingDE": de,
-            "selected": selected, "data": data}
+            "selected": selected, "data": data, "det": det, "mfin": mfin}
 
 def _cand(name, ticker, why, tax, de, hint):
     return {"name": name, "ticker": ticker, "why": why, "tax": tax, "gearingDE": de,
             "betaHint": hint, "addable": "private" not in ticker.lower()}
 
 DNL = {
- "mock": True, "subject": {"name": "Dyno Nobel", "ticker": "DNL.AX", "selectedBeta": 1.10, "tax": 0.275, "de": 0.27,
+ "mock": True, "subject": {"name": "Dyno Nobel", "ticker": "DNL.AX", "selectedBeta": 1.10, "tax": 0.275, "de": 0.27, "det": {"ndeb":2.1,"dol":1.7,"cyc":0.65},
    "measuredNote": "Measured β 0.36 (post-demerger, world-index AUD series) — too short and noisy to use."},
  "rf": 4.30, "erp": 5.00, "alpha": 0.0,
  "indices": ["S&P/ASX 200", "MSCI World"], "indexDefault": "S&P/ASX 200",
  "windows": ["weekly · 2y", "monthly · 4y"], "windowDefault": "weekly · 2y",
  "toDiscount": {"mode": "wacc", "wE": 0.79, "kdAfterTax": 4.20, "label": "WACC"},
+ "detNote": "Read across the three drivers: <b>Sasol</b> screens high on all of them &mdash; heavy financial and operational leverage plus deep oil-price cyclicality &mdash; which is why its equity beta (1.45) tops the set and why it is excluded as an outlier. <b>Yara</b> carries the most operating leverage (ammonia plants are highly fixed-cost) but steadier fertiliser demand, so a middling asset beta. <b>Orica</b> sits closest to Dyno Nobel on operational leverage and cyclicality. Dyno Nobel&rsquo;s ~78% contracted book dampens its revenue cyclicality versus the mining-services peers, supporting an asset beta a touch below them before regearing to the lower DNL D/E.",
  "comparables": [
-   _comp("Orica", "ORI.AX", "Only ASX-listed direct explosives peer; near-identical mining-customer mix and ammonium-nitrate feedstock exposure.", 0.30, 0.45, {"S&P/ASX 200": (1.05, 1.02), "MSCI World": (1.15, 1.10)}, True, 101),
-   _comp("Yara International", "YAR.OL", "Global nitrogen / AN major; shares the ammonia-cost driver, though a broader fertiliser mix dilutes the explosives read.", 0.24, 0.35, {"S&P/ASX 200": (1.20, 1.18), "MSCI World": (1.25, 1.22)}, True, 111),
-   _comp("ICL Group", "ICL", "Specialty minerals plus AN; similar cyclical mining-demand beta.", 0.23, 0.40, {"S&P/ASX 200": (1.10, 1.08), "MSCI World": (1.12, 1.10)}, True, 121),
-   _comp("Sasol", "SOL.JO", "Explosives via BME but dominated by energy / chemicals and highly geared — excluded as an outlier.", 0.28, 0.80, {"S&P/ASX 200": (1.45, 1.40), "MSCI World": (1.50, 1.45)}, False, 131),
+   _comp("Orica", "ORI.AX", "Only ASX-listed direct explosives peer; near-identical mining-customer mix and ammonium-nitrate feedstock exposure.", 0.30, 0.45, {"S&P/ASX 200": (1.05, 1.02), "MSCI World": (1.15, 1.10)}, True, 101, det={"ndeb":1.8,"dol":1.9,"cyc":0.75}, mfin={"ccy":"AUD","price":21.00,"shares":480,"netDebt":1800,"ebitda":{"ttm":1400,"fwd":1540},"ebit":{"ttm":915,"fwd":1007},"ni":{"ttm":650,"fwd":715}}),
+   _comp("Yara International", "YAR.OL", "Global nitrogen / AN major; shares the ammonia-cost driver, though a broader fertiliser mix dilutes the explosives read.", 0.24, 0.35, {"S&P/ASX 200": (1.20, 1.18), "MSCI World": (1.25, 1.22)}, True, 111, det={"ndeb":1.5,"dol":2.3,"cyc":0.55}, mfin={"ccy":"USD","price":82.00,"shares":258,"netDebt":3500,"ebitda":{"ttm":3800,"fwd":3990},"ebit":{"ttm":2600,"fwd":2730},"ni":{"ttm":1930,"fwd":2027}}),
+   _comp("ICL Group", "ICL", "Specialty minerals plus AN; similar cyclical mining-demand beta.", 0.23, 0.40, {"S&P/ASX 200": (1.10, 1.08), "MSCI World": (1.12, 1.10)}, True, 121, det={"ndeb":2.0,"dol":1.8,"cyc":0.60}, mfin={"ccy":"USD","price":5.00,"shares":1290,"netDebt":2200,"ebitda":{"ttm":1150,"fwd":1242},"ebit":{"ttm":750,"fwd":810},"ni":{"ttm":496,"fwd":536}}),
+   _comp("Sasol", "SOL.JO", "Explosives via BME but dominated by energy / chemicals and highly geared — excluded as an outlier.", 0.28, 0.80, {"S&P/ASX 200": (1.45, 1.40), "MSCI World": (1.50, 1.45)}, False, 131, det={"ndeb":2.6,"dol":2.8,"cyc":0.85}, mfin={"ccy":"ZAR","price":12.50,"shares":640,"netDebt":6000,"ebitda":{"ttm":3111,"fwd":3204},"ebit":{"ttm":2000,"fwd":2060},"ni":{"ttm":1231,"fwd":1268}}),
  ],
  "candidates": [
    _cand("AECI", "AFE.JO", "African explosives + chemicals; smaller and less liquid, similar mining exposure.", 0.28, 0.55, 1.15),

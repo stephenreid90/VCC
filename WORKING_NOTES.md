@@ -13,6 +13,218 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 
 ---
 
+## CHAT HANDOVER — 12 July 2026 (lease accounting; swap at iter ~18)
+
+**Read this first.** This chat scoped and largely built **lease accounting** (the parked-twice item). The
+11 July block below still describes the broader UI state; this block supersedes it for leases. Detail lives in
+the "Lease accounting — approach agreed, scope locked (12 July 2026)" section further down.
+
+**What shipped — all DNL, verified, NOT committed (commit from Stephen's terminal):**
+
+1. **Treatment agreed = Approach A** (leases are debt): reported post-AASB 16 earnings + lease liability in
+   net debt. Materiality gate (two ratios, 10-15%), Moody's/S&P peer re-capitalisation for lease-heavy names,
+   AASB 16 vs US GAAP divergence, and the data contract are all written up in the scope section below.
+2. **DNL re-anchored** — leases folded into net debt; headline ~11c lower. New six:
+   **MT 3.48 / Orderly 4.05 / AI Lag 3.37 / Fragmentation 2.52 / Disorderly 1.33 / Stagflation 1.17**
+   (asymmetry unchanged 4.09). Touched: `dnl_scenarios_comparison_v4.xlsx` (explicit lease row; equity/
+   per-share/deltas converted from literals to formulas), audited `dnl_muddle_through_valuation_v6_...xlsx`
+   (explicit lease line from a new Assumptions input; misleading BS net-debt note fixed; 3.594 -> 3.484), and
+   the generator (`netDebt` 1300->1512, both DCF bridges, net-debt drill-down, MT narrative; rich Excel + DCF
+   table auto-follow `CFG.netDebt`). LibreOffice recalc + JSON parse + node --check all pass.
+3. **Lease-materiality panel** in DNL's net-debt drill-down (ratios + on-screen 10-15% threshold +
+   "Lease-light" verdict). **`workbook_lint.py` lease-basis check** (WARNs when leases are orphaned from the
+   bridge; passes re-anchored v6, warns the pre-fix backup). **`_leaseContract`** mock data-contract block in
+   the DNL CFG + a note for Ben in the scope section.
+
+**Next in this workstream (fresh chat): #2 methodology write-up** (lease-normalisation convention into
+`equity_bridge_and_valuation_mechanics.md` + architecture ref) **and #6 lease-neutral EV/EBITDAR peer basis**
+(gated to a lease-heavy archetype flag; DNL/WBC/CSL untouched). Both fully scoped below.
+
+**Housekeeping / quirks:** nothing committed from the sandbox. A stale git lock was moved aside to
+`.git/index.lock.dead1` — delete it from cmd. The Edit tool truncated `workbook_lint.py` once mid-write
+(restored via `git show HEAD:` + in-place overwrite, since the mount blocks unlink so `git checkout` can't
+replace a file) — **prefer sandbox-side python overwrite for any source file bigger than a few KB.**
+
+**Mechanics unchanged:** edit `ui_prototypes/_generator/` then `python3 build_cfgs.py && python3 gen_ui.py`;
+DNL-only features gate on data presence (leaseMat / _leaseContract / richbook); verify JSON + node --check +
+reduced-form/DCF ties on every regen; Chrome/file:// won't open locally, Stephen eyeballs.
+
+---
+
+## CHAT HANDOVER — 11 July 2026 (UI build-out chat, swap point ~iter 19)
+
+Read this first for the current UI state. The dated entries further down hold the detail; the older
+"Next session focus (25 June)" section below is now background.
+
+**Where we are.** This chat built out the **DNL** scenario-interface prototype substantially, all through the
+shared generator. Everything new is **DNL-first**; WBC and CSL are deliberately untouched for the new features
+(gated — see below) and await their pass. Nothing was committed from the sandbox this session — commits
+finalise from Stephen's terminal (the `.git` lock quirk); the generated HTML and generator sources are saved
+on the mount.
+
+**Shipped this chat** (edit `ui_prototypes/_generator/`, regenerate; mock-now/real-later where data is absent):
+
+1. β-workbench opener moved to sit under "Beta — peer triangulation" (all three prototypes).
+2. **Beta determinants** in the β workbench — financial leverage / operational leverage / cyclicality, with
+   numbered method footnotes (¹–⁴) and asset β via Hamada. DNL only.
+3. **Summary financials tab** (5-yr P&L / balance sheet / cash flow) — real FY25 as-reported, mock FY21–24. DNL only.
+4. **Multiples tab** — implied-by-DCF + cross-check; EV/EBITDA · EV/EBIT · P/E; forward/normalised + reported
+   FY25 basis. DNL only.
+5. **Comparable-company multiples workbench** — editable, transposed comps sheet (replaced the old expander),
+   multiples derived from underlying peer financials, median tied to the β peer selection. Basis now drives
+   **peers and subject together** (like-for-like) — this was the last fix.
+6. **DCF tab Narrative/Table toggle** — traditional per-scenario DCF that reconstructs the headline EV exactly
+   (Δ 0), with drill-downs: real §11 operating build (revenue × margin → EBIT → NOPAT), net-debt breakdown,
+   terminal-value calc. DNL only (richbook-gated).
+
+**Next, in order:**
+
+1. **Lease accounting** — Stephen's explicitly-flagged next issue, parked twice. Not yet scoped. Do this first.
+2. **Roll the new DNL features to WBC and CSL** — statements, multiples tab + peer workbench, DCF table,
+   determinants. Archetype-aware: WBC (bank) uses P/E + P/B and a dividend/excess-return build (no EV bridge);
+   CSL is FCFF at Ke with USD→AUD 0.66. Needs the WBC/CSL rich templates (the older pending item).
+3. **Real EODHD data** — replace the mocks (`beta_data.py` det/mfin + peer betas; statements FY21–24) once
+   Ben's feed returns (currently down). The mock JSON shapes are the contract the real feed must reproduce.
+
+**How to work in here (critical):**
+
+1. **Never hand-edit the generated HTML.** Edit `_generator/` — `build_cfgs.py` (per-company data), `beta_data.py`
+   (mock feed), `gen_ui.py` (scaffold + inlined JS) — then `python3 build_cfgs.py && python3 gen_ui.py`.
+2. **Large-file edits corrupt via the Edit/Write tools** (`gen_ui.py` ~100KB, `build_cfgs.py` ~60KB). Edit them
+   sandbox-side with python string-replace + `ast.parse` checks + `cp`; keep /tmp backups (this session's are
+   `/tmp/*.bak*.py`).
+3. **DNL-only features are gated by data presence**, not by code branches: `CFG.richbook` (DCF table),
+   `CFG.beta.subject.det` (determinants), `CFG.multiples` + titles (multiples/workbench tab), `CFG.dcfDetail`
+   (DCF drill-downs), `_financials` + titles (statements). Shared JS is inlined in all three HTML but stays
+   dormant without the data/title. **Extending a feature to WBC/CSL = add the data + title, not new code.**
+4. **Verify every regen**: extract each embedded `CFG`, JSON-parse it; confirm the reduced-form still
+   reproduces each Muddle Through (DNL 3.59) and the DCF cascade ties (Δ 0); `node --check` the inlined app
+   script. Chrome/`file://` won't open locally — Stephen eyeballs visually.
+5. Mock data is always flagged in-UI and lives in the JSON shape the real feed must reproduce.
+
+---
+
+## Lease accounting — approach agreed, scope locked (12 July 2026)
+
+The parked-twice lease issue, scoped with Stephen this chat. **Approach agreed; build not started
+(pending the one open decision below).** Read this before touching leases.
+
+**The problem in one line.** Leases touch the number in three places — the operating build
+(EBIT/EBITDA/FCFF), the net-debt/equity bridge, and the multiples tab — and one convention must hold
+across all three. DNL is in a latent *mixed* state today: reported post-AASB 16 earnings (rent already
+replaced by right-of-use depreciation + lease interest) but net debt **excludes** the 212 lease liability
+(the "narrow, AASB16 excl" definition). Numerator sits in the leases-are-debt world; bridge sits in the
+leases-are-operating world.
+
+**Agreed treatment:**
+
+1. **Default convention — Approach A (leases as debt).** Keep reported post-AASB 16 earnings and add the
+   lease liability into net debt so both sides agree. Chosen over de-capitalising (Approach B) because it
+   uses reported numbers with least estimation and scales to lease-heavy names.
+2. **Materiality gate — two ratios.** Liability ÷ EV (or lease-inclusive net debt); lease cost
+   (ROU dep + lease interest ≈ cash lease payment) ÷ EBITDA. Threshold ~10–15% on *either* flips a company
+   from "apply convention, show calc, move on" to "lease-sensitive". **Both ratios AND the threshold must be
+   shown on screen**, per Stephen (not asserted). DNL is lease-light (liability ~2.6% of EV).
+3. **DNL fix.** Fold the 212 into net debt so numerator/bridge agree — a ~11c / ~3% one-directional
+   correction. Stephen pushed back on calling that immaterial: it's a *consistency* fix (not judgment), so
+   we take it. No heavy machinery for DNL.
+4. **Cross-company = a multiples problem, not a DCF problem.** In the subject's own DCF, earnings and the
+   lease liability come from the same accounts under the same tenure assumption, so a longer/shorter term
+   moves EV and the liability together and they offset at the equity line — the DCF discounts the real rent
+   stream, so the accounting carve-up nets out. A multiple can't net it out (EBITDA is tenure-invariant but
+   the liability that adjusts EV is tenure-dependent), so the distortion passes straight through.
+5. **Aligning peers — Moody's/S&P house re-capitalisation (Stephen liked this).** Don't consume reported
+   lease liabilities cross-company; rebuild from the underlying rent commitments on one house rule with three
+   fixed knobs: (a) capitalisation method (uniform multiple, e.g. rent × 8, or uniform rate+term);
+   (b) tenure definition (e.g. committed-to-first-break, or committed + standard renewal); (c) rent definition
+   (incl. variable/turnover rent). Applied identically to subject and every peer. Surfaced as a lease-neutral
+   **EV/EBITDAR** basis on the multiples toggle, **gated to lease-heavy archetypes** (DNL/WBC/CSL never see it).
+   Same fix also neutralises the AASB 16 vs US GAAP divergence (see 6).
+6. **AASB 16 vs US GAAP (ASC 842).** Balance sheet broadly aligned (both capitalise ROU asset + lease
+   liability). Income statement / cash flow **not** aligned: AASB 16 is single-model (all leases → dep +
+   interest, so all lease cost leaves EBITDA and operating cash flow); ASC 842 keeps operating leases as a
+   single straight-line operating expense that stays *in* EBIT/EBITDA and operating cash flow. So identical
+   economics report different EBITDA/OCF across standards. The uniform EBITDAR basis strips this out too.
+7. **Subject-consistency rule.** Whatever tenure assumption sets the liability in net debt must be the same
+   assumption behind the earnings figure — automatic on reported numbers; the trap is normalising one side
+   without the other.
+8. **Data contract (flag to Ben for EODHD).** Need three fields we can't do without: whether "total debt"
+   includes lease liabilities, the rent / lease-cost line, the lease **maturity table** (to re-discount/
+   re-capitalise on our own rule), and an IFRS-vs-US-GAAP flag per company.
+
+**Build plan (tasks #1–#8):** lock notes (this) → methodology convention → lint consistency check → DNL
+materiality panel + corrected bridge → [DNL headline re-anchor: OPEN DECISION] → gated EBITDAR basis →
+mock lease data-contract fields → verify. Same generator mechanics as always (edit `_generator/`, regen,
+verify; large edits sandbox-side + cp).
+
+**DECISION (task #5) — RESOLVED: re-anchor everything now** (Stephen, 12 July). Headline moves down.
+
+**Accounts check (Stephen asked "look in the accounts").** DNL's own statutory accounts aren't in the repo
+(only our briefing/discussion PDFs). But `data/financials/dnl.yaml` (parsed FY25 statutory BS) lists
+`capital_lease_obligations: 211.5` as a **separate** line from short-term (626.3) / long-term (1,238.9)
+borrowings; the valuation's net-debt anchor is borrowings−cash = 1,218 (ex that lease line) + 82 = 1,300.
+So the operative 3.59 **excluded** leases — re-anchor confirmed correct, no double-count. The v6 workbook's
+Balance Sheet note claiming net debt "includes capital leases" was the misleading outlier (now fixed).
+
+**Wiring reality found:** the three artefacts carried three different net-debt/share decompositions that all
+reproduce 3.59 — `comparison_v4` (net debt −1,224 val-date + bridge −151.65, shares 1,770, a **hard-coded
+values dump**), audited `v6` (D 1,260.8, shares 1,770, **formula** model), and the UI (EV 8,064, net debt
+1,300, shares 1,884, reduced-form). Period-consistent lease figures: 194.3 (H1 val-date, workbooks) / 212
+(FY25, UI). Both bases round to the SAME re-anchored set.
+
+### Re-anchor DONE + verified (12 July) — tasks #4, #5 complete
+
+Re-anchored six DNL scenarios (constant −~0.11 shift; **asymmetry ratio unchanged 4.09**):
+**MT 3.48 · Orderly 4.05 · AI Lag 3.37 · Fragmentation 2.52 · Disorderly 1.33 · Stagflation 1.17.**
+
+1. **`dnl_scenarios_comparison_v4.xlsx`** (operative source): added explicit `Less: AASB 16 lease liabilities
+   (−194.3)` row to DCF Outputs; **converted equity-value + per-share + vs-market/vs-MT cells to formulas**
+   (were literals); Asymmetry per-share now references DCF Outputs. LibreOffice recalc: 3.48/4.05/3.37/2.52/
+   1.33/1.17, asymmetry 4.09. Backup `/tmp/lease_bak`.
+2. **`dnl_muddle_through_valuation_v6_...xlsx`** (audited formula model): added explicit lease line from a new
+   Assumptions input (B108 = 194.3) into the Equity Bridge (per-share 3.594 → **3.484**); **fixed the
+   misleading BS!C20 net-debt note** (now: borrowings less cash, ex-leases; leases deducted explicitly per
+   Approach A). LibreOffice recalc clean (the two DCF Build-up (v5) error cells are pre-existing, unrelated).
+3. **Generator** (`build_cfgs.py`, 20 ASCII-anchored patches, `ast.parse` OK): scenario bars, `cp.base` 3.48,
+   `netDebt` 1300→**1512** (+ `netDebtExLeases` 1300, `leaseLiab` 212); compact + detailed DCF bridges gain an
+   explicit lease line (equity 6,764→**6,552**, /share 3.48); net-debt drill-down array gains
+   `Add: AASB 16 lease liabilities 212` and note flips "excluded" → Approach A / included; MT narrative "Why
+   AUD 3.48? … modestly below market (~4%)".
+4. **Materiality panel (task #4)** — `dcfDetail.leaseMat` data + a renderer in `gen_ui.py`'s net-debt
+   drill-down: shows liability, ÷EV (2.6%), per-share impact (AUD 0.11, ~3% of value), lease cost ÷EBITDA
+   (~7%/6% rep/fwd), the **10-15% threshold on screen**, and the verdict **Lease-light → Approach A, no
+   lease-neutral peer basis needed**. Gated on `dd.leaseMat` (DNL only).
+5. **Rich Excel + DCF table** read `CFG.netDebt` → auto-use 1,512 → 3.48 (no hard-coded 1,300 anywhere).
+
+**Verified:** all three CFGs parse as valid JSON; DNL scenarios/base/netDebt/leaseMat correct; WBC/CSL carry
+no leaseMat/netDebt (gated, untouched); UI bridge (8064−1512)/1884 = 3.48; workbook recalcs tie; `node
+--check` passes all three app scripts. Not browser-eyeballed (file:// limitation) — Stephen to view.
+
+### #3 (lint) + #7 (data contract) also DONE this session (12 July)
+
+- **#3** — `scripts/workbook_lint.py` gained `check_lease_basis()`: flags lease liabilities sitting on the
+  balance sheet but not wired into net debt / the equity bridge (the pre-fix mixed-basis state). Verified:
+  new v6 -> INFO "basis consistent" (Assumptions!B108); pre-fix backup -> WARN. **Quirk hit:** the Edit tool
+  truncated this file mid-write; restored via `git show HEAD:scripts/workbook_lint.py` + in-place overwrite
+  (the mount blocks unlink, so `git checkout` can't replace a file). Left `.git/index.lock.dead1` (moved
+  aside per the standing lock workaround) - Stephen can delete it from his own cmd window.
+- **#7** — `_leaseContract` mock block added to the DNL CFG (dormant, DNL-only): accountingStandard,
+  totalDebtIncludesLeases, leaseLiability, annualLeaseCost, incrementalBorrowingRate, leaseMaturityUndisc
+  (year bands), contractNote. All three CFGs still parse; WBC/CSL carry none.
+
+**Note for Ben (EODHD feed) — carry per company:** (1) whether reported total debt includes AASB 16 lease
+liabilities; (2) the annual rent / lease-cost line (RoU depreciation + lease interest); (3) the undiscounted
+lease-maturity table (to re-capitalise peers on a uniform house rule); (4) the accounting-standard flag
+(AASB 16 / IFRS 16 vs US GAAP ASC 842).
+
+**Remaining (fresh chat): #2 methodology convention** (equity-bridge doc + architecture ref) **and #6
+lease-neutral EV/EBITDAR multiples basis** (gated to lease-heavy archetype). Both scoped above; safe to hand off.
+
+**Nothing committed from the sandbox** — workbooks + generator + lint changes saved on the mount; commit
+finalises from Stephen's terminal.
+
+---
+
 ## Next session focus (fresh chat — opened after 25 June 2026)
 
 Two workstreams, in order:
@@ -835,3 +1047,65 @@ Next: per-scenario impact matrix `data/impact_matrix/by_industry/australian_majo
 - **Gas-contract roll-off overlay added (29 May 2026).** Tara flagged that the US gas-contract roll-off (2028-2030 window) was narrative-only and the margin glide path actually moved the wrong way (transformation drove margins up through FY31 — exactly when the gas-cost advantage erodes). Resolution: added a structural-headwind overlay to the margin glide of -50/-100/-150bps cumulative in Y3/Y4/Y5, partially offsetting the transformation tailwind. Methodology §3.2.1 captures the concept (sister to transformation overlay). Applied flat across scenarios for this iteration — future refinement could make scenario-conditional (bigger drag under high-gas scenarios like Stagflation/Disorderly Climate). Headline DNL per-share moves: MT AUD 3.22 → AUD 2.90 (vs market AUD 3.61, -20%); Orderly AUD 3.72 → AUD 3.36 (-7%); Stagflation AUD 1.12 → AUD 0.82; all scenarios drop AUD 0.31-0.36/share. Workbooks v3 in analyses/dnl/valuations/. Aligns with substack discipline of building structural risk into cash flows, not hand-waving to terminal state or adjusting WACC.
 - **Reference texts and style anchors (28 May 2026).** Tara's go-to references: (a) Damodaran (Stern website, blog, books — particularly Investment Valuation, Narrative and Numbers, and the 2005 "Value of Control" paper); (b) Mercer's Business Valuation: An Integrated Theory, 3rd Edition (Mercer + Harms, 2021); (c) Clifford Ang's Applied Valuation; (d) Valuation Matters substack at valuationmatters1.substack.com (co-authored Stephen Reid + Tony Carlton). Style of thinking absorbed from KISS principle + control-premium-fallacy posts: (i) build risk and economic content into the cash flows, not into ad-hoc premia or discounts; (ii) "standard" adjustments applied rotely are suspect — case-specific mechanism is required; (iii) KISS / market efficiency / historical premia get arbitraged away; (iv) distinguish measurable from abstract (e.g. takeover premium != control premium); (v) double-counting check is the recurring red flag. The single-WACC discipline (methodology §3.5) is a direct application of (i) and (v).
 - **Single-WACC discipline across scenarios (28 May 2026).** Resolution of the parked §9.7 review item 4 ("WACC scenario behaviour"). WACC is set at the valuation date and held constant across all scenarios. Rationale: each scenario already prices its risk through the cash-flow path; using a higher discount rate in a stress scenario double-counts risk. The marginal investor's required return is set by today's market conditions; it does not change conditional on which future state realises. Scenario rate-driver deltas (Rf, ERP, country risk) are retained in the impact matrix for narrative context but do NOT flow into the DCF discount rate. Terminal growth REMAINS scenario-conditional (it represents a structural economic state, not risk re-prici
+## UI — β-workbench button relocation + beta-determinants comps (11 July 2026, new chat)
+
+Stephen's UI asks (DNL-first, real-statements/hybrid-betas per AskUserQuestion):
+1. **Button moved.** The "β / cost-of-capital workbench →" opener now sits **directly under the
+   "Beta — peer triangulation" block** in the Discount-rate detail (was at the very bottom, below all
+   seven theory panels). Done with a `<!--BWSLOT-->` marker inserted in the `detail.discount` assembly
+   (gen_ui.py line ~806, between `_discount` and `dr_theory_html`); the discount branch replaces the
+   marker with the button, falling back to append if absent. Applies to all three (shared render).
+2. **Beta determinants comps (DNL only this pass).** New "Beta determinants — why these asset betas"
+   disclosure table in the β workbench (below the peer table): per subject + selected peer, the three
+   drivers — **financial leverage** (D/E · ND/EBITDA, from reported gearing), **operational leverage**
+   (DOL, estimated), **revenue/cash-flow cyclicality** (cycle corr., estimated) — with low/med/high
+   chips and the resulting **asset β**. Framing: financial leverage = the Hamada levered-vs-unlevered
+   gap; opLev + cyclicality set the asset beta itself. Closing `detNote` reads the set (Sasol high on
+   all three → top β, excluded; DNL's ~78% contracted book dampens cyclicality). Hybrid data in
+   `beta_data.py` (`det` dict on DNL subject + 4 comps + `detNote`); render **gated on `BW.subject.det`**
+   so WBC/CSL are untouched until their pass.
+
+**Edits done sandbox-side + cp** (the large-file truncation quirk) via python patch scripts with
+assertions; backups in /tmp/gen_ui.bak.py, /tmp/beta_data.bak.py. **Verified:** build_cfgs + gen_ui
+regen clean; all three CFGs parse as valid JSON; BWSLOT lands exactly after the peer-triangulation `<p>`;
+DNL carries det on subject+4 comps+detNote, WBC/CSL carry none; DNL MT still 3.59 / scenarios intact;
+all three app scripts pass `node --check`. Not browser-eyeballed (file:// limitation) — Stephen to view.
+
+**Task 3 (5-yr statements tab) — BLOCKED on data.** DNL only has FY24/FY25/H1-FY26 clean in-repo;
+pre-FY25 = IPL incl. the demerged fertiliser business (Phosphate Hill visible in the v6 workbook BS).
+Stephen wants actual reported financials, not segment carve-outs. Awaiting his call: reconstruct a real
+5-yr as-reported series from an EODHD DNL/IPL pull (Ben's feed), show the ~2 clean years we have now,
+or build the tab on WBC/CSL first (clean multi-year EODHD CSVs) then adapt DNL.
+
+**Next issue after the above (Stephen flagged, not started): lease accounting.**
+Iteration ~4 this chat.
+
+## UI — determinants footnotes + DNL 5-yr statements tab (11 July 2026, cont.)
+
+Follow-ups on the same chat:
+- **Determinants footnoted.** The β-workbench determinants table now has superscripts ¹–⁴ on the column
+  headers and a numbered footnote block: ¹ financial leverage = reported gearing (ND/EBITDA, D/E, mocked);
+  ² operational leverage = DOL = %ΔEBIT/%ΔRevenue ≈ 1+FC/EBIT (mocked estimate); ³ cyclicality = corr of
+  real revenue growth vs GDP/industrial production (mocked estimate); ⁴ asset β = Hamada βu = βl/(1+(1−t)·D/E),
+  computed live. Long inline caveat shortened to a one-line mock banner pointing at the footnotes.
+  Mock values live in `beta_data.py` `det` dicts (ndeb/dol/cyc) + `gearingDE` + `detNote` — DNL only.
+- **Task 3 built (DNL, real FY25 + mock prior 4y).** New **"Summary financials"** tab under Explore the
+  build-up: Income statement / Balance sheet / Cash flow, FY21–FY25. **FY25 is real as-reported** from
+  `data/financials/dnl.yaml` (P&L bridged with an "other opex" + "non-operating & significant items" line so
+  it articulates; BS from the 30 Sep 2025 snapshot; CF = OCF/capex/FCF/dividends). **FY21–FY24 are mock**
+  placeholders (continuing-ops basis), greyed with a "mock" badge per column, internally consistent (P&L
+  articulates, BS balances exactly) and footnoted as pending the EODHD DNL/IPL pull. Pre-demerger IPL group
+  (incl. fertilisers) deliberately NOT shown, per Stephen. Structured `_financials` in build_cfgs; new
+  `financials_html()` renderer in gen_ui; tab gated to DNL (WBC/CSL unchanged).
+
+All edits sandbox-side + regen; verified: 3× valid JSON, DNL tabs now include `financials` (WBC/CSL don't),
+statements render with real FY25 (rev 3,710) + mock badges, all app scripts pass `node --check`. Backups in
+/tmp/*.bak*.py. Not browser-eyeballed (file://).
+
+**Next: lease accounting** (Stephen's flagged next issue). Iteration ~8 this chat.
+
+## UI — Multiples tab: implied-by-DCF + cross-check (11 July 2026, cont.)
+
+New **"Multiples"** tab (DNL only), per Stephen's design AskUserQuestion: both directions, forward/normalised
+base (reported FY25 as reference), dedicated tab.
+- **Metric selector:** EV/EBITDA · EV/EBIT · P/E (ar

@@ -611,6 +611,7 @@ function vccDownload(){ try{
     var d=document.getElementById('detail'); var h='';
     Object.keys(CFG.titles).forEach(function(k){ h+='<div class="detailcard"><h4 style="margin-bottom:8px;">'+CFG.titles[k]+'</h4><div>'+detailHTML(k)+'</div></div>'; });
     d.innerHTML=h; wireEditable('assum',d); wireEditable('forces',d); wireEditable('discount',d);
+    var _mw=d.querySelector('#mwrap'); if(_mw){ muInit(); mwRender(_mw); }
     var dl=d.querySelector('#dlbtn'); if(dl) dl.addEventListener('click',function(){ vccDownload(); });
     d.scrollIntoView({behavior:'smooth', block:'nearest'}); }
 
@@ -641,15 +642,21 @@ function vccDownload(){ try{
     if(k==='assum'){ var lab=activeScen().n; var head='';
       if(activeScen().kind!=='broker'){ head='<div style="border:0.5px solid var(--bd); border-left:2.5px solid var(--user-tx); border-radius:8px; padding:11px 13px; margin-bottom:12px;"><div style="font-weight:600; margin-bottom:2px;">Your inputs — '+lab+'</div><div class="sub" style="margin-bottom:8px;">the value-material inputs; type to override (syncs with the sliders and the live value). The full assumption set is below.</div>'+editableInputsTable()+'</div>'; }
       return head+CFG.detail.assum; }
-    if(k==='dcf'){ var h='<p>'+CFG.dcfIntro+'</p>';
-      CFG.dcfRows.forEach(function(r){ if(r[2]){ h+='<details class="thy"><summary style="display:flex; justify-content:space-between; align-items:center;"><span>'+r[0]+'</span><span style="font-weight:600; margin-left:auto;">'+r[1]+'</span></summary><div class="thybody">'+r[2]+'</div></details>'; } else { h+='<div style="display:flex; justify-content:space-between; padding:8px 10px; margin-top:5px; font-weight:600; border-top:1px solid var(--bd2);"><span>'+r[0]+'</span><span>'+r[1]+'</span></div>'; } });
-      return h+'<button style="margin-top:12px; font-size:13px; padding:6px 12px;" id="dlbtn">⤓ download all scenarios to Excel</button><div style="font-size:11px; color:var(--text3); margin-top:4px;">formula workbook · DCF to equity, discount build, comparables/β &amp; charts (DNL) · includes your edits</div>'; }
-    if(k==='discount'){ return CFG.detail.discount + (CFG.beta? '<div style="margin-top:14px;"><button id="openbw" style="font-size:13px; padding:6px 12px;">β / cost-of-capital workbench →</button><div id="bwrap" style="margin-top:10px;"></div></div>' : ''); }
+    if(k==='dcf'){ var _dl='<button style="margin-top:12px; font-size:13px; padding:6px 12px;" id="dlbtn">⤓ download all scenarios to Excel</button><div style="font-size:11px; color:var(--text3); margin-top:4px;">formula workbook · DCF to equity, discount build, comparables/β &amp; charts (DNL) · includes your edits</div>';
+      var _nar='<p>'+CFG.dcfIntro+'</p>'; CFG.dcfRows.forEach(function(r){ if(r[2]){ _nar+='<details class="thy"><summary style="display:flex; justify-content:space-between; align-items:center;"><span>'+r[0]+'</span><span style="font-weight:600; margin-left:auto;">'+r[1]+'</span></summary><div class="thybody">'+r[2]+'</div></details>'; } else { _nar+='<div style="display:flex; justify-content:space-between; padding:8px 10px; margin-top:5px; font-weight:600; border-top:1px solid var(--bd2);"><span>'+r[0]+'</span><span>'+r[1]+'</span></div>'; } });
+      if(!CFG.richbook){ return _nar+_dl; }
+      var _sc=activeScen(); if(_sc.kind==='broker'){ _sc=muScenByKind('live')||_sc; }
+      var _tg='<div style="display:flex; gap:6px; align-items:center; margin-bottom:10px;"><span class="sub">View:</span><button class="dcf_view" data-v="narr" style="font-size:12px; '+(dcfView==='narr'?'border-color:var(--bdinfo); color:var(--info-tx);':'')+'">Narrative</button><button class="dcf_view" data-v="table" style="font-size:12px; '+(dcfView==='table'?'border-color:var(--bdinfo); color:var(--info-tx);':'')+'">DCF table</button></div>';
+      return _tg+(dcfView==='table'?dcfTableHTML(_sc):_nar)+_dl; }
+    if(k==='discount'){ var _bw = CFG.beta? '<div style="margin:8px 0 4px;"><button id="openbw" style="font-size:13px; padding:6px 12px;">β / cost-of-capital workbench →</button><div id="bwrap" style="margin-top:10px;"></div></div>' : ''; return CFG.detail.discount.indexOf('<!--BWSLOT-->')>=0 ? CFG.detail.discount.replace('<!--BWSLOT-->', _bw) : CFG.detail.discount + _bw; }
+    if(k==='multiples'){ return '<div id="mwrap"></div>'; }
     return CFG.detail[k]||''; }
   function wireEditable(k,d){
     if(k==='assum'){ Array.prototype.forEach.call(d.querySelectorAll('.assumInp'),function(inp){ inp.addEventListener('change',function(){ var key=inp.getAttribute('data-k'); var s=sliderByKey(key); var v=parseFloat(inp.value); if(isNaN(v)){ inp.value=st[key]; return; } v=Math.max(s.min,Math.min(s.max,v)); inp.value=v; setInput(key,v); }); }); }
     if(k==='forces'){ var es=editableScens(); Array.prototype.forEach.call(d.querySelectorAll('.fm'),function(inp){ inp.addEventListener('change',function(){ var sc=es[+inp.getAttribute('data-si')]; if(!sc) return; sc.forces=sc.forces||{}; sc.forces[+inp.getAttribute('data-i')]=inp.value; sc.v=scVal(sc); saveLS(); drawBars(); }); }); }
     if(k==='discount'){ var ob=d.querySelector('#openbw'); if(ob) ob.addEventListener('click',function(){ bwInit(); bwRender(d.querySelector('#bwrap')); ob.style.display='none'; }); }
+    if(k==='multiples'){ var mw=d.querySelector('#mwrap'); if(mw){ muInit(); mwRender(mw); } }
+    if(k==='dcf'){ Array.prototype.forEach.call(d.querySelectorAll('.dcf_view'),function(b){ b.addEventListener('click',function(){ dcfView=b.getAttribute('data-v'); openDetail('dcf', true); }); }); }
   }
   function openDetail(k,skipScroll){ var d=document.getElementById('detail');
     d.innerHTML='<div class="detailcard"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><h4>'+CFG.titles[k]+'</h4><button id="closeov" aria-label="close" style="padding:2px 9px;">×</button></div><div>'+detailHTML(k)+'</div></div>';
@@ -662,7 +669,7 @@ function vccDownload(){ try{
   function bwInit(){
     bs={ idx:BW.indexDefault, win:BW.windowDefault, rf:BW.rf, erp:BW.erp, alpha:BW.alpha,
          relever:false, targetDE:(BW.subject.de||0), showCand:false, showWider:false, comps:BW.comparables.slice(), plot:null };
-    bs.comps.forEach(function(c){ c._sel=c.selected; });
+    bs.comps.forEach(function(c){ if(c._sel===undefined) c._sel=c.selected; });
     var f=bs.comps.filter(function(c){return c._sel;})[0]; bs.plot=f?f.name:(bs.comps[0]&&bs.comps[0].name);
   }
   function betaOf(c){ var d=c._added?c._data:c.data; return d[bs.idx][bs.win].beta; }
@@ -671,6 +678,8 @@ function vccDownload(){ try{
   function relev(bu,tax,de){ return bu*(1+(1-tax)*de); }
   function median(a){ if(!a.length) return 0; var b=a.slice().sort(function(x,y){return x-y;}); var m=Math.floor(b.length/2); return b.length%2?b[m]:(b[m-1]+b[m])/2; }
   function selectedComps(){ return bs.comps.filter(function(c){return c._sel;}); }
+  function _lvl(v,a,b){ return (v==null)?-1:(v<a?0:(v<b?1:2)); }
+  function _bandChip(l){ if(l<0) return ''; var t=['low','med','high'][l], c=['var(--success-tx)','var(--text2)','var(--danger-tx)'][l]; return ' <span style="font-size:10px; color:'+c+';">'+t+'</span>'; }
   function aggBeta(){ var sc=selectedComps(); if(!sc.length) return {beta:0,medL:0,medU:0};
     var medL=median(sc.map(function(c){return betaOf(c);}));
     var medU=median(sc.map(function(c){return unlev(betaOf(c),c.tax,c.gearingDE);}));
@@ -713,6 +722,28 @@ function vccDownload(){ try{
     bs.comps.forEach(function(c,ci){ var bl=betaOf(c), bu=unlev(bl,c.tax,c.gearingDE);
       h+='<tr style="border-top:0.5px solid var(--bd);"><td style="padding:6px 4px 6px 0; vertical-align:top;"><input type="checkbox" class="bw_sel" data-ci="'+ci+'" '+(c._sel?'checked':'')+'></td><td style="padding:6px 8px 6px 0;">'+c.name+' <span class="sub">'+c.ticker+'</span>'+(c._added?' <span class="sub" style="color:var(--user-tx);">added</span>':'')+'<details class="thy" style="margin-top:4px;"><summary>why comparable</summary><div class="thybody">'+c.why+'</div></details></td><td style="padding:6px 8px; text-align:right; '+(c._sel?'font-weight:600;':'color:var(--text3);')+'">'+bl.toFixed(2)+'</td><td style="padding:6px 8px; text-align:right; color:var(--text2);">'+(BW.bank?'—':bu.toFixed(2))+'</td><td style="padding:6px 0; text-align:right; vertical-align:top;"><button class="bw_plot" data-name="'+c.name+'" style="font-size:11px; padding:2px 7px; '+(bs.plot===c.name?'border-color:var(--bdinfo);':'')+'">plot</button></td></tr>'; });
     h+='</table>';
+    if(BW.subject.det){ var _dc=[BW.subject].concat(bs.comps.filter(function(c){return c._sel;}));
+      h+='<details class="thy" style="margin-top:12px;" open><summary>Beta determinants — why these asset betas</summary><div class="thybody">';
+      h+='<div class="sub" style="margin-bottom:8px; line-height:1.55;">A stock’s equity (levered) beta rests on three fundamentals. <b>Financial leverage</b> gears the asset beta up — the levered-vs-unlevered gap (Hamada). The underlying <b>asset beta</b> is itself driven by <b>operational leverage</b> (fixed-cost intensity — how far a revenue move amplifies into profit) and the <b>cyclicality of revenues &amp; cash flows</b> (how tightly the top line tracks the economic cycle). Reading peers on all three explains, and disciplines, the beta you pick.</div>';
+      h+='<div class="sub" style="margin-bottom:8px; color:var(--warning-tx);"><b>Illustrative mock data.</b> Ben&rsquo;s EODHD feed is temporarily down, so the figures below are placeholders. Calculation methods are footnoted underneath.</div>';
+      h+='<div style="overflow-x:auto;"><table style="font-size:12px; border-collapse:collapse; white-space:nowrap; width:100%;"><tr><td class="sub" style="padding:3px 8px 3px 0;">Company</td><td class="sub" style="padding:3px 8px; text-align:right;">Financial leverage<sup>1</sup><br>D/E · ND/EBITDA</td><td class="sub" style="padding:3px 8px; text-align:right;">Operational leverage<sup>2</sup><br>DOL</td><td class="sub" style="padding:3px 8px; text-align:right;">Revenue cyclicality<sup>3</sup><br>cycle corr.</td><td class="sub" style="padding:3px 8px; text-align:right;">Asset β<sup>4</sup></td></tr>';
+      _dc.forEach(function(c){ var d=c.det||{}, isSub=(c===BW.subject); var de=isSub?BW.subject.de:c.gearingDE;
+        var ab=isSub?(BW.bank?BW.subject.selectedBeta:unlev(BW.subject.selectedBeta,BW.subject.tax,BW.subject.de)):unlev(betaOf(c),c.tax,c.gearingDE);
+        h+='<tr style="border-top:0.5px solid var(--bd);"><td style="padding:5px 8px 5px 0;">'+(isSub?'<b>'+c.name+'</b> <span class="sub">subject</span>':c.name)+'</td>';
+        h+='<td style="padding:5px 8px; text-align:right;">'+de.toFixed(2)+' · '+(d.ndeb!=null?d.ndeb.toFixed(1)+'×':'—')+_bandChip(_lvl(d.ndeb,1.5,2.5))+'</td>';
+        h+='<td style="padding:5px 8px; text-align:right;">'+(d.dol!=null?d.dol.toFixed(1)+'×':'—')+_bandChip(_lvl(d.dol,1.6,2.2))+'</td>';
+        h+='<td style="padding:5px 8px; text-align:right;">'+(d.cyc!=null?d.cyc.toFixed(2):'—')+_bandChip(_lvl(d.cyc,0.5,0.7))+'</td>';
+        h+='<td style="padding:5px 8px; text-align:right; font-weight:600;">'+ab.toFixed(2)+'</td></tr>'; });
+      h+='</table></div>';
+      h+='<ol style="font-size:11.5px; color:var(--text2); line-height:1.5; margin:8px 0 0; padding-left:18px;">';
+      h+='<li><b>Financial leverage</b> — from reported gearing: net debt ÷ EBITDA and D/E. <span style="color:var(--warning-tx);">Mocked (EODHD down).</span></li>';
+      h+='<li><b>Operational leverage (DOL)</b> — how far a revenue move amplifies into EBIT: DOL = %ΔEBIT ÷ %ΔRevenue measured across the cycle, ≈ 1 + (fixed costs ÷ EBIT) from a cost-structure split. <span style="color:var(--warning-tx);">Mocked estimate — not yet computed from data.</span></li>';
+      h+='<li><b>Revenue cyclicality</b> — the correlation (or regression β) of real revenue growth against GDP / industrial-production growth over a full cycle. <span style="color:var(--warning-tx);">Mocked estimate — not yet computed from data.</span></li>';
+      h+='<li><b>Asset β (unlevered)</b> — Hamada unlevering, computed live from the levered β, tax and gearing: β<sub>u</sub> = β<sub>l</sub> ÷ (1 + (1−tax)·D/E).</li>';
+      h+='</ol>';
+      if(BW.detNote) h+='<div class="sub" style="margin-top:8px; line-height:1.55;">'+BW.detNote+'</div>';
+      h+='</div></details>';
+    }
     h+='<div style="margin-top:8px;"><button id="bw_find" style="font-size:12px;">'+(bs.showCand?'− hide candidates':'✦ find more comparables')+'</button>';
     if(bs.showCand){ h+='<div style="margin-top:8px; border:0.5px dashed var(--bd2); border-radius:8px; padding:8px 10px;">';
       h+='<div class="sub" style="margin-bottom:4px;">Add any company you consider comparable, even if it is not listed here:</div><div style="display:flex; gap:6px; align-items:flex-end; flex-wrap:wrap; margin-bottom:10px;"><div><div class="sub">Name</div><input id="bw_cn" placeholder="company" style="width:120px; font:inherit; font-size:12px; padding:2px 6px; border:0.5px solid var(--bd2); border-radius:5px; background:var(--primary); color:var(--text);"></div><div><div class="sub">Ticker</div><input id="bw_ct" placeholder="TICK" style="width:74px; font:inherit; font-size:12px; padding:2px 6px; border:0.5px solid var(--bd2); border-radius:5px; background:var(--primary); color:var(--text);"></div><div><div class="sub">β (est.)</div><input id="bw_cb" type="number" step="0.05" value="1.00" style="width:64px; font:inherit; font-size:12px; padding:2px 6px; border:0.5px solid var(--bd2); border-radius:5px; background:var(--primary); color:var(--text);"></div><button id="bw_cadd" style="font-size:11px;">+ add</button></div>';
@@ -749,6 +780,138 @@ function vccDownload(){ try{
     Array.prototype.forEach.call(cont.querySelectorAll('.bw_add2'),function(b){ b.addEventListener('click',function(){ addCandObj(BW.candidates2[+b.getAttribute('data-i')]); bwRender(cont); }); });
     on('bw_apply','click',function(){ var a=activeScen(); if(a.kind==='broker'){ alert('Select an editable scenario first.'); return; } var s=sliderByKey('re'); var v=impliedDiscount(reOf(aggBeta().beta)); v=Math.max(s.min,Math.min(s.max,v)); setInput('re',v); syncSliders(); alert('Applied — discount rate set to '+v.toFixed(2)+'% for '+a.n+'.'); });
   }
+
+  // ---- Multiples view: implied-by-DCF + cross-check (MU=CFG.multiples; DNL only) ----
+  var MU=CFG.multiples; var ms=null; var dcfView='narr';
+  function ensurePeerSel(){ if(BW&&BW.comparables){ BW.comparables.forEach(function(c){ if(c._sel===undefined) c._sel=c.selected; }); } }
+  function _earn(c,field){ var f=c.mfin; if(!f) return null; var e=f[field]; if(e==null) return null; return (typeof e==='object')?e[ms.basis]:e; }
+  function muComp(c){ var f=c.mfin; if(!f) return null; var mc=f.price*f.shares, ev=mc+f.netDebt, eb=_earn(c,'ebitda'), ei=_earn(c,'ebit'), ni=_earn(c,'ni'); return {mktcap:mc, ev:ev, evebitda:ev/eb, evebit:ev/ei, pe:mc/ni}; }
+  function peerMult(m){ if(!BW||!BW.comparables) return m.peer; var v=BW.comparables.filter(function(c){return c._sel&&c.mfin;}).map(function(c){return muComp(c)[m.k];}); return v.length?median(v):m.peer; }
+  function muInit(){ ensurePeerSel(); if(!ms) ms={ basis:MU.baseDefault, metric:MU.metricDefault, refMode:'peer', custom:'' }; }
+  function muMetric(){ for(var i=0;i<MU.metrics.length;i++){ if(MU.metrics[i].k===ms.metric) return MU.metrics[i]; } return MU.metrics[0]; }
+  function muBase(){ return MU.bases[ms.basis]; }
+  function muEV(v){ return v*CFG.shares+CFG.netDebt; }
+  function muImplied(v,m,b){ return (m.kind==='ev')? muEV(v)/b[m.field] : v*CFG.shares/b[m.field]; }
+  function muValue(x,m,b){ return (m.kind==='ev')? (x*b[m.field]-CFG.netDebt)/CFG.shares : x*b[m.field]/CFG.shares; }
+  function muRefMult(m,mkt){ if(ms.refMode==='market') return mkt; if(ms.refMode==='custom'){ var c=parseFloat(ms.custom); return isNaN(c)?peerMult(m):c; } return peerMult(m); }
+  function muScenByKind(k){ for(var i=0;i<CFG.scenarios.length;i++){ if(CFG.scenarios[i].kind===k) return CFG.scenarios[i]; } return null; }
+  function muX(x){ return x.toFixed(1)+'×'; }
+  function muN(x){ return Math.round(x).toLocaleString(); }
+  function mwCompsWorkbench(){ if(!BW||!BW.comparables) return ''; var cs=BW.comparables, m=muMetric();
+    var h='<div class="hd" style="margin:4px 0 4px;">Comparable company multiples — workbench <span class="sub" style="font-weight:400;">(mock · editable · same peer set as the β workbench)</span></div>';
+    h+='<div class="sub" style="margin-bottom:6px; color:var(--warning-tx);">Mock inputs, each peer in its own local currency — edit any input cell to recompute; multiples are currency-neutral. Validate to reported statements when the EODHD feed returns.</div>';
+    h+='<div style="overflow-x:auto;"><table style="font-size:12px; border-collapse:collapse; white-space:nowrap;">';
+    h+='<tr><td class="sub" style="padding:3px 8px 3px 0;"></td>';
+    cs.forEach(function(c,ci){ h+='<td class="sub" style="padding:3px 8px; text-align:right;"><label style="cursor:pointer;"><input type="checkbox" class="mu_comp" data-ci="'+ci+'" '+(c._sel?'checked':'')+' style="vertical-align:middle;"> '+c.name+'</label><div style="font-weight:400; color:var(--text3);">'+(c.mfin?c.mfin.ccy:'')+'</div></td>'; });
+    h+='<td class="sub" style="padding:3px 8px; text-align:right; color:var(--info-tx);">Median<br>(selected)</td></tr>';
+    function fval(c,field,basis){ var f=c.mfin; if(!f) return null; var e=f[field]; if(e==null) return null; return basis?((typeof e==='object')?e[ms.basis]:e):e; }
+    function inRow(label,field,step,basis){ var tag=basis?' <span class="sub">('+MU.bases[ms.basis].label.split(' ')[0].toLowerCase()+')</span>':''; var r='<tr style="border-top:0.5px solid var(--bd);"><td style="padding:4px 8px 4px 0; color:var(--text2);">'+label+tag+'</td>';
+      cs.forEach(function(c,ci){ var v=fval(c,field,basis); r+='<td style="padding:3px 4px; text-align:right;">'+(v!=null?'<input type="number" class="mu_fin" data-ci="'+ci+'" data-f="'+field+'" data-basis="'+(basis?'1':'')+'" value="'+v+'" step="'+step+'" style="width:78px; text-align:right; font:inherit; font-size:11.5px; padding:2px 4px; border:0.5px solid var(--bd2); border-radius:5px; background:var(--primary); color:var(--text);">':'—')+'</td>'; });
+      return r+'<td></td></tr>'; }
+    function derRow(label,key,mult){ var hi=(mult&&key===m.field); var r='<tr style="border-top:0.5px solid var(--bd);'+(hi?' background:var(--secondary);':'')+'"><td style="padding:4px 8px 4px 0; '+(mult?'font-weight:600;':'color:var(--text2);')+'">'+label+'</td>';
+      cs.forEach(function(c){ var cc=muComp(c), v=cc?cc[key]:null; r+='<td style="padding:4px 8px; text-align:right; '+(c._sel?'':'color:var(--text3);')+(mult?' font-weight:600;':'')+'">'+(v!=null?(mult?muX(v):Math.round(v).toLocaleString()):'—')+'</td>'; });
+      var medv=mult?peerMult({k:key,peer:null}):null; return r+'<td style="padding:4px 8px; text-align:right; color:var(--info-tx); font-weight:600;">'+(mult&&medv!=null?muX(medv):'')+'</td></tr>'; }
+    h+=inRow('Price','price','0.01')+inRow('Shares (m)','shares','1')+derRow('Market cap','mktcap',false)+inRow('Net debt','netDebt','1')+derRow('Enterprise value','ev',false);
+    h+=inRow('EBITDA','ebitda','1',true)+inRow('EBIT','ebit','1',true)+inRow('Net income','ni','1',true);
+    h+=derRow('EV / EBITDA','evebitda',true)+derRow('EV / EBIT','evebit',true)+derRow('P / E','pe',true);
+    h+='</table></div><div class="sub" style="margin:5px 0 12px; line-height:1.5;">The EBITDA / EBIT / net income rows follow the selected earnings basis (top toggle) — switching it moves the subject and the peers together, so the comparison stays like-for-like (market cap, net debt and EV are current market values, unchanged by basis). Tick/untick a peer (top row) to change the set — this drives the median and the peer-median lines below, and stays in sync with the β workbench (Sasol excluded by default). Derived cells (market cap, EV, the three multiples) recompute live; edits are session-only.</div>';
+    return h; }
+  function mwRender(cont){ if(!cont||!MU) return; var m=muMetric(), b=muBase(), h='';
+    h+='<p style="margin-top:0;">Two lenses on the same value. <b>Implied by each scenario</b> divides every DCF outcome by a common earnings base to show the multiple it pays; the <b>cross-check</b> runs it the other way — a reference multiple × earnings gives a value to set beside the intrinsic range.</p>';
+    h+='<div class="sub" style="margin-bottom:10px; color:var(--warning-tx);">'+MU.note+'</div>';
+    h+='<div style="display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start; margin-bottom:10px;">';
+    h+='<div><div class="sub" style="margin-bottom:3px;">Earnings basis (subject &amp; peers)</div>';
+    Object.keys(MU.bases).forEach(function(bk){ h+='<button class="mu_basis" data-b="'+bk+'" style="font-size:12px; margin-right:4px; '+(bk===ms.basis?'border-color:var(--bdinfo); color:var(--info-tx);':'')+'">'+MU.bases[bk].label+'</button>'; });
+    h+='</div><div><div class="sub" style="margin-bottom:3px;">Multiple</div>';
+    MU.metrics.forEach(function(mm){ h+='<button class="mu_metric" data-m="'+mm.k+'" style="font-size:12px; margin-right:4px; '+(mm.k===ms.metric?'border-color:var(--bdinfo); color:var(--info-tx);':'')+'">'+mm.label+'</button>'; });
+    h+='</div></div>';
+    h+='<div style="background:var(--secondary); border-radius:8px; padding:9px 11px; font-size:12.5px; margin-bottom:12px;"><b>'+b.label+'</b> ('+CFG.ccy+' m): EBITDA '+muN(b.ebitda)+' · EBIT '+muN(b.ebit)+' · net income '+muN(b.ni)+' · EPS '+CFG.ccy+' '+(b.ni/CFG.shares).toFixed(2)+'<div class="sub" style="margin-top:4px;">'+b.note+'</div></div>';
+    h+=mwCompsWorkbench();
+    var mkt=muImplied(CFG.market,m,b);
+    h+='<div class="hd" style="margin:4px 0 4px;">Implied '+m.label+' by scenario</div><div style="overflow-x:auto;"><table style="font-size:12.5px; border-collapse:collapse; width:100%; white-space:nowrap;">';
+    h+='<tr><td class="sub" style="padding:3px 8px 3px 0;">Scenario</td><td class="sub" style="padding:3px 8px; text-align:right;">Value / share</td>'+(m.kind==='ev'?'<td class="sub" style="padding:3px 8px; text-align:right;">EV</td>':'')+'<td class="sub" style="padding:3px 8px; text-align:right;">Implied '+m.label+'</td></tr>';
+    CFG.scenarios.slice().sort(function(a,c){return c.v-a.v;}).forEach(function(sc){ var im=muImplied(sc.v,m,b), isB=(sc.kind==='broker');
+      h+='<tr style="border-top:0.5px solid var(--bd);"><td style="padding:5px 8px 5px 0; '+(sc===activeScen()?'font-weight:600; color:var(--info-tx);':'')+'">'+sc.n+(isB?' <span class="sub">(ref)</span>':'')+'</td><td style="padding:5px 8px; text-align:right;">'+CFG.ccy+' '+sc.v.toFixed(CFG.dp)+'</td>'+(m.kind==='ev'?'<td style="padding:5px 8px; text-align:right; color:var(--text2);">'+muN(muEV(sc.v))+'</td>':'')+'<td style="padding:5px 8px; text-align:right; font-weight:600;">'+muX(im)+'</td></tr>'; });
+    h+='<tr style="border-top:1px solid var(--bd2);"><td style="padding:5px 8px 5px 0; color:var(--text2);">Market-implied (price '+CFG.ccy+' '+CFG.market.toFixed(CFG.dp)+')</td><td></td>'+(m.kind==='ev'?'<td></td>':'')+'<td style="padding:5px 8px; text-align:right; color:var(--text2);">'+muX(mkt)+'</td></tr>';
+    h+='<tr><td style="padding:5px 8px 5px 0; color:var(--warning-tx);">Peer median (mock, selected peers)</td><td></td>'+(m.kind==='ev'?'<td></td>':'')+'<td style="padding:5px 8px; text-align:right; color:var(--warning-tx);">'+muX(peerMult(m))+'</td></tr>';
+    h+='</table></div><div class="sub" style="margin-top:6px; line-height:1.5;">The denominator is held at the '+b.label.toLowerCase()+' base, so this reads each scenario as a multiple of <i>today’s</i> earnings — higher-value scenarios pay up to a higher multiple. Where a scenario sits above the peer median, the DCF is asking the market to re-rate.</div>';
+    h+='<div class="hd" style="margin:16px 0 4px;">Cross-check — value from a '+m.label+' multiple</div>';
+    h+='<div style="display:flex; gap:8px; align-items:flex-end; flex-wrap:wrap; margin-bottom:8px;"><div><div class="sub" style="margin-bottom:3px;">Reference</div>';
+    [['peer','Peer median'],['market','Market'],['custom','Custom']].forEach(function(r){ h+='<button class="mu_ref" data-r="'+r[0]+'" style="font-size:12px; margin-right:4px; '+(r[0]===ms.refMode?'border-color:var(--bdinfo); color:var(--info-tx);':'')+'">'+r[1]+'</button>'; });
+    var rm=muRefMult(m,mkt);
+    h+='</div><div><div class="sub" style="margin-bottom:3px;">Multiple</div><input id="mu_custom" type="number" step="0.5" value="'+rm.toFixed(1)+'" '+(ms.refMode==='custom'?'':'disabled')+' style="width:80px; font:inherit; padding:3px 6px; border:0.5px solid var(--bd2); border-radius:6px; background:var(--primary); color:var(--text);"></div></div>';
+    var pv=muValue(rm,m,b), mt=muScenByKind('live'), evs=editableScens().map(function(s){return s.v;}), lo=Math.min.apply(null,evs), hi=Math.max.apply(null,evs);
+    h+='<div style="background:var(--secondary); border-radius:8px; padding:11px 13px;"><div style="font-size:13px;">'+muX(rm)+' '+m.label+' × '+CFG.ccy+' '+muN(b[m.field])+' m'+(m.kind==='ev'?(' = EV '+muN(rm*b[m.field])+' → less net debt '+muN(CFG.netDebt)+' → equity '+muN(rm*b[m.field]-CFG.netDebt)):'')+'</div><div style="font-size:15px; font-weight:600; margin-top:5px;">→ '+CFG.ccy+' '+pv.toFixed(CFG.dp)+' per share</div><div class="sub" style="margin-top:5px;">vs Muddle Through '+CFG.ccy+' '+(mt?mt.v.toFixed(CFG.dp):'—')+' · vs market '+CFG.ccy+' '+CFG.market.toFixed(CFG.dp)+' · DCF scenario range '+CFG.ccy+' '+lo.toFixed(CFG.dp)+'–'+hi.toFixed(CFG.dp)+'</div></div>';
+    cont.innerHTML=h; mwWire(cont);
+  }
+  function mwWire(cont){ function on(sel,ev,fn){ Array.prototype.forEach.call(cont.querySelectorAll(sel),function(e){ e.addEventListener(ev,fn); }); }
+    on('.mu_basis','click',function(){ ms.basis=this.getAttribute('data-b'); mwRender(cont); });
+    on('.mu_metric','click',function(){ ms.metric=this.getAttribute('data-m'); mwRender(cont); });
+    on('.mu_ref','click',function(){ ms.refMode=this.getAttribute('data-r'); mwRender(cont); });
+    on('.mu_comp','click',function(){ var ci=+this.getAttribute('data-ci'); if(BW&&BW.comparables[ci]){ BW.comparables[ci]._sel=this.checked; } mwRender(cont); });
+    on('.mu_fin','change',function(){ var ci=+this.getAttribute('data-ci'), f=this.getAttribute('data-f'), isB=this.getAttribute('data-basis')==='1', v=parseFloat(this.value); var mf=(BW&&BW.comparables[ci])?BW.comparables[ci].mfin:null; if(mf&&!isNaN(v)){ if(isB){ if(mf[f]==null||typeof mf[f]!=='object') mf[f]={}; mf[f][ms.basis]=v; } else { mf[f]=v; } } mwRender(cont); });
+    var ci=cont.querySelector('#mu_custom'); if(ci) ci.addEventListener('change',function(){ ms.custom=this.value; ms.refMode='custom'; mwRender(cont); });
+  }
+
+  function dcfTableHTML(sc){ var v=sc.vals||{}, re=(v.re!=null?+v.re:CFG.cp.re0*100), g=(v.g!=null?+v.g:CFG.cp.g0*100), gr=5;
+    var reF=re/100, gF=g/100, grF=gr/100, per=sc.v, ev=per*CFG.shares+CFG.netDebt;
+    var den=0; for(var t=1;t<=5;t++){ den+=Math.pow(1+grF,t-1)/Math.pow(1+reF,t); }
+    den+=Math.pow(1+grF,4)*(1+gF)/((reF-gF)*Math.pow(1+reF,5));
+    var F1=ev/den, yrs=['FY27','FY28','FY29','FY30','FY31'], fc=[],df=[],pv=[], pvexp=0;
+    for(var t=0;t<5;t++){ var f=F1*Math.pow(1+grF,t), d=1/Math.pow(1+reF,t+1); fc.push(f); df.push(d); pv.push(f*d); pvexp+=f*d; }
+    var tv=fc[4]*(1+gF)/(reF-gF), pvterm=tv/Math.pow(1+reF,5), evchk=pvexp+pvterm;
+    function n0(x){ return Math.round(x).toLocaleString(); }
+    var h='<p style="margin-top:0;">Traditional DCF for the selected scenario <b>'+sc.n+'</b> — an explicit five-year FCFF stream discounted at the scenario rate, bridged from enterprise value to equity. Reduced-form-consistent: the explicit stream reconstructs the headline EV (tie check below). '+CFG.ccy+' m unless noted.</p>';
+    h+='<div class="sub" style="margin-bottom:8px;">Discount rate '+re.toFixed(2)+'% · terminal growth '+g.toFixed(2)+'% · near-term FCFF growth '+gr.toFixed(0)+'% · net debt '+n0(CFG.netDebt)+' · shares '+n0(CFG.shares)+'m.</div>';
+    h+='<div style="overflow-x:auto;"><table style="font-size:12px; border-collapse:collapse; white-space:nowrap; width:100%;">';
+    h+='<tr><td class="sub" style="padding:3px 8px 3px 0;">Explicit period</td>'+yrs.map(function(y){return '<td class="sub" style="padding:3px 8px; text-align:right;">'+y+'</td>';}).join('')+'</tr>';
+    h+='<tr style="border-top:0.5px solid var(--bd);"><td style="padding:5px 8px 5px 0;">FCFF</td>'+fc.map(function(f){return '<td style="padding:5px 8px; text-align:right;">'+n0(f)+'</td>';}).join('')+'</tr>';
+    h+='<tr><td style="padding:5px 8px 5px 0;">Discount factor</td>'+df.map(function(d){return '<td style="padding:5px 8px; text-align:right; color:var(--text2);">'+d.toFixed(3)+'</td>';}).join('')+'</tr>';
+    h+='<tr><td style="padding:5px 8px 5px 0; font-weight:500;">PV of FCFF</td>'+pv.map(function(x){return '<td style="padding:5px 8px; text-align:right; font-weight:500;">'+n0(x)+'</td>';}).join('')+'</tr>';
+    h+='</table></div>';
+    function row(l,val,bold,paren){ return '<tr style="border-top:0.5px solid var(--bd);"><td style="padding:6px 8px 6px 0; '+(bold?'font-weight:600;':'')+'">'+l+'</td><td style="padding:6px 0; text-align:right; '+(bold?'font-weight:600;':'')+'">'+(paren?'('+n0(Math.abs(val))+')':n0(val))+'</td></tr>'; }
+    h+='<table style="width:100%; font-size:13px; margin-top:8px;">';
+    h+=row('Sum PV of explicit FCFF (FY27–FY31)',pvexp);
+    h+=row('Terminal value (Gordon, g '+g.toFixed(2)+'%)',tv);
+    h+=row('PV of terminal value',pvterm);
+    h+=row('Enterprise value',evchk,true);
+    h+=row('Less: net debt',-CFG.netDebt,false,true);
+    h+=row('Equity value',evchk-CFG.netDebt,true);
+    h+='<tr style="border-top:0.5px solid var(--bd);"><td style="padding:6px 8px 6px 0;">÷ shares (m)</td><td style="padding:6px 0; text-align:right;">'+n0(CFG.shares)+'</td></tr>';
+    h+='<tr style="border-top:1px solid var(--bd2);"><td style="padding:6px 8px 6px 0; font-weight:700;">Value per share ('+CFG.ccy+')</td><td style="padding:6px 0; text-align:right; font-weight:700;">'+per.toFixed(CFG.dp)+'</td></tr>';
+    h+='</table>';
+    h+='<div class="sub" style="margin-top:6px;">Tie check: reconstructed EV '+n0(evchk)+' vs headline EV '+n0(ev)+' (Δ '+(evchk-ev).toFixed(1)+'). Terminal value is ~'+Math.round(pvterm/evchk*100)+'% of enterprise value. FCFF year 1 solved so the explicit stream reproduces the reduced-form EV; when the full DCF engine lands, its per-year projection lines replace this cascade in place.</div>';
+    var dd=CFG.dcfDetail;
+    if(dd){
+      h+='<details class="thy" style="margin-top:10px;"><summary>Net debt — breakdown</summary><div class="thybody"><table style="width:100%; font-size:12.5px;">';
+      dd.netDebt.forEach(function(r){ var bold=(r[2]==='sub'||r[2]==='tot'); h+='<tr style="'+(bold?'border-top:0.5px solid var(--bd2);':'')+'"><td style="padding:4px 8px 4px 0; '+(bold?'font-weight:600;':'')+'">'+r[0]+'</td><td style="padding:4px 0; text-align:right; '+(bold?'font-weight:600;':'')+'">'+(r[1]<0?'('+Math.abs(r[1]).toLocaleString()+')':r[1].toLocaleString())+'</td></tr>'; });
+      h+='</table><div class="sub" style="margin-top:6px; line-height:1.5;">'+dd.netDebtNote+'</div></div></details>';
+      if(dd.leaseMat){ var lm=dd.leaseMat;
+        var evPct=lm.liab/lm.ev*100, psImp=lm.liab/lm.shares, psPct=psImp/CFG.cp.base*100, cRep=lm.leaseCost/lm.ebitdaRep*100, cFwd=lm.leaseCost/lm.ebitdaFwd*100;
+        h+='<details class="thy" open><summary>Lease materiality (AASB 16)</summary><div class="thybody" style="font-size:12.5px; line-height:1.6;"><table style="width:100%; font-size:12.5px;">';
+        h+='<tr><td style="padding:3px 8px 3px 0;">AASB 16 lease liability</td><td style="text-align:right;">'+CFG.ccy+' '+lm.liab+'m</td></tr>';
+        h+='<tr><td style="padding:3px 8px 3px 0;">&nbsp;&nbsp;÷ enterprise value ('+lm.ev.toLocaleString()+')</td><td style="text-align:right;">'+evPct.toFixed(1)+'%</td></tr>';
+        h+='<tr><td style="padding:3px 8px 3px 0;">&nbsp;&nbsp;per-share impact (÷ '+lm.shares.toLocaleString()+'m shares)</td><td style="text-align:right;">'+CFG.ccy+' '+psImp.toFixed(2)+' (~'+psPct.toFixed(0)+'% of value)</td></tr>';
+        h+='<tr><td style="padding:3px 8px 3px 0;">Annual lease cost (est. RoU dep + interest ≈ '+lm.leaseCost+'m)</td><td></td></tr>';
+        h+='<tr><td style="padding:3px 8px 3px 0;">&nbsp;&nbsp;÷ EBITDA — reported '+lm.ebitdaRep+' / forward '+lm.ebitdaFwd+'</td><td style="text-align:right;">'+cRep.toFixed(1)+'% / '+cFwd.toFixed(1)+'%</td></tr>';
+        h+='</table><div class="sub" style="margin-top:6px; line-height:1.5;">Gate: if the lease liability exceeds ~'+lm.threshold+' of EV, or annual lease cost exceeds ~'+lm.threshold+' of EBITDA, the name is <b>lease-sensitive</b> and the cross-company multiples switch to a lease-neutral (EV/EBITDAR) basis — stripping out tenure-judgment and AASB 16-vs-US GAAP differences. Below that, Approach A (leases in net debt) suffices.</div>';
+        h+='<div style="margin-top:8px; display:inline-block; padding:4px 10px; border-radius:6px; font-weight:600; background:var(--secondary);">Verdict: '+lm.verdict+' — Approach A applied (leases in net debt); no lease-neutral peer basis needed for DNL.</div>';
+        h+='</div></details>';
+      }
+      h+='<details class="thy"><summary>Terminal value — calculation</summary><div class="thybody" style="font-size:12.5px; line-height:1.7;">Gordon growth on the final explicit year:<br>Terminal-year FCFF = FY31 FCFF '+n0(fc[4])+' × (1 + g '+g.toFixed(2)+'%) = '+n0(fc[4]*(1+gF))+'<br>Terminal value = '+n0(fc[4]*(1+gF))+' ÷ (Re '+re.toFixed(2)+'% − g '+g.toFixed(2)+'%) = <b>'+n0(tv)+'</b><br>PV of terminal value = '+n0(tv)+' ÷ (1 + Re)⁵ = <b>'+n0(pvterm)+'</b><br>Terminal value is ~'+Math.round(pvterm/evchk*100)+'% of enterprise value.</div></details>';
+      if(sc.kind==='live' && dd.mt){ var mt=dd.mt;
+        h+='<details class="thy" open><summary>Operating build — revenue × margin → EBIT (Muddle Through)</summary><div class="thybody"><div style="overflow-x:auto;"><table style="font-size:12px; border-collapse:collapse; white-space:nowrap; width:100%;">';
+        h+='<tr><td class="sub" style="padding:3px 8px 3px 0;"></td>'+mt.years.map(function(y){return '<td class="sub" style="padding:3px 8px; text-align:right;">'+y+'</td>';}).join('')+'</tr>';
+        h+='<tr style="border-top:0.5px solid var(--bd);"><td style="padding:4px 8px 4px 0;">Revenue</td>'+mt.revenue.map(function(v){return '<td style="padding:4px 8px; text-align:right;">'+v.toLocaleString()+'</td>';}).join('')+'</tr>';
+        h+='<tr><td style="padding:4px 8px 4px 0; color:var(--text2);">growth %</td>'+mt.revenue.map(function(v,i){var g2=(i===0)?null:(v/mt.revenue[i-1]-1)*100; return '<td style="padding:4px 8px; text-align:right; color:var(--text3);">'+(g2==null?'—':g2.toFixed(1)+'%')+'</td>';}).join('')+'</tr>';
+        h+='<tr><td style="padding:4px 8px 4px 0; color:var(--text2);">EBIT margin (base '+mt.baseMargin+'% + peer-gap − gas)</td>'+mt.ebit.map(function(e,i){return '<td style="padding:4px 8px; text-align:right;">'+(e/mt.revenue[i]*100).toFixed(1)+'%</td>';}).join('')+'</tr>';
+        h+='<tr style="border-top:0.5px solid var(--bd);"><td style="padding:4px 8px 4px 0; font-weight:600;">EBIT</td>'+mt.ebit.map(function(v){return '<td style="padding:4px 8px; text-align:right; font-weight:600;">'+v.toLocaleString()+'</td>';}).join('')+'</tr>';
+        h+='<tr><td style="padding:4px 8px 4px 0; color:var(--text2);">applied tax %</td>'+mt.taxGlide.map(function(t){return '<td style="padding:4px 8px; text-align:right; color:var(--text3);">'+t.toFixed(2)+'%</td>';}).join('')+'</tr>';
+        h+='<tr><td style="padding:4px 8px 4px 0;">NOPAT = EBIT × (1−tax)</td>'+mt.ebit.map(function(e,i){return '<td style="padding:4px 8px; text-align:right;">'+Math.round(e*(1-mt.taxGlide[i]/100)).toLocaleString()+'</td>';}).join('')+'</tr>';
+        h+='</table></div><div class="sub" style="margin-top:6px; line-height:1.5;">'+mt.note+'</div></div></details>';
+      } else if(dd.mt){ h+='<details class="thy"><summary>Operating build — revenue × margin → EBIT</summary><div class="thybody"><div class="sub" style="line-height:1.5;">The revenue × margin operating build is shown for the Muddle Through base case (audited-workbook §11 traceability). Per-scenario operating projections arrive with the DCF engine; this scenario uses the reduced-form reconstruction above, which reproduces its enterprise value.</div></div></details>'; }
+    }
+    return h; }
 
   // init
   selectScenario(CFG.activeIdx);
@@ -795,6 +958,39 @@ def assum_table(rows):
         h+='<tr style="border-bottom:0.5px solid var(--bd);"><td style="padding:6px 8px 6px 0; font-weight:500; white-space:nowrap; vertical-align:top;">%s</td><td style="padding:6px 8px; white-space:nowrap; vertical-align:top;">%s</td><td style="padding:6px 8px; vertical-align:top;">%s</td><td style="padding:6px 0; color:var(--text2); vertical-align:top;">%s</td></tr>'%(r[0],r[1],tag(r[2]),r[3])
     return h+'</table>'
 
+def _fmtm(v):
+    if v is None: return ''
+    n='{:,.0f}'.format(abs(v))
+    return '('+n+')' if v<0 else n
+
+def financials_html(fin):
+    yrs=fin['years']; real=fin['real']
+    def hdr():
+        h='<tr><td class="sub" style="padding:4px 8px 4px 0;"></td>'
+        for i,y in enumerate(yrs):
+            badge='' if real[i] else ' <span style="font-size:9px; color:var(--warning-tx);">mock</span>'
+            st='' if real[i] else 'color:var(--text3);'
+            h+='<td class="sub" style="padding:4px 8px; text-align:right; %s">%s%s</td>'%(st,y,badge)
+        return h+'</tr>'
+    def rws(items):
+        h=''
+        for it in items:
+            lbl=it[0]; vals=it[1]; bold=len(it)>2 and it[2]; fw='font-weight:600;' if bold else ''
+            h+='<tr style="border-top:0.5px solid var(--bd);"><td style="padding:5px 8px 5px 0; %s white-space:nowrap;">%s</td>'%(fw,lbl)
+            for i,v in enumerate(vals):
+                col='' if real[i] else 'color:var(--text3);'
+                h+='<td style="padding:5px 8px; text-align:right; %s %s">%s</td>'%(fw,col,_fmtm(v))
+            h+='</tr>'
+        return h
+    def tbl(title,items):
+        return '<div class="hd" style="margin:14px 0 4px;">%s</div><div style="overflow-x:auto;"><table style="font-size:12px; border-collapse:collapse; white-space:nowrap; width:100%%;">%s%s</table></div>'%(title,hdr(),rws(items))
+    h='<p>%s</p>'%fin['intro']
+    h+='<div class="sub" style="margin-bottom:4px; color:var(--warning-tx);">%s</div>'%fin['note']
+    h+='<div class="sub" style="margin-bottom:2px;">All figures %s &middot; financial year to %s.</div>'%(fin['ccy'],fin['fye'])
+    h+=tbl('Income statement',fin['pl']); h+=tbl('Balance sheet',fin['bs']); h+=tbl('Cash flow',fin['cf'])
+    if fin.get('foot'): h+='<div class="sub" style="margin-top:10px; line-height:1.5;">%s</div>'%fin['foot']
+    return h
+
 OUTDIR=os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 import os as _os
 _CFGP=_os.path.join(_os.path.dirname(_os.path.abspath(__file__)),'cfgs_gen.json')
@@ -803,11 +999,12 @@ for key,cfg in CFGS.items():
     cfg['detail']={
         'forces': forces_table(cfg['_forces']['intro'], cfg['_forces']['rows'], cfg['_forces']['net']),
         'position': cfg['_position'],
-        'discount': cfg['_discount'] + dr_theory_html(cfg.get('_drtheory', [])),
+        'discount': cfg['_discount'] + '<!--BWSLOT-->' + dr_theory_html(cfg.get('_drtheory', [])),
         'assum': assum_table(cfg['_assum'])
     }
     cfg['forcesData']=cfg['_forces']
-    for kk in ['_forces','_position','_discount','_assum','_drtheory']: cfg.pop(kk, None)
+    if '_financials' in cfg: cfg['detail']['financials']=financials_html(cfg['_financials'])
+    for kk in ['_forces','_position','_discount','_assum','_drtheory','_financials']: cfg.pop(kk, None)
     html=SCAFFOLD.replace('__CFG__', json.dumps(cfg)).replace('__COMPANY__', cfg['company']).replace('__CCYNOTE__', cfg['ccynote']).replace('__CCY__', cfg['ccy'])
     out=os.path.join(OUTDIR, '%s_scenario_interface.html'%key)
     open(out,'w',encoding='utf-8').write(html)

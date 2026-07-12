@@ -115,6 +115,50 @@ def find_labelled_value(ws, needle):
     return None, None
 
 
+def check_lease_basis(wb):
+    """AASB 16 lease-basis consistency: if lease liabilities sit on the balance
+    sheet, they must be handled in the valuation bridge (included in net debt or
+    deducted explicitly per Approach A). Post-AASB 16 EBITDA (rent replaced by
+    right-of-use depreciation + lease interest) paired with an ex-lease net debt
+    silently overstates equity. Heuristic - WARN, not ERROR."""
+    findings = []
+    lease_liab = None
+    for ws in wb.worksheets:
+        for r in range(1, ws.max_row + 1):
+            lab = ws.cell(r, 1).value
+            if isinstance(lab, str) and re.search(r"lease liabilit", lab, re.I):
+                for ci in range(2, min(ws.max_column, 5) + 1):
+                    v = ws.cell(r, ci).value
+                    if isinstance(v, (int, float)) and v > 0:
+                        lease_liab = (ws.title, ws.cell(r, ci).coordinate, v)
+                        break
+            if lease_liab:
+                break
+        if lease_liab:
+            break
+    if not lease_liab:
+        findings.append(("INFO", "No lease-liability line found; lease-basis check n/a."))
+        return findings
+    wired = False
+    for ws in wb.worksheets:
+        for row in ws.iter_rows():
+            for c in row:
+                lab = c.value
+                if isinstance(lab, str) and "lease" in lab.lower() and re.search(
+                        r"less:\s*.*lease|add:\s*.*lease|net debt.*includ.*lease|"
+                        r"includ.*lease.*net debt|lease.*(=|as)\s*debt|approach a", lab, re.I):
+                    wired = True
+    if wired:
+        findings.append(("INFO", "Lease liabilities (%s!%s = %s) are wired into the bridge / net debt "
+                         "(Approach A) - basis consistent." % lease_liab))
+    else:
+        findings.append(("WARN", "Lease liabilities (%s!%s = %s) are on the balance sheet but not "
+                         "explicitly included in net debt or deducted in the equity bridge. If EBITDA/EBIT "
+                         "are post-AASB 16, the net-debt side must also carry leases (Approach A) or the "
+                         "valuation mixes bases and overstates equity. Confirm treatment." % lease_liab))
+    return findings
+
+
 def lint(path, assumptions_sheet="Assumptions", do_recalc=True):
     findings = []
     wb = openpyxl.load_workbook(path, data_only=False)
@@ -179,6 +223,8 @@ def lint(path, assumptions_sheet="Assumptions", do_recalc=True):
             findings.append(("WARN", "Could not locate an explicit EBIT-margin row for continuity check."))
     else:
         findings.append(("WARN", "Terminal EBIT margin not found / not numeric; continuity check skipped."))
+
+    findings.extend(check_lease_basis(wb))
     return findings
 
 
