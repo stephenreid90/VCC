@@ -781,7 +781,7 @@ function vccDownload(){ try{
   // ---- Multiples view: implied-by-DCF + cross-check (MU=CFG.multiples; DNL only) ----
   var MU=CFG.multiples; var ms=null; var dcfView='narr';
   function ensurePeerSel(){ if(BW&&BW.comparables){ BW.comparables.forEach(function(c){ if(c._sel===undefined) c._sel=c.selected; }); } }
-  function _earn(c,field){ var f=c.mfin; if(!f) return null; var e=f[field]; if(e==null) return null; return (typeof e==='object')?e[ms.basis]:e; }
+  function _earn(c,field){ var f=c.mfin; if(!f) return null; var e=f[field]; if(e==null) return null; var bdef=MU.bases[ms.basis], pk=(bdef&&bdef.peerKey)?bdef.peerKey:ms.basis; var v=(typeof e==='object')?e[pk]:e; if(v!=null&&bdef&&bdef.peerGrow) v=v*bdef.peerGrow; return v; }
   // Lease-neutral EV/EBITDAR basis: GATED on MU.leaseNeutral (lease-heavy archetypes only). DNL/WBC/CSL carry no leaseNeutral, so this stays dormant for them.
   // Schema: MU.leaseNeutral = { capMult, peer, peerNote, note, subject:{ rent, leaseLiabInND } }; each peer mfin also carries { rent, leaseLiab }.
   function muMetrics(){ var m=MU.metrics.slice(); if(MU.leaseNeutral){ m.push({k:'evebitdar',label:'EV / EBITDAR',kind:'evr',field:'ebitdar',peer:MU.leaseNeutral.peer,peerNote:MU.leaseNeutral.peerNote}); } return m; }
@@ -834,7 +834,7 @@ function vccDownload(){ try{
     h+='</div><div><div class="sub" style="margin-bottom:3px;">Multiple</div>';
     muMetrics().forEach(function(mm){ h+='<button class="mu_metric" data-m="'+mm.k+'" style="font-size:12px; margin-right:4px; '+(mm.k===ms.metric?'border-color:var(--bdinfo); color:var(--info-tx);':'')+'">'+mm.label+'</button>'; });
     h+='</div></div>';
-    h+='<div style="background:var(--secondary); border-radius:8px; padding:9px 11px; font-size:12.5px; margin-bottom:12px;"><b>'+b.label+'</b> ('+CFG.ccy+' m): EBITDA '+muN(b.ebitda)+(MU.leaseNeutral?' · EBITDAR '+muN(muEbitdar(b)):'')+' · EBIT '+muN(b.ebit)+' · net income '+muN(b.ni)+' · EPS '+CFG.ccy+' '+(b.ni/CFG.shares).toFixed(2)+'<div class="sub" style="margin-top:4px;">'+b.note+'</div></div>';
+    h+='<div style="background:var(--secondary); border-radius:8px; padding:9px 11px; font-size:12.5px; margin-bottom:12px;"><b>'+b.label+'</b>'+(b.consensus?' <span class="sub">(our build)</span>':'')+' ('+CFG.ccy+' m): EBITDA '+muN(b.ebitda)+(MU.leaseNeutral?' · EBITDAR '+muN(muEbitdar(b)):'')+' · EBIT '+muN(b.ebit)+' · net income '+muN(b.ni)+' · EPS '+CFG.ccy+' '+(b.ni/CFG.shares).toFixed(2)+(b.consensus?'<div style="margin-top:5px; padding-top:5px; border-top:0.5px solid var(--bd);"><b>Consensus</b> <span class="sub" style="color:var(--warning-tx);">(mock — pending EODHD / broker feed)</span> ('+CFG.ccy+' m): EBITDA '+muN(b.consensus.ebitda)+' · EBIT '+muN(b.consensus.ebit)+' · net income '+muN(b.consensus.ni)+' · EPS '+CFG.ccy+' '+(b.consensus.ni/CFG.shares).toFixed(2)+'</div>':'')+'<div class="sub" style="margin-top:4px;">'+b.note+'</div>'+(b.consensus?'<div class="sub" style="margin-top:3px;">The implied multiples below are computed on the <b>our-build</b> earnings, so they tie to the DCF; consensus is shown alongside for comparison.</div>':'')+'</div>';
     h+=mwCompsWorkbench();
     var mkt=muImplied(CFG.market,m,b);
     h+='<div class="hd" style="margin:4px 0 4px;">Implied '+m.label+' by scenario</div><div style="overflow-x:auto;"><table style="font-size:12.5px; border-collapse:collapse; width:100%; white-space:nowrap;">';

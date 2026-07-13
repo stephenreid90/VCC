@@ -13,6 +13,59 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 
 ---
 
+## CHAT HANDOVER — 13 July 2026 (cash-flow tie + forward-multiples re-base)
+
+**Read this first.** Two DNL pieces this chat, both verified, **NOT committed** (commit from Stephen's
+terminal — delete `.git/index.lock` first; the sandbox can't unlink it). Supersedes nothing below; adds to it.
+
+1. **Summary Financials — cash flow now articulates** (`build_cfgs.py` `_financials['cf']` rebuilt). Operating
+   cash flow builds from net profit after tax + D&A + non-cash significant items + a working-capital line (the
+   WC line ties to the balance-sheet current assets/liabilities); free cash flow = OCF − capex; then dividends
+   + a combined financing line; **cash at end of year equals the balance-sheet cash line every year, incl. real
+   FY25 = 647**. FY25 WC-&-other and financing lines are condensed (fold in non-cash demerger items, buybacks,
+   net borrowings, STI movements) so it still ties. Foot note updated. Verified numerically (tie-check PASS) and
+   in the rendered table.
+
+2. **Multiples tab — three-basis toggle + revenue re-base.** Replaced the mislabelled "Forward / normalised" +
+   "Reported FY25" with **FY25 underlying · FY26 forward · FY27 forward** (default FY26).
+   - **FY25 underlying** = ex the ~AUD 200m demerger one-offs (operating-income basis: EBIT 484 not reported
+     344; EBITDA 768), so the trailing multiple is meaningful.
+   - **FY26 / FY27** show **our-build and consensus side by side** (consensus = invented mock, flagged pending
+     the EODHD/broker feed); implied multiples compute on our-build so they tie to the DCF.
+   - **Re-base = revenue LEVEL only.** Lifted the operating build to the clean post-demerger run-rate
+     (FY26 ~3,905 = TTM to 31 Mar 26; FY27 ~4,139 at the established ~6% growth), replacing the old ~3,405
+     reduced-form base that sat ~13% below the accounts. **The established margin glide is UNCHANGED**
+     (baseMargin 14.1 + peerGap − gasRolloff → 14.7/15.9/15.6/15.1/14.6). *Stephen corrected an earlier draft
+     where Claude invented a NEW 12.5%→14.5% margin — do not reintroduce a second margin assumption; only the
+     revenue level moves.*
+   - **Numbers:** FY25u 768/484/322 · FY26 836/551/372 · FY27 910/608/409 (EBITDA/EBIT/NI). Forward
+     EV/EBITDA **FY26 9.65×, FY27 8.87×** (peers ~6.6–7.0×). **Headline UNCHANGED: MT 3.48, EV 8,068.**
+   - **Mechanics:** peers are keyed `ttm`/`fwd` in `beta_data.py` and were **not** touched — instead each
+     subject basis carries a `peerKey` (+ `peerGrow` on FY27) and `_earn` maps fy25u→ttm, fy26→fwd,
+     fy27→fwd×1.055. build_cfgs `multiples.bases` + `dcfDetail.mt` re-based; `gen_ui` `_earn` + base box (consensus
+     side-by-side) changed. All three CFGs valid JSON; `node --check` clean; WBC/CSL untouched.
+
+**Context / diagnosis worth keeping.** DNL FYE = **30 September**; valuation anchor ~21 May 2026, so FY26 is the
+current/stub year (mostly elapsed) and FY27 is the first full forward year — which is why the DCF starts its
+explicit period at FY27. The old "Forward/normalised" basis was really underlying-FY25 mislabelled; the mt
+operating build separately sat ~13% below the reported revenue baseline. Both now reconciled to the accounts
+(`data/financials/dnl.yaml`, which designates TTM-Mar-26 ~3,905 the "cleanest post-demerger baseline").
+
+**Git state.** Identity is **already Stephen Reid** — the CLAUDE.md "Tara Reid" note is **STALE** (worth
+fixing in CLAUDE.md). Commit `87cf8dc` (lease workstream: §4.6 + v0.8 + gated EV/EBITDAR) is committed **and
+pushed**. A mount glitch had truncated `WORKING_NOTES.md`, `architecture.md` and the methodology doc in the
+working tree; **restored this chat by overwriting with HEAD content** (sandbox-side, since `.git/index.lock`
+blocks `git restore`). Uncommitted now = this chat's cash-flow + re-base changes (`build_cfgs.py`, `gen_ui.py`,
+`dnl_scenario_interface.html`) plus this WORKING_NOTES block. **Don't `git restore WORKING_NOTES.md`** — it now
+carries this new block; just delete the lock and commit.
+
+**Open / next.** Consensus figures are placeholders (replace when EODHD returns). FY26/FY27 our-build earnings
+use only established assumptions but Stephen may refine. The reduced-form-to-EV reconciliation at the re-based
+revenue is illustrative (real per-year engine = M1, still pending). Earlier threads still open: WBC/CSL rich
+templates (bank + FX archetypes), real EODHD behind the β workbench, the lease data-contract fields.
+
+---
+
 ## CHAT HANDOVER — 12 July 2026 (lease accounting, part 2: #2 + #6 DONE)
 
 **Read this first.** Fresh chat picked up the two remaining lease items from the block below; **both now
