@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 import json
+# Optional lease-neutral EV/EBITDAR multiples basis (methodology §4.6.5): add a
+#   "leaseNeutral": { "capMult": 8, "peer": <ref mult>, "peerNote": str, "note": str,
+#                     "subject": { "rent": <annual lease cost>, "leaseLiabInND": <reported lease liab in netDebt> } }
+# block INSIDE a company's "multiples" dict, and give each peer mfin a { "rent", "leaseLiab" } pair,
+# ONLY for a lease-heavy archetype. It gates the EV/EBITDAR toggle in gen_ui.py (house re-capitalisation:
+# strip reported lease liability, add uniform rent x capMult; EBITDAR = EBITDA + rent). DNL/WBC/CSL are
+# lease-light and deliberately carry NO leaseNeutral block, so the feature stays dormant for them.
 
 def dtable(rows):
     h='<table style="width:100%; font-size:13px;">'

@@ -13,6 +13,55 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 
 ---
 
+## CHAT HANDOVER — 12 July 2026 (lease accounting, part 2: #2 + #6 DONE)
+
+**Read this first.** Fresh chat picked up the two remaining lease items from the block below; **both now
+shipped and verified, NOT committed** (commit from Stephen's terminal). Nothing else in the earlier blocks
+changed.
+
+1. **#2 methodology convention — DONE.** New **§4.6 Lease-normalisation convention (AASB 16 / IFRS 16)** written
+   into `design/methodology/equity_bridge_and_valuation_mechanics.md` (§4.6.1 Approach A default · §4.6.2
+   subject-consistency invariant · §4.6.3 two-ratio materiality gate shown on screen · §4.6.4 why cross-company
+   is a multiples not a DCF problem · §4.6.5 house re-capitalisation → lease-neutral EV/EBITDAR, three knobs,
+   gated to lease-heavy archetypes · §4.6.6 AASB 16 vs US GAAP ASC 842 · §4.6.7 DNL lease-light worked example
+   3.59→3.48 · §4.6.8 data contract + auditor discipline test). Matched the doc's own technical register (not the
+   Valuation Matters reader voice — this is an internal spec). **`architecture.md` bumped v0.7 → v0.8** with a
+   full "Migration from v0.7 → v0.8" block (a/b/c) referencing §4.6; Version/Date/Status lines updated.
+
+2. **#6 lease-neutral EV/EBITDAR peer basis — DONE, gated + dormant.** Generator now supports an EV/EBITDAR
+   multiple on the multiples toggle, **gated on `MU.leaseNeutral`** (present only for lease-heavy archetypes).
+   DNL/WBC/CSL carry **no** leaseNeutral block, so it's dormant for them (confirmed: `grep leaseNeutral
+   cfgs_gen.json` = 0; the only hits are the schema-doc comment in build_cfgs.py). Mechanics: EBITDAR =
+   EBITDA + rent; EV re-capitalised on a house rule (strip reported lease liability, add uniform rent ×
+   `capMult`), applied identically to subject + every peer — neutralises tenure judgment and the
+   AASB 16-vs-US GAAP EBITDA gap. Schema documented in a `build_cfgs.py` comment:
+   `multiples.leaseNeutral = { capMult, peer, peerNote, note, subject:{ rent, leaseLiabInND } }` + each peer
+   `mfin` gains `{ rent, leaseLiab }`.
+   - **Implementation** (`gen_ui.py`, 7 string-replace patches, sandbox-side python + `ast.parse`, NOT the Edit
+     tool): added `muMetrics()` (appends the gated EV/EBITDAR metric), `muEbitdar/muAdjBridge/muIsEV/muDen/
+     muEVof/muBridge` helpers; unified `muImplied`/`muValue` through them (ev + evr + eq all one path);
+     `muComp` computes peer `evebitdar`; comps workbench gains a Rent input row + EV/EBITDAR derived row + a
+     house-rule note; base box shows EBITDAR; implied-by-scenario table + cross-check show Adj. EV / adjusted
+     net obligations for the evr kind.
+
+**Verified:** all three CFGs parse as valid JSON; none carry leaseNeutral (untouched); all three app scripts
+`node --check` clean; DNL netDebt still 1512 (re-anchor intact). **EV/EBITDAR math proven on a synthetic
+lease-heavy fixture** (`/outputs/fixture_ebitdar.js`, 13/13 pass): peer EV/EBITDAR by hand, peer median,
+subject adjBridge/EBITDAR, implied@price, `muValue(muImplied(v))==v` round-trip at four values, cross-check
+equity, and a no-regression check that the ev-kind metrics are unchanged. Not browser-eyeballed (file://
+limitation) — Stephen to view; the evr toggle only appears once a lease-heavy company config exists.
+
+**Quirks:** nothing committed from sandbox. Scratch files the mount won't let the sandbox delete —
+`ui_prototypes/_generator/apply_r6.py`, `gen_ui.prelease6.bak`, `build_cfgs.prelease6.bak` — delete from
+Stephen's cmd window. Confirmed again: **prefer sandbox-side python overwrite for gen_ui.py/build_cfgs.py**
+(used 7 guarded replacements; no truncation).
+
+**Lease workstream now COMPLETE** (tasks #1–#8 all done across the two chats). Next natural threads: the
+WBC/CSL rich-template roll-out (bank + FX archetypes) and real EODHD data behind the β workbench + the lease
+data-contract — but nothing lease-specific outstanding. Discuss before starting.
+
+---
+
 ## CHAT HANDOVER — 12 July 2026 (lease accounting; swap at iter ~18)
 
 **Read this first.** This chat scoped and largely built **lease accounting** (the parked-twice item). The

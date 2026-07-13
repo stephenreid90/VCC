@@ -785,14 +785,23 @@ function vccDownload(){ try{
   var MU=CFG.multiples; var ms=null; var dcfView='narr';
   function ensurePeerSel(){ if(BW&&BW.comparables){ BW.comparables.forEach(function(c){ if(c._sel===undefined) c._sel=c.selected; }); } }
   function _earn(c,field){ var f=c.mfin; if(!f) return null; var e=f[field]; if(e==null) return null; return (typeof e==='object')?e[ms.basis]:e; }
-  function muComp(c){ var f=c.mfin; if(!f) return null; var mc=f.price*f.shares, ev=mc+f.netDebt, eb=_earn(c,'ebitda'), ei=_earn(c,'ebit'), ni=_earn(c,'ni'); return {mktcap:mc, ev:ev, evebitda:ev/eb, evebit:ev/ei, pe:mc/ni}; }
+  // Lease-neutral EV/EBITDAR basis: GATED on MU.leaseNeutral (lease-heavy archetypes only). DNL/WBC/CSL carry no leaseNeutral, so this stays dormant for them.
+  // Schema: MU.leaseNeutral = { capMult, peer, peerNote, note, subject:{ rent, leaseLiabInND } }; each peer mfin also carries { rent, leaseLiab }.
+  function muMetrics(){ var m=MU.metrics.slice(); if(MU.leaseNeutral){ m.push({k:'evebitdar',label:'EV / EBITDAR',kind:'evr',field:'ebitdar',peer:MU.leaseNeutral.peer,peerNote:MU.leaseNeutral.peerNote}); } return m; }
+  function muEbitdar(b){ return b.ebitda + (MU.leaseNeutral?MU.leaseNeutral.subject.rent:0); }
+  function muAdjBridge(){ var LN=MU.leaseNeutral; return CFG.netDebt - (LN.subject.leaseLiabInND||0) + LN.subject.rent*LN.capMult; }
+  function muComp(c){ var f=c.mfin; if(!f) return null; var mc=f.price*f.shares, ev=mc+f.netDebt, eb=_earn(c,'ebitda'), ei=_earn(c,'ebit'), ni=_earn(c,'ni'); var o={mktcap:mc, ev:ev, evebitda:ev/eb, evebit:ev/ei, pe:mc/ni}; if(MU.leaseNeutral){ var LN=MU.leaseNeutral, rent=(f.rent||0), ebr=eb+rent, evadj=ev-(f.leaseLiab||0)+rent*LN.capMult; o.evebitdar=evadj/ebr; } return o; }
   function peerMult(m){ if(!BW||!BW.comparables) return m.peer; var v=BW.comparables.filter(function(c){return c._sel&&c.mfin;}).map(function(c){return muComp(c)[m.k];}); return v.length?median(v):m.peer; }
   function muInit(){ ensurePeerSel(); if(!ms) ms={ basis:MU.baseDefault, metric:MU.metricDefault, refMode:'peer', custom:'' }; }
-  function muMetric(){ for(var i=0;i<MU.metrics.length;i++){ if(MU.metrics[i].k===ms.metric) return MU.metrics[i]; } return MU.metrics[0]; }
+  function muMetric(){ var ml=muMetrics(); for(var i=0;i<ml.length;i++){ if(ml[i].k===ms.metric) return ml[i]; } return ml[0]; }
   function muBase(){ return MU.bases[ms.basis]; }
   function muEV(v){ return v*CFG.shares+CFG.netDebt; }
-  function muImplied(v,m,b){ return (m.kind==='ev')? muEV(v)/b[m.field] : v*CFG.shares/b[m.field]; }
-  function muValue(x,m,b){ return (m.kind==='ev')? (x*b[m.field]-CFG.netDebt)/CFG.shares : x*b[m.field]/CFG.shares; }
+  function muIsEV(m){ return m.kind==='ev'||m.kind==='evr'; }
+  function muDen(m,b){ return m.kind==='evr'?muEbitdar(b):b[m.field]; }
+  function muEVof(m,v){ return m.kind==='evr'?(v*CFG.shares+muAdjBridge()):muEV(v); }
+  function muBridge(m){ return m.kind==='evr'?muAdjBridge():CFG.netDebt; }
+  function muImplied(v,m,b){ return muIsEV(m)? muEVof(m,v)/muDen(m,b) : v*CFG.shares/muDen(m,b); }
+  function muValue(x,m,b){ return muIsEV(m)? (x*muDen(m,b)-muBridge(m))/CFG.shares : x*muDen(m,b)/CFG.shares; }
   function muRefMult(m,mkt){ if(ms.refMode==='market') return mkt; if(ms.refMode==='custom'){ var c=parseFloat(ms.custom); return isNaN(c)?peerMult(m):c; } return peerMult(m); }
   function muScenByKind(k){ for(var i=0;i<CFG.scenarios.length;i++){ if(CFG.scenarios[i].kind===k) return CFG.scenarios[i]; } return null; }
   function muX(x){ return x.toFixed(1)+'×'; }
@@ -813,8 +822,11 @@ function vccDownload(){ try{
       var medv=mult?peerMult({k:key,peer:null}):null; return r+'<td style="padding:4px 8px; text-align:right; color:var(--info-tx); font-weight:600;">'+(mult&&medv!=null?muX(medv):'')+'</td></tr>'; }
     h+=inRow('Price','price','0.01')+inRow('Shares (m)','shares','1')+derRow('Market cap','mktcap',false)+inRow('Net debt','netDebt','1')+derRow('Enterprise value','ev',false);
     h+=inRow('EBITDA','ebitda','1',true)+inRow('EBIT','ebit','1',true)+inRow('Net income','ni','1',true);
+    if(MU.leaseNeutral){ h+=inRow('Annual rent / lease cost','rent','1',false); }
     h+=derRow('EV / EBITDA','evebitda',true)+derRow('EV / EBIT','evebit',true)+derRow('P / E','pe',true);
+    if(MU.leaseNeutral){ h+=derRow('EV / EBITDAR','evebitdar',true); }
     h+='</table></div><div class="sub" style="margin:5px 0 12px; line-height:1.5;">The EBITDA / EBIT / net income rows follow the selected earnings basis (top toggle) — switching it moves the subject and the peers together, so the comparison stays like-for-like (market cap, net debt and EV are current market values, unchanged by basis). Tick/untick a peer (top row) to change the set — this drives the median and the peer-median lines below, and stays in sync with the β workbench (Sasol excluded by default). Derived cells (market cap, EV, the three multiples) recompute live; edits are session-only.</div>';
+    if(MU.leaseNeutral){ var LN=MU.leaseNeutral; h+='<div class="sub" style="margin:0 0 12px; line-height:1.5; color:var(--warning-tx);"><b>Lease-neutral basis (lease-heavy archetype).</b> EBITDAR adds annual rent back to EBITDA, and enterprise value is re-capitalised on one house rule &mdash; each name&rsquo;s reported lease liability stripped out and a uniform rent &times; '+LN.capMult+' added back &mdash; applied identically to the subject and every peer. This removes each company&rsquo;s own tenure judgment and the AASB 16-vs-US GAAP (ASC 842) EBITDA difference, so EV/EBITDAR compares like with like. '+(LN.note||'')+'</div>'; }
     return h; }
   function mwRender(cont){ if(!cont||!MU) return; var m=muMetric(), b=muBase(), h='';
     h+='<p style="margin-top:0;">Two lenses on the same value. <b>Implied by each scenario</b> divides every DCF outcome by a common earnings base to show the multiple it pays; the <b>cross-check</b> runs it the other way — a reference multiple × earnings gives a value to set beside the intrinsic range.</p>';
@@ -823,17 +835,17 @@ function vccDownload(){ try{
     h+='<div><div class="sub" style="margin-bottom:3px;">Earnings basis (subject &amp; peers)</div>';
     Object.keys(MU.bases).forEach(function(bk){ h+='<button class="mu_basis" data-b="'+bk+'" style="font-size:12px; margin-right:4px; '+(bk===ms.basis?'border-color:var(--bdinfo); color:var(--info-tx);':'')+'">'+MU.bases[bk].label+'</button>'; });
     h+='</div><div><div class="sub" style="margin-bottom:3px;">Multiple</div>';
-    MU.metrics.forEach(function(mm){ h+='<button class="mu_metric" data-m="'+mm.k+'" style="font-size:12px; margin-right:4px; '+(mm.k===ms.metric?'border-color:var(--bdinfo); color:var(--info-tx);':'')+'">'+mm.label+'</button>'; });
+    muMetrics().forEach(function(mm){ h+='<button class="mu_metric" data-m="'+mm.k+'" style="font-size:12px; margin-right:4px; '+(mm.k===ms.metric?'border-color:var(--bdinfo); color:var(--info-tx);':'')+'">'+mm.label+'</button>'; });
     h+='</div></div>';
-    h+='<div style="background:var(--secondary); border-radius:8px; padding:9px 11px; font-size:12.5px; margin-bottom:12px;"><b>'+b.label+'</b> ('+CFG.ccy+' m): EBITDA '+muN(b.ebitda)+' · EBIT '+muN(b.ebit)+' · net income '+muN(b.ni)+' · EPS '+CFG.ccy+' '+(b.ni/CFG.shares).toFixed(2)+'<div class="sub" style="margin-top:4px;">'+b.note+'</div></div>';
+    h+='<div style="background:var(--secondary); border-radius:8px; padding:9px 11px; font-size:12.5px; margin-bottom:12px;"><b>'+b.label+'</b> ('+CFG.ccy+' m): EBITDA '+muN(b.ebitda)+(MU.leaseNeutral?' · EBITDAR '+muN(muEbitdar(b)):'')+' · EBIT '+muN(b.ebit)+' · net income '+muN(b.ni)+' · EPS '+CFG.ccy+' '+(b.ni/CFG.shares).toFixed(2)+'<div class="sub" style="margin-top:4px;">'+b.note+'</div></div>';
     h+=mwCompsWorkbench();
     var mkt=muImplied(CFG.market,m,b);
     h+='<div class="hd" style="margin:4px 0 4px;">Implied '+m.label+' by scenario</div><div style="overflow-x:auto;"><table style="font-size:12.5px; border-collapse:collapse; width:100%; white-space:nowrap;">';
-    h+='<tr><td class="sub" style="padding:3px 8px 3px 0;">Scenario</td><td class="sub" style="padding:3px 8px; text-align:right;">Value / share</td>'+(m.kind==='ev'?'<td class="sub" style="padding:3px 8px; text-align:right;">EV</td>':'')+'<td class="sub" style="padding:3px 8px; text-align:right;">Implied '+m.label+'</td></tr>';
+    h+='<tr><td class="sub" style="padding:3px 8px 3px 0;">Scenario</td><td class="sub" style="padding:3px 8px; text-align:right;">Value / share</td>'+(muIsEV(m)?'<td class="sub" style="padding:3px 8px; text-align:right;">'+(m.kind==='evr'?'Adj. EV':'EV')+'</td>':'')+'<td class="sub" style="padding:3px 8px; text-align:right;">Implied '+m.label+'</td></tr>';
     CFG.scenarios.slice().sort(function(a,c){return c.v-a.v;}).forEach(function(sc){ var im=muImplied(sc.v,m,b), isB=(sc.kind==='broker');
-      h+='<tr style="border-top:0.5px solid var(--bd);"><td style="padding:5px 8px 5px 0; '+(sc===activeScen()?'font-weight:600; color:var(--info-tx);':'')+'">'+sc.n+(isB?' <span class="sub">(ref)</span>':'')+'</td><td style="padding:5px 8px; text-align:right;">'+CFG.ccy+' '+sc.v.toFixed(CFG.dp)+'</td>'+(m.kind==='ev'?'<td style="padding:5px 8px; text-align:right; color:var(--text2);">'+muN(muEV(sc.v))+'</td>':'')+'<td style="padding:5px 8px; text-align:right; font-weight:600;">'+muX(im)+'</td></tr>'; });
-    h+='<tr style="border-top:1px solid var(--bd2);"><td style="padding:5px 8px 5px 0; color:var(--text2);">Market-implied (price '+CFG.ccy+' '+CFG.market.toFixed(CFG.dp)+')</td><td></td>'+(m.kind==='ev'?'<td></td>':'')+'<td style="padding:5px 8px; text-align:right; color:var(--text2);">'+muX(mkt)+'</td></tr>';
-    h+='<tr><td style="padding:5px 8px 5px 0; color:var(--warning-tx);">Peer median (mock, selected peers)</td><td></td>'+(m.kind==='ev'?'<td></td>':'')+'<td style="padding:5px 8px; text-align:right; color:var(--warning-tx);">'+muX(peerMult(m))+'</td></tr>';
+      h+='<tr style="border-top:0.5px solid var(--bd);"><td style="padding:5px 8px 5px 0; '+(sc===activeScen()?'font-weight:600; color:var(--info-tx);':'')+'">'+sc.n+(isB?' <span class="sub">(ref)</span>':'')+'</td><td style="padding:5px 8px; text-align:right;">'+CFG.ccy+' '+sc.v.toFixed(CFG.dp)+'</td>'+(muIsEV(m)?'<td style="padding:5px 8px; text-align:right; color:var(--text2);">'+muN(muEVof(m,sc.v))+'</td>':'')+'<td style="padding:5px 8px; text-align:right; font-weight:600;">'+muX(im)+'</td></tr>'; });
+    h+='<tr style="border-top:1px solid var(--bd2);"><td style="padding:5px 8px 5px 0; color:var(--text2);">Market-implied (price '+CFG.ccy+' '+CFG.market.toFixed(CFG.dp)+')</td><td></td>'+(muIsEV(m)?'<td></td>':'')+'<td style="padding:5px 8px; text-align:right; color:var(--text2);">'+muX(mkt)+'</td></tr>';
+    h+='<tr><td style="padding:5px 8px 5px 0; color:var(--warning-tx);">Peer median (mock, selected peers)</td><td></td>'+(muIsEV(m)?'<td></td>':'')+'<td style="padding:5px 8px; text-align:right; color:var(--warning-tx);">'+muX(peerMult(m))+'</td></tr>';
     h+='</table></div><div class="sub" style="margin-top:6px; line-height:1.5;">The denominator is held at the '+b.label.toLowerCase()+' base, so this reads each scenario as a multiple of <i>today’s</i> earnings — higher-value scenarios pay up to a higher multiple. Where a scenario sits above the peer median, the DCF is asking the market to re-rate.</div>';
     h+='<div class="hd" style="margin:16px 0 4px;">Cross-check — value from a '+m.label+' multiple</div>';
     h+='<div style="display:flex; gap:8px; align-items:flex-end; flex-wrap:wrap; margin-bottom:8px;"><div><div class="sub" style="margin-bottom:3px;">Reference</div>';
@@ -841,7 +853,7 @@ function vccDownload(){ try{
     var rm=muRefMult(m,mkt);
     h+='</div><div><div class="sub" style="margin-bottom:3px;">Multiple</div><input id="mu_custom" type="number" step="0.5" value="'+rm.toFixed(1)+'" '+(ms.refMode==='custom'?'':'disabled')+' style="width:80px; font:inherit; padding:3px 6px; border:0.5px solid var(--bd2); border-radius:6px; background:var(--primary); color:var(--text);"></div></div>';
     var pv=muValue(rm,m,b), mt=muScenByKind('live'), evs=editableScens().map(function(s){return s.v;}), lo=Math.min.apply(null,evs), hi=Math.max.apply(null,evs);
-    h+='<div style="background:var(--secondary); border-radius:8px; padding:11px 13px;"><div style="font-size:13px;">'+muX(rm)+' '+m.label+' × '+CFG.ccy+' '+muN(b[m.field])+' m'+(m.kind==='ev'?(' = EV '+muN(rm*b[m.field])+' → less net debt '+muN(CFG.netDebt)+' → equity '+muN(rm*b[m.field]-CFG.netDebt)):'')+'</div><div style="font-size:15px; font-weight:600; margin-top:5px;">→ '+CFG.ccy+' '+pv.toFixed(CFG.dp)+' per share</div><div class="sub" style="margin-top:5px;">vs Muddle Through '+CFG.ccy+' '+(mt?mt.v.toFixed(CFG.dp):'—')+' · vs market '+CFG.ccy+' '+CFG.market.toFixed(CFG.dp)+' · DCF scenario range '+CFG.ccy+' '+lo.toFixed(CFG.dp)+'–'+hi.toFixed(CFG.dp)+'</div></div>';
+    h+='<div style="background:var(--secondary); border-radius:8px; padding:11px 13px;"><div style="font-size:13px;">'+muX(rm)+' '+m.label+' × '+CFG.ccy+' '+muN(muDen(m,b))+' m'+(muIsEV(m)?(' = '+(m.kind==='evr'?'adj. EV':'EV')+' '+muN(rm*muDen(m,b))+' → less '+(m.kind==='evr'?'adjusted net obligations':'net debt')+' '+muN(muBridge(m))+' → equity '+muN(rm*muDen(m,b)-muBridge(m))):'')+'</div><div style="font-size:15px; font-weight:600; margin-top:5px;">→ '+CFG.ccy+' '+pv.toFixed(CFG.dp)+' per share</div><div class="sub" style="margin-top:5px;">vs Muddle Through '+CFG.ccy+' '+(mt?mt.v.toFixed(CFG.dp):'—')+' · vs market '+CFG.ccy+' '+CFG.market.toFixed(CFG.dp)+' · DCF scenario range '+CFG.ccy+' '+lo.toFixed(CFG.dp)+'–'+hi.toFixed(CFG.dp)+'</div></div>';
     cont.innerHTML=h; mwWire(cont);
   }
   function mwWire(cont){ function on(sel,ev,fn){ Array.prototype.forEach.call(cont.querySelectorAll(sel),function(e){ e.addEventListener(ev,fn); }); }
