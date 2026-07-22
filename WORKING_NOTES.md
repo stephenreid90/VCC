@@ -13,6 +13,94 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 
 ---
 
+## CHAT HANDOVER — 22 July 2026 (b) (single-source-of-truth protocol · β claim withdrawn)
+
+**Read this before the block below it.** This session did **not** decide β. It re-diagnosed the
+re-anchor problem as an *architecture* problem and drafted the protocol to fix it:
+**`design/single_source_of_truth.md`** (draft, not in force, awaiting Stephen's review of §3 and §8).
+
+**Stephen's reframing that started it.** The issue is not which number wins — it is that building
+the UI produced multiple different calculations doing the same thing. He wants one-source-of-truth
+baked in before any further UI work: whenever a number is needed, check whether we already have it.
+
+**Root cause identified.** We stored *answers*, not *methods*, in a format consumers cannot read.
+β was settled — in cell B71 of an `.xlsx`. Nothing in the system can read a spreadsheet cell, so
+every consumer made its own copy. The coupling that proves the point: β depends on gearing, gearing
+on equity market value, equity market value on the share count — so under a stored-method regime,
+settling the share count *recomputes* β; under ours it silently leaves β wrong.
+
+### ⚠ CORRECTIONS TO EARLIER BLOCKS — the notes below this one contain claims now known false
+
+1. **The β re-levering claim made this session is WITHDRAWN.** An interim finding that re-levering
+   the peer cluster vindicates the workbook's 0.95 and retires 1.10 as an error was **cherry-picked**
+   (it quoted the lowest cell of a grid). Across both index bases and both candidate gearings the
+   re-levered cluster median runs ~**0.96–1.05**, which **excludes both stored answers**. On the
+   world index — the workbook's own stated convention for >30% non-AU revenue — it returns 1.01–1.05.
+   **β remains open and remains Stephen's call**, exactly as the block below records.
+2. **The drift is 4 quantities, not 8.** Genuine drift: β, share count, WACC, base EBIT margin.
+   *Not* drift: revenue 3,400 vs 3,905 (continuing-ops vs incl. Phosphate Hill — already ruled on;
+   4,139 is FY27, not a base); net debt 1,260.8/1,300/1,512/1,810 (four definitions); EV
+   7,736.6/8,064/7,681.5 (DCF / reduced-form / market); leases 194.3 vs 211.5 (two dates).
+   **Basis mixing, not stale copying, is the more persistent failure.**
+3. **`dnl.yaml` is internally inconsistent.** `beta: 1.10` (:163) but `computed_wacc: 0.0882` (:189),
+   whose own comment derives it from `4.30% + 1.15 × 5.00%` — a twice-superseded β. Also
+   `beta_measured: 0.36` (:105) duplicates `market_data.beta: 0.359` (:341).
+4. **1,884 is not generator-only** — `dnl.yaml:179` derives `equity_market_value: 6802.0` from it,
+   working shown at `:182`. Retiring 1,884 means recomputing that.
+5. **The feed contradicts itself on shares.** Market cap 6,390.4 at price 3.6061 implies **1,772m**,
+   two lines from a stated `shares_outstanding: 1875.9`. Ben to reconcile.
+
+### Decisions made this session
+
+1. **One β and one WACC per company per valuation date.** Scenarios differ in cash flows, not in
+   discount rate. Strict reading of cross-cutting convention 1; removes the β/gearing circularity.
+   *Consequence:* the UI's per-scenario "assessed rate" behaviour (`dnl_scenario_interface.html:418`)
+   is retired — note it already contradicts the same file's single-WACC claim (`build_cfgs.py:72,142`).
+2. **Three-layer taxonomy:** observed data (layer 1) / method and selection (layer 2) / derived
+   values (layer 3). Store the method, never the answer.
+3. **The register needs no new file.** An earlier proposal for `data/method/` is **withdrawn** — the
+   split already exists: `data/financials/` is machine-written (it holds the EODHD CSVs), and
+   `data/companies/` is hand-written judgement. Judgement merely leaked into the wrong one.
+4. **The workbook is an export, not a repository** (Stephen's ruling). It stays downloadable and
+   formula-driven; `golden/dnl_mt_v6.json` becomes the pinned oracle in its own right.
+
+### The one concrete migration (a split, not a move)
+
+`data/financials/dnl.yaml` lines **42–199** (`normalised_baseline`) contain all three layers at once:
+layer 2 (margin, net debt, capex, tax, D&A, terminal growth, β rationale) → move to
+`data/companies/dnl.yaml`; layer 1 (risk-free rate, measured β, peer dataset, equity/debt market
+values) → stays; layer 3 (`computed_wacc`) → **delete**. Consumers to repoint:
+`src/vcc_valuations/translator.py:225`, `scripts/run_smoke_test.py:45,74`. `csl.yaml` same
+(its block includes observed `shares_outstanding: 478.9`). **No `data/financials/wbc.yaml` exists.**
+Caveat: `csl.yaml` declares itself `workbook_reverse_engineered`, hand-curated from an export — so
+layer-1 purity is aspirational there and that circularity must be broken separately.
+
+### Also found
+
+- **`.github-token` was NOT gitignored** (untracked, never committed, but one `git add -A` from
+  disaster). **Fixed this session.** Stephen has a new fine-grained PAT; old one should be revoked.
+- `scripts/export_excel.py` writes EV/equity/per-share as literal values — breaches standing rule 1.
+- A formula-driven workbook writer **partly exists**: `VCCXLSX` inside `dnl_scenario_interface.html`,
+  with an `Ff()` formula constructor and Hamada formulas. Move it server-side rather than rebuild.
+- `scripts/workbook_lint.py` already does orphan-input and terminal-continuity checks — the §5 lint
+  extends an existing surface.
+- `src/vcc_valuations/dcf/fcf_engine.py` carries no company data, only dataclass defaults
+  (`wacc=0.085`, `terminal_growth=0.025`) which should arguably be removed so a missing input fails loudly.
+
+### Next
+
+1. **Commit M1 + the `.gitignore` fix** from Stephen's terminal. Still uncommitted, 63 tests green.
+2. **Stephen reviews `design/single_source_of_truth.md`** — especially §3 (the split) and §8 (twelve
+   open items, several needing his call).
+3. **Execute the `normalised_baseline` split** + repoint the two consumers + the lint.
+4. **Then** β and the share count — with the method registered, so the decision propagates instead of
+   being typed into three places.
+5. Then M2. Note the honest scoping: this protocol is *adjacent* to M2, not "the front half" of it —
+   an earlier framing that was overstated. Computing β on demand needs a new peer-triangulation
+   derivation and a layer-1 peer feed (gearings and tax rates live only in the MOCK `beta_data.py`).
+
+---
+
 ## CHAT HANDOVER — 22 July 2026 (M1 engine · re-anchor decisions · IronCorp note)
 
 **Read this first.** Built the **real per-year DCF engine** (build-plan step 10 / engine plan
