@@ -17,8 +17,10 @@ precedents, archetype-specific adjustments).
 2. **Ben** — runs the parallel data-sourcing workstream, still active ("Ben's bot"
    produced the 5 May 2026 platform-side review).
 
-*(Git is currently configured to author commits as Tara Reid / tara@reidadvisory.net —
-a leftover. Tell me if you want this switched to your name and email.)*
+*(Git author identity is Stephen Reid / stephenreid90@gmail.com — verified 22 July 2026.
+The earlier "Tara Reid" leftover has been resolved; recent commits are authored as Stephen.
+Note: `design/build_plan.html` still shows "Owner: Tara Reid" in its header — cosmetic, in
+that doc only.)*
 
 ## Repo and environment
 

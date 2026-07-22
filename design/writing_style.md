@@ -27,7 +27,9 @@ walking a thoughtful peer through *why* a common practice is wrong, not lecturin
    "you" for the practitioner reader. Collegial, not authoritative-from-on-high.
 6. **Comfortable with nuance and caveats.** Qualify honestly ("generally, but not always";
    "if it ever existed"). Treat continua as continua (liquidity, control) rather than forcing
-   false binaries.
+   false binaries. But a caveat that blunts an otherwise clean point should be *cut, not
+   appended* — make the point cleanly, or give the caveat its own line; don't hedge
+   mid-sentence.
 7. **Always land on practical implications.** Close the loop with what the practitioner
    should actually do — an "Implications" or "Final comment" turn that converts the argument
    into guidance.
@@ -57,6 +59,21 @@ walking a thoughtful peer through *why* a common practice is wrong, not lecturin
 4. Headings are short and plain ("Willing buyer", "Market practice", "Implications"),
    used to structure a long argument — not decorative.
 5. Quote sources accurately and attribute; footnote the reference.
+
+## Register: notes to colleagues vs published prose
+
+Everything above is the *published* register — reasoned in paragraphs, for a reader who came
+to be persuaded. A working note or email to a peer runs tighter:
+
+1. Plain bullets are fine for genuinely enumerable points — keep them plain, no bold lead-ins.
+2. Drop the section-heading scaffolding; let the argument flow.
+3. State a point and stop. For a knowledgeable reader, don't justify the self-evident
+   ("People have to be able to take their work into Excel to share it." — no more than that).
+4. No summary recap. Land the implications in the body, not in a closing "what I'd do".
+5. Warm, brief sign-off ("Happy to chat").
+
+Err simpler than feels right. Where a draft has been trimmed twice and still reads dense,
+trim again — the points survive it.
 
 *(Note: the blog is co-authored with Tony Carlton and some posts are his; this captures the
 shared masthead voice. Tell me where your solo voice should differ from Tony's.)*

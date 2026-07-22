@@ -13,6 +13,129 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 
 ---
 
+## CHAT HANDOVER — 22 July 2026 (M1 engine · re-anchor decisions · IronCorp note)
+
+**Read this first.** Built the **real per-year DCF engine** (build-plan step 10 / engine plan
+milestone **M1**), engine-first slice: a single-segment industrial FCFF engine that reproduces the
+audited DNL Muddle Through workbook **to the cent**. **NOT committed** (commit from Stephen's
+terminal — delete `.git/index.lock` first if present). Supersedes nothing below; adds the engine.
+
+**What shipped (all new files; `src/` had only Phase-3.5 stubs before):**
+
+1. `src/vcc_valuations/assumptions/wacc.py` — `WaccBuild` relocated from `dcf/fcf_stub.py` per the
+   engine plan §1.3 (single-discipline WACC, component build-up; `fcf_stub.py` left untouched so its
+   tests still pass). New `src/vcc_valuations/assumptions/__init__.py` package.
+2. `src/vcc_valuations/dcf/fcf_engine.py` — `FcfEngine.run(FcfEngineInputs) -> FcfDcfResult`. Real
+   mechanics, not the reduced-form solve: fractional **stub** period (val date → first FY-end),
+   **mid-period discounting from the valuation date**, per-year **margin glide** (base + transformation
+   overlay + gas-roll-off overlay as separate rows, methodology §11), per-year **tax glide**, a **capex
+   step** (transition→steady), **Gordon terminal** on the grown last-year FCFF, and a **granular equity
+   bridge** (`EquityBridge`, incl. a `from_anchor` Period-A net-debt walk). Terminal-share >70% fires a
+   **non-blocking** warning (owner decision R3). Single-WACC discipline is structural.
+3. `tests/dcf/golden/_recalc.py` — reproducible oracle extractor (forces LibreOffice "always recalc
+   OOXML" via a throwaway profile, dumps target cells → `golden/dnl_mt_v6.json`). The committed JSON is
+   the oracle; the test needs no spreadsheet tooling. `tests/dcf/golden/dnl_mt_inputs.py` hand-resolves
+   the DNL MT inputs from the workbook Assumptions sheet (each scalar cell-referenced; revenue-growth
+   chain reproduced explicitly) — the M1 stand-in for the linkage/assumptions layers.
+4. `tests/dcf/test_e2e_dnl_mt.py` — golden-master, **20 assertions, all pass**; line-level FCFF vectors +
+   headline. **Full suite 63 passed, no regressions.**
+
+**Golden result (ties audited `dnl_muddle_through_valuation_v6_2026-06-25.xlsx`):** revenue
+1193.4/3609.3/3831.4/4067.2/4317.6/4583.3 · margin glide 14.7/15.9/15.6/15.1/14.6 · WACC 8.2755% ·
+g 2.5% · PV explicit 1,950.7 + PV terminal 5,785.9 → **EV 7,736.6** · terminal share 74.8% · bridge
+EV − netdebt@val 1,224.0 − sep-adj 151.6 − leases 194.3 = equity 6,166.6 ÷ 1,770 sh = **3.484** (−3.5%
+vs market 3.61).
+
+**⚠ KEY FINDING — workbook↔UI drift (decision needed).** The engine reproduces the **audited v6
+workbook** (the plan's designated oracle): base revenue **3,400**→FY27 **3,609**, shares **1,770**,
+granular bridge (1,224 + 151.6 + 194.3), **EV 7,736.6**. The **generator/UI MT block has diverged**:
+re-based revenue (FY27 **4,139**), shares **1,884**, netDebt **1,512** lumped, leases **212**, EV
+**~8,064** — solved so the reduced-form stream reproduces the 8,068 headline at ~3.48. **Both land at
+~3.48 by construction, via materially different inputs.** So "EV 8,068" (reduced-form) ≠ the honest
+bottom-up DCF EV 7,736.6. Wiring the engine to the UI (M5) forces a reconciliation: either (a) re-anchor
+the workbook to the re-based revenue / 1,884 sh / 1,512 ND, or (b) pull the UI back to the workbook.
+**Stephen's methodology call — not made.**
+
+**Also (note 3.59 vs 3.48):** 3.59 was the *model's* pre-lease MT output (vs market 3.61), not a share
+price; the lease re-anchor moved it to 3.484. The engine targets 3.484.
+
+**Housekeeping:** `CLAUDE.md` "Tara Reid" git-author note **fixed** (verified author = Stephen Reid /
+stephenreid90; `build_plan.html` header still cosmetically shows "Owner: Tara Reid"). Test-run quirk:
+the mount desyncs file-tool writes from the bash/python view — `test_e2e_dnl_mt.py` had to be written
+**sandbox-side** (Edit-tool write looked right to `sed` but Python compiled a stale copy). Prefer
+sandbox-side overwrites for test/source files, as noted for the generator. Nothing committed from the
+sandbox.
+
+---
+
+### Re-anchor: what was decided this session (and what is still blocked)
+
+**Stephen's rulings.** (1) The **workbook is the single source of truth**; the UI/generator and
+`dnl.yaml` derive from it. (2) The **revenue basis is LOCKED at the workbook's FY26 3,400
+continuing-ops figure** (→ FY27 3,609). The multiples-tab re-base to ~3,905 from the 12–13 July
+chat is to be **reverted**.
+
+**Why — the Phosphate Hill reconciliation (the finding that settled it).** Reported and TTM
+revenue *include* Phosphate Hill, which is being divested (sale to Mayfair, completion Q3 FY26);
+the workbook's continuing-ops build *excludes* it. Evidence: FY25 reported 3,710.1 vs workbook
+continuing 3,220 (gap 490); TTM-Mar-26 reported 3,905.4 vs workbook FY26 3,400 (gap 505). Both
+gaps ≈ Phosphate Hill. So ~3,905 and 3,400 are **not comparable**, and last chat's "3,400 sits
+~13% below the accounts" drew the wrong conclusion. Keeping PH revenue in the forward build while
+the bridge *also* takes PH sale proceeds/ARO/inventory would double-count the same business.
+
+**⚠ BLOCKED — the β fork gates the rest.** The generator re-anchor was deliberately **NOT
+executed**, because EV depends on WACC, which depends on a genuine methodology fork:
+
+- **Workbook:** β **0.95** (world-index MSCI World, Hamada re-levered; convention = world index
+  for >30% non-AU revenue) → Re 9.05%, **WACC 8.2755%**, EV 7,736.6, MT 3.484.
+- **`dnl.yaml` + the β-workbench:** β **1.10** (peer cluster Orica/ICL/Yara, v0.6 §3.5.3
+  peer-triangulation, 17 June) → Re 9.80%, WACC ~8.68–8.82%.
+
+Both are documented and separately built into artefacts (the β workbench is built around 1.10), so
+this is Stephen's call, not a mechanical "workbook wins". **Pick β first**, then re-anchor
+everything in one consistent pass. Also unresolved and riding along: **share count 1,770**
+(workbook, paired to the 31 Mar 2026 net-debt anchor; ties to E = 6,390 = 1,770 × 3.61) **vs
+1,884** (generator/`dnl.yaml`).
+
+**Scale of the drift found (do not underestimate).** The generator carries a whole older
+parameter set — β 1.10, WACC ~8.7%, "normalised EBIT margin 13.5%" (workbook base is 14.1%),
+shares 1,884, netDebt 1,512 lumped, leases 212, EV 8,064 — plus last chat's re-based revenue.
+`dnl.yaml` carries a *third* set (β 1.10, WACC 8.82%, E 6,802, D 1,810, shares 1,884). The five
+non-MT scenario values and the `cp` slider model were calibrated on the old set and **cannot be
+re-derived by hand** — they need the scenario engine (M2/M3). Deliberate decision: **do not
+hand-patch**, or we simply create a fourth inconsistent set.
+
+**Target once β is locked** (workbook basis, for reference): EV 7,736.6 · net debt @ val 1,224.0 ·
+separation adjustments 151.65 · leases 194.3 · single bridge figure **1,570** · equity 6,166.6 ÷
+1,770 sh = **3.484**.
+
+**Process fix agreed (the durable answer to the drift).** The engine is the one calculator; the
+workbook is the human-auditable oracle it reproduces (the `_recalc.py` golden master); the
+generator and `dnl.yaml` should **consume engine output** rather than keep hand-typed copies, with
+a lint for stray hardcoded valuation numbers and one recorded house pick per methodology choice.
+
+### Also this session (non-VCC)
+
+- **`note_to_ben_ironcorp_critique.md`** (repo root) — critique of Ben's 50-page IronCorp/deecalc
+  brief, developed in staged parts and rewritten to the house voice. Core argument: being exact
+  and re-runnable doesn't *find* a model's error, but deecalc is unusually well-placed to help
+  find it — five concrete mechanisms. Stephen sent an edited, shorter version.
+- **`design/writing_style.md` updated** — new "Register: notes to colleagues vs published prose"
+  section (plain bullets, no heading scaffolding, no summary recap, don't justify the
+  self-evident, warm sign-off, err simpler) and a refinement to pattern 6: cut a blunting caveat
+  rather than appending it.
+
+### Next
+
+1. **Decide β (0.95 world-index vs 1.10 peer-cluster) and the share count** — this gates everything.
+2. Then re-anchor the generator **and** `dnl.yaml` to the workbook in one pass, engine-driven.
+3. Then M2: wire the driver-keyed `AssumptionSet` → `FcfEngineInputs` (`linkage/` + `assumptions/`:
+   translation rules, time profiles, derivations, consistency, segment aggregation).
+4. Then M3 (segment FCFF + CSL) — needs the binding-terminal-margin + terminal-capex=D&A path,
+   already stubbed as a seam in `fcf_engine._terminal`.
+
+---
+
 ## CHAT HANDOVER — 13 July 2026 (cash-flow tie + forward-multiples re-base)
 
 **Read this first.** Two DNL pieces this chat, both verified, **NOT committed** (commit from Stephen's

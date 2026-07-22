@@ -1,0 +1,360 @@
+"""
+Production single-segment industrial FCFF engine (engine implementation plan,
+step 10 / milestone M1).
+
+This replaces the Phase-3.5 ``fcf_stub`` for the industrial archetype. Unlike the
+stub it reproduces the *audited workbook* mechanics line-for-line, so it ties to
+the regression oracle to the cent rather than merely proving pipeline shape:
+
+    - a fractional STUB period from the valuation date to the first fiscal
+      year-end (revenue = base-year revenue x stub-fraction);
+    - MID-PERIOD discounting measured from the valuation date (stub sits in
+      front of the explicit years);
+    - a per-year EBIT-margin GLIDE built as base margin + a transformation
+      overlay + a (negative) input-cost roll-off overlay, shown as separate
+      rows (methodology section 11: industry baseline + company offset explicit);
+    - a per-year applied-tax GLIDE (effective -> blended statutory);
+    - a capex step (transition % -> steady-state %);
+    - a Gordon-growth terminal capitalising the last explicit FCFF grown at g,
+      discounted at the end of the final explicit year;
+    - a granular equity bridge (EV -> net debt at the valuation date -> net
+      separation/one-off adjustments -> AASB 16 leases -> equity; ÷ shares; x FX
+      only at the per-share line).
+
+Scope note (M1): the engine consumes a resolved :class:`FcfEngineInputs` that
+mirrors a company's audited-workbook Assumptions sheet. Populating that object
+from the full driver-keyed ``AssumptionSet`` (the ``linkage/`` + ``assumptions/``
+layers) is milestone M2; the mapping is deliberately left as a seam here.
+
+Segment-level forecasting, the binding-terminal-margin fix (terminal capex =
+D&A) and FX-by-segment are CSL/M3 concerns and are flagged, not implemented.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from typing import List, Optional, Union
+
+from vcc_valuations.assumptions.wacc import WaccBuild
+
+# Terminal share of EV above which a sensitivity pass is required (methodology
+# section 11.4.2 / 15.2). Non-blocking by owner decision R3 (25 June 2026):
+# emit a warning that triggers a sensitivity pass; never auto-suppress.
+TERMINAL_SHARE_THRESHOLD = 0.70
+
+
+@dataclass
+class EquityBridge:
+    """EV -> equity bridge components, all in the reporting currency (AUD m).
+
+    Sign convention matches the workbook Equity Bridge sheet: every component is
+    a claim *ahead of* ordinary equity and is therefore subtracted from EV.
+    """
+
+    net_debt_at_valuation: float
+    equity_bridge_adjustments_net: float  # net separation / one-off obligations
+    lease_liabilities: float              # AASB 16, Approach A (leases = debt)
+    shares_outstanding: float
+    fx_rate: float = 1.0                  # per-share FX; applied ONLY at the per-share line
+    market_reference_price: Optional[float] = None
+
+    @classmethod
+    def from_anchor(
+        cls,
+        *,
+        net_debt_anchor: float,
+        period_a_years: float,
+        operating_cash_flow_run_rate: float,
+        capex_run_rate: float,
+        equity_bridge_adjustments_net: float,
+        lease_liabilities: float,
+        shares_outstanding: float,
+        fx_rate: float = 1.0,
+        market_reference_price: Optional[float] = None,
+    ) -> "EquityBridge":
+        """Roll net debt from the financials anchor date to the valuation date.
+
+        Period-A walk (methodology section 7): net debt falls by operating cash
+        generated and rises by capex paid over the anchor->valuation gap.
+        """
+        net_debt_at_valuation = (
+            net_debt_anchor
+            - operating_cash_flow_run_rate * period_a_years
+            + capex_run_rate * period_a_years
+        )
+        return cls(
+            net_debt_at_valuation=net_debt_at_valuation,
+            equity_bridge_adjustments_net=equity_bridge_adjustments_net,
+            lease_liabilities=lease_liabilities,
+            shares_outstanding=shares_outstanding,
+            fx_rate=fx_rate,
+            market_reference_price=market_reference_price,
+        )
+
+
+@dataclass
+class FcfEngineInputs:
+    """Resolved, single-segment industrial FCFF inputs (one company x scenario).
+
+    Mirrors the audited-workbook Assumptions sheet. All rate/margin fields are
+    decimals (0.141 = 14.1%). The transformation and gas-roll-off overlays are
+    per-year CUMULATIVE deltas versus the base margin, length == horizon_years.
+    The tax glide and capex list are also length == horizon_years (year 1..H);
+    the stub takes its own explicit scalars.
+    """
+
+    company_id: str
+    scenario_id: str
+    functional_currency: str
+
+    horizon_years: int
+    stub_years: float                     # valuation date -> first FY-end, in years
+
+    # Revenue
+    base_year_revenue: float
+    revenue_growth: float                 # constant compound rate (chain-derived)
+
+    # EBIT margin glide (base + overlays), shown as separate rows
+    base_ebit_margin: float
+    margin_transformation: List[float]    # per-year cumulative pp delta (len H)
+    margin_gas_rolloff: List[float]       # per-year cumulative pp delta (len H, <= 0)
+
+    # Tax
+    stub_tax_rate: float
+    tax_rate_glide: List[float]           # year 1..H applied rates (len H)
+
+    # Cash-flow bridge
+    da_pct_revenue: float
+    capex_pct_stub: float
+    capex_pct: List[float]                # year 1..H capex/revenue (len H)
+    delta_wc: List[float] = field(default_factory=list)   # year 1..H (len H); [] -> zeros
+    delta_wc_stub: float = 0.0
+
+    # Discounting
+    wacc: Union[WaccBuild, float] = 0.085
+
+    # Terminal
+    terminal_growth: float = 0.025
+
+    # Equity bridge
+    equity_bridge: Optional[EquityBridge] = None
+
+    def __post_init__(self) -> None:
+        H = self.horizon_years
+        for name, vec in (
+            ("margin_transformation", self.margin_transformation),
+            ("margin_gas_rolloff", self.margin_gas_rolloff),
+            ("tax_rate_glide", self.tax_rate_glide),
+            ("capex_pct", self.capex_pct),
+        ):
+            if len(vec) != H:
+                raise ValueError(f"{name} must have length horizon_years={H}, got {len(vec)}")
+        if not self.delta_wc:
+            self.delta_wc = [0.0] * H
+        elif len(self.delta_wc) != H:
+            raise ValueError(f"delta_wc must have length {H}, got {len(self.delta_wc)}")
+
+    @property
+    def wacc_scalar(self) -> float:
+        return self.wacc.wacc if isinstance(self.wacc, WaccBuild) else float(self.wacc)
+
+
+@dataclass
+class FcfDcfResult:
+    company_id: str
+    scenario_id: str
+    horizon_years: int
+    functional_currency: str
+
+    # Period labels: "Stub", "Y1", ... "YH"
+    period_labels: List[str]
+
+    # Year-by-year forecast (stub first), units: reporting currency millions
+    revenue: List[float]
+    ebit_margin: List[float]
+    ebit: List[float]
+    applied_tax_rate: List[float]
+    tax: List[float]              # negative
+    nopat: List[float]
+    da: List[float]
+    capex: List[float]            # negative
+    delta_wc: List[float]         # negative (a use of cash) or zero
+    fcff: List[float]
+
+    # Discounting
+    wacc: float
+    mid_times: List[float]
+    discount_factors: List[float]
+    pv_fcff: List[float]
+
+    # Terminal
+    terminal_growth: float
+    terminal_fcff: float
+    terminal_value: float
+    terminal_end_time: float
+    terminal_discount_factor: float
+
+    # Enterprise value
+    pv_explicit: float
+    pv_terminal: float
+    enterprise_value: float
+
+    # Equity bridge
+    net_debt_at_valuation: float
+    equity_bridge_adjustments_net: float
+    lease_liabilities: float
+    equity_value: float
+    shares_outstanding: float
+    value_per_share: float               # in functional currency
+    value_per_share_reported: float      # after FX (== value_per_share when fx==1)
+
+    # Diagnostics
+    terminal_share_of_ev: float
+    market_reference_price: Optional[float]
+    discount_to_market: Optional[float]
+    warnings: List[str]
+    notes: List[str]
+
+
+class FcfEngine:
+    """Single-segment industrial FCFF DCF. ``run(inputs) -> FcfDcfResult``."""
+
+    def run(self, inp: FcfEngineInputs) -> FcfDcfResult:
+        H = inp.horizon_years
+        wacc = inp.wacc_scalar
+        g = inp.terminal_growth
+        notes: List[str] = []
+        warnings: List[str] = []
+
+        if g >= wacc:
+            raise ValueError(
+                f"terminal growth {g:.4f} >= WACC {wacc:.4f}; Gordon terminal undefined."
+            )
+
+        # ---- Revenue (stub = base x stub-fraction; years compound from base) ----
+        revenue = [inp.base_year_revenue * inp.stub_years]
+        for k in range(1, H + 1):
+            revenue.append(inp.base_year_revenue * (1.0 + inp.revenue_growth) ** k)
+
+        # ---- EBIT margin glide (stub at base; years = base + overlays) ----
+        ebit_margin = [inp.base_ebit_margin]
+        for k in range(H):
+            ebit_margin.append(
+                inp.base_ebit_margin
+                + inp.margin_transformation[k]
+                + inp.margin_gas_rolloff[k]
+            )
+        ebit = [r * m for r, m in zip(revenue, ebit_margin)]
+
+        # ---- Tax (per-year applied rate; stub at effective) ----
+        applied_tax_rate = [inp.stub_tax_rate] + list(inp.tax_rate_glide)
+        tax = [-e * t for e, t in zip(ebit, applied_tax_rate)]
+        nopat = [e + t for e, t in zip(ebit, tax)]
+
+        # ---- D&A and capex ----
+        da = [r * inp.da_pct_revenue for r in revenue]
+        capex_pct_all = [inp.capex_pct_stub] + list(inp.capex_pct)
+        capex = [-r * c for r, c in zip(revenue, capex_pct_all)]
+
+        # ---- Working-capital change ----
+        delta_wc = [-inp.delta_wc_stub] + [-w for w in inp.delta_wc]
+
+        # ---- Unlevered FCFF ----
+        fcff = [n + d + c + w for n, d, c, w in zip(nopat, da, capex, delta_wc)]
+
+        # ---- Mid-period discounting from the valuation date ----
+        # stub occupies [0, stub_years]; explicit year k occupies
+        # [stub + k-1, stub + k]; mid-points as below.
+        mid_times = [inp.stub_years / 2.0]
+        for k in range(1, H + 1):
+            mid_times.append(inp.stub_years + k - 0.5)
+        discount_factors = [1.0 / (1.0 + wacc) ** t for t in mid_times]
+        pv_fcff = [f * df for f, df in zip(fcff, discount_factors)]
+
+        # ---- Terminal value (Gordon on last explicit FCFF grown at g) ----
+        # NB: the CSL/M3 segment engine rebuilds terminal FCFF from a *binding*
+        # terminal EBIT margin with terminal capex = D&A. DNL's audited workbook
+        # capitalises the grown last-year FCFF directly; this engine matches it.
+        terminal_fcff = fcff[-1] * (1.0 + g)
+        terminal_value = terminal_fcff / (wacc - g)
+        terminal_end_time = inp.stub_years + H
+        terminal_discount_factor = 1.0 / (1.0 + wacc) ** terminal_end_time
+        pv_terminal = terminal_value * terminal_discount_factor
+
+        pv_explicit = sum(pv_fcff)
+        enterprise_value = pv_explicit + pv_terminal
+        terminal_share = pv_terminal / enterprise_value if enterprise_value else 0.0
+
+        if terminal_share > TERMINAL_SHARE_THRESHOLD:
+            warnings.append(
+                f"Terminal value is {terminal_share:.1%} of EV (> "
+                f"{TERMINAL_SHARE_THRESHOLD:.0%}); methodology section 11.4.2 "
+                "requires a sensitivity pass on terminal assumptions "
+                "(non-blocking, per owner decision R3)."
+            )
+
+        # ---- Equity bridge ----
+        eb = inp.equity_bridge
+        if eb is None:
+            raise ValueError("FcfEngineInputs.equity_bridge is required to value equity.")
+        equity_value = (
+            enterprise_value
+            - eb.net_debt_at_valuation
+            - eb.equity_bridge_adjustments_net
+            - eb.lease_liabilities
+        )
+        value_per_share = equity_value / eb.shares_outstanding
+        value_per_share_reported = value_per_share * eb.fx_rate
+
+        discount_to_market: Optional[float] = None
+        if eb.market_reference_price:
+            discount_to_market = value_per_share_reported / eb.market_reference_price - 1.0
+
+        # single-WACC discipline is structural: one scalar used for every period
+        # and the terminal. Recorded for the trace.
+        notes.append(
+            f"Single WACC {wacc:.4%} applied to all {H} explicit years, the stub, "
+            "and the terminal (section 3.5 single-discount-rate discipline)."
+        )
+
+        return FcfDcfResult(
+            company_id=inp.company_id,
+            scenario_id=inp.scenario_id,
+            horizon_years=H,
+            functional_currency=inp.functional_currency,
+            period_labels=["Stub"] + [f"Y{k}" for k in range(1, H + 1)],
+            revenue=revenue,
+            ebit_margin=ebit_margin,
+            ebit=ebit,
+            applied_tax_rate=applied_tax_rate,
+            tax=tax,
+            nopat=nopat,
+            da=da,
+            capex=capex,
+            delta_wc=delta_wc,
+            fcff=fcff,
+            wacc=wacc,
+            mid_times=mid_times,
+            discount_factors=discount_factors,
+            pv_fcff=pv_fcff,
+            terminal_growth=g,
+            terminal_fcff=terminal_fcff,
+            terminal_value=terminal_value,
+            terminal_end_time=terminal_end_time,
+            terminal_discount_factor=terminal_discount_factor,
+            pv_explicit=pv_explicit,
+            pv_terminal=pv_terminal,
+            enterprise_value=enterprise_value,
+            net_debt_at_valuation=eb.net_debt_at_valuation,
+            equity_bridge_adjustments_net=eb.equity_bridge_adjustments_net,
+            lease_liabilities=eb.lease_liabilities,
+            equity_value=equity_value,
+            shares_outstanding=eb.shares_outstanding,
+            value_per_share=value_per_share,
+            value_per_share_reported=value_per_share_reported,
+            terminal_share_of_ev=terminal_share,
+            market_reference_price=eb.market_reference_price,
+            discount_to_market=discount_to_market,
+            warnings=warnings,
+            notes=notes,
+        )
