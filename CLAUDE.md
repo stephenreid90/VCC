@@ -85,6 +85,11 @@ and audit the draft against it before handing it back.
 4. **Naming:** `snake_case` for ids and filenames; `CamelCase` for Python classes.
 5. **Override discipline:** target ≤20% of cells overridden per company; above that, the
    archetype is mis-specified.
+6. **Share-count / net-debt anchoring:** issued shares and net debt are anchored at the
+   *last reported balance-sheet date, both to the same date*; the ongoing buyback is NOT
+   projected forward (a buyback at fair value is value-neutral per share, and intra-period
+   counts can't be reliably reconciled). Full detail: methodology §5
+   (`design/methodology/equity_bridge_and_valuation_mechanics.md`).
 
 ## Operational quirks
 

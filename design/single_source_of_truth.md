@@ -257,6 +257,13 @@ be fed by Ben's pipeline.
    pull replaces the mock.
 4. **Workbook generator** — scope and build it, or drop §6's formula requirement.
 5. **Valuation-date stamping.** Rule 6 says one β per *valuation date*, but nothing records one.
+   The related question of *which* date anchors shares and net debt is already settled by
+   methodology §5 (latest reported, both paired to the same balance-sheet date; buyback not
+   projected) — now surfaced as CLAUDE.md cross-cutting convention 6. Residual is **enforcement**:
+   the §5.4 validator is unimplemented, and `data/financials/dnl.yaml` still lacks
+   `shares_outstanding_at`/`net_debt_at`, carries a non-compliant share count (1,875.9m vs the
+   §5.3 anchor of 1,770m at 31 Mar 2026) and an `equity_market_value` (6,802.0, off a phantom
+   1,884m vs the compliant ~6,390 = 1,770 × 3.61). Fix belongs in the DNL β re-anchor pass.
 6. **Supersession log.** Retired figures keep resurfacing in prose — 1.10, 1,884 and 3,400 appear
    across the briefing pack and four discussion-document versions with nothing marking them dead.
 7. **Export proliferation.** `analyses/dnl/valuations/` holds fourteen DNL workbooks, six of them

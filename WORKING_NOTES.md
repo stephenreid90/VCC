@@ -14,6 +14,61 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 
 ---
 
+## CHAT HANDOVER — 25 July 2026 (b) (share-count convention: already in methodology §5, now surfaced · β still open)
+
+**Read this, then the CSL-split block below it.** After the CSL split (below), this session went deep on
+DNL's β / share-count tangle and **landed the share-count half**. Key realisation: the anchoring
+convention was *already written* — methodology §5 "Share-count discipline" — we simply hadn't surfaced
+or enforced it, and I wasted several turns chasing a live figure the spec tells us to ignore.
+
+**The convention (methodology §5).**
+1. §5.1 — latest *reported* issued share count, paired with net debt at the *same* balance-sheet date;
+   do not project the buyback forward.
+2. §5.2 — rationale: an on-market buyback at fair value is value-neutral per share, so projecting it
+   into the denominator (without walking net debt forward by the cash spent) double-counts.
+3. §5.3 — practical: `share_statistics.shares_outstanding_at: 2026-03-31`, `shares_outstanding ≈ 1,770m`
+   (back-solved from H1 NPAT ex-IMIs / EPS ex-IMIs, net of H1 buybacks); the `as_at` must match the
+   net-debt anchor date.
+4. §5.4 — validator: error if `shares_outstanding_at ≠ net_debt_at` (NOT yet implemented).
+
+**So the answer to "what's DNL's share count" is ~1,770m at 31 Mar 2026** — the H1 anchor the workbook
+already uses. The four rival numbers reconcile: **1,770m** (workbook / §5 anchor — correct); **1,772m**
+(feed market cap 6,390.4 ÷ price 3.6061 — agrees, the feed's market-cap field was current); **1,875.9m**
+(EODHD `shares_outstanding` in dnl.yaml — STALE); **1,884m** (behind `equity_market_value: 6,802` —
+phantom, wrong). The live public count is **1,754.1m at 3 Jul 2026** (ASX Appendix 3G) — *post-anchor*
+buyback, deliberately NOT used. DNL has an active buyback (expanded Dec 2025 to ≤250m shares / ~A$740m
+through late 2026), which is exactly why §5 says anchor and don't chase.
+
+**What shipped this session on this thread (documentation only — no numbers moved).**
+1. **CLAUDE.md** — added cross-cutting convention 6 (share-count / net-debt anchoring, pointer to §5), so
+   it sits in the "never violate" list read every session.
+2. **design/single_source_of_truth.md §8 item 5** — annotated that §5 governs the anchoring date; the
+   residual is enforcement (validator + missing fields + the non-compliant dnl.yaml numbers).
+
+**NOT done — DNL data still violates §5 (belongs in the β re-anchor pass, NOT piecemeal).**
+`data/financials/dnl.yaml` still carries `share_statistics.shares_outstanding: 1,875,912,826` (no
+`shares_outstanding_at`, no source) and `wacc_observed_inputs.equity_market_value: 6,802.0` (off the
+phantom 1,884m). The §5.3-compliant values are shares **1,770m @ 31 Mar 2026** and equity market value
+**~6,390** (= 1,770 × 3.61, which equals the feed's own market cap). Left unchanged here because it moves
+E/V → WACC → every scenario, and the standing rule is: don't hand-patch, or we create yet another
+inconsistent set. It rides with the β decision.
+
+**β itself — STILL OPEN, STILL STEPHEN'S CALL** (unchanged): proper triangulation ~0.96–1.05, excluding
+both 0.95 and 1.10. Ben's residual is narrow: (1) real peer gearings/tax for the triangulation (mock in
+`ui_prototypes/_generator/beta_data.py`); (2) optionally confirm the *exact* reported 31 Mar 2026 issued
+count from the 1H26 half-year PDF — secondary sources (openbriefing, kalkine, marketscreener) didn't
+yield it cleanly this session; the filing PDF is the place.
+
+**The clean next action — the "DNL β re-anchor pass" (one focused chat).**
+1. Stephen picks β.
+2. Bring dnl.yaml into §5.3 compliance: `shares_outstanding_at: 2026-03-31`, `shares_outstanding: 1,770m`
+   + source; recompute/retire `equity_market_value` (→ ~6,390, or derive rather than store).
+3. Add `derived_metrics.net_debt_at` and implement the §5.4 validator (`shares_at == net_debt_at`).
+4. Re-run; then re-anchor the generator/UI engine-driven (do NOT hand-patch scenario values).
+Then WBC (clear its stored `cost_of_equity`), then the remaining §8 items, then M2.
+
+---
+
 ## CHAT HANDOVER — 25 July 2026 (CSL layer split · lint tightened)
 
 **Read this first.** This session (1) committed and pushed the DNL layer split + lint that was
