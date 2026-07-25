@@ -13,6 +13,95 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 
 ---
 
+## CHAT HANDOVER — 22 July 2026 (c) (SSOT protocol EXECUTED for DNL · CI fixed)
+
+**Read this first, then (b) below it, then the spec.** This session committed M1, fixed CI, and
+**executed the layer split for DNL** — the protocol in `design/single_source_of_truth.md` is no
+longer just drafted, it is in force for one company with a lint guarding it.
+
+**Commit state (all pushed unless noted).**
+- `0acab99` — M1 engine + golden master + SSOT protocol draft.
+- `009616a` — CI fix (root `conftest.py` puts `src/` on `sys.path`).
+- **Uncommitted at handoff:** the DNL layer split + lint. Commit message drafted; `git add -A` is
+  safe (`.github-token` is gitignored). Commit from Stephen's terminal.
+
+**CI was failing — now fixed.** Two GitHub Actions emails after the M1 push ("Deploy Web
+Playground: all jobs failed" + a Tests failure). Cause was **not** the push: neither workflow
+installs the package and nothing put `src/` on the path, so every `import vcc_valuations` failed at
+collection. Reproduced in a clean checkout (2 errors, 0 tests), fixed with a root `conftest.py`,
+re-verified 63 → green. Two things still worth doing (not done): (1) `.github/workflows/deploy-web.yml`
+doesn't deploy — its deploy step is a placeholder `echo`, so it just reruns tests under a misleading
+name; (2) `test.yml` runs `--cov=models`, so all of `src/vcc_valuations` (i.e. M1) reports zero
+coverage. Cosmetic: `setup.py` still says `author='Ben Watson'`.
+
+**THE DNL LAYER SPLIT — what shipped this session.** Executed §3 of the protocol, proven value-neutral
+by adversarial audit (50 leaves in, 49 out, only `computed_wacc` deleted, no value or rationale
+changed; smoke-test output byte-identical bar one label line; 63 → **68 tests green**).
+
+1. `data/financials/dnl.yaml` — the `normalised_baseline` block (was lines 42–199) is gone. What
+   remains is `wacc_observed_inputs` (layer 1: `risk_free_rate`, `beta_measured`,
+   `beta_peer_dataset_v0_6_backport`, `equity_market_value`, `debt_market_value`). Header comment +
+   `last_updated` bumped to 2026-07-22 with a note that the file is *not yet* truly machine-refreshable.
+2. `data/companies/dnl.yaml` — gained `normalised_baseline` (layer 2: margin, net debt, capex, tax,
+   D&A, terminal growth) with a nested `wacc_method` (ERP, `beta_selected` + rationale + refresh
+   action, active `beta`, cost of debt). Hand-authored; never machine-written.
+3. `computed_wacc: 0.0882` **DELETED** — it was a stored layer-3 value derived from a twice-superseded
+   β 1.15. (The engine computes WACC; nothing should store it.)
+4. `src/vcc_valuations/translator.py` — new `resolve_normalised_baseline(inputs)` joins layer 2 +
+   layer 1 back into the legacy `wacc_build` shape, so consumers are unaffected. `load_inputs` now
+   passes `company_raw` and parses the company YAML once (was twice). CSL fallback: if
+   `data/companies/<id>` has no `normalised_baseline`, it reads the old financials location.
+5. `scripts/run_smoke_test.py` — repointed to `resolve_normalised_baseline`; docstring + header
+   updated.
+6. `src/vcc_valuations/schemas/company.py` — `CompanyPositionFile` gained
+   `normalised_baseline: dict | None` (loosely typed; consumers reach it via the translator, not this
+   model). Left loose until the layer-2 schema is specified (protocol §8 item 9).
+
+**THE LINT (`tests/test_ssot_lint.py`, 5 tests + `scripts/ssot_lint_baseline.py` + baseline JSON).**
+- **Check 1** — no stored derived value in *either* data layer (widened after audit: `computed_wacc`
+  lived in layer 1, so a layer-2-only scan would have missed the very defect it targets). Excludes
+  `market_data.*`/`share_statistics.*` (feed snapshots are layer 1 by definition). **Found two
+  pre-existing offenders, recorded as visible debt in `KNOWN_STORED_DERIVED`:**
+  `csl.yaml::…cost_of_equity_build.computed_cost_of_equity` and
+  `wbc.yaml::…cost_of_equity_build.cost_of_equity` — clear each during that company's split.
+- **Check 2** — no `normalised_baseline` left in a layer-1 financials file (csl.yaml exempt until split).
+- **Check 3** — value-keyed ratchet: register scalars must not appear as literals in `src/`, `scripts/`,
+  `ui_prototypes/_generator/*.py`; 124 pre-existing duplicates baselined, anything NEW fails.
+  Regenerate downward only via `scripts/ssot_lint_baseline.py`.
+- **Two join tests** pin the rejoined `wacc_build` and the CSL fallback.
+- **Known lint limits (documented in-file):** value-keyed not path-keyed, so updating `beta` while
+  leaving `beta_selected`/a peer's `beta_indicative` behind is invisible (needs the layer-2 schema to
+  name the authoritative key). Scan scope is `.py` only — **not** the UI `.html`, `tests/`, `models/`,
+  `.md`, `.xlsx`. `_is_scannable` skips 1900–2100 (years), <0.02, and integer-valued <100 — so β=1.0,
+  g=1.5%, netdebt=1,950 are invisible. Several of the 124 baseline entries are coincidental collisions
+  with generic constants (0.1/0.3/0.5), so routine edits can trip the stale-baseline assertion.
+
+**Open, deliberately NOT done this session (each needs a call, none blocks the others).**
+1. **CSL split** — mirrors DNL, but two judgement calls: is `group_revenue` layer 1 or 2, and how to
+   split `cost_of_equity_build` (csl.yaml declares itself `workbook_reverse_engineered`, so its
+   "layer 1" is hand-curated from an export — circularity to break). Clearing
+   `computed_cost_of_equity` is part of this.
+2. **WBC** — no `data/financials/wbc.yaml` exists at all; only `data/companies/wbc.yaml`. Clear its
+   stored `cost_of_equity` during whatever WBC work comes next.
+3. **β decision + share count** — STILL OPEN, STILL STEPHEN'S CALL. Now cheaper: method is registered,
+   so a decision propagates via `resolve_normalised_baseline` instead of being retyped. Corrected
+   analysis stands: proper triangulation → ~0.96–1.05, excluding BOTH 0.95 and 1.10. **Live problem:**
+   `equity_market_value: 6802.0` is now blessed as layer-1 observed data but derives from 1,884 shares,
+   contradicting `share_statistics` (1,875.9) in the same file — a ~6.4% error in the equity weight
+   until the share count is settled.
+4. **Peer-exclusion reasons + `capital_structure_rationale`** currently sit in layer 1 with the peer
+   data; §2 arguably makes exclusion reasons layer 2. Left pending the §8 "where does peer data live"
+   decision rather than pre-judged.
+5. The other §8 items unchanged: workbook generator scope, valuation-date stamping, basis labels,
+   supersession log, export proliferation, layer-2 schema.
+
+**Then M2** (unchanged): wire driver-keyed `AssumptionSet` → `FcfEngineInputs`. Honest scoping from
+(b): this protocol is *adjacent* to M2, not its front half. Computing β on demand needs a new
+peer-triangulation derivation + a layer-1 peer feed (gearings/tax live only in the MOCK
+`beta_data.py`).
+
+---
+
 ## CHAT HANDOVER — 22 July 2026 (b) (single-source-of-truth protocol · β claim withdrawn)
 
 **Read this before the block below it.** This session did **not** decide β. It re-diagnosed the

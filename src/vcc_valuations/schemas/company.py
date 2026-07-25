@@ -299,3 +299,10 @@ class CompanyPositionFile(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     company_position: CompanyPosition
+
+    # Layer-2 method and selection (margins, net debt, tax, the beta selection),
+    # migrated here from data/financials/<id>.yaml per
+    # design/single_source_of_truth.md §3. Left loosely typed until the layer-2
+    # schema is specified (protocol §8, open item 9); consumers reach it through
+    # translator.resolve_normalised_baseline(), not through this model.
+    normalised_baseline: dict | None = None

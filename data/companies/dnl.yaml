@@ -293,3 +293,122 @@ company_position:
       scenario_sensitivity_overrides: null
 
   corporate_actions: []
+
+# --- NORMALISED VALUATION BASELINE (layer 2: method and selection) ---
+# Migrated from data/financials/dnl.yaml `normalised_baseline` on 22 July 2026 per
+# design/single_source_of_truth.md §3. Hand-authored; never machine-written.
+# TODO (protocol rule 8): add decided_on date + status to each entry.
+normalised_baseline:
+  # Operating-margin override
+  ebit_margin: 0.135
+  ebit_margin_rationale: >
+    Mid-point of pre-demerger Dyno Nobel segment range of 13-15%.
+    Replaces TTM Mar-2026 reported operating margin of 11.23%, which
+    is depressed by post-demerger transition costs (residual demerger
+    items + post-rename consolidation adjustments, per income-
+    statement TTM notes above).
+
+
+  # Net-debt override
+  net_debt: 1300.0
+  net_debt_rationale: >
+    Steady-state mid-point of estimated AUD 1.2-1.4bn underlying
+    leverage. Replaces reported AUD 1,810m, which reflects post-
+    demerger balance-sheet restructuring expected to ease over the
+    next 12 months (per derived-metrics notes above). Net debt /
+    EBITDA at this level is ~1.5x on TTM EBITDA — mid-range for the
+    industrial-explosives peer group.
+
+
+  # Capex (% of revenue) — already normalised in current smoke test;
+  # capturing here for transparency.
+  capex_pct_revenue: 0.07
+  capex_pct_revenue_rationale: >
+    Pre-demerger historical pattern (6-7%). FY25 reported 12.8% is
+    inflated by partial-year reporting and capital restructuring;
+    rejected as the steady-state anchor.
+
+
+  # Tax rate
+  tax_rate: 0.30
+  tax_rate_rationale: >
+    Australian statutory rate. Effective rate runs lower (FY25: 20.4%)
+    due to franking / R&D / foreign tax credits, but those are timing
+    and mix effects; statutory is the conservative anchor for a
+    forward-looking baseline.
+
+
+  # D&A (% of revenue)
+  da_pct_revenue: 0.073
+  da_pct_revenue_rationale: >
+    Matches assumed capex/revenue ratio of 7%, consistent with a
+    steady-state mature industrial where the asset base isn't growing
+    fast. FY25 D&A/revenue ratio of 7.7% (284.1 / 3,710) is in line.
+
+
+  # Terminal growth
+  terminal_growth: 0.025
+  terminal_growth_rationale: >
+    GDP-adjacent (Australian long-run nominal trend) for a mature
+    industrial in a developed-market context. Section 9.7 demographic
+    trajectory consideration: a structurally aging Australia could
+    pull terminal nominal growth toward 2.0%, but the explicit-
+    horizon is short enough (5 years) that the demographic shift
+    sits beyond it.
+
+  # Cost-of-equity / WACC method and selection (layer 2).
+  wacc_method:
+
+      equity_risk_premium: 0.0500
+      equity_risk_premium_rationale: >
+        Damodaran-style mature-Australia ERP. Between implied global-
+        mature mid-point (~4.6%) and Australian historical (~5.5%).
+        Modest country-risk premium over US base (~50bps) baked in.
+
+
+      beta_selected: 1.10
+      beta_selection_rationale: |
+        Selected via peer-triangulation per §3.5.3. Peer table
+        (indicative β values; full EODHD pull pending for refresh):
+          Orica (ASX:ORI):       ~1.05 — comparable peer (direct industry; mining-services)
+          Yara (OSLO:YAR):       ~1.20 — comparable peer (ammonia / fertiliser)
+          ICL (NYSE:ICL):        ~1.10 — comparable peer (specialty chemicals + mining)
+          Sasol (JSE:SOL):       ~1.45 — EXCLUDED (energy + petrochemicals; different archetype)
+          DNL (subject):         0.36 measured (UNRELIABLE; window too short)
+
+        Comparable cluster ORI / YAR / ICL: β ~1.0-1.2, midpoint 1.10.
+        DNL's franchise mix closest to Orica but more US-weighted with
+        long-term US gas contract advantage reducing near-term margin
+        volatility — supports anchor at cluster midpoint.
+
+        β_selected = 1.10. Replaces v0.5 estimate of 1.15 (derived
+        from pre-demerger IPL ASX200 regression plus modest uplift but
+        did not formally peer-triangulate).
+
+        Re = 4.30% + 1.10 × 5.00% = 9.80% (vs v0.5 estimate 10.05%).
+        Modest 25bps reduction; WACC moves from 8.82% to ~8.68%.
+        Per-share value impact: ~+AUD 0.05 (positive but immaterial
+        vs scenario asymmetry of AUD 2.31 to AUD 0.57).
+
+
+      beta_refresh_action: |
+        Ben to provide EODHD fundamentals exports for ORI, YAR, ICL when
+        convenient. β_selected likely to stay near 1.10 but worth
+        verifying against the same data basis as the WBC peer pull
+        (15 June 2026).
+
+
+      # Active β for valuation
+      beta: 1.10
+      beta_rationale: >
+        Per §3.5.3 peer-triangulation discipline (v0.6, 17 June 2026
+        backport). Cluster midpoint of Orica / Yara / ICL ~1.0-1.2;
+        midpoint 1.10. See beta_selection_rationale block above.
+
+
+      cost_of_debt_pretax: 0.0600
+      cost_of_debt_pretax_rationale: >
+        AUD investment-grade BBB-tier corporate spread ~170bps over
+        10-year sovereign. IPL pre-demerger BBB+/Baa1; post-demerger
+        DNL likely BBB given smaller scale and concentrated cyclical
+        exposure.

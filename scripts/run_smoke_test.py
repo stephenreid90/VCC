@@ -5,10 +5,9 @@ Loads YAML inputs -> applies translator -> runs FCF DCF stub ->
 prints a summary table. Surfaces any schema / data-shape issues
 before Phase 4 expansion.
 
-Calibrated baseline (24 May 2026): if the company's financials YAML
-carries a `normalised_baseline` block, the translator picks up the
-normalised margin / net debt / capex / tax-rate overrides, and this
-driver constructs a WaccBuild from the same block.
+Calibrated baseline (24 May 2026): the layer-2 baseline (data/companies/<id>.yaml) is joined with the layer-1
+observed inputs (data/financials/<id>.yaml) to build the WaccBuild — see
+translator.resolve_normalised_baseline and design/single_source_of_truth.md §3.
 
 Usage:
     PYTHONPATH=src python scripts/run_smoke_test.py
@@ -22,7 +21,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
-from vcc_valuations.translator import load_inputs, translate_to_assumption_set  # noqa: E402
+from vcc_valuations.translator import (  # noqa: E402
+    load_inputs,
+    resolve_normalised_baseline,
+    translate_to_assumption_set,
+)
 from vcc_valuations.dcf.fcf_stub import run_fcf_dcf, WaccBuild  # noqa: E402
 
 
@@ -40,9 +43,9 @@ def _fmt_aud_m(v: float) -> str:
     return f"AUD {v:,.0f}m"
 
 
-def _build_wacc_from_yaml(financials: dict):
-    """Construct a WaccBuild from data/financials/<id>.yaml normalised_baseline."""
-    norm = financials.get("normalised_baseline") or {}
+def _build_wacc_from_yaml(inputs: dict):
+    """Construct a WaccBuild from the joined layer-1 / layer-2 baseline."""
+    norm = resolve_normalised_baseline(inputs)
     wb = norm.get("wacc_build")
     if not wb:
         return None
@@ -70,10 +73,10 @@ def main() -> None:
         archetype_id="industrial_explosives",
         company_id="dnl",
     )
-    wacc_build = _build_wacc_from_yaml(preload["financials"])
-    norm = preload["financials"].get("normalised_baseline") or {}
+    wacc_build = _build_wacc_from_yaml(preload)
+    norm = resolve_normalised_baseline(preload)
     if norm:
-        print("\nCalibrated baseline (from data/financials/dnl.yaml normalised_baseline):")
+        print("\nCalibrated baseline (data/companies/dnl.yaml + data/financials/dnl.yaml):")
         print(f"  Normalised EBIT margin:   {norm.get('ebit_margin'):.1%}")
         print(f"  Steady-state net debt:    {_fmt_aud_m(norm.get('net_debt', 0))}")
         print(f"  Capex / revenue:          {norm.get('capex_pct_revenue'):.1%}")

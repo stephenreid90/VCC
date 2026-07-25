@@ -173,7 +173,8 @@ def load_inputs(
     archetype = IndustryArchetypeFile.model_validate(
         _load(archetype_path)
     ).industry_archetype
-    company = CompanyPositionFile.model_validate(_load(company_path)).company_position
+    company_raw = _load(company_path)
+    company = CompanyPositionFile.model_validate(company_raw).company_position
     matrix = ImpactMatrix.model_validate(_load(matrix_path))
     financials = _load(financials_path)
 
@@ -183,7 +184,32 @@ def load_inputs(
         "company": company,
         "matrix": matrix,
         "financials": financials,
+        "company_raw": company_raw,
     }
+
+
+def resolve_normalised_baseline(inputs: dict) -> dict:
+    """Join the layer-2 method/selection block with the layer-1 observed inputs.
+
+    Layer 2 (judgement: margins, net debt, tax, the beta selection) lives in
+    ``data/companies/<id>.yaml`` under ``normalised_baseline``. Layer 1 (observed
+    market data: risk-free rate, measured beta, peer dataset, equity and debt
+    market values) stays in ``data/financials/<id>.yaml`` under
+    ``wacc_observed_inputs``. See ``design/single_source_of_truth.md`` §3.
+
+    Returns the joined mapping in the legacy shape, so callers that expect a
+    ``wacc_build`` sub-mapping keep working. Falls back to the pre-migration
+    location for companies not yet split (CSL).
+    """
+    financials = inputs["financials"]
+    norm = dict((inputs.get("company_raw") or {}).get("normalised_baseline") or {})
+    if not norm:
+        return dict(financials.get("normalised_baseline") or {})
+    observed = financials.get("wacc_observed_inputs") or {}
+    method = dict(norm.pop("wacc_method", None) or {})
+    if observed or method:
+        norm["wacc_build"] = {**observed, **method}
+    return norm
 
 
 # ----------------------------------------------------------------------
@@ -218,11 +244,10 @@ def translate_to_assumption_set(
     bs_total = financials["balance_sheet"]
     share_stats = financials["share_statistics"]
 
-    # If a normalised_baseline block is present in the financials YAML,
-    # prefer its values over the as-reported figures (smoke-test
-    # calibration overlay — see data/financials/<id>.yaml for the
-    # rationale against each override).
-    norm = financials.get("normalised_baseline") or {}
+    # Layer-2 judgement joined with layer-1 observed inputs; prefer these over
+    # the as-reported figures. Rationale for each sits beside the value in
+    # data/companies/<id>.yaml (see design/single_source_of_truth.md §3).
+    norm = resolve_normalised_baseline(inputs)
 
     base_revenue = income["revenue"]
     base_ebit_margin = norm.get("ebit_margin", income["operating_margin"])

@@ -1,0 +1,254 @@
+"""Single-source-of-truth lint (design/single_source_of_truth.md §5).
+
+Three checks, cheapest first:
+
+1. **No stored derived values in layer 2.** A key that names a computed quantity
+   (``computed_wacc``, ``enterprise_value``, ``price_per_share`` ...) must not
+   appear in ``data/companies/<id>.yaml``. This is the ``computed_wacc: 0.0882``
+   defect: a layer-3 value stored beside its own inputs, silently stale.
+
+2. **No layer-2 block left in layer 1.** ``data/financials/<id>.yaml`` must not
+   carry ``normalised_baseline`` — it migrated to ``data/companies/``. Guards
+   against the split being quietly undone by a feed refresh or a merge.
+
+3. **Register values are not duplicated in code (ratchet).** Every scalar in the
+   register is searched for as a literal across source, scripts and the UI
+   generator. Known pre-existing duplicates are recorded in
+   ``ssot_lint_baseline.json``; anything *new* fails. As the backfill proceeds
+   the baseline must shrink, so a stale entry fails too.
+
+Check 3 is deliberately a ratchet rather than a hard gate: the generator carries
+a whole older parameter set that cannot be re-derived by hand until the scenario
+engine exists (M2/M3), and hand-patching it would create a fourth inconsistent
+set. The ratchet stops the bleeding without demanding the backfill first.
+"""
+
+from __future__ import annotations
+
+import json
+import re
+from pathlib import Path
+
+import pytest
+import yaml
+
+ROOT = Path(__file__).resolve().parents[1]
+BASELINE = Path(__file__).parent / "ssot_lint_baseline.json"
+
+DERIVED_KEY = re.compile(
+    r"^(computed_|derived_|implied_).*|.*_(wacc|ev)$|^(wacc|enterprise_value|"
+    r"equity_value|cost_of_equity|fair_value|price_per_share|value_per_share|"
+    r"per_share_value)$"
+)
+
+SCAN_GLOBS = ("src/**/*.py", "scripts/**/*.py", "ui_prototypes/_generator/*.py")
+
+# Values too generic to be evidence of duplication (years, counts, small ints,
+# common ratios). Matching these would drown the signal.
+def _is_scannable(v) -> bool:
+    if not isinstance(v, (int, float)) or isinstance(v, bool):
+        return False
+    a = abs(float(v))
+    if a == 0 or a < 0.02 or 1900 <= a <= 2100:
+        return False
+    return not (float(v).is_integer() and a < 100)
+
+
+def _walk(node, prefix=""):
+    if isinstance(node, dict):
+        for k, v in node.items():
+            yield from _walk(v, f"{prefix}.{k}" if prefix else str(k))
+    elif isinstance(node, list):
+        for i, v in enumerate(node):
+            yield from _walk(v, f"{prefix}[{i}]")
+    else:
+        yield prefix, node
+
+
+def _company_ids():
+    return sorted(p.stem for p in (ROOT / "data" / "companies").glob("*.yaml")
+                  if not p.stem.endswith("_documents"))
+
+
+def _load(p: Path):
+    return yaml.safe_load(p.read_text(encoding="utf-8")) or {}
+
+
+# ----------------------------------------------------------------- check 1
+# Observed market snapshots from the feed are layer 1 by definition, even when
+# the underlying quantity is derived by whoever published it (EODHD's own EV).
+OBSERVED_PREFIXES = ("market_data.", "share_statistics.")
+
+# Pre-existing stored derived values, each to be cleared when that company is
+# split per design/single_source_of_truth.md §3. Listed rather than silently
+# skipped so the debt stays visible; remove an entry when it is fixed.
+KNOWN_STORED_DERIVED = {
+    "data/financials/csl.yaml :: normalised_baseline.cost_of_equity_build."
+    "computed_cost_of_equity": "clear during the CSL split",
+    "data/companies/wbc.yaml :: company_position.bank_specifics."
+    "cost_of_equity_build.cost_of_equity": "clear during the WBC split",
+}
+
+
+def test_no_stored_derived_values_in_data():
+    """Neither layer may store a computed answer.
+
+    Deliberately covers layer 1 as well as layer 2: the defect that motivated
+    this check (``computed_wacc: 0.0882``) lived in ``data/financials``, so a
+    layer-2-only scan would have missed the very thing it was written for.
+    """
+    offenders = []
+    for cid in _company_ids():
+        for rel in (f"data/companies/{cid}.yaml", f"data/financials/{cid}.yaml"):
+            p = ROOT / rel
+            if not p.exists():
+                continue
+            for path, _ in _walk(_load(p)):
+                leaf = path.split(".")[-1].split("[")[0]
+                if path.startswith(OBSERVED_PREFIXES):
+                    continue
+                if DERIVED_KEY.match(leaf):
+                    offenders.append(f"{rel} :: {path}")
+    fixed = sorted(set(KNOWN_STORED_DERIVED) - set(offenders))
+    assert not fixed, (
+        "These stored derived values are gone — remove them from "
+        "KNOWN_STORED_DERIVED so the check tightens:\n  " + "\n  ".join(fixed)
+    )
+    offenders = sorted(set(offenders) - set(KNOWN_STORED_DERIVED))
+    assert not offenders, (
+        "A computed answer is stored as data. Delete it; the engine computes "
+        "these (protocol rule 2):\n  " + "\n  ".join(offenders)
+    )
+
+
+# ----------------------------------------------------------------- check 2
+def test_layer_2_block_not_left_in_layer_1():
+    offenders = [
+        f"data/financials/{p.name}"
+        for p in (ROOT / "data" / "financials").glob("*.yaml")
+        if "normalised_baseline" in _load(p)
+    ]
+    known_unmigrated = {"data/financials/csl.yaml"}
+    unexpected = sorted(set(offenders) - known_unmigrated)
+    assert not unexpected, (
+        "Judgement found in a machine-refreshable layer-1 file:\n  "
+        + "\n  ".join(unexpected)
+        + "\nMove it to data/companies/<id>.yaml (protocol rules 3 and 4)."
+    )
+
+
+# ----------------------------------------------------------------- check 3
+def _register_values():
+    """{value_as_written: [register paths that hold it]} across both layers."""
+    reg: dict[str, set[str]] = {}
+    for cid in _company_ids():
+        for rel in (f"data/companies/{cid}.yaml", f"data/financials/{cid}.yaml"):
+            p = ROOT / rel
+            if not p.exists():
+                continue
+            for path, val in _walk(_load(p)):
+                if _is_scannable(val):
+                    reg.setdefault(_fmt(val), set()).add(f"{rel}::{path}")
+    return reg
+
+
+def _fmt(v) -> str:
+    return f"{float(v):.10g}"
+
+
+NUMBER = re.compile(r"(?<![\w.])[-+]?(?:\d+\.\d+|\.\d+|\d+)(?![\w.])")
+
+
+def _find_duplicates():
+    """Tokenise each line once and test membership, rather than searching for
+    every register value in every line — the naive form is O(lines x values)
+    and takes minutes on this repo."""
+    reg = _register_values()
+    hits: dict[str, list[str]] = {}
+    for pattern in SCAN_GLOBS:
+        for f in sorted(ROOT.glob(pattern)):
+            rel = f.relative_to(ROOT).as_posix()
+            for line in f.read_text(encoding="utf-8", errors="ignore").split("\n"):
+                if "ssot-allow" in line:
+                    continue
+                for tok in NUMBER.findall(line):
+                    try:
+                        key = _fmt(float(tok))
+                    except ValueError:
+                        continue
+                    if key in reg:
+                        hits.setdefault(f"{rel}:{key}", sorted(reg[key])[:1])
+    return hits
+
+
+def test_register_values_not_duplicated_in_code():
+    if not BASELINE.exists():
+        pytest.skip("no baseline recorded yet — run scripts/ssot_lint_baseline.py")
+    baseline = set(json.loads(BASELINE.read_text(encoding="utf-8")))
+    found = set(_find_duplicates())
+    new = sorted(found - baseline)
+    assert not new, (
+        "New hardcoded copies of register values (protocol rule 1):\n  "
+        + "\n  ".join(new)
+        + "\nConsume engine output instead, or annotate the line '# ssot-allow'."
+    )
+    stale = sorted(baseline - found)
+    assert not stale, (
+        "Baseline entries no longer match. EITHER the duplicate was removed "
+        "(good — regenerate the baseline so the ratchet tightens) OR the value "
+        "DRIFTED and the copy is now stale (bad — reconcile it first). Check "
+        "which before regenerating:\n  " + "\n  ".join(stale)
+    )
+
+
+# Known limitation: the register is keyed by value, not by path, so a value
+# stays "live" while any register entry still holds it. Updating `beta` while
+# leaving `beta_selected` behind is therefore invisible to check 3. Fixing that
+# needs the layer-2 schema (protocol §8, open item 9) to state which key is
+# authoritative for each quantity.
+
+
+# --------------------------------------------------------- consumer join
+def test_resolve_normalised_baseline_reconstructs_the_wacc_build():
+    """The split must be invisible to consumers.
+
+    Layer 2 (data/companies) joined with layer 1 (data/financials) has to hand
+    back the pre-migration ``wacc_build`` shape, or every downstream caller
+    breaks silently. This is the coverage the migration itself most needed.
+    """
+    from vcc_valuations.translator import load_inputs, resolve_normalised_baseline
+
+    inputs = load_inputs(
+        ROOT,
+        scenario_id="muddle_through",
+        archetype_id="industrial_explosives",
+        company_id="dnl",
+    )
+    norm = resolve_normalised_baseline(inputs)
+
+    # Layer-2 scalars.
+    assert norm["ebit_margin"] == 0.135        # ssot-allow: pinning the join
+    assert norm["net_debt"] == 1300.0          # ssot-allow
+    assert norm["tax_rate"] == 0.30            # ssot-allow
+    assert norm["terminal_growth"] == 0.025    # ssot-allow
+
+    # Rejoined wacc_build spans both layers.
+    wb = norm["wacc_build"]
+    assert wb["risk_free_rate"] == 0.0430          # ssot-allow: layer 1
+    assert wb["equity_market_value"] == 6802.0     # ssot-allow: layer 1
+    assert wb["debt_market_value"] == 1810.0       # ssot-allow: layer 1
+    assert wb["equity_risk_premium"] == 0.0500     # ssot-allow: layer 2
+    assert wb["beta"] == 1.10                      # ssot-allow: layer 2
+    assert wb["cost_of_debt_pretax"] == 0.0600     # ssot-allow: layer 2
+    assert "computed_wacc" not in wb, "layer-3 value must not be stored"
+    assert "wacc_method" not in norm, "wacc_method is folded into wacc_build"
+
+
+def test_unmigrated_company_still_resolves_via_fallback():
+    """CSL has not been split yet; its baseline must still load from layer 1."""
+    from vcc_valuations.translator import resolve_normalised_baseline
+
+    fin = _load(ROOT / "data" / "financials" / "csl.yaml")
+    norm = resolve_normalised_baseline({"financials": fin, "company_raw": {}})
+    assert norm, "fallback to the pre-migration location returned nothing"
+    assert norm["net_debt"] == fin["normalised_baseline"]["net_debt"]
