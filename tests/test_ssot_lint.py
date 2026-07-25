@@ -83,8 +83,7 @@ OBSERVED_PREFIXES = ("market_data.", "share_statistics.")
 # split per design/single_source_of_truth.md §3. Listed rather than silently
 # skipped so the debt stays visible; remove an entry when it is fixed.
 KNOWN_STORED_DERIVED = {
-    "data/financials/csl.yaml :: normalised_baseline.cost_of_equity_build."
-    "computed_cost_of_equity": "clear during the CSL split",
+    # CSL's computed_cost_of_equity was cleared in the 25 July 2026 CSL split.
     "data/companies/wbc.yaml :: company_position.bank_specifics."
     "cost_of_equity_build.cost_of_equity": "clear during the WBC split",
 }
@@ -128,7 +127,9 @@ def test_layer_2_block_not_left_in_layer_1():
         for p in (ROOT / "data" / "financials").glob("*.yaml")
         if "normalised_baseline" in _load(p)
     ]
-    known_unmigrated = {"data/financials/csl.yaml"}
+    # CSL was split on 25 July 2026; no company should carry a layer-2 block in
+    # layer 1 now. Kept as an (empty) exemption set for the next unsplit company.
+    known_unmigrated: set[str] = set()
     unexpected = sorted(set(offenders) - known_unmigrated)
     assert not unexpected, (
         "Judgement found in a machine-refreshable layer-1 file:\n  "
@@ -244,11 +245,34 @@ def test_resolve_normalised_baseline_reconstructs_the_wacc_build():
     assert "wacc_method" not in norm, "wacc_method is folded into wacc_build"
 
 
-def test_unmigrated_company_still_resolves_via_fallback():
-    """CSL has not been split yet; its baseline must still load from layer 1."""
+def test_csl_split_reconstructs_cost_of_equity_build():
+    """CSL is split like DNL, but discounts FCFF at the cost of equity.
+
+    So its observed inputs (``coe_observed_inputs``, layer 1) rejoin its
+    method/selection block (``coe_method``, layer 2) into ``cost_of_equity_build``
+    — the mirror of DNL's ``wacc_build`` — and no ``wacc_build`` is produced.
+    """
     from vcc_valuations.translator import resolve_normalised_baseline
 
     fin = _load(ROOT / "data" / "financials" / "csl.yaml")
-    norm = resolve_normalised_baseline({"financials": fin, "company_raw": {}})
-    assert norm, "fallback to the pre-migration location returned nothing"
-    assert norm["net_debt"] == fin["normalised_baseline"]["net_debt"]
+    comp = _load(ROOT / "data" / "companies" / "csl.yaml")
+    norm = resolve_normalised_baseline({"financials": fin, "company_raw": comp})
+
+    # Layer-2 scalars.
+    assert norm["tax_rate"] == 0.19             # ssot-allow: pinning the join
+    assert norm["terminal_growth"] == 0.03      # ssot-allow
+    assert norm["terminal_ebit_margin"] == 0.30  # ssot-allow
+
+    # Rejoined cost_of_equity_build spans both layers.
+    coe = norm["cost_of_equity_build"]
+    assert coe["risk_free_rate"] == 0.045       # ssot-allow: layer 1
+    assert coe["beta_measured"] == 0.094        # ssot-allow: layer 1
+    assert len(coe["beta_peer_dataset"]) == 4   # layer 1
+    assert coe["equity_risk_premium"] == 0.05   # ssot-allow: layer 2
+    assert coe["beta"] == 0.85                  # ssot-allow: layer 2
+    assert "computed_cost_of_equity" not in coe, "layer-3 value must not be stored"
+    assert "coe_method" not in norm, "coe_method is folded into cost_of_equity_build"
+    assert "wacc_build" not in norm, "CSL has no WACC build"
+
+    # And the split really happened: no normalised_baseline left in layer 1.
+    assert "normalised_baseline" not in fin

@@ -11,6 +11,71 @@ handoffs — the *volatile* layer. Durable facts and standing rules live in `CLA
 See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → this file
 → `design/architecture.md` → `design/build_plan.html` → (optional) `design/frameworks/`.
 
+
+---
+
+## CHAT HANDOVER — 25 July 2026 (CSL layer split · lint tightened)
+
+**Read this first.** This session (1) committed and pushed the DNL layer split + lint that was
+left uncommitted at the 22 July (c) handoff, and (2) executed the **CSL layer split**, mirroring
+DNL. Both are pushed. 68 tests green throughout.
+
+**Commit state (all pushed to origin/main).**
+
+1. `aafa878` — *SSOT: execute DNL layer split + add hardcoded-value lint*. This is the 22 July (c)
+   work, finally in history. Committed and pushed sandbox-side (the PAT in `.github-token` was used
+   for the push; `git push origin main` alone fails in the sandbox with no stored credential —
+   inject the token URL).
+2. `<this session's CSL commit>` — the CSL split below.
+
+**THE CSL SPLIT — what shipped.** Proven value-neutral by the same adversarial audit as DNL:
+**95 numeric leaves in, 93 out — only `computed_cost_of_equity` (0.0875) and `group_ebit_margin_fy25`
+(0.275) removed, zero added, zero changed.** Translator rejoin faithful (all `cost_of_equity_build`
+keys present, none extra, computed value absent).
+
+1. **`data/financials/csl.yaml` (layer 1).** `normalised_baseline` block GONE. Replaced by observed
+   blocks: `group_financials` (group_revenue 15,558 — Stephen's call: layer 1, observed disclosed
+   accounts), `balance_sheet` (net_debt 9,100), `market_data` (price/fx/consensus), `share_statistics`
+   (shares 478.9), and `coe_observed_inputs` (risk_free_rate, beta_measured + source, beta_peer_dataset).
+   Header `last_updated` bumped to 2026-07-25 with a note that this file is `workbook_reverse_engineered`
+   (still hand-curated from the v4 workbook, not yet machine-fed — refresh-safety aspirational, the
+   circularity the protocol §3 flags).
+2. **`data/companies/csl.yaml` (layer 2).** Gained a top-level `normalised_baseline` (sibling of
+   `company_position`, same placement as DNL): corporate_unallocated, capex/da/terminal_capex pct,
+   working_capital_change, tax_rate, restructuring_cash_to_come, terminal_ebit_margin, terminal_growth,
+   plus a nested **`coe_method`** (ERP, beta_selected + rationale, market-implied note, active beta,
+   discount_rate_basis). CSL discounts FCFF at the **cost of equity**, not WACC — hence `coe_method`
+   / `cost_of_equity_build`, the mirror of DNL's `wacc_method` / `wacc_build`. (Stephen's call:
+   full mirror of DNL, not the minimal delete-only variant.)
+3. **Deleted `computed_cost_of_equity: 0.0875`** (stored layer-3 value; engine computes Re). Also
+   **dropped `group_ebit_margin_fy25: 0.275`** (a self-described derived memo; concept survives in
+   the group_revenue rationale prose). Removed the hand-typed "(8.75%)" from `discount_rate_basis`.
+4. **`src/vcc_valuations/translator.py`.** `resolve_normalised_baseline` now also joins
+   `coe_observed_inputs` (layer 1) + `coe_method` (layer 2) into `cost_of_equity_build`, alongside
+   the existing wacc join. DNL path unchanged (no coe_* keys).
+5. **Lint (`tests/test_ssot_lint.py`).** Removed CSL's `computed_cost_of_equity` from
+   `KNOWN_STORED_DERIVED` (now only WBC's `cost_of_equity` remains as visible debt); emptied
+   `known_unmigrated` in check 2 (CSL is split, so no company should carry a layer-2 block in layer
+   1 now); replaced the old CSL-fallback test with `test_csl_split_reconstructs_cost_of_equity_build`.
+6. **Baseline ratchet tightened 124 → 120.** Deleting 0.0875 and 0.275 from the register made four
+   code copies stale (`wacc.py:0.275`, `beta_data.py:0.275`, `build_cfgs.py:0.0875` +`:0.275`) —
+   the GOOD case (register source removed, not value drift), so regenerated **downward** via
+   `scripts/ssot_lint_baseline.py`.
+
+**PICK THIS UP NEXT (unchanged from 22 July (c), minus the now-done CSL split).**
+
+1. **β decision + share count** — STILL OPEN, STILL STEPHEN'S CALL, and now the highest-value item.
+   Live problem persists on DNL: `equity_market_value: 6802.0` is blessed as layer-1 observed but
+   derives from 1,884 shares, contradicting `share_statistics: 1,875.9` — ~6.4% error in the equity
+   weight. Blocked on Ben's reconciliation (feed's own market cap 6,390.4 ÷ 3.6061 = 1,772) and the
+   real EODHD peer pull. Proper triangulation → ~0.96–1.05, excluding both 0.95 and 1.10.
+2. **WBC** — clear its stored `cost_of_equity` (the remaining `KNOWN_STORED_DERIVED` offender) when
+   WBC work comes up. No `data/financials/wbc.yaml` exists yet.
+3. **Remaining §8 items** — layer-2 schema, valuation-date stamping, basis labels, supersession log,
+   export proliferation, peer-data home.
+4. **Then M2** (wire AssumptionSet → FcfEngineInputs). This protocol is adjacent to M2, not its
+   front half.
+
 ---
 
 ## CHAT HANDOVER — 22 July 2026 (c) (SSOT protocol EXECUTED for DNL · CI fixed)

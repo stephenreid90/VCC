@@ -198,17 +198,27 @@ def resolve_normalised_baseline(inputs: dict) -> dict:
     ``wacc_observed_inputs``. See ``design/single_source_of_truth.md`` §3.
 
     Returns the joined mapping in the legacy shape, so callers that expect a
-    ``wacc_build`` sub-mapping keep working. Falls back to the pre-migration
-    location for companies not yet split (CSL).
+    ``wacc_build`` (DNL) or ``cost_of_equity_build`` (CSL, which discounts at the
+    cost of equity) sub-mapping keep working. Falls back to the pre-migration
+    location for any company not yet split.
     """
     financials = inputs["financials"]
     norm = dict((inputs.get("company_raw") or {}).get("normalised_baseline") or {})
     if not norm:
         return dict(financials.get("normalised_baseline") or {})
+    # WACC discipline (DNL): observed capital-structure + rate inputs joined with
+    # the method/selection block into the legacy wacc_build shape.
     observed = financials.get("wacc_observed_inputs") or {}
     method = dict(norm.pop("wacc_method", None) or {})
     if observed or method:
         norm["wacc_build"] = {**observed, **method}
+    # Cost-of-equity discipline (CSL): discounts FCFF at Ke, so there is no
+    # capital-structure weighting. Its observed market inputs (coe_observed_inputs)
+    # rejoin its method/selection block (coe_method) into cost_of_equity_build.
+    coe_observed = financials.get("coe_observed_inputs") or {}
+    coe_method = dict(norm.pop("coe_method", None) or {})
+    if coe_observed or coe_method:
+        norm["cost_of_equity_build"] = {**coe_observed, **coe_method}
     return norm
 
 
