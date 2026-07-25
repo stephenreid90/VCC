@@ -367,6 +367,26 @@ normalised_baseline:
 
 
       beta_selected: 1.10
+      beta_selected_decided_on: 2026-07-25
+      beta_selected_status: decided_owner_ratified
+      beta_selection_decision: |
+        DECISION 25 Jul 2026 (Stephen, ratified). beta = 1.10, on a real-gearing peer
+        triangulation:
+          - Unlevered the comparable equity betas at REAL gearings (Orica D/E 0.18,
+            Yara 0.36, ICL 0.30; tax 30/23/30%) -> asset beta ~0.93 (ASX-200) /
+            ~0.98 (MSCI-World).
+          - Re-levered at DNL's D/E 0.28 (net debt 1,810 / equity = 1,770m x 3.61)
+            -> 1.11 (ASX) to 1.17 (MSCI-World).
+          - Shaded to the TOP of a 1.05-1.10 reasoned range for DNL's lowest-in-set
+            operating leverage (~78% contracted book + long US gas contract) and
+            contract-dampened revenue cyclicality. 1.10 = mildly conservative.
+        SUPERSEDES the earlier "triangulation gives 0.96-1.05, excludes 1.10" note:
+        that rested on overstated MOCK peer gearings (0.45/0.35/0.40 in
+        ui_prototypes/_generator/beta_data.py, internally inconsistent with their own
+        mfin). With real gearings DNL sits mid-to-upper on leverage, so beta holds
+        1.05-1.10 rather than falling to ~1.0. Peer gearings here are public estimates
+        (Orica net debt / Yara market cap to be firmed) pending Ben's rigorous EODHD
+        pull; robust to sensitivity (world-basis beta 1.11-1.19 across DNL D/E 0.19-0.32).
       beta_selection_rationale: |
         Selected via peer-triangulation per §3.5.3. Peer table
         (indicative β values; full EODHD pull pending for refresh):

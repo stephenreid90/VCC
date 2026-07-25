@@ -14,6 +14,32 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 
 ---
 
+## CHAT HANDOVER — 25 July 2026 (c) (β DECIDED = 1.10 · share-count fix still pending)
+
+**β is settled.** Stephen ratified **β = 1.10** on 25 Jul 2026, on a *real-gearing* peer triangulation
+(not the mock). Recorded in `data/companies/dnl.yaml` `wacc_method.beta_selection_decision`
+(+ `beta_selected_decided_on` / `beta_selected_status: decided_owner_ratified`). **Value unchanged**
+(was already 1.10) → value-neutral, 68 tests green, no re-run.
+
+**The analysis (corrects the record).** Unlevering the comparable equity betas at *real* gearings
+(Orica D/E 0.18, Yara 0.36, ICL 0.30) gives asset β ~0.93 (ASX) / ~0.98 (World); re-levering at DNL's
+D/E 0.28 gives **1.11 (ASX) to 1.17 (World)** — at/above the raw peer median because DNL sits
+mid-to-upper on leverage. Shaded to the top of a 1.05–1.10 range for DNL's lowest-in-set operating
+leverage (~78% contracted book + long US gas contract) and dampened cyclicality → 1.10. **This
+supersedes** the old "triangulation → 0.96–1.05, excludes 1.10" claim, which was a MOCK-gearing
+artefact (`beta_data.py` gearings 0.45/0.35/0.40 overstated peer leverage and are internally
+inconsistent with their own mfin). So 1.10 is defensible, not stale. Peer gearings are public estimates
+(Orica net debt / Yara market cap to firm); Ben's rigorous EODHD pull still wanted but the call is
+robust to sensitivity.
+
+**STILL PENDING — the §5.3 share-count fix (the other half of the re-anchor pass).** `dnl.yaml` still
+carries `share_statistics.shares_outstanding: 1,875.9m` and `equity_market_value: 6,802` (off the
+phantom 1,884m). §5.3-compliant = 1,770m @ 31 Mar 2026 and equity ~6,390. Unlike β, this **does** move
+the E/V weight → WACC → valuations, so it needs an engine re-run and is its own step (do NOT hand-patch
+scenario values). β being locked unblocks it. Then WBC, remaining §8 items, M2.
+
+---
+
 ## CHAT HANDOVER — 25 July 2026 (b) (share-count convention: already in methodology §5, now surfaced · β still open)
 
 **Read this, then the CSL-split block below it.** After the CSL split (below), this session went deep on
