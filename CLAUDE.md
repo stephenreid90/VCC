@@ -101,3 +101,8 @@ and audit the draft against it before handing it back.
   and pushes returned 403). The `.git/*.lock` create-but-not-delete quirk above can still
   surface during commit/push — move the lock aside (`mv .git/index.lock .git/index.lock.deadN`,
   and `.git/HEAD.lock` if present) and retry.
+- **Cleanup script + standing rule.** Because the sandbox can't delete, each session
+  orphans `*.bak` backups and `.git/*.lock.dead*` files. Run **`sandbox_cleanup.cmd`**
+  (repo root) from a normal cmd window to clear them all in one go. Standing rule for
+  Claude: whenever a session leaves sandbox-orphaned files, always give Stephen the exact
+  CMD to run — rendered as a copy-button widget, not a blockquote — and point at this script.
