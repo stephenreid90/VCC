@@ -324,5 +324,32 @@ dnl["beta"]=beta_data.DNL; wbc["beta"]=beta_data.WBC; csl["beta"]=beta_data.CSL
 
 import os as _os
 _CFGP=_os.path.join(_os.path.dirname(_os.path.abspath(__file__)),'cfgs_gen.json')
+
+# ---- Workstream B: Five-Forces -> driver routing (generic by driver key). ----
+# Each impact names the reduced-form driver it moves; a transitory force carries a
+# FY27-FY31 path (PV-collapsed for the reduced-form, fed natively to the engine at M2).
+# Sign convention: +bps = value-accretive; compute applies each driver's own scale/sign.
+dnl["_forces"]["impacts"] = [
+  {"drv":"", "bps":0},
+  {"drv":"gas", "path":[200,200,150,100,50], "note":"US gas-contract cost edge; transitory, routed to the gas driver; path = 200 + gasRolloff overlay, eroding as contracts roll off through FY31."},
+  {"drv":"g", "bps":15},
+  {"drv":"", "bps":0},
+  {"drv":"g", "bps":-40},
+]
+wbc["_forces"]["impacts"] = [
+  {"drv":"", "bps":0},
+  {"drv":"m", "bps":8, "note":"deposit-franchise NIM edge; flows through the terminal-ROE driver."},
+  {"drv":"", "bps":0},
+  {"drv":"", "bps":0},
+  {"drv":"g", "bps":-10},
+]
+csl["_forces"]["impacts"] = [
+  {"drv":"", "bps":0},
+  {"drv":"m", "bps":5},
+  {"drv":"", "bps":0},
+  {"drv":"", "bps":0},
+  {"drv":"m", "bps":10},
+]
+
 json.dump({"dnl":dnl,"wbc":wbc,"csl":csl}, open(_CFGP,'w'), ensure_ascii=False)
 print("cfgs.json written")

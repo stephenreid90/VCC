@@ -528,7 +528,21 @@ function vccDownload(){ try{
     var term=Math.pow((p.re0-p.g0)/(Re-g), p.wTerm);
     return p.base*term*(m/p.m0)*((1-tax)/(1-p.tax0))*(1+(x-p.x0)*p.xk); }
   function ratio(vals){ return computeVals(vals)/CFG.cp.base; }
-  function scVal(sc){ return (sc.kind==='broker')? sc.v : sc.anchor*ratio(sc.vals); }
+  function _pvAvg(path, reFrac){ var num=0, den=0; for(var i=0;i<path.length;i++){ var df=Math.pow(1+reFrac,-(i+0.5)); num+=path[i]*df; den+=df; } return den? num/den : 0; }
+  function _effBps(imp, reFrac){ if(!imp) return 0; if(imp.path) return _pvAvg(imp.path, reFrac); return imp.bps||0; }
+  function _parseBps(v, fb){ if(v===undefined||v===null||v==='') return fb; if(Array.isArray(v)) return null; var f=parseFloat(String(v).replace(/\u2212/g,'-').replace(/[^0-9.+-]/g,'')); return isNaN(f)? fb : f; }
+  // Five-Forces -> driver offsets (delta from the assessed impact, so leaving cells untouched moves nothing).
+  function forcesOffsets(sc){ var out={}; var fd=CFG.forcesData, imp=fd&&fd.impacts; if(!imp||sc.kind==='broker') return out;
+    var reFrac=((sc.vals&&sc.vals.re!=null)?sc.vals.re:singleWacc)/100, xKey=CFG.cp.xKey, xk=CFG.cp.xk;
+    imp.forEach(function(m,i){ if(!m||!m.drv) return; var assessed=_effBps(m, reFrac);
+      var ov=(sc.forces&&sc.forces[i]!==undefined)?sc.forces[i]:null, user;
+      if(ov===null) user=assessed; else if(Array.isArray(ov)) user=_pvAvg(ov, reFrac); else user=_parseBps(ov, assessed);
+      var d=user-assessed; if(!d) return;
+      var dv=(m.drv===xKey)? d*(xk<0?-1:1) : d/100; out[m.drv]=(out[m.drv]||0)+dv; });
+    return out; }
+  function valsWithForces(sc){ var off=forcesOffsets(sc); var v={}; for(var k in sc.vals){ v[k]=sc.vals[k]; }
+    for(var key in off){ v[key]=(v[key]!=null?v[key]:0)+off[key]; } return v; }
+  function scVal(sc){ return (sc.kind==='broker')? sc.v : sc.anchor*ratio(valsWithForces(sc)); }
   function editableScens(){ return CFG.scenarios.filter(function(sc){ return sc.kind!=='broker'; }); }
   function isOverridden(sc){ if(sc.kind==='broker') return false; var d=defaultVals(); for(var i=0;i<CFG.sliders.length;i++){ var k=CFG.sliders[i].k; if(sc.vals[k]!==d[k]) return true; } for(var f in (sc.forces||{})){ if(sc.forces.hasOwnProperty(f)) return true; } return false; }
 
@@ -625,14 +639,30 @@ function vccDownload(){ try{
   function editableInputsTable(){ var h='<table style="width:100%; font-size:13px;">';
     CFG.sliders.forEach(function(s){ h+='<tr><td style="padding:4px 8px 4px 0; color:var(--text2);">'+s.label+'</td><td style="padding:4px 0; text-align:right; white-space:nowrap;"><input class="assumInp" data-k="'+s.k+'" type="number" min="'+s.min+'" max="'+s.max+'" step="'+s.step+'" value="'+st[s.k]+'" style="width:82px; text-align:right; font:inherit; padding:2px 6px; border:0.5px solid var(--bd2); border-radius:6px; background:var(--primary); color:var(--text);"> <span class="sub">'+(s.suf.trim()||'')+'</span></td></tr>'; });
     return h+'</table>'; }
-  function forcesMatrix(){ var fd=CFG.forcesData; var es=editableScens();
-    var h='<div style="margin-top:14px; border-top:0.5px solid var(--bd); padding-top:10px;"><div class="hd" style="margin-bottom:2px;">Assessed impact — and per-scenario override</div><div class="sub" style="margin-bottom:8px;">The company-vs-industry position above is <b>structural</b>, so each scenario column defaults to the same <b>assessed</b> impact. Override any cell for a scenario (saves in this browser). In this prototype the outcome bars come from the calibrated cases / reduced-form; a future engine will make these impacts flow into the number.</div><div style="overflow-x:auto;"><table style="font-size:12px; border-collapse:collapse; white-space:nowrap;"><tr><td class="sub" style="padding:3px 8px 3px 0; position:sticky; left:0; background:var(--primary);">Force</td><td class="sub" style="padding:3px 8px;">Assessed</td>';
-    es.forEach(function(sc){ h+='<td class="sub" style="padding:3px 8px; '+(sc===activeScen()?'color:var(--info-tx); font-weight:600;':'')+'">'+sc.n+'</td>'; });
+  function forcesMatrix(){ var fd=CFG.forcesData; var imp=fd.impacts||[]; var es=editableScens(); var act=activeScen();
+    var reFrac=((act&&act.vals&&act.vals.re!=null)?act.vals.re:singleWacc)/100;
+    function dlab(k){ var s=sliderByKey(k); return s? s.label : k; }
+    var h='<div style="margin-top:14px; border-top:0.5px solid var(--bd); padding-top:10px;"><div class="hd" style="margin-bottom:2px;">Assessed impact — and per-scenario override</div><div class="sub" style="margin-bottom:8px;">The company-vs-industry position above is <b>structural</b>, so each scenario column defaults to the <b>assessed</b> impact. Overrides now flow into the number through the reduced-form — each force routes to the driver it moves, as a delta from the assessed case, so leaving cells untouched changes nothing. Transitory forces are PV-collapsed here; the per-year engine (M2) will consume the full path natively.</div><div style="overflow-x:auto;"><table style="font-size:12px; border-collapse:collapse; white-space:nowrap;"><tr><td class="sub" style="padding:3px 8px 3px 0; position:sticky; left:0; background:var(--primary);">Force</td><td class="sub" style="padding:3px 8px;">Routes to</td><td class="sub" style="padding:3px 8px;">Assessed</td>';
+    es.forEach(function(sc){ h+='<td class="sub" style="padding:3px 8px; '+(sc===act?"color:var(--info-tx); font-weight:600;":"")+'">'+sc.n+'</td>'; });
     h+='</tr>';
-    fd.rows.forEach(function(r,i){ h+='<tr style="border-top:0.5px solid var(--bd);"><td style="padding:5px 8px 5px 0; font-weight:500; position:sticky; left:0; background:var(--primary);">'+r[0]+'</td><td style="padding:5px 8px; color:var(--text2);">'+r[4]+'</td>';
-      es.forEach(function(sc,si){ var val=(sc.forces&&sc.forces[i]!==undefined)?sc.forces[i]:r[4]; h+='<td style="padding:3px 6px;"><input class="fm" data-si="'+si+'" data-i="'+i+'" value="'+esc(val)+'" style="width:74px; font:inherit; font-size:12px; padding:2px 5px; border:0.5px solid var(--bd2); border-radius:5px; background:var(--primary); color:var(--text);"></td>'; });
-      h+='</tr>'; });
-    return h+'</table></div></div>'; }
+    fd.rows.forEach(function(r,i){ var m=imp[i]||{};
+      h+='<tr style="border-top:0.5px solid var(--bd);"><td style="padding:5px 8px 5px 0; font-weight:500; position:sticky; left:0; background:var(--primary);">'+r[0]+'</td>';
+      if(!m.drv){ h+='<td class="sub" style="padding:5px 8px; color:var(--text3);">—</td><td class="sub" style="padding:5px 8px; color:var(--text2);">'+r[4]+'</td>';
+        es.forEach(function(){ h+='<td class="sub" style="padding:3px 6px; color:var(--text3); text-align:center;">—</td>'; }); h+='</tr>'; return; }
+      var assessed=_effBps(m, reFrac), isPath=!!m.path;
+      h+='<td class="sub" style="padding:5px 8px; color:var(--text2);">&rarr; '+dlab(m.drv)+'</td>';
+      h+='<td class="sub" style="padding:5px 8px; color:var(--text2);">'+(isPath? (Math.round(assessed)+' bps*') : (m.bps+' bps'))+'</td>';
+      es.forEach(function(sc,si){ var ov=sc.forces&&sc.forces[i];
+        if(isPath){ var eff=Array.isArray(ov)? _pvAvg(ov, reFrac) : assessed; h+='<td class="sub" style="padding:3px 6px; text-align:center; color:var(--text2);">'+Math.round(eff)+(Array.isArray(ov)?' <span style="color:var(--user-tx);">&#9998;</span>':'')+'</td>'; }
+        else { var val=(ov!==undefined&&!Array.isArray(ov))? ov : Math.round(assessed); h+='<td style="padding:3px 6px;"><input class="fm" data-si="'+si+'" data-i="'+i+'" type="number" step="1" value="'+esc(val)+'" style="width:60px; font:inherit; font-size:12px; padding:2px 5px; border:0.5px solid var(--bd2); border-radius:5px; background:var(--primary); color:var(--text);"></td>'; }
+      }); h+='</tr>'; });
+    h+='</table></div>';
+    var pr='';
+    imp.forEach(function(m,i){ if(m&&m.path){ var ov=(act.forces&&Array.isArray(act.forces[i]))?act.forces[i]:m.path; var cells='';
+      ['FY27','FY28','FY29','FY30','FY31'].forEach(function(y,yi){ cells+='<td style="padding:2px 5px; text-align:center;"><div class="sub" style="font-size:10px;">'+y+'</div><input class="fy" data-i="'+i+'" data-y="'+yi+'" type="number" step="1" value="'+esc(ov[yi])+'" style="width:52px; font:inherit; font-size:12px; padding:2px 4px; border:0.5px solid var(--bd2); border-radius:5px; background:var(--primary); color:var(--text);"></td>'; });
+      pr+='<tr><td class="sub" style="padding:4px 10px 4px 0; white-space:nowrap;">'+fd.rows[i][0]+'</td>'+cells+'</tr>'; } });
+    if(pr){ h+='<div style="margin-top:12px; border-top:0.5px solid var(--bd); padding-top:8px;"><div class="hd" style="margin-bottom:2px;">Year-by-year path — transitory forces ('+act.n+')</div><div class="sub" style="margin-bottom:6px;">Edit per-year bps for the active scenario; the assessed column PV-collapses this path. The engine (M2) will use the path directly.</div><table style="border-collapse:collapse;">'+pr+'</table></div>'; }
+    return h+'</div>'; }
   function userWorldHTML(sc){ var rows='';
     CFG.sliders.forEach(function(s){ var uv=sc.vals[s.k], dv=s.def, chg=(uv!==dv);
       rows+='<tr style="border-top:0.5px solid var(--bd);"><td style="padding:5px 8px 5px 0; color:var(--text2);">'+s.label+'</td><td style="padding:5px 8px; text-align:right; '+(chg?'font-weight:600;':'color:var(--text3);')+'">'+fmt(s,uv)+'</td><td style="padding:5px 0; text-align:right; color:var(--text3);">'+(chg?('was '+fmt(s,dv)):'—')+'</td></tr>'; });
@@ -659,7 +689,10 @@ function vccDownload(){ try{
     return CFG.detail[k]||''; }
   function wireEditable(k,d){
     if(k==='assum'){ Array.prototype.forEach.call(d.querySelectorAll('.assumInp'),function(inp){ inp.addEventListener('change',function(){ var key=inp.getAttribute('data-k'); var s=sliderByKey(key); var v=parseFloat(inp.value); if(isNaN(v)){ inp.value=st[key]; return; } v=Math.max(s.min,Math.min(s.max,v)); inp.value=v; setInput(key,v); }); }); }
-    if(k==='forces'){ var es=editableScens(); Array.prototype.forEach.call(d.querySelectorAll('.fm'),function(inp){ inp.addEventListener('change',function(){ var sc=es[+inp.getAttribute('data-si')]; if(!sc) return; sc.forces=sc.forces||{}; sc.forces[+inp.getAttribute('data-i')]=inp.value; sc.v=scVal(sc); saveLS(); drawBars(); }); }); }
+    if(k==='forces'){ var es=editableScens();
+      Array.prototype.forEach.call(d.querySelectorAll('.fm'),function(inp){ inp.addEventListener('change',function(){ var sc=es[+inp.getAttribute('data-si')]; if(!sc) return; sc.forces=sc.forces||{}; var i=+inp.getAttribute('data-i'); var f=parseFloat(inp.value); if(isNaN(f)) delete sc.forces[i]; else sc.forces[i]=f; sc.v=scVal(sc); saveLS(); drawBars(); updateCards(activeScen().v); }); });
+      Array.prototype.forEach.call(d.querySelectorAll('.fy'),function(inp){ inp.addEventListener('change',function(){ var a=activeScen(); if(a.kind==='broker') return; var i=+inp.getAttribute('data-i'), y=+inp.getAttribute('data-y'); a.forces=a.forces||{}; var base=(CFG.forcesData.impacts[i]&&CFG.forcesData.impacts[i].path)||[]; var arr=Array.isArray(a.forces[i])?a.forces[i].slice():base.slice(); var f=parseFloat(inp.value); arr[y]=isNaN(f)?0:f; a.forces[i]=arr; a.v=scVal(a); saveLS(); drawBars(); updateCards(a.v); openDetail('forces', true); }); });
+    }
     if(k==='discount'){ bwInit(); var _bwr=d.querySelector('#bwrap'); if(_bwr) bwRender(_bwr); var ob=d.querySelector('#openbw'); if(ob) ob.style.display='none'; }
     if(k==='multiples'){ var mw=d.querySelector('#mwrap'); if(mw){ muInit(); mwRender(mw); } }
     if(k==='dcf'){ Array.prototype.forEach.call(d.querySelectorAll('.dcf_view'),function(b){ b.addEventListener('click',function(){ dcfView=b.getAttribute('data-v'); openDetail('dcf', true); }); }); }
