@@ -39,6 +39,7 @@ details.thy .thybody{padding:2px 12px 11px 22px; font-size:12.5px;}
   <div class="metric"><div style="font-size:13px; color:var(--text2);" id="mklab"></div><div style="font-size:24px; font-weight:600;" id="vmkt"></div></div>
   <div class="metric"><div style="font-size:13px; color:var(--text2);" id="brlab"></div><div style="font-size:24px; font-weight:600;" id="vbr"></div></div>
   <div class="metric"><div style="font-size:13px; color:var(--text2);" id="m4lab"></div><div style="font-size:24px; font-weight:600;" id="m4val"></div></div>
+  <div class="metric"><div style="font-size:13px; color:var(--text2);">Discount rate</div><div style="font-size:24px; font-weight:600;"><span id="wacchip"></span></div><div style="font-size:12px; color:var(--text3);" id="waccsub"></div></div>
 </div>
 <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1.5rem; margin-bottom:1.5rem;">
   <div><div class="hd">Top 5 value drivers <span style="font-weight:400; color:var(--text3); font-size:12px;">— flex to see impact</span></div>
@@ -415,7 +416,7 @@ var DNLRICH=(function(){
     d.push([T('After-tax cost of debt (%)'),Ff(q(AS)+'!$B$26')]); //B10
     d.push([T('WACC (%)',S_BOLD),Ff('B7*B9+B10*(1-B9)',S_VAL)]);  //B11
     d.push([]);
-    d.push([T('Scenarios discount at their assessed rate (default '+ (cp.re0*100).toFixed(2) +'%). This β-driven WACC is the alternative — set a scenario’s discount rate to it to apply.')]);
+    d.push([T('All scenarios discount at the single WACC ('+ (cp.re0*100).toFixed(2) +'%) — one rate per company per valuation date; scenarios differ in cash flows, not the discount rate. The β build above sets that single rate; a per-scenario override is available as a deliberate what-if.')]);
     sheets.push({name:DR,rows:d});
 
     // ---------- DCF per scenario ----------
@@ -515,6 +516,7 @@ function vccDownload(){ try{
 (function(){
   var LS='vcc_ws_'+CFG.companyShort;
   var applyGlobal=false;
+  var singleWacc=CFG.cp.re0*100;
   function defaultVals(){ var o={}; CFG.sliders.forEach(function(s){ o[s.k]=s.def; }); return o; }
   function sliderByKey(k){ for(var i=0;i<CFG.sliders.length;i++){ if(CFG.sliders[i].k===k) return CFG.sliders[i]; } return null; }
   function activeScen(){ return CFG.scenarios[CFG.activeIdx]; }
@@ -546,9 +548,11 @@ function vccDownload(){ try{
     var em=document.getElementById('vmkt'); em.textContent=(vm>=0?'+':'')+vm.toFixed(0)+'%'; em.style.color=vm>=0?'var(--success-tx)':'var(--danger-tx)';
     document.getElementById('vbr').textContent=(vb>=0?'+':'')+vb.toFixed(0)+'%'; }
   function render(){ var a=activeScen(); if(a.kind!=='broker') a.v=scVal(a); updateCards(a.v); drawBars(); }
+  function updateWacc(){ var el=document.getElementById('wacchip'); if(el) el.textContent=singleWacc.toFixed(2)+'%'; var sub=document.getElementById('waccsub'); if(sub) sub.textContent='single '+((CFG.beta&&CFG.beta.toDiscount&&CFG.beta.toDiscount.label)||'WACC')+' · all scenarios'; }
 
   // ---- one input change on the active scenario; global => every editable scenario ----
   function setInput(k,v){ var a=activeScen(); if(a.kind==='broker') return;
+    if(k==='re' && applyGlobal){ singleWacc=v; }
     if(applyGlobal){ editableScens().forEach(function(sc){ sc.vals[k]=v; sc.v=scVal(sc); }); }
     else { a.vals[k]=v; a.v=scVal(a); }
     saveLS(); syncSliders(); updateCards(activeScen().v); drawBars(); }
@@ -559,15 +563,17 @@ function vccDownload(){ try{
     CFG.scenarios.forEach(function(s,i){ var w=Math.max(0,Math.min(100,s.v/CFG.scale*100)), sel=(i===CFG.activeIdx);
       var od=(s.kind!=='broker'&&isOverridden(s))?'<span title="adjusted from the assessed case" style="color:var(--user-tx);"> ✎</span>':'';
       var del=(s.kind==='user')?'<span class="delu" data-uid="'+s.uid+'" title="delete scenario" style="cursor:pointer; color:var(--text3); padding:0 3px;">×</span>':'';
+      var wr=(s.kind!=='broker'&&s.vals&&Math.abs((s.vals.re!=null?s.vals.re:singleWacc)-singleWacc)>1e-9)?'<span title="per-scenario discount-rate override — differs from the single WACC" style="color:var(--warning-tx); font-weight:500; font-size:11px;"> · r '+s.vals.re.toFixed(2)+'%</span>':'';
       h+='<div class="scbar" data-i="'+i+'" style="display:flex; align-items:center; gap:8px; margin-bottom:5px; cursor:pointer; border-radius:5px; padding:1px 2px; '+(sel?'background:var(--secondary);':'')+'">'
        +'<div style="width:122px; font-size:12px; color:'+(sel?'var(--text)':'var(--text2)')+'; font-weight:'+(sel?'500':'400')+'; text-align:right; flex:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">'+del+s.n+od+'</div>'
        +'<div style="flex:1; position:relative; height:19px;"><div style="height:19px; width:'+w+'%; background:'+barColor(s.kind)+'; border-radius:4px; '+(sel?'outline:1.5px solid var(--bdinfo);':'')+'"></div>'
-       +'<div style="position:absolute; top:1px; left:calc('+w+'% + 6px); font-size:12px; font-weight:500; color:'+txtColor(s.kind)+'; white-space:nowrap;">'+s.v.toFixed(CFG.dp)+'</div></div></div>';
+       +'<div style="position:absolute; top:1px; left:calc('+w+'% + 6px); font-size:12px; font-weight:500; color:'+txtColor(s.kind)+'; white-space:nowrap;">'+s.v.toFixed(CFG.dp)+wr+'</div></div></div>';
     });
     h+='<div style="position:absolute; left:130px; right:0; top:0; bottom:14px; pointer-events:none;"><div style="position:absolute; left:'+mkt+'%; top:0; bottom:0; border-left:1.5px dashed var(--text2);"></div></div></div>';
     var bx=document.getElementById('bars'); bx.innerHTML=h;
     Array.prototype.forEach.call(bx.querySelectorAll('.scbar'),function(el){ el.addEventListener('click',function(){ selectBar(parseInt(el.getAttribute('data-i'))); }); });
     Array.prototype.forEach.call(bx.querySelectorAll('.delu'),function(el){ el.addEventListener('click',function(ev){ ev.stopPropagation(); delScenario(el.getAttribute('data-uid')); }); });
+    updateWacc();
   }
 
   function selectScenario(i){ CFG.activeIdx=i; var sc=CFG.scenarios[i];
@@ -651,7 +657,7 @@ function vccDownload(){ try{
   function wireEditable(k,d){
     if(k==='assum'){ Array.prototype.forEach.call(d.querySelectorAll('.assumInp'),function(inp){ inp.addEventListener('change',function(){ var key=inp.getAttribute('data-k'); var s=sliderByKey(key); var v=parseFloat(inp.value); if(isNaN(v)){ inp.value=st[key]; return; } v=Math.max(s.min,Math.min(s.max,v)); inp.value=v; setInput(key,v); }); }); }
     if(k==='forces'){ var es=editableScens(); Array.prototype.forEach.call(d.querySelectorAll('.fm'),function(inp){ inp.addEventListener('change',function(){ var sc=es[+inp.getAttribute('data-si')]; if(!sc) return; sc.forces=sc.forces||{}; sc.forces[+inp.getAttribute('data-i')]=inp.value; sc.v=scVal(sc); saveLS(); drawBars(); }); }); }
-    if(k==='discount'){ var ob=d.querySelector('#openbw'); if(ob) ob.addEventListener('click',function(){ bwInit(); bwRender(d.querySelector('#bwrap')); ob.style.display='none'; }); }
+    if(k==='discount'){ bwInit(); var _bwr=d.querySelector('#bwrap'); if(_bwr) bwRender(_bwr); var ob=d.querySelector('#openbw'); if(ob) ob.style.display='none'; }
     if(k==='multiples'){ var mw=d.querySelector('#mwrap'); if(mw){ muInit(); mwRender(mw); } }
     if(k==='dcf'){ Array.prototype.forEach.call(d.querySelectorAll('.dcf_view'),function(b){ b.addEventListener('click',function(){ dcfView=b.getAttribute('data-v'); openDetail('dcf', true); }); }); }
   }
@@ -667,7 +673,7 @@ function vccDownload(){ try{
     bs={ idx:BW.indexDefault, win:BW.windowDefault, rf:BW.rf, erp:BW.erp, alpha:BW.alpha,
          relever:false, targetDE:(BW.subject.de||0), showCand:false, showWider:false, comps:BW.comparables.slice(), plot:null };
     bs.comps.forEach(function(c){ if(c._sel===undefined) c._sel=c.selected; });
-    var f=bs.comps.filter(function(c){return c._sel;})[0]; bs.plot=f?f.name:(bs.comps[0]&&bs.comps[0].name);
+    // beta plots start collapsed; each opens inline under its comparable on click
   }
   function betaOf(c){ var d=c._added?c._data:c.data; return d[bs.idx][bs.win].beta; }
   function pointsOf(c){ var d=c._added?c._data:c.data; return d[bs.idx][bs.win].points; }
@@ -706,18 +712,35 @@ function vccDownload(){ try{
     pts.forEach(function(p){ s+='<circle cx="'+X(p[0])+'" cy="'+Y(p[1])+'" r="2.4" fill="var(--user-tx)" opacity="0.75"/>'; });
     s+='<text x="'+(W-pad)+'" y="18" text-anchor="end" font-size="12" fill="var(--text2)">slope β = '+b.toFixed(2)+'</text>';
     s+='<text x="'+(W-pad)+'" y="'+(H-6)+'" text-anchor="end" font-size="9" fill="var(--text3)">index return →</text></svg>'; return s; }
+  function bwPlotBlock(pc){ var stt=betaStats(pointsOf(pc)), sig=Math.abs(stt.t1)>2, verdict=sig?('<b style="color:'+(stt.b>1?'var(--danger-tx)':'var(--info-tx)')+';">significantly '+(stt.b>1?'above':'below')+' 1</b>'):'<b>not distinguishable from 1</b>';
+    return '<div class="sub" style="margin:2px 0 4px;">Regression of '+pc.name+' returns vs '+bs.idx+' ('+bs.win+') — slope = β</div>'+scatterSVG(pc)+'<div class="sub" style="margin-top:5px; line-height:1.55;">n='+stt.n+' · R² '+stt.r2.toFixed(2)+' · SE(β) '+stt.se.toFixed(2)+' · t(β vs 0) '+stt.t0.toFixed(1)+' · <b>t(β vs 1) '+stt.t1.toFixed(1)+'</b> → β is '+verdict+' at ~95%.</div>'; }
   function bwRender(cont){ if(!cont) return;
     var agg=aggBeta(), re=reOf(agg.beta), disc=impliedDiscount(re), t=BW.toDiscount, h='';
+    h+='<div style="background:var(--info-bg); color:var(--info-tx); border-radius:8px; padding:8px 10px; font-size:12px; margin-bottom:10px;"><b>Single '+(t.label||'WACC')+' · '+singleWacc.toFixed(2)+'%</b> — one rate per company per valuation date (methodology §3.5; cross-cutting convention 1). Scenarios differ in cash flows, not in the discount rate. Applying below updates the single rate for <b>all</b> scenarios; tick “this scenario only” to record a deliberate per-scenario override.</div>';
     h+='<div style="background:var(--warning-bg); color:var(--warning-tx); border-radius:8px; padding:8px 10px; font-size:12px; margin-bottom:10px;"><b>Mock data.</b> Betas and scatter points are synthetic placeholders shaped like the eventual EODHD feed (peer price series + indices + gearing/tax). To be sourced from Ben&rsquo;s pipeline.</div>';
+    h+='<div style="display:flex; flex-wrap:wrap; gap:18px; align-items:flex-start; margin-bottom:8px;"><div style="flex:1 1 300px; min-width:250px;">';
+    h+='<div style="font-weight:600; font-size:14px; margin:2px 0 4px;">Build the discount rate</div><div class="sub" style="margin-bottom:10px;">Set the components (or select peers for β); the rate updates live. Choose how to apply it on the right.</div>';
     h+='<div style="display:flex; flex-wrap:wrap; gap:12px 18px; align-items:flex-end; margin-bottom:12px;">'+numField('bw_rf','Risk-free %',bs.rf,0.05)+numField('bw_erp','ERP %',bs.erp,0.05)+numField('bw_alpha','Alpha %',bs.alpha,0.1);
     h+='<div><div class="sub">Index</div><select id="bw_idx" style="font:inherit; padding:3px 6px; border:0.5px solid var(--bd2); border-radius:6px; background:var(--primary); color:var(--text);">'+BW.indices.map(function(ix){return '<option'+(ix===bs.idx?' selected':'')+'>'+ix+'</option>';}).join('')+'</select></div>';
     h+='<div><div class="sub">Estimation window</div>'+BW.windows.map(function(w){return '<button class="bw_win" data-w="'+w+'" style="font-size:12px; margin-right:4px; '+(w===bs.win?'border-color:var(--bdinfo); color:var(--info-tx);':'')+'">'+w+'</button>';}).join('')+'</div></div>';
-    if(!BW.bank){ h+='<label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text2); margin-bottom:10px; flex-wrap:wrap;"><input type="checkbox" id="bw_relev" '+(bs.relever?'checked':'')+'> unlever peers → relever at subject gearing D/E <input type="number" id="bw_de" value="'+bs.targetDE+'" step="0.05" min="0" '+(bs.relever?'':'disabled')+' style="width:64px; font:inherit; padding:2px 6px; border:0.5px solid var(--bd2); border-radius:6px; background:var(--primary); color:var(--text);"></label>'; }
+    if(!BW.bank){ h+='<label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text2); margin-bottom:4px; flex-wrap:wrap;"><input type="checkbox" id="bw_relev" '+(bs.relever?'checked':'')+'> use asset betas: unlever peers, re-lever at DNL gearing D/E <input type="number" id="bw_de" value="'+bs.targetDE+'" step="0.05" min="0" '+(bs.relever?'':'disabled')+' style="width:60px; font:inherit; padding:2px 6px; border:0.5px solid var(--bd2); border-radius:6px; background:var(--primary); color:var(--text);"></label><div class="sub" style="margin-bottom:10px; font-size:11.5px;">off = median of peers’ levered β · on = Hamada re-lever (the proper triangulation) at DNL’s gearing, and reveals the D/E box</div>'; }
     else { h+='<div class="sub" style="margin-bottom:10px;">Relevering is not applied to banks — beta is used directly (deposits/wholesale funding are operating inputs, not financing).</div>'; }
+    h+='</div>';
+    h+='<div style="flex:1 1 250px; min-width:240px;">';
+    h+='<div style="background:var(--secondary); border-radius:8px; padding:11px 13px;">';
+    h+='<div style="font-weight:600; font-size:13px; margin-bottom:6px;">The rate you built</div>';
+    h+='<div style="font-size:13px;">Selected peers ('+selectedComps().length+'): median levered β <b>'+agg.medL.toFixed(2)+'</b>'+(BW.bank?'':' · median unlevered <b>'+agg.medU.toFixed(2)+'</b>')+'</div>';
+    h+='<div style="font-size:13px; margin-top:4px;">→ subject β <b>'+agg.beta.toFixed(2)+'</b>'+(bs.relever?(' (relevered at D/E '+bs.targetDE+')'):'')+' · documented judgment '+BW.subject.selectedBeta.toFixed(2)+'</div>';
+    h+='<div style="font-size:13px; margin-top:4px;">→ R<sub>e</sub> = '+bs.rf.toFixed(2)+'% + β×'+bs.erp.toFixed(2)+'%'+(bs.alpha?(' + α '+bs.alpha.toFixed(2)+'%'):'')+' = <b>'+re.toFixed(2)+'%</b>'+(t.mode==='wacc'?(' → implied '+t.label+' <b>'+disc.toFixed(2)+'%</b>'):'')+'</div>';
+    h+='<div style="margin-top:10px; border-top:0.5px solid var(--bd2); padding-top:9px;"><div style="font-weight:600; font-size:13px; margin-bottom:6px;">Apply this rate ('+disc.toFixed(2)+'%)</div>';
+    h+='<label style="display:flex; gap:7px; align-items:flex-start; font-size:12.5px; margin-bottom:5px; cursor:pointer;"><input type="radio" name="bw_scope" value="all" checked style="margin-top:2px;"><span><b>To all scenarios</b> — sets the single '+(t.label||'WACC')+' (the disciplined default).</span></label>';
+    h+='<label style="display:flex; gap:7px; align-items:flex-start; font-size:12.5px; margin-bottom:9px; cursor:pointer;"><input type="radio" name="bw_scope" value="one" style="margin-top:2px;"><span><b>To this scenario only</b> — a deliberate per-scenario override, flagged on its bar.</span></label>';
+    h+='<button id="bw_apply" style="font-size:13px; padding:5px 14px;">apply →</button></div></div>';
+    h+='</div></div>';
     h+='<table style="width:100%; font-size:13px;"><tr><td class="sub"></td><td class="sub" style="padding:2px 8px 2px 0;">Comparable</td><td class="sub" style="padding:2px 8px; text-align:right;">Levered β</td><td class="sub" style="padding:2px 8px; text-align:right;">Unlevered β</td><td class="sub"></td></tr>';
     h+='<tr style="border-top:0.5px solid var(--bd);"><td></td><td style="padding:6px 8px 6px 0;"><b>'+BW.subject.name+'</b> <span class="sub">'+BW.subject.ticker+' · subject</span><div class="sub" style="color:var(--danger-tx);">'+BW.subject.measuredNote+'</div></td><td style="padding:6px 8px; text-align:right; font-weight:600;">'+BW.subject.selectedBeta.toFixed(2)+'</td><td style="padding:6px 8px; text-align:right; color:var(--text3);">'+(BW.bank?'—':unlev(BW.subject.selectedBeta,BW.subject.tax,BW.subject.de).toFixed(2))+'</td><td></td></tr>';
     bs.comps.forEach(function(c,ci){ var bl=betaOf(c), bu=unlev(bl,c.tax,c.gearingDE);
-      h+='<tr style="border-top:0.5px solid var(--bd);"><td style="padding:6px 4px 6px 0; vertical-align:top;"><input type="checkbox" class="bw_sel" data-ci="'+ci+'" '+(c._sel?'checked':'')+'></td><td style="padding:6px 8px 6px 0;">'+c.name+' <span class="sub">'+c.ticker+'</span>'+(c._added?' <span class="sub" style="color:var(--user-tx);">added</span>':'')+'<details class="thy" style="margin-top:4px;"><summary>why comparable</summary><div class="thybody">'+c.why+'</div></details></td><td style="padding:6px 8px; text-align:right; '+(c._sel?'font-weight:600;':'color:var(--text3);')+'">'+bl.toFixed(2)+'</td><td style="padding:6px 8px; text-align:right; color:var(--text2);">'+(BW.bank?'—':bu.toFixed(2))+'</td><td style="padding:6px 0; text-align:right; vertical-align:top;"><button class="bw_plot" data-name="'+c.name+'" style="font-size:11px; padding:2px 7px; '+(bs.plot===c.name?'border-color:var(--bdinfo);':'')+'">plot</button></td></tr>'; });
+      h+='<tr style="border-top:0.5px solid var(--bd);"><td style="padding:6px 4px 6px 0; vertical-align:top;"><input type="checkbox" class="bw_sel" data-ci="'+ci+'" '+(c._sel?'checked':'')+'></td><td style="padding:6px 8px 6px 0;">'+c.name+' <span class="sub">'+c.ticker+'</span>'+(c._added?' <span class="sub" style="color:var(--user-tx);">added</span>':'')+'<details class="thy" style="margin-top:4px;"><summary>why comparable</summary><div class="thybody">'+c.why+'</div></details></td><td style="padding:6px 8px; text-align:right; '+(c._sel?'font-weight:600;':'color:var(--text3);')+'">'+bl.toFixed(2)+'</td><td style="padding:6px 8px; text-align:right; color:var(--text2);">'+(BW.bank?'—':bu.toFixed(2))+'</td><td style="padding:6px 0; text-align:right; vertical-align:top;"><button class="bw_plot" data-name="'+c.name+'" style="font-size:11px; padding:2px 7px; '+(bs.plot===c.name?'border-color:var(--bdinfo); color:var(--info-tx);':'')+'">'+(bs.plot===c.name?'hide':'plot')+'</button></td></tr>'; if(bs.plot===c.name){ h+='<tr><td colspan="5" style="padding:0 8px 12px;">'+bwPlotBlock(c)+'</td></tr>'; } });
     h+='</table>';
     if(BW.subject.det){ var _dc=[BW.subject].concat(bs.comps.filter(function(c){return c._sel;}));
       h+='<details class="thy" style="margin-top:12px;" open><summary>Beta determinants — why these asset betas</summary><div class="thybody">';
@@ -749,14 +772,6 @@ function vccDownload(){ try{
       h+='<div style="margin-top:8px;"><button id="bw_wider" style="font-size:12px;">'+(bs.showWider?'− hide wider search':'⌕ search wider')+'</button>';
       if(bs.showWider && BW.candidates2){ h+='<div style="margin-top:6px;"><div class="sub" style="margin-bottom:6px;">Broader search — adjacent names with a weaker but arguable rationale:</div>'; BW.candidates2.forEach(function(cd,i){ h+=candRow(cd,'bw_add2',i); }); h+='</div>'; }
       h+='</div></div>'; } h+='</div>';
-    var pc=bs.comps.filter(function(c){return c.name===bs.plot;})[0];
-    if(pc){ var stt=betaStats(pointsOf(pc)), sig=Math.abs(stt.t1)>2, verdict=sig?('<b style="color:'+(stt.b>1?'var(--danger-tx)':'var(--info-tx)')+';">significantly '+(stt.b>1?'above':'below')+' 1</b>'):'<b>not distinguishable from 1</b>';
-      h+='<div style="margin-top:12px;"><div class="hd" style="margin-bottom:4px;">Beta regression — '+pc.name+' vs '+bs.idx+' <span class="sub">('+bs.win+')</span></div>'+scatterSVG(pc)+'<div class="sub" style="margin-top:5px; line-height:1.55;">n='+stt.n+' &middot; R\u00b2 '+stt.r2.toFixed(2)+' &middot; SE(\u03b2) '+stt.se.toFixed(2)+' &middot; t(\u03b2 vs 0) '+stt.t0.toFixed(1)+' &middot; <b>t(\u03b2 vs 1) '+stt.t1.toFixed(1)+'</b> &rarr; \u03b2 is '+verdict+' at ~95%.</div></div>'; }
-    h+='<div style="margin-top:12px; background:var(--secondary); border-radius:8px; padding:11px 13px;">';
-    h+='<div style="font-size:13px;">Selected peers ('+selectedComps().length+'): median levered β <b>'+agg.medL.toFixed(2)+'</b>'+(BW.bank?'':' · median unlevered <b>'+agg.medU.toFixed(2)+'</b>')+'</div>';
-    h+='<div style="font-size:13px; margin-top:4px;">→ subject β <b>'+agg.beta.toFixed(2)+'</b>'+(bs.relever?(' (relevered at D/E '+bs.targetDE+')'):'')+' · documented judgment '+BW.subject.selectedBeta.toFixed(2)+'</div>';
-    h+='<div style="font-size:13px; margin-top:4px;">→ R<sub>e</sub> = '+bs.rf.toFixed(2)+'% + β×'+bs.erp.toFixed(2)+'%'+(bs.alpha?(' + α '+bs.alpha.toFixed(2)+'%'):'')+' = <b>'+re.toFixed(2)+'%</b>'+(t.mode==='wacc'?(' → implied '+t.label+' <b>'+disc.toFixed(2)+'%</b>'):'')+'</div>';
-    h+='<button id="bw_apply" style="margin-top:8px; font-size:12px;">apply to the discount-rate slider ('+disc.toFixed(2)+'%)</button></div>';
     cont.innerHTML=h; bwWire(cont);
   }
   function bwWire(cont){
@@ -769,13 +784,15 @@ function vccDownload(){ try{
     on('bw_relev','change',function(){ bs.relever=this.checked; bwRender(cont); });
     on('bw_de','change',function(){ bs.targetDE=parseFloat(this.value)||0; bwRender(cont); });
     Array.prototype.forEach.call(cont.querySelectorAll('.bw_sel'),function(cb){ cb.addEventListener('change',function(){ bs.comps[+cb.getAttribute('data-ci')]._sel=cb.checked; bwRender(cont); }); });
-    Array.prototype.forEach.call(cont.querySelectorAll('.bw_plot'),function(b){ b.addEventListener('click',function(){ bs.plot=b.getAttribute('data-name'); bwRender(cont); }); });
+    Array.prototype.forEach.call(cont.querySelectorAll('.bw_plot'),function(b){ b.addEventListener('click',function(){ var nm=b.getAttribute('data-name'); bs.plot=(bs.plot===nm)?null:nm; bwRender(cont); }); });
     on('bw_find','click',function(){ bs.showCand=!bs.showCand; bwRender(cont); });
     on('bw_wider','click',function(){ bs.showWider=!bs.showWider; bwRender(cont); });
     on('bw_cadd','click',function(){ var cn=cont.querySelector('#bw_cn'), ct=cont.querySelector('#bw_ct'), cb=cont.querySelector('#bw_cb'); var nm=cn?cn.value:'', bv=cb?parseFloat(cb.value):NaN; if(!nm||isNaN(bv)){ alert('Enter a name and an estimated beta.'); return; } addCandObj({name:nm, ticker:(ct&&ct.value)||'—', why:'Added by you as a comparable.', betaHint:bv, tax:0.30, gearingDE:0, addable:true}); bwRender(cont); });
     Array.prototype.forEach.call(cont.querySelectorAll('.bw_add'),function(b){ b.addEventListener('click',function(){ addCandObj(BW.candidates[+b.getAttribute('data-i')]); bwRender(cont); }); });
     Array.prototype.forEach.call(cont.querySelectorAll('.bw_add2'),function(b){ b.addEventListener('click',function(){ addCandObj(BW.candidates2[+b.getAttribute('data-i')]); bwRender(cont); }); });
-    on('bw_apply','click',function(){ var a=activeScen(); if(a.kind==='broker'){ alert('Select an editable scenario first.'); return; } var s=sliderByKey('re'); var v=impliedDiscount(reOf(aggBeta().beta)); v=Math.max(s.min,Math.min(s.max,v)); setInput('re',v); syncSliders(); alert('Applied — discount rate set to '+v.toFixed(2)+'% for '+a.n+'.'); });
+    on('bw_apply','click',function(){ var scopeEl=cont.querySelector('input[name=bw_scope]:checked'); var thisOnly=scopeEl&&scopeEl.value==='one'; var s=sliderByKey('re'); var v=impliedDiscount(reOf(aggBeta().beta)); v=Math.max(s.min,Math.min(s.max,v));
+      if(thisOnly){ var a=activeScen(); if(a.kind==='broker'){ alert('Select an editable scenario first.'); return; } a.vals.re=v; a.v=scVal(a); saveLS(); syncSliders(); updateCards(a.v); drawBars(); alert('Per-scenario override — '+a.n+' discount rate set to '+v.toFixed(2)+'% (the single WACC stays '+singleWacc.toFixed(2)+'%).'); }
+      else { singleWacc=v; editableScens().forEach(function(sc){ sc.vals.re=v; sc.v=scVal(sc); }); saveLS(); syncSliders(); updateCards(activeScen().v); drawBars(); alert('Single WACC set to '+v.toFixed(2)+'% for all scenarios.'); } });
   }
 
   // ---- Multiples view: implied-by-DCF + cross-check (MU=CFG.multiples; DNL only) ----
