@@ -14,6 +14,55 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 
 ---
 
+## CHAT HANDOVER — 25 July 2026 (d) (UI: single WACC presented in the scenario interface)
+
+**Committed + pushed `ed7e756`.** First UI-workstream slice on the DNL scenario interface, driven by
+Stephen's "the UI defines what needs to be true" plan. Generator-only change (`gen_ui.py`) + the three
+regenerated HTMLs; reduced-form base still ties (DNL 3.48), `node --check` clean for all three.
+
+**Key finding (corrects an earlier read):** the workbench spine is ALREADY built and functional — user
+scenarios (+ add), per-input overrides on all five drivers (sliders + editable number fields), a
+global-vs-per-scenario "apply to all" toggle, live recompute (`setInput → scVal → computeVals`), and
+localStorage persistence. So "make a driver live" was mostly done; the remaining work is presentation,
+compute fidelity, and aligning with the settled conventions.
+
+**What shipped this slice (all in the discount-rate / β area):**
+1. Always-visible **"Discount rate" metric card** showing the single WACC (cost of equity for WBC/CSL),
+   kept in sync on every recompute — the single rate is now *presented*, not buried.
+2. The Discount-rate tab **auto-opens the β workbench** (was behind a second button), laid out in **two
+   columns**: component inputs (Rf/ERP/α, index, window, unlever toggle) on the left; **"The rate you
+   built"** + **"Apply this rate"** on the right.
+3. Apply scope is two explicit **radios** — "to all scenarios" (single WACC, default) or "to this
+   scenario only" (per-scenario override, flagged with a "· r X%" marker on that scenario's bar).
+   Encodes the single-WACC ruling while keeping the per-scenario what-if Stephen wanted.
+4. Clearer **unlever label** ("use asset betas: unlever peers, re-lever at DNL gearing D/E") + explainer.
+5. **β-regression plots expand inline** under each comparable (toggle open/close, "slope = β" caption);
+   removed the scroll-to-bottom scatter.
+6. **Excel-export wording** aligned to the single-WACC discipline.
+
+**Generator mechanics (critical):** edit `ui_prototypes/_generator/{build_cfgs.py, beta_data.py,
+gen_ui.py}` SANDBOX-SIDE (the Edit tool corrupts these large files on this mount), then
+`python3 build_cfgs.py && python3 gen_ui.py`. Verify every regen: extract the inlined `<script>` and
+`node --check` it; confirm the reduced-form base ties (`computeVals(defaults)==cp.base`, DNL 3.48);
+confirm WBC/CSL untouched. Never hand-edit the generated HTML. Stephen eyeballs the render (file:// won't
+open in the sandbox), and his UI has shown disappearing AskUserQuestion prompts — prefer plain-text
+numbered questions.
+
+**Compute honesty (unchanged):** the browser reduced-form (`computeVals`) is a multiplicative sensitivity
+model around the base case, NOT the real FCFF engine; the six scenario per-share values remain
+generator-hand-calibrated. The real-engine swap is M2.
+
+**Next on the UI (Stephen wants all three; A→C→B→D is the brief's suggested order):**
+1. Workstream A + C — layout/content richness (longer scenario descriptions from `data/scenarios/*.md`,
+   richer Five-Forces drill-down, discount-rate theory click-throughs from
+   `design/reference/discount_rate_iers/`, detail-renders-below). Low compute risk.
+2. Workstream B (rest) — extend the global/override + recompute pattern to other high-impact drivers; wire
+   the Five-Forces overrides into the number (currently saved/displayed but disconnected).
+3. Workstream D — β workbench depth (mostly built). Most data-dependent (mock `beta_data.py`).
+Full 10-point brief: `design/ui_design_brief.md`.
+
+---
+
 ## CHAT HANDOVER — 25 July 2026 (c) (β DECIDED = 1.10 · share-count fix still pending)
 
 **β is settled.** Stephen ratified **β = 1.10** on 25 Jul 2026, on a *real-gearing* peer triangulation
