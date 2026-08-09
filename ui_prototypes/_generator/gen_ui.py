@@ -971,13 +971,12 @@ def forces_table(intro, rows, net):
     h+='</table><div style="margin-top:10px; background:var(--secondary); border-radius:8px; padding:10px;"><b>Net company offset:</b> %s</div>'%net
     return h
 def dr_theory_html(rows):
-    # rows: [label, proper, ier, did]
-    h='<div style="margin-top:12px; border-top:0.5px solid var(--bd); padding-top:10px;"><div class="hd" style="margin-bottom:2px;">Practical theory — the proper approach vs what we did</div><div class="sub" style="margin-bottom:6px;">click any element to compare the textbook approach with what this valuation did</div>'
+    # rows: [label, bestpractice, did]
+    h='<div style="margin-top:12px; border-top:0.5px solid var(--bd); padding-top:10px;"><div class="hd" style="margin-bottom:2px;">Practical theory — best practice vs what we did</div><div class="sub" style="margin-bottom:6px;">click any element to compare the best-practice approach with what this valuation did</div>'
     for r in rows:
         h+='<details class="thy"><summary>%s</summary><div class="thybody">'%r[0]
-        h+='<div class="thytag" style="color:var(--success-tx);">The proper approach</div><div style="margin:2px 0 8px;">%s</div>'%r[1]
-        h+='<div class="thytag" style="color:var(--info-tx);">In market practice</div><div style="margin:2px 0 8px; color:var(--text2);">%s</div>'%r[2]
-        h+='<div class="thytag" style="color:var(--warning-tx);">What we did (VCC)</div><div style="margin:2px 0 0;">%s</div>'%r[3]
+        h+='<div class="thytag" style="color:var(--success-tx);">Best practice</div><div style="margin:2px 0 8px;">%s</div>'%r[1]
+        h+='<div class="thytag" style="color:var(--warning-tx);">What we did (VCC)</div><div style="margin:2px 0 0;">%s</div>'%r[2]
         h+='</div></details>'
     return h+'</div>'
 

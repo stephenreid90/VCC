@@ -34,33 +34,35 @@ WORLD_DESC = {
  "AI Productivity Lag":'<p>The Solow paradox at AI scale. Capability and capex advance genuinely (deficit-funded, US-led), but economy-wide productivity transformation doesn&rsquo;t arrive on the bull timeline: enterprise adoption is slow, so aggregate TFP grows only ~0.5% versus the 1.5%+ current investment implies. Rents capture is asymmetric — platform owners take the bulk while broad enterprise pays without proportional payback — and market concentration intensifies. The saving grace is the labour-cost channel: AI contains white-collar wage growth even where productivity transmission is weak. Headline numbers resemble Muddle Through, but the underlying story differs.</p><p><b>Macro picture.</b> Growth 1.9–2.0%, modestly below Muddle Through; inflation ~3.0% and real rates ~1.0% — both Muddle-Through-like. Aggregate TFP grows only ~0.5%. The tell: headline numbers resemble Muddle Through while the story underneath is fundamentally different.</p><p><b>What would move the world elsewhere.</b> Enterprise-AI adoption broadening with genuine TFP flow-through → Orderly Convergence; an AI-capex collapse or financial-market unwind → a tech-investment-unwind stress variant outside the set; a major non-AI shock → Stagflation, Fragmentation or Disorderly Climate depending on the shock.</p>',
 }
 
-# ---- Shared discount-rate theory (proper approach + IER evidence). Per-company "what we did" supplied separately. ----
+# ---- Global discount-rate theory (jurisdiction-neutral best practice). Per-company "what we did" supplied separately. ----
 DR_PROPER = [
  ("rf","Risk-free rate",
-  "A long-dated government bond yield in the cash-flow currency, ideally matched to the horizon/duration of the cash flows. Practice splits between the deep, liquid 10-year benchmark and a term-matched long bond for very long-life assets; a single YTM is only an average and distorts NPV when the curve is steep. Most take a recent spot rate rather than a normalised one.",
-  "In practice, valuers use a recent spot yield on a long government bond in the cash-flow currency — most commonly the 10-year, though some duration-match to 20 or 30-year bonds for very long-life assets. Normalising the rate is debated but usually set aside in favour of a current market yield."),
+  "The theoretically correct rate is a zero-coupon (spot) sovereign yield in the cash-flow currency, matched to the timing of each cash flow — a coupon bond&rsquo;s yield-to-maturity blends reinvestment assumptions across its life and is only an average. In practice the deep, liquid 10-year benchmark is used as a proxy, with longer tenors for very long-life assets; a steeply sloped curve is where that approximation most distorts long-dated NPVs."),
  ("erp","Equity risk premium",
-  "The unobservable expected excess return of equities over the risk-free asset, estimated from long-run historical premia, forward-looking/implied models, or surveys — none theoretically superior. Convention has settled near 6.0%, while acknowledging large statistical error.",
-  "Independent experts and practitioners typically adopt a market risk premium around <b>6.0%</b> (a 5–7% range is common), close to updated long-run historical estimates. The estimate carries very wide statistical error — the true premium behind a measured 6% could plausibly sit anywhere in a 2–10% band — and Australian practice usually makes no explicit imputation adjustment inside it."),
+  "The expected excess return of equities over the risk-free asset. It is unobservable, so it is estimated from long-run historical premia, forward-looking/implied models, or surveys — none decisive. Mature-market estimates cluster around 5–6%, but the statistical error is wide, so the figure is best treated as a reasoned convention rather than a measurement."),
  ("beta","Beta",
-  "Raw single-stock regression beta is noisy and window-dependent, so triangulate from a comparable set: unlever peer equity betas to asset betas and re-lever to a target structure, and/or use adjusted (mean-reverting) or fundamental betas. Index choice (local vs global) and estimation window materially change the answer.",
-  "Standard practice is to triangulate from a comparable set rather than trust a single regression: a subject&rsquo;s measured beta can swing widely across data providers and estimation windows (often anywhere from ~0.8 to ~2.7 for the same company), so experts lean on adjusted / fundamental betas and peer clusters, and treat mechanical unlever / relever with caution."),
- ("debt","Cost of debt / debt margin",
-  "Risk-free rate plus a debt margin set by the company&rsquo;s (or comparable-set) credit rating, referencing traded corporate-bond spreads over sovereigns at matching tenor; use a target rating consistent with the assumed gearing, not just the current coupon.",
-  "Cost of debt is normally built as the risk-free rate plus a credit-rating-based margin — a BBB issuer&rsquo;s traded spread over the sovereign at matching tenor, using a target rating consistent with the assumed gearing rather than the current coupon. Margins of ~1.5–3% over the risk-free rate are typical for investment-grade names."),
+  "A single-stock regression beta is noisy and shifts with the estimation window and the index chosen, so triangulate from a comparable set: unlever peer equity betas to asset betas and re-lever to the subject&rsquo;s target capital structure, cross-checked against adjusted (mean-reverting) or fundamental betas. Index choice — local versus global — matters most when a company&rsquo;s earnings currency differs from its listing."),
+ ("debt","Cost of debt",
+  "The risk-free rate plus a credit-spread margin set by the company&rsquo;s (or its comparable set&rsquo;s) target credit rating, referencing traded corporate-bond spreads over sovereigns at matching tenor. Use a through-the-cycle target rating consistent with the assumed gearing, not the current coupon."),
  ("gearing","Gearing / capital-structure weights",
-  "Weight equity and debt at market value, using a target/through-cycle structure informed by the subject&rsquo;s own gearing plus the comparable-set average, rather than a single spot snapshot (which is volatile and often inconsistent with the betas measured over the same window).",
-  "Weights are taken at <b>market value</b> on a target / through-cycle basis, informed by the comparable-set average rather than a single spot snapshot — commonly 15–25% debt for capital-light industrials, higher for infrastructure-like assets."),
- ("gamma","Gamma / imputation credits",
-  "Australia&rsquo;s dividend-imputation system gives resident investors franking credits; some argue these should be captured via a &lsquo;gamma&rsquo; factor (contested, ~0.25–0.65). Regulators such as the AER apply it through the tax line.",
-  "Whether to capture franking credits (via a &lsquo;gamma&rsquo; factor, contested at ~0.25–0.65) is heavily debated. Many independent valuers decline to adjust for imputation in a business-valuation context, arguing credit value is effectively binary across the shareholder base (full value to some domestic investors, nil to foreign ones) and not reliably priced by the market."),
+  "Weight equity and debt at market value on a target, through-the-cycle basis — informed by the subject&rsquo;s own structure and the comparable-set average rather than a single spot snapshot, which is volatile and often inconsistent with the betas measured over the same window."),
  ("wacc","WACC vs cost of equity",
-  "For an industrial/miner, discount ungeared after-tax cash flows at a WACC, then bridge enterprise value to equity via net debt. For a bank, debt is raw material (deposits/wholesale funding are operating inputs), so discount cash flows to equity at the cost of equity directly — a WACC/EV bridge is wrong.",
-  "Industrials and miners are valued by discounting ungeared after-tax cash flows at a WACC and bridging to equity via net debt; concluded WACCs for mature resource / industrial businesses commonly land around 7–9% (higher in higher-risk jurisdictions). Banks are the exception — deposits and wholesale funding are operating inputs, so bank cash flows are discounted to equity at the cost of equity directly, with no WACC / EV bridge."),
+  "For an ordinary company, discount ungeared after-tax cash flows (FCFF) at the WACC and bridge enterprise value to equity via net debt. For a bank, funding — deposits and wholesale debt — is an operating input rather than financing, so discount cash flows to equity at the cost of equity directly; a WACC/EV bridge would be wrong."),
 ]
 
-def drtheory(did):
-    return [[lbl, proper, ier, did.get(k, '&mdash;')] for (k, lbl, proper, ier) in DR_PROPER]
+# ---- Gated optional component: imputation / franking-credit "gamma".
+# Narrow relevance (dividend-imputation regimes, e.g. Australia; typically regulated /
+# infrastructure assets), so NOT part of the global default. Reintroduced only when a
+# company config supplies a gamma "what we did" note: drtheory(<DID>, gamma_did="...")
+# appends the row. Mirrors the multiples.leaseNeutral gating; dormant for DNL/WBC/CSL. ----
+GAMMA_COMPONENT = ("Imputation / franking credits (gamma)",
+  "In classical-tax jurisdictions no adjustment applies. Under a dividend-imputation system (e.g. Australia), company tax already paid can attach to dividends as credits usable by resident shareholders; some valuers capture this via a &lsquo;gamma&rsquo; factor (contested, ~0.25–0.65), most often for regulated or infrastructure assets. Practice is divided, and many decline it in a general business valuation because the credits&rsquo; value differs sharply between domestic and foreign holders.")
+
+def drtheory(did, gamma_did=None):
+    rows = [[lbl, bp, did.get(k, '&mdash;')] for (k, lbl, bp) in DR_PROPER]
+    if gamma_did:
+        rows.append([GAMMA_COMPONENT[0], GAMMA_COMPONENT[1], gamma_did])
+    return rows
 
 DNL_DID = {
  "rf":"10-year Commonwealth Government Securities YTM, <b>4.30%</b> (indicative, May 2026). Single spot 10-year — the pragmatic-benchmark choice, no duration-matching or normalisation.",
@@ -68,7 +70,6 @@ DNL_DID = {
  "beta":"Peer triangulation, rejecting the measured <b>0.36</b> (unreliable post-demerger): Orica ~1.05 / Yara ~1.20 / ICL ~1.10 cluster (Sasol 1.45 excluded) → selected <b>1.10</b>.",
  "debt":"<b>6.00%</b> pre-tax = an AUD investment-grade BBB-tier spread (~170bps) over the 10-year sovereign; after-tax 6.00% × (1−0.30) = 4.20%.",
  "gearing":"Market-value weights <b>E/V 79% / D/V 21%</b> (equity = 1,884m shares × AUD 3.61; debt = reported net debt). Market-value basis using reported net debt.",
- "gamma":"Not applied — consistent with the standard business-valuation view, and with our ERP making no explicit imputation allowance.",
  "wacc":"<b>WACC ≈ 8.68%</b> (Re 9.80% at β 1.10; 79% equity + 21% debt at 4.20% after-tax). Held constant across scenarios (§3.5).",
 }
 WBC_DID = {
@@ -77,7 +78,6 @@ WBC_DID = {
  "beta":"Peer triangulation: CBA 0.80 / NAB 0.72 / WBC 0.73 cluster → <b>0.75</b>; ANZ 0.57 excluded as an institutional-dilution outlier, MQG 0.88 a different archetype. Measured 0.73 documented alongside.",
  "debt":"Not applicable — a bank is discounted at cost of equity, with deposits and wholesale funding treated as operating inputs, not financing (§15).",
  "gearing":"Not applicable — no WACC / EV bridge for a bank.",
- "gamma":"Not applied — consistent with the standard business-valuation view and our imputation-neutral ERP.",
  "wacc":"<b>Cost of equity 8.05%</b> (Rf 4.30% + β 0.75 × ERP 5.0%), held constant across scenarios, no WACC/EV bridge — the bank convention (§15).",
 }
 CSL_DID = {
@@ -86,7 +86,6 @@ CSL_DID = {
  "beta":"Peer triangulation: Grifols / Takeda / Sanofi cluster 0.7–0.9 → selected <b>0.85</b>. Measured <b>0.094</b> rejected — it regressed an AUD-listed price against an AUD index for a USD-earning business.",
  "debt":"Not separately built — CSL&rsquo;s DCF discounts FCFF at the cost of equity (8.75%) rather than a blended WACC; see &lsquo;WACC vs cost of equity&rsquo; below.",
  "gearing":"Not applied — the CSL DCF discounts FCFF at Re, so no debt/equity weighting is used.",
- "gamma":"Not applied — CSL is USD-functional, so Australian imputation is moot in any case.",
  "wacc":"A single <b>cost of equity 8.75%</b> is applied to FCFF rather than a blended WACC — a simplification worth flagging; it slightly understates the discount rate versus a formal WACC.",
 }
 
