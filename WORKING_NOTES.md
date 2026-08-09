@@ -14,6 +14,75 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 
 ---
 
+## CHAT HANDOVER — 9 August 2026 (UI Workstreams A+C, C9, B — all shipped & pushed)
+
+**Commit state (all pushed to origin/main; HEAD `107ef59`).** The five commits from the prior
+session (`aafa878`…`408a2bb`) were already on origin — a stale local `origin/main` ref made them
+look unpushed; a `git fetch` confirmed. Always fetch before trusting "ahead by N". This session then
+added, in order:
+
+1. `0ed7546` — **A+C content.** C6: richer world-scenario descriptions (lead paragraph + *Macro
+   picture* + *What would move the world elsewhere*, from `data/scenarios/*.md`, shared across all
+   three). C7: an industry-level snapshot (concentration / lifecycle / excess-return durability, from
+   `data/industries/`) prepended to each Five-Forces `intro`. C8: position bullets regrouped under
+   `thytag` sub-heads (content verbatim, reordered only). A1: **verified, no change** — detail already
+   renders in place below the tabs (`openDetail`→`#detail`, `scrollIntoView({block:'nearest'})`,
+   `skipScroll` on load).
+2. `e4c0ea5` — **C9: discount-rate theory → global best practice.** Rewritten jurisdiction-neutral,
+   **six** components, collapsed to **two strands** (Best practice / What we did). Dropped the
+   Australia-centric IER framing (Stephen: the tool must read globally). Rf notes the **zero-coupon
+   (spot) sovereign** as theoretically correct, 10y coupon benchmark as the proxy. **Gamma dropped
+   from the default and gated** (`GAMMA_COMPONENT` in build_cfgs, appended only via
+   `drtheory(did, gamma_did=...)`; dormant for DNL/WBC/CSL) — it's Australia- *and*
+   infrastructure-specific. Mirrors the `multiples.leaseNeutral` gating pattern.
+3. `ae503a5` — **`sandbox_cleanup.cmd`** (repo root) + CLAUDE.md operational-quirks note. Mount is
+   create-but-not-delete → sessions orphan `*.bak` and `.git/*.lock.dead*`; the script clears them.
+   Standing rule added: always surface the exact cleanup CMD as a copy-widget.
+4. `107ef59` — **Workstream B: Five-Forces overrides now flow into the number.** Were saved to
+   localStorage but disconnected. Now routed **generically by driver key**, **delta-from-assessed**
+   (so the base tie is preserved), transitory forces as **FY27–31 year-paths PV-collapsed** for the
+   reduced-form and **forward-compatible with M2** (the engine will consume the path natively).
+   New: `_forces.impacts[]` data model; `forcesOffsets`/`valsWithForces`→`scVal` compute; numeric
+   matrix cells + a "Routes to" column + a per-year path editor for transitory forces.
+
+**Design decisions locked (Stephen):**
+1. Discount-rate theory is global/jurisdiction-neutral; per-company "What we did" stays specific
+   (DNL/WBC AUD, CSL USD) — legitimate, not Australia-centric.
+2. Gamma is a gated optional component, not in the global default; reintroduce via the gate when an
+   Australian-infrastructure archetype exists (don't build more machinery until then).
+3. **Forces→driver routing is generic by driver key.** Principle: *if a company's Porter's-5-forces
+   work implies it needs a driver its reduced-form lacks, add that driver.* Today's routing: DNL
+   supplier→**gas** x-driver (path from the `gasRolloff` overlay `[0,0,−50,−100,−150]`); DNL
+   new-entrants/rivalry→**g**; WBC supplier→ROE (**m**), rivalry→**g**; CSL supplier/rivalry→**m**;
+   buyer/substitutes neutral everywhere.
+4. Reduced-form stays an approximation; the faithful year-by-year flow-through is **M2**. The forces
+   year-paths already live in the data model (`_forces.impacts[i].path`) for M2 to consume — no re-keying.
+
+**Where things stand.** Workstreams **A and C are complete** (A1, C6–C9). **Workstream B** — the
+Five-Forces wiring is done; the workbench spine (user scenarios, per-input overrides, global/
+per-scenario toggle, live recompute, localStorage) was already built in prior sessions.
+
+**Open / next (pick by appetite):**
+1. **Workstream D** — β-workbench depth (add/deselect comparables, estimation-window toggle, index
+   selection). Most data-dependent; leans on the mock `beta_data.py`.
+2. **dnl.yaml §5.3 share-count fix** — `shares_outstanding_at` 2026-03-31, shares 1,770m + source;
+   `equity_market_value` 6,802 → ~6,390. Moves E/V → WACC → valuations, so needs an **engine re-run**,
+   NOT a hand-patch. β settled (1.10), so unblocked.
+3. **WBC split** (clear stored `cost_of_equity` — last `KNOWN_STORED_DERIVED` offender); CSL layer-1
+   circularity; §5.4 validator (`shares_outstanding_at == net_debt_at`). Then **M2** (wire
+   `AssumptionSet` → `FcfEngineInputs`).
+4. Ben still owes real peer gearings/tax (mock in `beta_data.py`) + optionally the exact reported
+   31 Mar 2026 issued share count.
+
+**Generator mechanics (unchanged, critical).** Edit `ui_prototypes/_generator/*.py` **sandbox-side**
+via Python string replacement (the Edit tool corrupts these large files); `python3 build_cfgs.py &&
+python3 gen_ui.py`; verify **node --check** on all three inlined scripts + base tie (**DNL 3.48 /
+WBC 30.15 / CSL 203.83**) + **netDebt 1512**. Never hand-edit the generated HTML. Commit sandbox-side
+(`mv .git/*.lock` aside; push with the `x-access-token` URL). Run `sandbox_cleanup.cmd` to clear
+orphaned files. Stephen's UI drops AskUserQuestion prompts — use plain-text numbered questions.
+
+---
+
 ## CHAT HANDOVER — 25 July 2026 (d) (UI: single WACC presented in the scenario interface)
 
 **Committed + pushed `ed7e756`.** First UI-workstream slice on the DNL scenario interface, driven by
