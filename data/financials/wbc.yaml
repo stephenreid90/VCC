@@ -1,0 +1,49 @@
+# WBC (Westpac) -- layer-1 observed financial inputs.
+# Split out of data/companies/wbc.yaml on 2026-08-11 (SSOT protocol §3;
+# methodology §15), mirroring the DNL and CSL splits: observed market data
+# lives here (layer 1); the method/selection (beta_selected, ERP, rationale)
+# lives in data/companies/wbc.yaml under normalised_baseline.coe_method
+# (layer 2). Still hand-curated from Ben's 15 Jun 2026 EODHD peer feeds --
+# not yet machine-fed.
+company_id: wbc
+reporting_currency: AUD
+data_source: EODHD fundamentals (Ben's market-ingest pipeline, 15 Jun 2026)
+last_updated: 2026-08-11
+
+# WBC is a bank: discounts at the cost of equity (Ke); no WACC weighting.
+coe_observed_inputs:
+  risk_free_rate: 0.0430
+  risk_free_rate_rationale: >
+    10-year Australian Commonwealth government bond yield, May 2026
+    (same anchor as the industrials methodology §3.5.2).
+
+  beta_measured: 0.73
+  beta_measured_source: >
+    EODHD fundamentals feed, 15 June 2026 (technicals section), computed
+    against the EODHD reference index over the standard window. Carries
+    material statistical noise; not used mechanically -- selected via
+    peer-triangulation per §15.2(c).
+
+  beta_peer_dataset:
+    - peer: CBA
+      ticker: ASX:CBA
+      beta_indicative: 0.80
+      inclusion: comparable_peer
+    - peer: NAB
+      ticker: ASX:NAB
+      beta_indicative: 0.72
+      inclusion: comparable_peer
+    - peer: WBC (subject)
+      ticker: ASX:WBC
+      beta_indicative: 0.73
+      inclusion: subject_measured_unreliable
+    - peer: ANZ
+      ticker: ASX:ANZ
+      beta_indicative: 0.57
+      inclusion: excluded_outlier
+      exclusion_reason: "Institutional / international revenue dilution; Suncorp integration period disrupting price series."
+    - peer: Macquarie
+      ticker: ASX:MQG
+      beta_indicative: 0.88
+      inclusion: informative_not_comparable
+      rationale: "Different archetype -- markets, asset management, commodities trading dilutes banking comparability."

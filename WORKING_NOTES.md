@@ -14,6 +14,39 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 
 ---
 
+## CHAT HANDOVER — 11 August 2026 (b) (WBC layer split — M2 track, step 1)
+
+First step of the M2 track: WBC split into layer 1 / layer 2, mirroring DNL and CSL. Clears the
+last `KNOWN_STORED_DERIVED` offender, so **no company now stores a computed discount rate**. Pushed.
+
+1. **New `data/financials/wbc.yaml`** (layer 1, LF): `coe_observed_inputs` — `risk_free_rate` +
+   source, `beta_measured` 0.73 + source, and the 5-name `beta_peer_dataset` (CBA/NAB/WBC/ANZ/MQG;
+   ANZ excluded-outlier, MQG informative-not-comparable). Hand-curated from Ben's 15 Jun 2026 EODHD
+   feed; not yet machine-fed.
+2. **`data/companies/wbc.yaml`** gained a top-level `normalised_baseline.coe_method` (layer 2): ERP
+   0.05, `beta_selected` 0.75 + the full peer-triangulation rationale (carried verbatim), cluster
+   0.72/0.75/0.80, active `beta` 0.75, `single_ke_discipline`, `discount_rate_basis`. As a bank it
+   carries *only* the Ke method — no FCFF margin/capex/terminal fields (correct for the archetype).
+   The old `company_position.bank_specifics.cost_of_equity_build` block is gone; layer-1 parts moved
+   to financials, layer-2 to `coe_method`, and the stored **`cost_of_equity: 0.0805` deleted** (engine
+   computes Re = 4.30% + 0.75 × 5.00% = 8.05%).
+3. **Translator unchanged** — the generic coe path (`coe_observed_inputs` + `coe_method` →
+   `cost_of_equity_build`) reconstructs WBC automatically; verified Re 8.05%, no `wacc_build`.
+4. **Lint:** `KNOWN_STORED_DERIVED` now empty; new
+   `test_wbc_split_reconstructs_cost_of_equity_build` pins the join. Value-keyed baseline regenerated
+   **downward 120 → 119** (only `build_cfgs.py:0.0805` dropped — that hardcoded generator copy is no
+   longer a stored-value duplicate; it is now a pure derived constant awaiting the M2 feed). **Suite
+   69 → 70 green.** CRLF preserved on wbc.yaml (targeted diff 59/81).
+
+**M2 track remaining:** (i) CSL layer-1 circularity — `data/financials/csl.yaml` is
+`workbook_reverse_engineered`, so its "layer 1" is hand-curated from an export; break that so it is a
+genuine observed feed. (ii) The engine wiring proper (`AssumptionSet` → `FcfEngineInputs`: `linkage/`,
+`assumptions/`, time profiles, derivations, segment aggregation). The generator still hardcodes
+`re0:0.0805` for the WBC UI (base tie 30.15); that gets consumed from the engine at M2/M5, not
+hand-patched now.
+
+---
+
 ## CHAT HANDOVER — 11 August 2026 (β free-input · DNL §5.3 share-count fix EXECUTED)
 
 Two things shipped this session; both pushed.

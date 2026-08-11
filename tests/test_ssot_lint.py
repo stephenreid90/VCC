@@ -82,10 +82,10 @@ OBSERVED_PREFIXES = ("market_data.", "share_statistics.")
 # Pre-existing stored derived values, each to be cleared when that company is
 # split per design/single_source_of_truth.md §3. Listed rather than silently
 # skipped so the debt stays visible; remove an entry when it is fixed.
-KNOWN_STORED_DERIVED = {
-    # CSL's computed_cost_of_equity was cleared in the 25 July 2026 CSL split.
-    "data/companies/wbc.yaml :: company_position.bank_specifics."
-    "cost_of_equity_build.cost_of_equity": "clear during the WBC split",
+KNOWN_STORED_DERIVED: dict[str, str] = {
+    # Register empty. CSL's computed_cost_of_equity was cleared in the 25 Jul
+    # 2026 CSL split; WBC's cost_of_equity in the 11 Aug 2026 WBC split. No
+    # company now stores a computed discount rate.
 }
 
 
@@ -306,3 +306,31 @@ def test_share_and_netdebt_anchor_dates_paired():
             f"{path.name}: §5.3 — shares_outstanding_source required with the anchor"
         )
     assert checked >= 1, "expected at least one company with a §5.3 share anchor (DNL)"
+
+
+def test_wbc_split_reconstructs_cost_of_equity_build():
+    """WBC (bank) is split like CSL: it discounts at the cost of equity.
+
+    Observed inputs (``coe_observed_inputs``, layer 1, ``data/financials/wbc.yaml``)
+    rejoin the method/selection block (``coe_method``, layer 2, ``data/companies/
+    wbc.yaml``) into ``cost_of_equity_build`` -- the mirror of DNL's ``wacc_build``.
+    No stored ``cost_of_equity``; no ``wacc_build`` (a bank has no WACC weighting).
+    """
+    from vcc_valuations.translator import resolve_normalised_baseline
+
+    fin = _load(ROOT / "data" / "financials" / "wbc.yaml")
+    comp = _load(ROOT / "data" / "companies" / "wbc.yaml")
+    norm = resolve_normalised_baseline({"financials": fin, "company_raw": comp})
+
+    coe = norm["cost_of_equity_build"]
+    assert coe["risk_free_rate"] == 0.0430        # ssot-allow: layer 1
+    assert coe["beta_measured"] == 0.73           # ssot-allow: layer 1
+    assert len(coe["beta_peer_dataset"]) == 5     # layer 1
+    assert coe["equity_risk_premium"] == 0.0500   # ssot-allow: layer 2
+    assert coe["beta"] == 0.75                    # ssot-allow: layer 2
+    assert "cost_of_equity" not in coe, "layer-3 value must not be stored"
+    assert "coe_method" not in norm, "coe_method is folded into cost_of_equity_build"
+    assert "wacc_build" not in norm, "WBC (bank) has no WACC build"
+
+    # And the split really happened: no normalised_baseline left in layer 1.
+    assert "normalised_baseline" not in fin

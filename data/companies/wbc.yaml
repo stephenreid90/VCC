@@ -1,3 +1,62 @@
+# --- Layer-2 method / selection (SSOT protocol §3; split 2026-08-11). ---
+# WBC is a bank: valued on the cost of equity, so normalised_baseline carries
+# only the Ke method (no FCFF margin/capex/terminal fields). Observed inputs
+# (Rf, measured beta, peer betas) live in data/financials/wbc.yaml.
+normalised_baseline:
+  coe_method:
+    # Bank-specific Ke (methodology §15.2). Single-Ke discipline: one rate,
+    # held across scenarios (scenarios differ in cash flows, not the rate).
+    equity_risk_premium: 0.0500
+    equity_risk_premium_rationale: >
+      Damodaran-style mature-Australia premium (same as §3.5.2).
+    beta_selected: 0.75
+    beta_selection_rationale: |
+      Selected via peer-triangulation per §15.2(c). Measured β carries
+      material statistical noise; mechanical use of the subject
+      company's measured value is unsound. Peer table:
+
+        | Bank | Measured β | Notes |
+        | CBA  | 0.80       | Closest large-cap retail-mortgage comparable; franchise leader |
+        | MQG  | 0.88       | Diversified investment bank — markets / asset mgmt dilutes banking comparability |
+        | WBC  | 0.73       | Subject company |
+        | NAB  | 0.72       | Closest pure-business-bank comparable |
+        | ANZ  | 0.57       | Outlier — institutional / international revenue dilution; recent Suncorp integration period disrupting price series |
+
+      Outlier identification: ANZ at 0.57 sits well below the cluster
+      and is excluded as an unsound peer. MQG at 0.88 is a different
+      archetype (markets, asset management, commodities trading) and
+      is informative but not directly comparable.
+
+      Comparable peer cluster: CBA / NAB / WBC at 0.72-0.80, midpoint
+      0.75. WBC's measured 0.73 sits at the bottom of the comparable
+      cluster. The franchise-mix logic for placement: WBC's mortgage-
+      book scale and recent business-rebuild position it close to NAB
+      (same retail-and-business mix) and CBA (similar funding profile,
+      weaker ROE) — there is no franchise-specific reason for it to be
+      more defensive than NAB.
+
+      β selected = 0.75 (cluster midpoint of comparable peers). This
+      is a 2bp uplift to WBC's measured value, modest but
+      methodologically explicit. Re = 4.30% + 0.75 × 5.00% = 8.05%
+      (vs measured-β-mechanical 7.95%).
+    peer_cluster_midpoint: 0.75
+    peer_cluster_low: 0.72
+    peer_cluster_high: 0.80
+    beta: 0.75
+    beta_rationale: >
+      Active beta for valuation; a 2bp uplift on WBC's measured 0.73 to the
+      comparable-peer (CBA/NAB/WBC) cluster midpoint. Placement per
+      beta_selection_rationale.
+    single_ke_discipline: true
+    discount_rate_basis: >
+      Flows discounted at the cost of equity (bank archetype):
+      Re = Rf + beta x ERP = 4.30% + 0.75 x 5.00% = 8.05% (computed by the
+      engine, not stored). Held constant across scenarios per §15.2(d). Sits
+      ~90bps below the archetype initial mid-point (~8.93%) because the
+      peer-implied beta range is materially below the archetype's initial 0.85
+      floor; the peer evidence justifies revising the archetype anchor (see
+      australian_major_banks.yaml).
+
 company_position:
   id: wbc
   name: Westpac Banking Corporation
@@ -495,87 +554,6 @@ company_position:
         Retail deposit funding ratio strong. Non-interest-bearing
         Australian transaction balances AUD 149bn provide structural
         funding-cost advantage versus wholesale-funded peers.
-
-    cost_of_equity_build:
-      # Per methodology §15.2(b) and the peer-triangulation discipline at
-      # §15.2(c). Bank-specific Ke replaces WACC build. Calibrated
-      # against Ben's EODHD peer feeds (15 June 2026); see §14 source-
-      # document register.
-      risk_free_rate: 0.0430
-      risk_free_rate_source: "10-year Australian Commonwealth government bond yield, May 2026 (same as §3.5.2)."
-      equity_risk_premium: 0.0500
-      equity_risk_premium_source: "Damodaran-style mature-Australia premium (same as §3.5.2)."
-
-      beta_measured: 0.73
-      beta_measured_source: "EODHD fundamentals feed, 15 June 2026 (technicals section). Computed against the EODHD reference index over the standard window."
-      beta_selected: 0.75
-      beta_selection_rationale: |
-        Selected via peer-triangulation per §15.2(c). Measured β carries
-        material statistical noise; mechanical use of the subject
-        company's measured value is unsound. Peer table:
-
-          | Bank | Measured β | Notes |
-          | CBA  | 0.80       | Closest large-cap retail-mortgage comparable; franchise leader |
-          | MQG  | 0.88       | Diversified investment bank — markets / asset mgmt dilutes banking comparability |
-          | WBC  | 0.73       | Subject company |
-          | NAB  | 0.72       | Closest pure-business-bank comparable |
-          | ANZ  | 0.57       | Outlier — institutional / international revenue dilution; recent Suncorp integration period disrupting price series |
-
-        Outlier identification: ANZ at 0.57 sits well below the cluster
-        and is excluded as an unsound peer. MQG at 0.88 is a different
-        archetype (markets, asset management, commodities trading) and
-        is informative but not directly comparable.
-
-        Comparable peer cluster: CBA / NAB / WBC at 0.72-0.80, midpoint
-        0.75. WBC's measured 0.73 sits at the bottom of the comparable
-        cluster. The franchise-mix logic for placement: WBC's mortgage-
-        book scale and recent business-rebuild position it close to NAB
-        (same retail-and-business mix) and CBA (similar funding profile,
-        weaker ROE) — there is no franchise-specific reason for it to be
-        more defensive than NAB.
-
-        β selected = 0.75 (cluster midpoint of comparable peers). This
-        is a 2bp uplift to WBC's measured value, modest but
-        methodologically explicit. Re = 4.30% + 0.75 × 5.00% = 8.05%
-        (vs measured-β-mechanical 7.95%).
-      peer_beta_dataset:
-        - bank: CBA
-          beta_measured: 0.80
-          inclusion: comparable_peer
-        - bank: NAB
-          beta_measured: 0.72
-          inclusion: comparable_peer
-        - bank: WBC
-          beta_measured: 0.73
-          inclusion: subject
-        - bank: ANZ
-          beta_measured: 0.57
-          inclusion: excluded_outlier
-          exclusion_reason: "Institutional / international revenue dilution; Suncorp integration period disrupting price series. Re-estimate or use peer-implied value for ANZ's own valuation."
-        - bank: MQG
-          beta_measured: 0.88
-          inclusion: informative_not_comparable
-          rationale: "Different archetype — markets, asset management, commodities trading dilutes banking comparability."
-      peer_cluster_midpoint: 0.75
-      peer_cluster_low: 0.72
-      peer_cluster_high: 0.80
-
-      cost_of_equity: 0.0805
-      cost_of_equity_formula: "Re = Rf + beta_selected × ERP = 4.30% + 0.75 × 5.00% = 8.05%"
-      single_ke_discipline: true
-      commentary: >
-        Single-Ke discipline per §15.2(d): 8.05% held constant across
-        scenarios. The CAPM build uses the same Rf and ERP as the
-        industrials methodology (§3.5.2); the bank-specific component
-        is β, selected via the peer-triangulation discipline at
-        §15.2(c). WBC's measured β (0.73) is documented alongside the
-        selected β (0.75) for transparency; the 2bp uplift to the
-        comparable-peer cluster midpoint is the deliberate methodological
-        choice. Note Ke still sits below the initial archetype mid-
-        point (~8.93%) by ~90bps; that reflects the peer-implied
-        beta range being materially below the archetype's initial
-        range floor of 0.85. The peer evidence justifies revising the
-        archetype anchor — see australian_major_banks.yaml.
 
     historical_anchors:
       # Multi-year history from Ben's EODHD feed for through-cycle
