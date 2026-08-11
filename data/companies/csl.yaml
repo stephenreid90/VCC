@@ -604,3 +604,31 @@ normalised_baseline:
       FCFF discounted at the cost of equity given modest net leverage; single
       rate held across all six scenarios per §3.5. Terminal growth is
       scenario-conditional; the discount rate is not.
+
+  # --- Per-segment scenario baseline (layer 2; migrated from
+  # data/financials/csl.yaml on 2026-08-11 to break the layer-1 circularity). ---
+  # Muddle Through growth paths + margin uplifts per segment (methodology §11);
+  # observed FY25 revenue/margin stay in data/financials/csl.yaml.
+  segment_baseline:
+    - segment: csl_behring
+      muddle_through_growth_path: [-0.01, 0.025, 0.045, 0.055, 0.055, 0.055]
+      growth_shape: j_curve
+      growth_rationale: >
+        Behring J-curve: FY26 -1% (Medicare Part D + China trough), recovering
+        to the archetype secular 5.5% by FY29. Through-cycle plasma demand 5-7%.
+      margin_uplift_cum_fy31: 0.015
+      margin_uplift_rationale: >
+        +150bps peer-gap closure in Muddle Through; full +250bps reserved for
+        Orderly Convergence (benefit-funding consistency, §4.4.1).
+    - segment: csl_seqirus
+      muddle_through_cagr: 0.02
+      growth_rationale: >
+        Mature seasonal influenza-vaccine market. Pandemic / health-disruption
+        optionality lifts demand under Disorderly Climate.
+      margin_uplift_cum_fy31: 0.01
+    - segment: csl_vifor
+      muddle_through_cagr: 0.07
+      growth_rationale: >
+        Iron-deficiency / nephrology franchise (acquired 2022). Faster-growing,
+        younger franchise with patent-cliff / substitution exposure over time.
+      margin_uplift_cum_fy31: 0.01

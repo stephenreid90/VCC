@@ -18,21 +18,28 @@ fiscal_year: FY2025
 fy_end_date: 2025-06-30
 reporting_currency: USD
 functional_currency: USD
-base_year_status: workbook_reverse_engineered
+base_year_status: disclosed_accounts_hand_curated
 data_source: >
-  Disclosed FY25 segment accounts; curated from csl_muddle_through_valuation_v4.xlsx
-  (Muddle Through, terminal capex = D&A). Cross-checked to 16-analyst consensus pulled
-  via MarketScreener + Yahoo Finance (21 June 2026).
+  FY25 disclosed segment accounts (CSL FY25 results) for group and segment
+  revenue; 1H26 balance sheet for net debt; market feeds (MarketScreener /
+  Yahoo Finance, 21 Jun 2026) for price, FX and 16-analyst consensus; EODHD /
+  US Treasury for the cost-of-equity market inputs. Primary sources — NOT the
+  valuation workbook (the earlier workbook_reverse_engineered route is retired).
 data_generated: 2026-06-25
-last_updated: 2026-07-25
+last_updated: 2026-08-11
 last_updated_note: >
-  25 July 2026 — layer split per design/single_source_of_truth.md §3. The
-  hand-authored `normalised_baseline` block moved to data/companies/csl.yaml
-  (layer 2); what remains here is observed data (group financials, balance-sheet
-  anchor, market data, share statistics, cost-of-equity market inputs). NOTE:
-  base_year_status is `workbook_reverse_engineered` — this layer-1 file is still
-  hand-curated from csl_muddle_through_valuation_v4.xlsx, not yet machine-fed, so
-  refresh-safety is aspirational until Ben's pipeline supplies it.
+  11 Aug 2026 — broke the layer-1 circularity. (1) The per-segment SCENARIO
+  ASSUMPTIONS (muddle_through growth paths, growth_shape, margin uplifts + their
+  rationales) that had leaked into the `segments` block below moved to
+  data/companies/csl.yaml `normalised_baseline.segment_baseline` (layer 2). What
+  remains under `segments` here is observed only: disclosed FY25 segment revenue
+  and operating margin. (2) Observed values re-attributed to their primary
+  disclosures/feeds rather than to csl_muddle_through_valuation_v4.xlsx, and
+  base_year_status flipped off `workbook_reverse_engineered`. Numbers are the
+  disclosed figures (unchanged); independent MACHINE re-sourcing from Ben's
+  EODHD pipeline is still pending — until then this file is primary-cited but
+  hand-curated. Prior split: 25 Jul 2026 moved the top-level normalised_baseline
+  to layer 2 (design/single_source_of_truth.md §3).
 
 # --- OBSERVED GROUP FINANCIALS (layer 1: disclosed accounts) ---
 group_financials:
@@ -98,44 +105,25 @@ coe_observed_inputs:
       beta_indicative: 0.094
       inclusion: subject_measured_unreliable
 
-# --- SEGMENTS (industry+company decomposition per §11) ---
+# --- SEGMENTS (observed FY25 disclosed segment accounts, layer 1) ---
+# Scenario assumptions (growth paths, growth_shape, margin uplifts) are layer 2
+# and live in data/companies/csl.yaml normalised_baseline.segment_baseline (§11).
 segments:
   - segment: csl_behring
     industry_archetype: plasma_derived_therapies
     fy25_revenue: 11158.0
     fy25_or_margin: 0.422
     revenue_share: 0.717
-    muddle_through_growth_path: [-0.01, 0.025, 0.045, 0.055, 0.055, 0.055]
-    growth_shape: j_curve
-    growth_rationale: >
-      Behring J-curve: FY26 -1% (Medicare Part D + China trough), recovering
-      to the archetype secular 5.5% by FY29. Through-cycle plasma demand 5-7%.
-    margin_uplift_cum_fy31: 0.015
-    margin_uplift_rationale: >
-      +150bps peer-gap closure in Muddle Through; full +250bps reserved for
-      Orderly Convergence (benefit-funding consistency, §4.4.1).
-
   - segment: csl_seqirus
     industry_archetype: vaccines
     fy25_revenue: 2166.0
     fy25_or_margin: 0.474
     revenue_share: 0.139
-    muddle_through_cagr: 0.02
-    growth_rationale: >
-      Mature seasonal influenza-vaccine market. Pandemic / health-disruption
-      optionality lifts demand under Disorderly Climate.
-    margin_uplift_cum_fy31: 0.01
-
   - segment: csl_vifor
     industry_archetype: specialty_pharmaceuticals
     fy25_revenue: 2234.0
     fy25_or_margin: 0.491
     revenue_share: 0.144
-    muddle_through_cagr: 0.07
-    growth_rationale: >
-      Iron-deficiency / nephrology franchise (acquired 2022). Faster-growing,
-      younger franchise with patent-cliff / substitution exposure over time.
-    margin_uplift_cum_fy31: 0.01
 
 # --- IDENTITY ---
 identity:

@@ -334,3 +334,29 @@ def test_wbc_split_reconstructs_cost_of_equity_build():
 
     # And the split really happened: no normalised_baseline left in layer 1.
     assert "normalised_baseline" not in fin
+
+
+def test_csl_segment_assumptions_live_in_layer2_not_layer1():
+    """CSL layer-1 circularity fix (11 Aug 2026): per-segment SCENARIO assumptions
+    (growth paths, margin uplifts) are layer 2 and must not sit in the observed
+    ``data/financials/csl.yaml`` ``segments`` block. Observed FY25 revenue/margin
+    stay in layer 1.
+    """
+    fin = _load(ROOT / "data" / "financials" / "csl.yaml")
+    comp = _load(ROOT / "data" / "companies" / "csl.yaml")
+
+    LAYER2 = {"muddle_through_growth_path", "muddle_through_cagr", "growth_shape",
+              "growth_rationale", "margin_uplift_cum_fy31", "margin_uplift_rationale"}
+    for seg in fin["segments"]:
+        leaked = LAYER2 & set(seg)
+        assert not leaked, f"layer-2 leak in financials segment {seg.get('segment')}: {leaked}"
+        assert "fy25_revenue" in seg and "fy25_or_margin" in seg
+
+    sb = comp["normalised_baseline"]["segment_baseline"]
+    assert {s["segment"] for s in sb} == {"csl_behring", "csl_seqirus", "csl_vifor"}
+    beh = next(s for s in sb if s["segment"] == "csl_behring")
+    assert beh["muddle_through_growth_path"][0] == -0.01   # ssot-allow
+    assert beh["margin_uplift_cum_fy31"] == 0.015          # ssot-allow
+
+    assert "normalised_baseline" not in fin
+    assert fin["base_year_status"] != "workbook_reverse_engineered"

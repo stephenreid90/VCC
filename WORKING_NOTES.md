@@ -14,6 +14,44 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 
 ---
 
+## CHAT HANDOVER — 11 August 2026 (c) (CSL layer-1 circularity broken — M2 track, step 2)
+
+Second M2-track step: broke the circularity in `data/financials/csl.yaml` (was
+`base_year_status: workbook_reverse_engineered` — its "observed" layer-1 had been transcribed from
+the very model it feeds). Structural fix, not a re-computation; **numbers unchanged**. Pushed.
+
+1. **Layer-2 leak removed.** The `segments` block carried per-segment SCENARIO assumptions
+   (`muddle_through_growth_path`, `growth_shape`, `growth_rationale`, `margin_uplift_cum_fy31`,
+   `margin_uplift_rationale`, `muddle_through_cagr`) — pure judgment sitting in the observed file.
+   Moved to `data/companies/csl.yaml` `normalised_baseline.segment_baseline` (layer 2, one entry per
+   segment, verbatim). Layer-1 `segments` now holds observed only: `fy25_revenue`, `fy25_or_margin`,
+   `revenue_share`, `industry_archetype`.
+2. **Provenance re-attributed.** `base_year_status` flipped `workbook_reverse_engineered` →
+   `disclosed_accounts_hand_curated`; `data_source` + `last_updated_note` rewritten to cite primary
+   disclosures/feeds (FY25 disclosed segment accounts, 1H26 balance sheet, MarketScreener / Yahoo
+   market data, EODHD / US Treasury) rather than `csl_muddle_through_valuation_v4.xlsx`.
+3. **No schema change, no consumer impact.** `normalised_baseline` is a loosely-typed `dict` on
+   `CompanyPositionFile`, so `segment_baseline` slots in with no model edit; nothing in
+   src/scripts/generator reads the growth-path fields yet (M3/engine is where they get consumed). New
+   test `test_csl_segment_assumptions_live_in_layer2_not_layer1` pins the split. **Suite 70 → 71.**
+
+**Honest caveat.** This removes the *structural* circularity (assumptions out of the observed file)
+and the *citation* circularity (workbook → primary sources). It does NOT independently machine-verify
+the observed values against the filings — that stays pending Ben's EODHD pipeline; the file is now
+primary-cited but still hand-curated (stated in the header).
+
+**Aside found (NOT touched).** `data/companies/csl.yaml` `company_position` does not currently
+validate against `CompanyPositionFile` (76 schema mismatches — `functional_currency_rationale`
+missing, `industry_type` / `share_statistics` / `operating_result_share` extra, etc.). Pre-existing
+and latent (no test runs CSL through `load_inputs`). Worth a dedicated pass before CSL is wired to
+the engine (M3). My change is unrelated (0 of the 76 errors touch `normalised_baseline`).
+
+**M2 track remaining:** the engine wiring proper — `AssumptionSet` → `FcfEngineInputs` (`linkage/`,
+`assumptions/`, time profiles, derivations, segment aggregation). That is the large milestone; the
+SSOT hygiene that gated it (DNL §5.3, WBC split, CSL circularity) is now **done**.
+
+---
+
 ## CHAT HANDOVER — 11 August 2026 (b) (WBC layer split — M2 track, step 1)
 
 First step of the M2 track: WBC split into layer 1 / layer 2, mirroring DNL and CSL. Clears the
