@@ -59,3 +59,28 @@ def test_dnl_mt_ratified_per_share():
     assert round(r.enterprise_value, 1) == 7009.2
     # sanity: still a terminal-heavy DCF, below market
     assert r.value_per_share < r.market_reference_price
+
+
+def test_equity_bridge_adjustments_are_data_driven():
+    """The Fertilisers-separation equity-bridge adjustments are now a structured
+    data block (methodology §4.2) that reproduces the hand-typed golden net."""
+    import yaml
+    from vcc_valuations.translator import equity_bridge_adjustments_net_from_data
+    from tests.dcf.golden.dnl_mt_inputs import _equity_bridge_adjustments_net
+
+    raw = yaml.safe_load((ROOT / "data" / "companies" / "dnl.yaml").read_text(encoding="utf-8"))
+    net = equity_bridge_adjustments_net_from_data(raw)
+    assert round(net, 2) == 151.65                                   # workbook Equity Bridge B24
+    assert round(net, 4) == round(_equity_bridge_adjustments_net(), 4)   # ties the hand-typed golden
+
+
+def test_equity_bridge_validator_requires_on_balance_sheet_flag():
+    """Methodology §4.3: an adjustment missing on_balance_sheet_at_anchor is an error."""
+    import pytest
+    from vcc_valuations.translator import equity_bridge_adjustments_net_from_data
+
+    bad = {"normalised_baseline": {"equity_bridge_adjustments": [
+        {"id": "x", "amount_aud_m": 10.0, "direction": "subtract_from_equity",
+         "treatment": "add_back_in_full"}]}}
+    with pytest.raises(ValueError, match="on_balance_sheet_at_anchor"):
+        equity_bridge_adjustments_net_from_data(bad)

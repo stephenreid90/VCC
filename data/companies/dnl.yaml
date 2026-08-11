@@ -432,3 +432,74 @@ normalised_baseline:
         10-year sovereign. IPL pre-demerger BBB+/Baa1; post-demerger
         DNL likely BBB given smaller scale and concentrated cyclical
         exposure.
+
+  # --- Equity-bridge adjustments (methodology §4.2; migrated from the hand-typed
+  # tests/dcf/golden/dnl_mt_inputs.py on 2026-08-11). Fertilisers-separation items
+  # that sit OUTSIDE the narrow net-debt definition (§4.1). Net = 151.65 (subtract
+  # items less probability-weighted receivables). Every line carries an explicit
+  # on_balance_sheet_at_anchor flag per the §4.3 validator. ---
+  equity_bridge_adjustments:
+    - id: declared_unpaid_dividend
+      description: "Interim dividend 4.6cps x 1,770m, declared 11 May 2026, paid Jul 2026"
+      amount_aud_m: 81.4
+      direction: subtract_from_equity
+      on_balance_sheet_at_anchor: no
+      treatment: add_back_in_full
+    - id: phosphate_hill_aro_commitment
+      description: "ARO funding commitment at Phosphate Hill sale completion"
+      amount_aud_m: 126.0
+      direction: subtract_from_equity
+      on_balance_sheet_at_anchor: partial
+      provided_for_at_anchor_aud_m: 82.0
+      treatment: add_back_gap_only
+    - id: phosphate_hill_inventory
+      description: "Phosphate Hill inventory / working-capital settlement at completion"
+      amount_aud_m: 80.0
+      direction: subtract_from_equity
+      on_balance_sheet_at_anchor: no
+      treatment: add_back_in_full
+    - id: transformation_execution_cost
+      description: "Remaining transformation cash execution cost (§4.4b cost-of-closure)"
+      amount_aud_m: 12.0
+      direction: subtract_from_equity
+      on_balance_sheet_at_anchor: no
+      treatment: add_back_in_full
+    - id: geelong_remediation
+      description: "Geelong site remediation / exit obligation"
+      amount_aud_m: 35.0
+      direction: subtract_from_equity
+      on_balance_sheet_at_anchor: no
+      treatment: add_back_in_full
+    - id: gibson_island_closure
+      description: "Gibson Island closure / site obligations"
+      amount_aud_m: 97.0
+      direction: subtract_from_equity
+      on_balance_sheet_at_anchor: no
+      treatment: add_back_in_full
+    - id: separation_transaction_costs
+      description: "Fertilisers-separation transaction costs"
+      amount_aud_m: 11.0
+      direction: subtract_from_equity
+      on_balance_sheet_at_anchor: no
+      treatment: add_back_in_full
+    - id: perdaman_contingent_receivable
+      description: "Up to AUD 145m subject to operational milestones; expected 2027 (AASB 15 constrained)"
+      amount_aud_m: 145.0
+      direction: add_to_equity
+      on_balance_sheet_at_anchor: no
+      treatment: probability_weighted
+      probability: 0.50
+    - id: ipf_distribution_receivable
+      description: "IPF in-specie distribution / receivable"
+      amount_aud_m: 125.0
+      direction: add_to_equity
+      on_balance_sheet_at_anchor: no
+      treatment: probability_weighted
+      probability: 0.85
+    - id: phosphate_hill_contingent
+      description: "Phosphate Hill contingent consideration"
+      amount_aud_m: 100.0
+      direction: add_to_equity
+      on_balance_sheet_at_anchor: no
+      treatment: probability_weighted
+      probability: 0.30

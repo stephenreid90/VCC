@@ -14,6 +14,35 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 
 ---
 
+## CHAT HANDOVER — 11 August 2026 (e) (M2 — equity-bridge adjustments data-driven, §4.2/§4.3)
+
+Continued the M2 assumptions-layer build: migrated DNL's Fertilisers-separation equity-bridge
+adjustments out of the hand-typed `_equity_bridge_adjustments_net()` into a structured data block
+(methodology §4.2) and implemented the §4.3 validator. Pushed.
+
+1. **`data/companies/dnl.yaml` `normalised_baseline.equity_bridge_adjustments`** — the ten separation
+   items as a structured list (id, description, amount_aud_m, direction, on_balance_sheet_at_anchor,
+   treatment, + provided_for / probability): declared dividend 81.4, PH ARO gap 44 (126−82), PH
+   inventory 80, transformation cost 12, Geelong 35, Gibson Island 97, transaction 11; receivables
+   Perdaman 145×0.5, IPF 125×0.85, PH contingent 100×0.3. **Net 151.65** = workbook Equity Bridge B24.
+2. **`translator.equity_bridge_adjustments_net_from_data(company_raw)`** — sums the block (in_full /
+   gap_only / probability_weighted, signed by direction) and enforces the **§4.3 validator** (ValueError
+   if any line lacks `on_balance_sheet_at_anchor`). Two new tests: net == 151.65 == the hand-typed
+   golden; validator fires on a missing flag. **Suite 73 → 75.**
+3. **Ratchet:** the block surfaced a faithful pre-existing generator hardcode — `build_cfgs.py` prints
+   "IPF distribution +125" — so 125 gained a data home and the copy became visible debt. Baseline
+   regenerated 119 → 120 (only `build_cfgs.py:125` added), tracked like the other generator hardcodes
+   (clears when the generator consumes engine output at M5).
+
+**M2 status:** WACC half wired (β 1.10 → 3.073); equity-bridge adjustments now data-driven (§4.2/§4.3).
+Still hand-typed in `tests/dcf/golden/dnl_mt_inputs.py`: the per-year margin / gas / tax / capex glides,
+stub timing, the revenue-growth chain, and the bridge run-rates (OCF 500 / capex 256 / period-A). Next
+slice: a per-year-overlay schema (`margin_transformation`, `margin_gas_rolloff`, `tax_rate_glide`,
+`capex_pct`), then a full `build_engine_inputs_from_data` assembling FcfEngineInputs end-to-end and
+reproducing 3.073 with NO hand-typed constants.
+
+---
+
 ## CHAT HANDOVER — 11 August 2026 (d) (M2 — WACC wired data→engine; DNL re-anchored to β 1.10)
 
 Stephen's call (option 1): adopt the ratified β **1.10** and drive the discount rate from the data.

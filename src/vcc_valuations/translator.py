@@ -248,6 +248,43 @@ def build_wacc_from_inputs(inputs: dict, default_tax: float = 0.30):
     )
 
 
+def equity_bridge_adjustments_net_from_data(company_raw: dict):
+    """Sum the structured ``equity_bridge_adjustments`` (methodology §4.2).
+
+    Returns the net AUD-m figure the equity bridge subtracts from enterprise
+    value: subtract-from-equity items add to the net, add-to-equity receivables
+    (probability-weighted) reduce it. ``None`` if the company carries no list.
+
+    Enforces the §4.3 validator: every adjustment MUST carry an explicit
+    ``on_balance_sheet_at_anchor`` flag (raises ``ValueError`` otherwise) so a
+    provision is never silently double-counted.
+    """
+    nb = (company_raw or {}).get("normalised_baseline") or {}
+    adjustments = nb.get("equity_bridge_adjustments")
+    if not adjustments:
+        return None
+    net = 0.0
+    for a in adjustments:
+        if "on_balance_sheet_at_anchor" not in a:
+            raise ValueError(
+                f"equity_bridge_adjustment {a.get('id', '?')!r} lacks "
+                f"on_balance_sheet_at_anchor (methodology §4.3)"
+            )
+        treatment = a.get("treatment")
+        amount = a["amount_aud_m"]
+        if treatment == "add_back_in_full":
+            magnitude = amount
+        elif treatment == "add_back_gap_only":
+            magnitude = amount - a.get("provided_for_at_anchor_aud_m", 0.0)
+        elif treatment == "probability_weighted":
+            magnitude = a.get("expected_value_aud_m", amount * a["probability"])
+        else:
+            raise ValueError(f"unknown treatment {treatment!r} for {a.get('id')}")
+        sign = 1.0 if a["direction"] == "subtract_from_equity" else -1.0
+        net += sign * magnitude
+    return net
+
+
 # ----------------------------------------------------------------------
 # Translator
 # ----------------------------------------------------------------------
