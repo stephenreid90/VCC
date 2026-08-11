@@ -503,3 +503,20 @@ normalised_baseline:
       on_balance_sheet_at_anchor: no
       treatment: probability_weighted
       probability: 0.30
+
+  # --- Per-year engine overlays, scenario-keyed (methodology §11; migrated from
+  # the hand-typed tests/dcf/golden/dnl_mt_inputs.py on 2026-08-11). The Muddle
+  # Through per-year glides: margin transformation + gas roll-off (cumulative pp
+  # vs base), the tax glide, and the capex step. Base ebit margin, D&A and
+  # terminal growth included so the scenario's operating build is self-contained.
+  engine_overlays:
+    muddle_through:
+      base_ebit_margin: 0.141              # workbook B10
+      margin_transformation: [0.006, 0.018, 0.02, 0.02, 0.02]   # B45..B49 (cum pp)
+      margin_gas_rolloff: [0.0, 0.0, -0.005, -0.01, -0.015]     # B52..B56 (cum pp, <=0)
+      stub_tax_rate: 0.225                 # B59
+      tax_rate_glide: [0.225, 0.2375, 0.25, 0.2625, 0.275]      # Tax Bridge B12..B16
+      capex_pct_stub: 0.08                 # B12 (transition)
+      capex_pct: [0.08, 0.08, 0.07, 0.07, 0.07]                 # B12 (Y1,Y2), B11 (Y3..Y5)
+      da_pct_revenue: 0.073                # B13
+      terminal_growth: 0.025               # B77

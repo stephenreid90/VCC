@@ -285,6 +285,19 @@ def equity_bridge_adjustments_net_from_data(company_raw: dict):
     return net
 
 
+def engine_overlays_from_data(company_raw: dict, scenario_id: str):
+    """Per-year engine overlays for a scenario (methodology §11).
+
+    Returns the scenario's ``normalised_baseline.engine_overlays[scenario_id]``
+    mapping (margin glides, tax glide, capex step, base margin, D&A, terminal
+    growth), or ``None`` if absent. These are the per-year paths the FCFF engine
+    consumes; migrating them out of the hand-typed golden stand-in is part of M2.
+    """
+    nb = (company_raw or {}).get("normalised_baseline") or {}
+    overlays = nb.get("engine_overlays") or {}
+    return overlays.get(scenario_id)
+
+
 # ----------------------------------------------------------------------
 # Translator
 # ----------------------------------------------------------------------

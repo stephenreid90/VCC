@@ -14,6 +14,34 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 
 ---
 
+## CHAT HANDOVER — 11 August 2026 (f) (M2 — per-year engine overlays data-driven)
+
+Final M2 slice this session: migrated the Muddle Through per-year overlays out of the hand-typed
+`dnl_mt_inputs.py` into a scenario-keyed data block. Pushed.
+
+1. **`data/companies/dnl.yaml` `normalised_baseline.engine_overlays.muddle_through`** — the per-year
+   glides: `margin_transformation` [0.006,0.018,0.02,0.02,0.02], `margin_gas_rolloff`
+   [0,0,−0.005,−0.01,−0.015], `tax_rate_glide` [0.225…0.275], `capex_pct` [0.08,0.08,0.07,0.07,0.07],
+   plus `base_ebit_margin` 0.141, `stub_tax_rate` 0.225, `capex_pct_stub` 0.08, `da_pct_revenue` 0.073,
+   `terminal_growth` 0.025 — all tie the workbook cell refs.
+2. **`translator.engine_overlays_from_data(company_raw, scenario_id)`** returns the scenario overlay
+   mapping. New test builds FcfEngineInputs from the DATA overlays + DATA WACC and reproduces the
+   ratified **3.073** (fidelity check — drift in any overlay would move it). **Suite 75 → 76.**
+3. **Ratchet:** `tax_rate_glide` re-introduced 0.275 (27.5% tax); the three code hardcodes (wacc.py,
+   beta_data.py, build_cfgs.py) re-collide — real duplicates, baselined 120 → 123 (they were baselined
+   pre-CSL-deletion too).
+
+**M2 data-driven surface now:** discount rate (β 1.10 WACC), equity-bridge adjustments (§4.2/§4.3), and
+the per-year overlays — all from data, all reproducing 3.073. **Still hand-typed** in
+`tests/dcf/golden/dnl_mt_inputs.py`: `base_year_revenue` 3400, the revenue-growth chain (industry ×
+geo-mix + FF offset), `stub_years` 0.351, horizon 5, and the equity-bridge RUN-RATES (OCF 500, capex
+256, period_a 55/365, leases 194.3, market ref 3.61; net_debt_anchor 1260.8 and shares 1770 are already
+in data). **Next milestone:** `build_engine_inputs_from_data(inputs, scenario)` assembling the whole
+FcfEngineInputs from data + the revenue-chain derivation (§11) → zero hand-typed constants; then the
+other five scenarios; then M3 (segment FCFF for CSL).
+
+---
+
 ## CHAT HANDOVER — 11 August 2026 (e) (M2 — equity-bridge adjustments data-driven, §4.2/§4.3)
 
 Continued the M2 assumptions-layer build: migrated DNL's Fertilisers-separation equity-bridge

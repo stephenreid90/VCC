@@ -84,3 +84,28 @@ def test_equity_bridge_validator_requires_on_balance_sheet_flag():
          "treatment": "add_back_in_full"}]}}
     with pytest.raises(ValueError, match="on_balance_sheet_at_anchor"):
         equity_bridge_adjustments_net_from_data(bad)
+
+
+def test_engine_overlays_data_driven_reproduce_headline():
+    """Per-year overlays (margin/gas/tax/capex glides) now come from data; fed
+    into the engine with the data-driven WACC they reproduce the ratified 3.073."""
+    import yaml
+    from vcc_valuations.translator import engine_overlays_from_data
+
+    raw = yaml.safe_load((ROOT / "data" / "companies" / "dnl.yaml").read_text(encoding="utf-8"))
+    ov = engine_overlays_from_data(raw, "muddle_through")
+    inp = dataclasses.replace(
+        dnl_muddle_through_inputs(),
+        wacc=build_wacc_from_inputs(_load()),
+        base_ebit_margin=ov["base_ebit_margin"],
+        margin_transformation=ov["margin_transformation"],
+        margin_gas_rolloff=ov["margin_gas_rolloff"],
+        stub_tax_rate=ov["stub_tax_rate"],
+        tax_rate_glide=ov["tax_rate_glide"],
+        capex_pct_stub=ov["capex_pct_stub"],
+        capex_pct=ov["capex_pct"],
+        da_pct_revenue=ov["da_pct_revenue"],
+        terminal_growth=ov["terminal_growth"],
+    )
+    r = FcfEngine().run(inp)
+    assert round(r.value_per_share, 3) == 3.073     # data overlays + data WACC, ratified β 1.10
