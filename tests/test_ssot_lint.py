@@ -236,8 +236,8 @@ def test_resolve_normalised_baseline_reconstructs_the_wacc_build():
     # Rejoined wacc_build spans both layers.
     wb = norm["wacc_build"]
     assert wb["risk_free_rate"] == 0.0430          # ssot-allow: layer 1
-    assert wb["equity_market_value"] == 6802.0     # ssot-allow: layer 1
-    assert wb["debt_market_value"] == 1810.0       # ssot-allow: layer 1
+    assert wb["equity_market_value"] == 6390.0     # ssot-allow: layer 1 (§5.3 anchor)
+    assert wb["debt_market_value"] == 1260.8       # ssot-allow: layer 1 (§5.3 anchor)
     assert wb["equity_risk_premium"] == 0.0500     # ssot-allow: layer 2
     assert wb["beta"] == 1.10                      # ssot-allow: layer 2
     assert wb["cost_of_debt_pretax"] == 0.0600     # ssot-allow: layer 2
@@ -276,3 +276,33 @@ def test_csl_split_reconstructs_cost_of_equity_build():
 
     # And the split really happened: no normalised_baseline left in layer 1.
     assert "normalised_baseline" not in fin
+
+
+def test_share_and_netdebt_anchor_dates_paired():
+    """Methodology §5.4: shares_outstanding_at must equal net_debt_at.
+
+    Any company financials that declare a §5.3 issued-share anchor must pair it
+    with a net-debt anchor at the same reported balance-sheet date, and carry a
+    §5.3 source note. This is the equity-bridge "don't accidentally mismatch the
+    denominator and the leverage" check.
+    """
+    fin_dir = ROOT / "data" / "financials"
+    checked = 0
+    for path in sorted(fin_dir.glob("*.yaml")):
+        fin = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        ss = fin.get("share_statistics", {}) or {}
+        if "shares_outstanding_at" not in ss:
+            continue
+        checked += 1
+        dm = fin.get("derived_metrics", {}) or {}
+        assert "net_debt_at" in dm, (
+            f"{path.name}: §5.4 — share anchor present but derived_metrics.net_debt_at missing"
+        )
+        assert ss["shares_outstanding_at"] == dm["net_debt_at"], (
+            f"{path.name}: §5.4 — shares_outstanding_at {ss['shares_outstanding_at']} "
+            f"!= net_debt_at {dm['net_debt_at']}"
+        )
+        assert ss.get("shares_outstanding_source"), (
+            f"{path.name}: §5.3 — shares_outstanding_source required with the anchor"
+        )
+    assert checked >= 1, "expected at least one company with a §5.3 share anchor (DNL)"

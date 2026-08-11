@@ -14,6 +14,56 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 
 ---
 
+## CHAT HANDOVER — 11 August 2026 (β free-input · DNL §5.3 share-count fix EXECUTED)
+
+Two things shipped this session; both pushed.
+
+**1. β is now a free input in the workbench (commit `1a28b1b`, pushed).** In "The rate you built",
+the subject β was display-only (peer median, or Hamada-relevered median). Stephen's methodology is
+that peers *triangulate* β and the owner *chooses* an appropriate value — not necessarily the
+average/median. So β is now an editable field defaulting to the peer-derived value, overridable to
+any number, flowing straight into Re. Peer median / relevered / documented judgment stay on screen
+as reference, with a "↺ use peer-triangulated" reset when overridden. Generator-only change
+(`gen_ui.py`: `bs.betaOv`, `effBeta()`, apply routes through `effBeta`). Default unchanged, so the
+base tie held (DNL 3.48 / WBC 30.15 / CSL 203.83), netDebt 1512, `node --check` clean on all three.
+
+**2. DNL §5.3 share-count fix EXECUTED in the data layer (this session's data-fix commit, pushed).**
+This is the half that was decided-and-documented on 25 Jul but never applied to the source-of-truth
+file. The *valuation* already used 1,770m (golden inputs, M1 engine and workbook all tie 3.484), but
+`data/financials/dnl.yaml` still carried the stale EODHD feed (1,875.9m / phantom equity 6,802),
+which the translator reads for the per-share divisor and the WACC weight — so M2 (yaml → engine)
+would have silently reintroduced the ~6% equity-weight error. Now closed:
+
+1. `share_statistics` — §5.3-compliant: `shares_outstanding: 1,770,000,000`,
+   `shares_outstanding_at: 2026-03-31`, `shares_outstanding_source` note; the stale feed value kept
+   as `shares_outstanding_feed_stale` for provenance.
+2. `wacc_observed_inputs` — `equity_market_value` 6,802 → **6,390** (1,770m × 3.6061),
+   `debt_market_value` 1,810 → **1,260.8** (31 Mar 2026 anchor, workbook B74). E/V now 83.5% (was
+   79.0%), matching the golden. Rationale comment rewritten.
+3. `derived_metrics` — anchor `net_debt: 1,260.8` @ `net_debt_at: 2026-03-31`; the FY25-reported
+   1,809.8 (30 Sep 2025) preserved as `net_debt_fy25_reported`.
+4. **§5.4 validator implemented** (`tests/test_ssot_lint.py::test_share_and_netdebt_anchor_dates_paired`):
+   for any company declaring a §5.3 share anchor, `shares_outstanding_at` must equal
+   `derived_metrics.net_debt_at` and a source note must be present. Generalised across
+   `data/financials/*.yaml`.
+5. Join test updated (now pins 6,390 / 1,260.8). **Full suite 68 → 69 green; M1 golden still ties
+   3.484 (20 assertions); smoke-test WACC now E/V 83.5% off the 1,770m anchor.**
+
+**One judgment call (flag for veto).** `derived_metrics.net_debt` moved from the FY25-reported
+1,809.8 (30 Sep 2025) to the 31 Mar 2026 H1 anchor 1,260.8 — necessary because §5.4 needs
+`net_debt_at` to be a real date matching the 31 Mar share anchor; stamping 2026-03-31 on a 30-Sep
+figure would be false. FY25 preserved as `net_debt_fy25_reported`. **Valuation unaffected:** the
+translator uses the companies-yaml *normalised* override (1,300 steady-state) for `base_net_debt`,
+not `derived_metrics.net_debt`.
+
+**Still open / next.** The generator/UI scenario re-anchor stays engine-driven and waits on M2 (the
+six scenario values were calibrated on the old set, can't be hand-re-derived). M2 track: WBC split
+(clear stored `cost_of_equity`), CSL layer-1 circularity, then wire `AssumptionSet` →
+`FcfEngineInputs`. Ben still owes real peer gearings/tax + optionally the exact reported 31 Mar 2026
+issued count (1,770m is currently back-solved).
+
+---
+
 ## CHAT HANDOVER — 9 August 2026 (UI Workstreams A+C, C9, B — all shipped & pushed)
 
 **Commit state (all pushed to origin/main; HEAD `107ef59`).** The five commits from the prior

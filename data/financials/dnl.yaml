@@ -79,14 +79,16 @@ wacc_observed_inputs:
       inclusion: subject_measured_unreliable
 
 
-  # Capital-structure weights use market-value basis with the
-  # *reported* (not normalised) net debt — market-value weights
-  # reflect what the market actually sees on the balance sheet today.
-  equity_market_value: 6802.0
-  debt_market_value: 1810.0
+  # Capital-structure weights use market-value basis, anchored at the
+  # 31 Mar 2026 H1 balance-sheet date (methodology §5): equity off the
+  # §5.3-compliant 1,770m issued share count, debt at the same anchor.
+  equity_market_value: 6390.0
+  debt_market_value: 1260.8
   capital_structure_rationale: >
-    Equity = 1,884m shares x AUD 3.61 share price (21 May 2026).
-    Debt = reported net debt at 30 Sep 2025. E/V = 79.0%, D/V = 21.0%.
+    Equity = 1,770m issued shares (31 Mar 2026 H1 anchor, §5.3) x AUD
+    3.6061 = 6,390. Debt = net debt at the same 31 Mar 2026 anchor
+    (1,260.8; workbook B74). E/V = 83.5%, D/V = 16.5%. Supersedes the
+    pre-anchor 6,802 / 1,810 pair (off the phantom 1,884m count).
 
 
 # --- IDENTITY ---
@@ -195,8 +197,12 @@ balance_sheet:
   minority_interests: -1.1
 
 derived_metrics:
-  net_debt: 1809.8
-  net_debt_ebitda_fy25: 2.88
+  # Net debt anchored at the 31 Mar 2026 H1 balance-sheet date, paired
+  # with the §5.3 share count for the equity bridge (methodology §5.4).
+  net_debt: 1260.8                    # 31 Mar 2026 H1 anchor (workbook B74)
+  net_debt_at: 2026-03-31
+  net_debt_fy25_reported: 1809.8      # 30 Sep 2025 FY25 close (pre-anchor)
+  net_debt_ebitda_fy25: 2.88          # ratio on the FY25-reported figure
   net_debt_ebitda_ttm: 2.12
   capex_fy25: 474.2
   capex_pct_revenue_fy25: 0.128
@@ -238,9 +244,12 @@ market_data:
     rather than the data-history-derived 0.359.
   wall_street_target_price: 3.61
 
-# --- SHARE STATISTICS ---
+# --- SHARE STATISTICS (issued count anchored per methodology §5.3) ---
 share_statistics:
-  shares_outstanding: 1875912826
+  shares_outstanding_at: 2026-03-31
+  shares_outstanding: 1770000000       # ~1,770m at H1 anchor date
+  shares_outstanding_source: "Back-solved from H1 NPAT ex IMIs / EPS ex IMIs; period-end estimate net of H1 buybacks (methodology §5.3)"
+  shares_outstanding_feed_stale: 1875912826   # prior EODHD feed value (superseded; off phantom 1,884m count)
   shares_float: 1595329359
   percent_insiders: 0.0008
   percent_institutions: 0.6
