@@ -14,6 +14,42 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 
 ---
 
+## CHAT HANDOVER — 11 August 2026 (d) (M2 — WACC wired data→engine; DNL re-anchored to β 1.10)
+
+Stephen's call (option 1): adopt the ratified β **1.10** and drive the discount rate from the data.
+First end-to-end slice of M2 (`AssumptionSet → FcfEngineInputs`) — the WACC half. Pushed.
+
+1. **`translator.build_wacc_from_inputs(inputs)`** — assembles a `WaccBuild` from the resolved
+   layer-1/layer-2 data: β and ERP from the joined `wacc_build`, E/V weights from the §5.3-anchored
+   equity/debt market values (6,390 / 1,260.8). Returns `None` for Ke companies (banks / CSL). The
+   discount rate is now DATA-DRIVEN, not a hand-typed constant.
+2. **DNL Muddle Through re-anchored to β 1.10.** Data-driven WACC = **8.877%** (β 1.10, E/V 83.5%,
+   tax 0.30) → per-share **3.073** (EV 7,009, terminal 72.6%, −14.9% to market). This SUPERSEDES the
+   β-0.95 workbook headline **3.484** as the production number. Two new tests in
+   `tests/dcf/test_dnl_mt_ratified.py`: one pins the data-driven WACC (non-circular — ties the YAML);
+   one pins the end-to-end ratified per-share 3.073.
+3. **The β-0.95 workbook golden is KEPT** (`test_e2e_dnl_mt.py`, 20 assertions, 3.484) — its role is
+   now the **engine-mechanics oracle**: it proves the engine faithfully reproduces the audited v6
+   workbook when fed the workbook's own (β-stale) inputs, validating the mechanics independently of
+   any figure the engine itself emits. Not the production headline. (Workbook v6 lives at
+   `analyses/dnl/valuations/`; a β-1.10 workbook re-run could later give an INDEPENDENT oracle for
+   3.073 — today 3.073 is the engine's own output under the ratified β.)
+4. **Suite 71 → 73 green.**
+
+**Scope honesty — wired vs still hand-typed.** Only the WACC/discount half is data-driven. The
+per-year structural overlays still come from the hand-typed `tests/dcf/golden/dnl_mt_inputs.py`:
+`margin_transformation` + `margin_gas_rolloff` glides, `tax_rate_glide`, capex step, stub timing,
+the revenue-growth chain, and the whole Fertilisers-separation equity bridge (PH ARO/inventory,
+Perdaman, Gibson Island…). Migrating those into a data-driven assumptions/linkage layer — a new
+schema for per-year overlays + the equity-bridge adjustments, none of which exist in the YAML yet —
+is the remaining (large) M2 build.
+
+**Minor to reconcile later:** the workbook's WACC used blended statutory tax 0.275 on the debt leg;
+the data's `normalised_baseline.tax_rate` is 0.30, so the data-driven WACC (8.877%) is a hair below a
+0.275 build (8.90%). Reconcile when the tax layer is formalised.
+
+---
+
 ## CHAT HANDOVER — 11 August 2026 (c) (CSL layer-1 circularity broken — M2 track, step 2)
 
 Second M2-track step: broke the circularity in `data/financials/csl.yaml` (was

@@ -222,6 +222,32 @@ def resolve_normalised_baseline(inputs: dict) -> dict:
     return norm
 
 
+def build_wacc_from_inputs(inputs: dict, default_tax: float = 0.30):
+    """Assemble a ``WaccBuild`` from the resolved layer-1 / layer-2 data.
+
+    The single data-driven discount rate for WACC-discipline companies (DNL):
+    beta and ERP come from the joined ``wacc_build`` (layer-2 selection over the
+    layer-1 observed inputs), the E/V weights from the methodology-§5.3-anchored
+    equity / debt market values. Returns ``None`` for cost-of-equity companies
+    (banks / CSL), which carry no ``wacc_build``.
+    """
+    from vcc_valuations.assumptions.wacc import WaccBuild
+
+    norm = resolve_normalised_baseline(inputs)
+    wb = norm.get("wacc_build")
+    if not wb:
+        return None
+    return WaccBuild(
+        risk_free_rate=wb["risk_free_rate"],
+        equity_risk_premium=wb["equity_risk_premium"],
+        beta=wb["beta"],
+        cost_of_debt_pretax=wb["cost_of_debt_pretax"],
+        tax_rate=norm.get("tax_rate", default_tax),
+        equity_market_value=wb["equity_market_value"],
+        debt_market_value=wb["debt_market_value"],
+    )
+
+
 # ----------------------------------------------------------------------
 # Translator
 # ----------------------------------------------------------------------
