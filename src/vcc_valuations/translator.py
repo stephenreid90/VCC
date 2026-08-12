@@ -713,6 +713,76 @@ def build_bank_inputs_from_data(inputs: dict, scenario_id: str):
     )
 
 
+def build_segment_inputs_from_data(inputs: dict, scenario_id: str):
+    """Assemble ``SegmentInputs`` for one segment-level company x scenario (M3).
+
+    Segment FY25 revenue / operating-result margin are the layer-1 observed anchors in
+    ``data/financials/<id>.yaml``; the layer-2 drivers (per-segment growth path + margin
+    uplift, corporate build, terminal, tax) come from ``normalised_baseline.segment_fcff``.
+    Ke = Rf + beta x ERP from the joined ``cost_of_equity_build`` (single rate, held across
+    scenarios). Zero derived values are read from data.
+    """
+    from vcc_valuations.dcf.segment_engine import SegmentInputs, SegmentSpec
+
+    company = inputs["company"]
+    company_raw = inputs.get("company_raw") or {}
+    nb = company_raw.get("normalised_baseline") or {}
+    sf = nb.get("segment_fcff")
+    financials = inputs["financials"]
+    if sf is None:
+        raise ValueError(f"{company.id}: no segment_fcff block (build_segment_inputs_from_data "
+                         "handles segment-level-valuation companies only).")
+    scen = sf["by_scenario"].get(scenario_id)
+    if scen is None:
+        raise ValueError(f"{company.id}: no segment scenario {scenario_id!r}.")
+
+    coe = resolve_normalised_baseline(inputs).get("cost_of_equity_build") or {}
+    rf = coe.get("risk_free_rate"); erp = coe.get("equity_risk_premium")
+    beta = coe.get("beta", coe.get("beta_selected"))
+    if rf is None or erp is None or beta is None:
+        raise ValueError(f"{company.id}: incomplete cost_of_equity_build.")
+    ke = rf + beta * erp
+
+    horizon = sf["timing"]["horizon_years"]
+    # per-segment growth path (Behring is an explicit path; the others a flat CAGR).
+    def growth_path(seg_name):
+        if f"{_seg_key(seg_name)}_growth" in scen:
+            return list(scen[f"{_seg_key(seg_name)}_growth"])
+        cagr = scen[f"{_seg_key(seg_name)}_cagr"]
+        return [cagr] * (horizon + 1)
+
+    segs = []
+    for s in financials["segments"]:
+        name = s["segment"]
+        segs.append(SegmentSpec(
+            name=name,
+            fy25_revenue=s["fy25_revenue"],
+            fy25_or_margin=s["fy25_or_margin"],
+            growth_path=growth_path(name),
+            margin_uplift_cum=scen[f"{_seg_key(name)}_margin_uplift"],
+        ))
+
+    corp = sf["corporate"]; drv = sf["drivers"]; anch = sf["anchors"]
+    return SegmentInputs(
+        company_id=company.id, scenario_id=scenario_id, horizon_years=horizon,
+        segments=segs,
+        corporate_fy25=corp["unallocated_fy25"], corporate_growth=corp["unallocated_growth"],
+        net_interest_fy25=corp["net_interest_fy25"], net_interest_decline=corp["net_interest_decline"],
+        capex_pct_revenue=drv["capex_pct_revenue"], da_pct_revenue=drv["da_pct_revenue"],
+        wc_change_pct_revenue_change=drv["wc_change_pct_revenue_change"],
+        terminal_capex_pct_revenue=drv["terminal_capex_pct_revenue"],
+        terminal_ebit_margin=scen["terminal_ebit_margin"], terminal_growth=scen["terminal_growth"],
+        tax_rate=scen["tax_rate"], cost_of_equity=ke,
+        net_debt=anch["net_debt"], restructuring_cash_to_come=anch["restructuring_cash_to_come"],
+        shares_outstanding_m=anch["shares_outstanding_m"], fx_aud_per_usd=sf["fx_aud_per_usd"],
+    )
+
+
+def _seg_key(segment_name: str) -> str:
+    """Map a segment id (``csl_behring``) to its driver key stem (``behring``)."""
+    return segment_name.split("_")[-1]
+
+
 # ----------------------------------------------------------------------
 # Translator
 # ----------------------------------------------------------------------
