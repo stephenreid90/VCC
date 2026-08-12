@@ -24,6 +24,8 @@ reimplement the engine in the browser to make anything live** — that recreates
 problem this session killed. The only feature that wants runtime compute is the live user-scenario (#1);
 handle it per the decision in #1 below (build at build time; demo live; service at programming), not a JS port.
 
+**✅ #2 DONE (12 Aug 2026 (h), commit `d5bbd5b`) — see the handover block below. #1 is now next.**
+
 **DO #2 FIRST (bounded, capstone of the traceability work): "download EVERYTHING to Excel".**
 - Want: the download button emits a full workbook — all six scenarios, the DCF build, WACC build, Tax
   Bridge, Equity Bridge, comps + comp analysis, Porter's — matching the audited-workbook discipline
@@ -62,6 +64,44 @@ handle it per the decision in #1 below (build at build time; demo live; service 
   built-ins (whose company Porter's offset is currently scenario-invariant, −25bps fixed).
 
 
+
+---
+
+## CHAT HANDOVER — 12 August 2026 (h) (standalone UI #2 SHIPPED — "download EVERYTHING to Excel", full audited engine-sourced formula workbook, base64-embedded)
+
+Feature #2 from PLANNED NEXT is done and pushed (`d5bbd5b`; cleanup-script follow-up `bb4fca8`).
+The DNL standalone HTML's download button now serves a **full audited formula workbook**,
+pre-generated with the production engine at build time and **base64-embedded** in the page —
+no runtime backend, fully downstream of the one Python engine.
+
+1. **New `ui_prototypes/_generator/engine_workbook.py`** builds the workbook with openpyxl from
+   live data (zero hardcoded domain numbers — reads the loaded inputs via the translator). Nine
+   sheets, honouring standing rule 1 (one **Assumptions** sheet of yellow input cells; every other
+   cell on every other sheet is an Excel **formula** linking back): Assumptions · Revenue growth
+   (six scenarios, the §11 chain) · WACC build · Tax bridge · DCF build (six scenarios, per-year
+   FCFF: revenue→margin→EBIT→tax glide→NOPAT→D&A→capex→FCFF→PV→EV→equity bridge→per-share) ·
+   Equity bridge (central-case Period-A walk + the §4.2 adjustments detail) · Comparables & beta
+   (peer Hamada unlever/relever, median vs ratified β) · Porter five forces (assessed offsets that
+   sum to the revenue-chain net offset) · Scenarios summary. Industry baseline and company offset
+   are **separate input rows**, the company/scenario value derived by formula.
+2. **Verified by LibreOffice headless recalc**: every formula result ties the engine — all six
+   per-share (OC 3.562 / MT 3.073 / AIPL 2.985 / Frag 2.222 / DClim 1.177 / Stag 1.019), EV 7,009.2,
+   net-debt walk 1,224.03, equity 5,439; comps median relever 1.00 vs ratified β 1.10; Porter's net
+   offset −0.0025 cross-checks Revenue B41. Decoded straight from the HTML config → same numbers.
+3. **Wiring:** `build_cfgs.py` generates the bytes and sets `dnl["xlsxB64"]` (+`xlsxName`);
+   `gen_ui.py`'s `vccDownload()` decodes base64→Blob→download when `CFG.xlsxB64` is present, else
+   falls through to the old in-browser JS writer. **WBC/CSL untouched** (no `xlsxB64` → still the JS
+   builder until they're engine-wired). Button label/caption switch to the engine-book wording for DNL.
+4. **Green:** suite **99**, SSOT ratchet **8** (no baseline drift — the module has no stored-value
+   duplicates), `node --check` OK on all three inlined scripts, base ties **3.073 / 30.15 / 203.83**.
+   `_dnl_full.xlsx` (the module's `__main__` artifact) is gitignored; `sandbox_cleanup.cmd` extended
+   to clear it plus the stray `.git/objects/**/tmp_obj_*` push corpses.
+
+**Next = #1** (user writes their own world scenario → macros → Porter's → company → valuation).
+Per the PLANNED NEXT decision: build at build time in the Python engine layer, pre-compute one or
+two illustrative user-authored scenarios into the standalone file as worked examples, demo the live
+self-serve version in Cowork; do NOT JS-port the engine. Also open: roll the Excel export onto
+WBC/CSL once engine-wired; per-year P&L Derivation; workings view; DM-inflation basis.
 
 ---
 
