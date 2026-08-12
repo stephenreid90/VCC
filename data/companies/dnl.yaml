@@ -363,34 +363,33 @@ normalised_baseline:
   # (world GDP 2.3%, CPI 3.0%) — reconciling the workbook basis to the published
   # scenario macros is separate, later work. Promoting industry_baseline to the
   # archetype file (with a schema field) is a follow-up. ---
-  # V6 nomenclature and cell refs (Assumptions B17-B42). ONLY yellow-cell inputs
-  # live here; every derived row (industry volume B25, industry pricing B29,
-  # industry nominal B30, DM/EM weighting B33/B34, geo-mix multiplier B36, net
-  # offset B41, company nominal B42) is computed and exposed as an auditable step
-  # by translator.revenue_growth_chain_from_data — never stored back here.
+  # V6 nomenclature and cell refs (Assumptions B17-B42; scenario macros from
+  # dnl_scenarios_comparison_v4 Inputs sheet). ONLY yellow-cell inputs live here;
+  # every derived row (industry volume B25, industry pricing B29, industry nominal
+  # B30, DM/EM weighting B33/B34, geo-mix multiplier B36, net offset B41, company
+  # nominal B42) is computed and exposed as an auditable step by
+  # translator.revenue_growth_chain_from_data — never stored back here.
+  #
+  # Structure: `shared` holds the scenario-invariant industry coefficients and the
+  # DNL company offset; `by_scenario` holds only the per-scenario macro drivers.
+  # This is the methodology's industry-baseline + company/scenario-offset split
+  # (standing rule 1 / §11) and de-duplicates the shared coefficients across the six.
   revenue_growth_chain:
-    muddle_through:
-      macro_context:
-        # B17: DM real GDP growth. Context memo ONLY — explicitly NOT used in the
-        # chain, which keys off global mining real growth (B19) and DM inflation
-        # (B18). Carried for traceability so the workbook row has a data home.
-        dm_real_gdp_growth: 0.02
-      industry_baseline:
+    shared:
+      industry_structure:
         # Volume build (B23-B25): volume = a x mining_real_growth + b.
         volume_coefficient_a: 1.15        # B23: volume beta to mining real growth
-        global_mining_real_growth: 0.025  # B19: tracks real GDP + EM mining tilt + depletion
         volume_constant_b: 0.004          # B24: pickup from ore-grade decline / waste tonnage
         # Pricing build (B26-B29): pricing = w_infl x DM_inflation + w_gas x gas + productivity.
         pricing_weight_inflation: 0.7     # B26: 70% of price tracks DM inflation
-        dm_inflation: 0.025               # B18: developed-markets inflation, normalising to 2.5%
         pricing_weight_gas: 0.3           # B27: 30% of price tracks gas input cost
-        gas_price_growth: 0.02            # B20: gas input-cost proxy (no MT commodity boom)
         productivity_sharing: 0.005       # B28: +50bps net productivity uplift / yr
       company_offset:
         # Geo-mix (B33-B36). DM/EM weighting is DERIVED from the segment's
         # geographic_concentration (developed_market_regions -> DM; the rest -> EM),
         # so the workbook's hardcoded 0.9/0.1 becomes an auditable derived step
         # rather than a stored input. em_growth_premium is the yellow cell (B35).
+        # Scenario-invariant: DNL's competitive position does not change by world.
         developed_market_regions:         # classify geographic_concentration into DM vs EM
           - United States
           - Australia
@@ -401,6 +400,22 @@ normalised_baseline:
           rivalry_product_mix: -0.001            # B38: more bulk-ANFO weighted. -10bps
           new_entrants_pipeline_uplift: 0.0015   # B39: DNEL LATAM/Africa ramp (time-limited). +15bps
           buyer_supplier_substitutes: 0.0        # B40: at industry average. net 0
+    by_scenario:
+      # Per-scenario macro (B18/B19/B20 + B17 context memo). dm_real_gdp_growth is
+      # carried for traceability but NOT consumed (the chain keys off mining real
+      # growth + DM inflation). Values are the dnl_scenarios_comparison_v4 Inputs sheet.
+      muddle_through:
+        macro: {dm_real_gdp_growth: 0.020, dm_inflation: 0.025, global_mining_real_growth: 0.025, gas_price_growth: 0.020}
+      orderly_convergence:
+        macro: {dm_real_gdp_growth: 0.025, dm_inflation: 0.020, global_mining_real_growth: 0.040, gas_price_growth: 0.015}
+      ai_productivity_lag:
+        macro: {dm_real_gdp_growth: 0.017, dm_inflation: 0.025, global_mining_real_growth: 0.020, gas_price_growth: 0.020}
+      fragmentation:
+        macro: {dm_real_gdp_growth: 0.010, dm_inflation: 0.035, global_mining_real_growth: 0.015, gas_price_growth: 0.040}
+      disorderly_climate_crystallisation:
+        macro: {dm_real_gdp_growth: 0.015, dm_inflation: 0.035, global_mining_real_growth: 0.020, gas_price_growth: 0.060}
+      stagflation_persists:
+        macro: {dm_real_gdp_growth: 0.005, dm_inflation: 0.045, global_mining_real_growth: 0.000, gas_price_growth: 0.050}
 
   # Net-debt override
   net_debt: 1300.0
@@ -597,23 +612,35 @@ normalised_baseline:
       treatment: probability_weighted
       probability: 0.30
 
-  # --- Per-year engine overlays, scenario-keyed (methodology §11; migrated from
-  # the hand-typed tests/dcf/golden/dnl_mt_inputs.py on 2026-08-11). The Muddle
-  # Through per-year glides: margin transformation + gas roll-off (cumulative pp
-  # vs base), the tax glide, and the capex step. Base ebit margin, D&A and
-  # terminal growth included so the scenario's operating build is self-contained.
+  # --- Per-year engine overlays (methodology §11). Structure mirrors the
+  # revenue chain: `baseline` is the Muddle Through operating build (the workbook
+  # v6 per-year glides); `by_scenario` holds only the scenario-conditional deltas
+  # (from dnl_scenarios_comparison_v4 Inputs sheet, rows 12-14). The resolver
+  # translator.engine_overlays_from_data applies the deltas as a PARALLEL SHIFT
+  # across the five explicit years (owner decision 12 Aug 2026): margin_delta_pp
+  # added to every explicit-year margin, capex_delta_pp to every explicit-year
+  # capex; terminal_growth is set absolutely. The stub (base year) is unshifted.
+  # MT's deltas are zero, so MT resolves to the audited v6 build unchanged.
+  #
+  # NB: stub_tax_rate + tax_rate_glide are NOT here — they are derived by
+  # translator.tax_bridge_from_data (see the tax_bridge block below).
   engine_overlays:
-    muddle_through:
+    baseline:
       base_ebit_margin: 0.141              # workbook B10
       margin_transformation: [0.006, 0.018, 0.02, 0.02, 0.02]   # B45..B49 (cum pp)
       margin_gas_rolloff: [0.0, 0.0, -0.005, -0.01, -0.015]     # B52..B56 (cum pp, <=0)
-      # NB: stub_tax_rate + tax_rate_glide are NO LONGER stored here — they were
-      # derived values (effective rate gliding to blended statutory). See the
-      # tax_bridge block below; translator.tax_bridge_from_data derives them.
       capex_pct_stub: 0.08                 # B12 (transition)
       capex_pct: [0.08, 0.08, 0.07, 0.07, 0.07]                 # B12 (Y1,Y2), B11 (Y3..Y5)
       da_pct_revenue: 0.073                # B13
-      terminal_growth: 0.025               # B77
+    by_scenario:
+      # margin_delta_pp / capex_delta_pp are parallel shifts vs the baseline path;
+      # terminal_growth is absolute (B77 base 0.025 + the comparison's delta).
+      muddle_through:                     {margin_delta_pp:  0.000, capex_delta_pp: 0.00, terminal_growth: 0.0250}
+      orderly_convergence:                {margin_delta_pp:  0.005, capex_delta_pp: 0.00, terminal_growth: 0.0275}
+      ai_productivity_lag:                {margin_delta_pp:  0.005, capex_delta_pp: 0.00, terminal_growth: 0.0225}
+      fragmentation:                      {margin_delta_pp: -0.030, capex_delta_pp: 0.00, terminal_growth: 0.0225}
+      disorderly_climate_crystallisation: {margin_delta_pp: -0.030, capex_delta_pp: 0.03, terminal_growth: 0.0175}
+      stagflation_persists:               {margin_delta_pp: -0.075, capex_delta_pp: 0.00, terminal_growth: 0.0225}
 
   # --- Tax Bridge (workbook Tax Bridge sheet; migrated 2026-08-12). INPUTS ONLY:
   # the FY26 effective rate (B59), the per-jurisdiction statutory rates (C5-C7,

@@ -367,16 +367,36 @@ def equity_bridge_adjustments_net_from_data(company_raw: dict):
 
 
 def engine_overlays_from_data(company_raw: dict, scenario_id: str):
-    """Per-year engine overlays for a scenario (methodology §11).
+    """Per-year engine overlays for a scenario (methodology §11), RESOLVED.
 
-    Returns the scenario's ``normalised_baseline.engine_overlays[scenario_id]``
-    mapping (margin glides, tax glide, capex step, base margin, D&A, terminal
-    growth), or ``None`` if absent. These are the per-year paths the FCFF engine
-    consumes; migrating them out of the hand-typed golden stand-in is part of M2.
+    ``engine_overlays`` is stored as a ``baseline`` operating build (the Muddle
+    Through v6 per-year glides) plus per-scenario ``by_scenario`` deltas. This
+    resolver applies the deltas as a PARALLEL SHIFT across the explicit years
+    (owner decision 12 Aug 2026): ``margin_delta_pp`` is added to every explicit
+    year's ``margin_transformation`` and ``capex_delta_pp`` to every explicit
+    year's ``capex_pct``; ``terminal_growth`` is taken absolutely. The stub (base
+    year) is left unshifted. Returns the resolved mapping with the same keys
+    consumers already expect (``base_ebit_margin``, ``margin_transformation``,
+    ``margin_gas_rolloff``, ``capex_pct_stub``, ``capex_pct``, ``da_pct_revenue``,
+    ``terminal_growth``), or ``None`` if the scenario is absent.
     """
     nb = (company_raw or {}).get("normalised_baseline") or {}
     overlays = nb.get("engine_overlays") or {}
-    return overlays.get(scenario_id)
+    base = overlays.get("baseline")
+    scen = (overlays.get("by_scenario") or {}).get(scenario_id)
+    if base is None or scen is None:
+        return None
+    margin_delta = scen.get("margin_delta_pp", 0.0)
+    capex_delta = scen.get("capex_delta_pp", 0.0)
+    return {
+        "base_ebit_margin": base["base_ebit_margin"],
+        "margin_transformation": [x + margin_delta for x in base["margin_transformation"]],
+        "margin_gas_rolloff": list(base["margin_gas_rolloff"]),
+        "capex_pct_stub": base["capex_pct_stub"],
+        "capex_pct": [x + capex_delta for x in base["capex_pct"]],
+        "da_pct_revenue": base["da_pct_revenue"],
+        "terminal_growth": scen["terminal_growth"],
+    }
 
 
 def _geographic_regions(company_raw: dict) -> list:
@@ -420,16 +440,19 @@ def revenue_growth_chain_from_data(inputs: dict, scenario_id: str):
 
     company_raw = inputs.get("company_raw") or {}
     nb = company_raw.get("normalised_baseline") or {}
-    chain = (nb.get("revenue_growth_chain") or {}).get(scenario_id)
-    if not chain:
+    rgc = nb.get("revenue_growth_chain") or {}
+    shared = rgc.get("shared") or {}
+    scen = (rgc.get("by_scenario") or {}).get(scenario_id)
+    if not shared or not scen:
         return None
 
-    ib = chain["industry_baseline"]
-    co = chain["company_offset"]
+    ib = shared["industry_structure"]     # scenario-invariant coefficients
+    macro = scen["macro"]                 # per-scenario B18/B19/B20
+    co = shared["company_offset"]         # scenario-invariant company offset
     b = DerivationBuilder(f"revenue_growth_chain[{scenario_id}]")
 
     a = ib["volume_coefficient_a"]
-    mining = ib["global_mining_real_growth"]
+    mining = macro["global_mining_real_growth"]
     b_const = ib["volume_constant_b"]
     volume = b.step(
         "B25", "Industry volume growth", a * mining + b_const,
@@ -438,9 +461,9 @@ def revenue_growth_chain_from_data(inputs: dict, scenario_id: str):
     )
 
     w_infl = ib["pricing_weight_inflation"]
-    dm_infl = ib["dm_inflation"]
+    dm_infl = macro["dm_inflation"]
     w_gas = ib["pricing_weight_gas"]
-    gas = ib["gas_price_growth"]
+    gas = macro["gas_price_growth"]
     prod = ib["productivity_sharing"]
     pricing = b.step(
         "B29", "Industry pricing growth", w_infl * dm_infl + w_gas * gas + prod,

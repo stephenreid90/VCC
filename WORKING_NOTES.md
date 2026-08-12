@@ -14,7 +14,46 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 
 ---
 
-## CHAT HANDOVER — 12 August 2026 (d) (Tax Bridge to V6 traceability — and a real SSOT fix: stored tax glide removed)
+## CHAT HANDOVER — 12 August 2026 (e) (DNL COMPLETE — all six scenarios from data; MT baseline + scenario overlay)
+
+DNL now values end-to-end from data across ALL SIX scenarios (was MT only). Restructured the
+scenario-specific blocks into the methodology's baseline + overlay shape and added the five non-MT
+scenarios from `dnl_scenarios_comparison_v4`. Pushed. **Suite 90 → 99.**
+
+**Per-share (ratified WACC 8.877%, β 1.10):** Orderly Convergence 3.562 > Muddle Through 3.073 >
+AI Productivity Lag 2.985 > Fragmentation 2.222 > Disorderly Climate 1.177 > Stagflation 1.019. Downside
+skew ~4.2× (v4 workbook 4.05×). These supersede the v4 comparison's per-share (which were at a stale
+β-0.95 WACC 0.0828), exactly as MT's 3.073 superseded 3.484.
+
+1. **`revenue_growth_chain` restructured** to `shared` (industry_structure coeffs + company_offset — both
+   scenario-invariant) + `by_scenario.{id}.macro` (DM inflation, global mining real growth, gas price
+   growth, + DM-GDP context memo). De-duplicates the shared coefficients across the six. The chain
+   reproduces the workbook's per-scenario revenue growth (row 26) to the cent for all six.
+2. **`engine_overlays` restructured** to `baseline` (the MT v6 operating build) + `by_scenario.{id}` deltas
+   (`margin_delta_pp`, `capex_delta_pp`, `terminal_growth`). **Owner decision (12 Aug): scenario margin/capex
+   deltas apply as a PARALLEL SHIFT across the five explicit years** (regime is persistent from Y1; the stub
+   is unshifted). `translator.engine_overlays_from_data` now RESOLVES baseline+deltas and returns the same
+   keys consumers expect — so MT (zero deltas) is unchanged and still ties 3.073. Y5 EBIT margin ties the
+   workbook (row 27) for all six.
+3. **Scenario data source:** `dnl_scenarios_comparison_v4.xlsx` Inputs sheet (macros rows 6-9; deltas rows
+   12-14). Net company-position offset is scenario-invariant (row 23). Rationale for the margin deltas:
+   the cost-pass-through channel (upside = margin protected/lifted; Stagflation = input inflation can't be
+   passed through, −7.5pp the binding downside). WACC + equity bridge + tax bridge are all shared.
+4. **Tests +9** (`test_dnl_all_scenarios.py`): parametrized driver-ties-workbook for all six, MT==3.073,
+   asymmetry downside-skewed, single-WACC-across-scenarios. **Ratchet 136 → 137** (one coincidental collision:
+   0.04 = OC mining growth vs a beta_data.py literal). Regenerated + verified.
+
+**Where DNL stands: DONE for the engine path.** All five derived sheets trace at V6 granularity (revenue
+chain, WACC, Equity Bridge, Tax Bridge) AND all six scenarios produce per-share from data with zero
+hand-typed constants. `dnl_mt_inputs.py` remains oracle-only.
+
+**Next — roll across the other two (Stephen's plan: get happy with one, then the other two).** WBC (bank
+archetype — Ke discipline, no WACC/EV bridge, different operating build: NIM / cost-to-income / credit
+losses, methodology §15) and CSL (segment FCFF, Ke, M3 — and the pre-existing 76-error
+`CompanyPositionFile` schema mismatch to clear first). WBC and CSL each have a `_scenarios_comparison`
+workbook to source the six scenarios from, same as DNL. The DNL scenario structure (shared + by_scenario,
+parallel-shift overlay) is the template. Also still open: per-year P&L margin `Derivation` (parity item);
+the human-readable workings view (deferred); the DM-inflation basis reconciliation.
 
 Rolled the traceability pattern onto the Tax Bridge, which doubled as a genuine single-source-of-truth
 fix: the per-year `tax_rate_glide` was a STORED derived value in `engine_overlays` (the effective rate
