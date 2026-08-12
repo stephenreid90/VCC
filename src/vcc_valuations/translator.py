@@ -624,6 +624,89 @@ def build_engine_inputs_from_data(inputs: dict, scenario_id: str):
     )
 
 
+def build_bank_inputs_from_data(inputs: dict, scenario_id: str):
+    """Assemble ``BankInputs`` for one bank x scenario from data (methodology §15).
+
+    Resolves the bank operating build from ``normalised_baseline.bank_build``:
+    the AIEA/NIM chain (industry anchor + company offset + per-scenario macro
+    deltas), the per-year overlays (NIM / cost-to-income / credit-loss glides,
+    parallel-shifted per scenario), and the terminal ROE-fade inputs. The cost of
+    equity comes from the joined ``cost_of_equity_build`` (Rf + beta x ERP), held
+    constant across scenarios (single-Ke discipline, §15.2(d)). Zero derived values
+    are read from data; every derived quantity is computed by the engine.
+    """
+    from vcc_valuations.dcf.bank_engine import BankInputs
+
+    company = inputs["company"]
+    company_raw = inputs.get("company_raw") or {}
+    nb = company_raw.get("normalised_baseline") or {}
+    bb = nb.get("bank_build")
+    if bb is None:
+        raise ValueError(f"{company.id}: no bank_build block (build_bank_inputs_from_data "
+                         "handles bank-archetype companies only).")
+
+    # Cost of equity (single Ke, held across scenarios).
+    coe = resolve_normalised_baseline(inputs).get("cost_of_equity_build") or {}
+    rf = coe.get("risk_free_rate")
+    erp = coe.get("equity_risk_premium")
+    beta = coe.get("beta", coe.get("beta_selected"))
+    if rf is None or erp is None or beta is None:
+        raise ValueError(f"{company.id}: incomplete cost_of_equity_build (need rf, ERP, beta).")
+    ke = rf + beta * erp
+
+    timing = bb["timing"]
+    chain = bb["aiea_nim_chain"]
+    shared = chain["shared"]
+    macro = chain["by_scenario"].get(scenario_id)
+    overlays = bb["overlays"]
+    base = overlays["baseline"]
+    scen = overlays["by_scenario"].get(scenario_id)
+    if macro is None or scen is None:
+        raise ValueError(f"{company.id}: no bank scenario {scenario_id!r}.")
+
+    # AIEA growth: industry anchor + scenario delta + company offset (Five Forces).
+    aiea_growth = (shared["industry"]["aiea_growth"] + macro.get("aiea_growth_delta", 0.0)
+                   + shared["company_offset"]["aiea_growth_offset"])
+
+    # Per-year glides, parallel-shifted per scenario.
+    nim_shift = macro.get("nim_delta_bps", 0) / 10000.0
+    nim_applied = [x + nim_shift for x in base["nim_applied"]]
+    cti_shift = scen["y5_cost_to_income"] - base["cost_to_income"][-1]
+    cost_to_income = [x + cti_shift for x in base["cost_to_income"]]
+    cl_shift = scen.get("credit_loss_delta_bps", 0) / 10000.0
+    credit_loss_rate = [x + cl_shift for x in base["credit_loss_rate"]]
+
+    anchors = bb["balance_sheet_anchors"]
+    drivers = bb["forecast_drivers"]
+    income = bb["income_anchors_1h26"]
+
+    return BankInputs(
+        company_id=company.id,
+        scenario_id=scenario_id,
+        stub_years=timing["stub_years"],
+        horizon_years=timing["horizon_years"],
+        aiea_y1_time_factor=timing["aiea_y1_time_factor"],
+        aiea_anchor=anchors["aiea_1h26_average"],
+        book_equity=anchors["book_equity"],
+        at1_hybrid=anchors["at1_hybrid"],
+        non_controlling_interests=anchors["non_controlling_interests"],
+        treasury_shares=anchors["treasury_shares"],
+        shares_outstanding_m=anchors["shares_outstanding_m"],
+        non_interest_income_1h=income["non_interest_income"],
+        aiea_growth=aiea_growth,
+        non_interest_income_growth=drivers["non_interest_income_growth"],
+        avg_loans_pct_aiea=drivers["avg_loans_pct_aiea"],
+        effective_tax_rate=drivers["effective_tax_rate"],
+        dividend_payout_ratio=drivers["dividend_payout_ratio"],
+        nim_applied=nim_applied,
+        cost_to_income=cost_to_income,
+        credit_loss_rate=credit_loss_rate,
+        cost_of_equity=ke,
+        terminal_roe=scen["terminal_roe"],
+        terminal_growth=scen["terminal_growth"],
+    )
+
+
 # ----------------------------------------------------------------------
 # Translator
 # ----------------------------------------------------------------------

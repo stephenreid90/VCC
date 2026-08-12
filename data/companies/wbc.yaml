@@ -57,6 +57,70 @@ normalised_baseline:
       floor; the peer evidence justifies revising the archetype anchor (see
       australian_major_banks.yaml).
 
+  bank_build:
+    # Bank operating build (methodology §15): residual-income / DDM valuation.
+    # Sourced from analyses/wbc/valuations/wbc_muddle_through_valuation_v4_formulas.xlsx
+    # (Muddle Through baseline) and wbc_scenarios_comparison_v2.xlsx (the six worlds).
+    # Standing rule 1: industry anchor and company-position offset are SEPARATE rows;
+    # the applied value is derived. The engine consumes this block; nothing is stored
+    # that the engine can derive.
+    timing:
+      stub_years: 0.35          # 1H26 close (31 Mar 2026) to FY26 end (30 Sep 2026)
+      horizon_years: 5          # FY27-FY31 explicit
+      aiea_y1_time_factor: 1.18 # FY27 average-balance offset from the 1H26-average anchor
+                                # (stub uses stub_years/2; Y2+ compound at the growth rate)
+    income_anchors_1h26:        # AUD m, half-year to 31 Mar 2026, ex Notable items
+      net_interest_income: 9763
+      non_interest_income: 1521
+      operating_expenses: 5830
+      credit_impairment: 443
+      cash_npat: 3483
+    balance_sheet_anchors:      # AUD m, 1H26 close (31 Mar 2026)
+      aiea_1h26_average: 1035226
+      book_equity: 72825
+      at1_hybrid: 8522
+      non_controlling_interests: 350
+      treasury_shares: 64
+      shares_outstanding_m: 3414.9
+    forecast_drivers:
+      non_interest_income_growth: 0.025
+      through_cycle_credit_loss_rate: 0.0018
+      effective_tax_rate: 0.30
+      dividend_payout_ratio: 0.75
+      avg_loans_pct_aiea: 0.77
+    aiea_nim_chain:
+      shared:
+        industry:               # archetype anchors (Big Four system)
+          aiea_growth: 0.045
+          nim_anchor: 0.0186
+        company_offset:         # WBC Five-Forces position vs the archetype
+          aiea_growth_offset: -0.0015
+          nim_offset: 0.0008
+      by_scenario:              # parallel shifts to the industry anchors
+        orderly_convergence: {aiea_growth_delta: 0.02, nim_delta_bps: 5}
+        muddle_through: {aiea_growth_delta: 0.0, nim_delta_bps: 0}
+        ai_productivity_lag: {aiea_growth_delta: 0.0, nim_delta_bps: 0}
+        fragmentation: {aiea_growth_delta: -0.005, nim_delta_bps: 0}
+        disorderly_climate_crystallisation: {aiea_growth_delta: -0.005, nim_delta_bps: 0}
+        stagflation_persists: {aiea_growth_delta: -0.02, nim_delta_bps: -20}
+    overlays:
+      baseline:                 # per-year glides: [stub, Y1..Y5] (Muddle Through)
+        cost_to_income: [0.516, 0.515, 0.51, 0.495, 0.485, 0.48]
+        credit_loss_rate: [0.0011, 0.0013, 0.0016, 0.0018, 0.0018, 0.0018]
+        nim_applied: [0.019, 0.0192, 0.0193, 0.0194, 0.0194, 0.0194]
+        terminal_roe: 0.105
+        terminal_growth: 0.035
+      by_scenario:
+        # y5_cost_to_income re-anchors the CTI glide endpoint (parallel shift so Y5
+        # hits the target); credit_loss_delta_bps shifts the loss-rate glide;
+        # terminal_roe / terminal_growth are absolute per world.
+        orderly_convergence: {y5_cost_to_income: 0.46, credit_loss_delta_bps: -20, terminal_roe: 0.11, terminal_growth: 0.0375}
+        muddle_through: {y5_cost_to_income: 0.48, credit_loss_delta_bps: 0, terminal_roe: 0.105, terminal_growth: 0.035}
+        ai_productivity_lag: {y5_cost_to_income: 0.475, credit_loss_delta_bps: 0, terminal_roe: 0.105, terminal_growth: 0.0325}
+        fragmentation: {y5_cost_to_income: 0.49, credit_loss_delta_bps: 5, terminal_roe: 0.10, terminal_growth: 0.0325}
+        disorderly_climate_crystallisation: {y5_cost_to_income: 0.49, credit_loss_delta_bps: 20, terminal_roe: 0.09, terminal_growth: 0.0325}
+        stagflation_persists: {y5_cost_to_income: 0.51, credit_loss_delta_bps: 50, terminal_roe: 0.09, terminal_growth: 0.0325}
+
 company_position:
   id: wbc
   name: Westpac Banking Corporation
