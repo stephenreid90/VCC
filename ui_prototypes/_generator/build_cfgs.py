@@ -409,6 +409,33 @@ def bank_pack(company_id, archetype_id, scen, broker_price, market_price):
             "ordinary_equity": {nm: res[sid].ordinary_equity_value for sid, nm, _k in scen},
             "npat_y5": {nm: res[sid].cash_npat[5] for sid, nm, _k in scen}}
 
+from vcc_valuations.translator import build_segment_inputs_from_data as _sgi
+from vcc_valuations.dcf.segment_engine import SegmentEngine as _SegEng
+
+def segment_pack(company_id, archetype_id, scen, broker_price, market_price):
+    """Segment-FCFF (M3) analogue of engine_pack. Central case is kind=='live'."""
+    inps = {sid: _sgi(_li(_ROOT, sid, archetype_id, company_id), sid) for sid, _nm, _kind in scen}
+    res = {sid: _SegEng().run(inps[sid]) for sid, _nm, _kind in scen}
+    live = [t for t in scen if t[2] == "live"][0]
+    r0 = res[live[0]]; _ke = inps[live[0]].cost_of_equity
+    base = round(r0.value_per_share_aud, 2)
+    vals = {nm: round(res[sid].value_per_share_aud, 2) for sid, nm, _k in scen}
+    bars = []
+    for sid, nm, kind in scen:
+        bars.append({"n": nm, "v": vals[nm], "kind": kind})
+        if kind == "up":
+            bars.append({"n": "Average broker", "v": broker_price, "kind": "broker"})
+    ups = [v - base for v in vals.values() if v > base]
+    downs = [base - v for v in vals.values() if v < base]
+    asym = (max(downs) / max(ups)) if (ups and downs) else None
+    return {"base": base, "ke": _ke, "discount_to_market": base / market_price - 1.0,
+            "vals": vals, "bars": bars, "asym": asym, "terminal_share": r0.terminal_share_of_ev,
+            "usd": {nm: res[sid].value_per_share_usd for sid, nm, _k in scen},
+            "ev": {nm: res[sid].enterprise_value for sid, nm, _k in scen},
+            "pv_explicit": {nm: res[sid].pv_explicit for sid, nm, _k in scen},
+            "pv_terminal": {nm: res[sid].pv_terminal for sid, nm, _k in scen},
+            "equity": {nm: res[sid].equity_value for sid, nm, _k in scen}}
+
 _DNL_SCEN = [
     ("orderly_convergence", "Orderly Convergence", "up"),
     ("muddle_through", "Muddle Through", "live"),
@@ -599,5 +626,49 @@ from engine_workbook import build_wbc_workbook_bytes as _wwbk
 wbc["xlsxB64"] = _b64.b64encode(_wwbk(wbc)).decode("ascii")
 wbc["xlsxName"] = "WBC_full_valuation_workbook.xlsx"
 # ===== end WBC SSOT block =====
+# ===== SSOT: CSL segment-FCFF headline + build-up wired to the production engine =====
+_CSL_SCEN = [
+    ("orderly_convergence", "Orderly Convergence", "up"),
+    ("muddle_through", "Muddle Through", "live"),
+    ("ai_productivity_lag", "AI Productivity Lag", "down"),
+    ("disorderly_climate_crystallisation", "Disorderly Climate", "down"),
+    ("fragmentation", "Fragmentation", "down"),
+    ("stagflation_persists", "Stagflation Persists", "down"),
+]
+_sp = segment_pack("csl", "biopharmaceuticals", _CSL_SCEN, csl["broker"], csl["market"])
+_sbase = _sp["base"]; _ske = _sp["ke"]; _svals = _sp["vals"]
+_sdm = abs(_sp["discount_to_market"]) * 100.0
+def _sm(v): return "{:,.0f}".format(round(v))
+csl["cp"]["base"] = _sbase
+csl["cp"]["re0"] = round(_ske, 6)
+csl["scenarios"] = _sp["bars"]
+csl["metric4"] = {"label": "Terminal % of value", "value": ("%.0f%%" % (_sp["terminal_share"] * 100))}
+for _s in csl["sliders"]:
+    if _s["k"] == "re":
+        _s["def"] = round(_ske * 100.0, 2)
+
+# build-up bridge + rows -> engine (already FCFF-shaped; source the numbers)
+_cmt = "Muddle Through"
+_eUSD = _sp["usd"][_cmt]; _eEV = _sp["ev"][_cmt]; _ePVx = _sp["pv_explicit"][_cmt]
+_ePVt = _sp["pv_terminal"][_cmt]; _eEq = _sp["equity"][_cmt]
+csl["dcf"] = bridge([
+    ["Sum PV explicit FCFF (FY27\u2013FY31)", _sm(_ePVx)],
+    ["PV of terminal value", _sm(_ePVt)],
+    ["Enterprise value", _sm(_eEV)],
+    ["Less: net debt", "(9,100)"],
+    ["Less: restructuring PV", "(507)"],
+    ["Equity value", _sm(_eEq)],
+    ["\u00f7 shares (m)", "478.9"],
+    ["Value per share USD", "%.2f" % _eUSD],
+    ["Value per share AUD", "%.2f" % _sbase]],
+    "USD m. Five-year FCFF (FY27\u2013FY31) plus terminal, discounted at the %.2f%% cost of equity with mid-period discounting. Terminal binds to a 30%% EBIT margin with terminal capex = D&amp;A (%.0f%% of value). Engine-computed; per-scenario detail in csl_scenarios_comparison_v2." % (_ske * 100, _sp["terminal_share"] * 100))
+
+csl["footnote"] = csl["footnote"].replace(
+    "Calibrated central case: CSL Muddle Through USD 134.52 / AUD 203.83",
+    "Engine-computed central case: CSL Muddle Through USD %.2f / AUD %.2f" % (_eUSD, _sbase))
+csl["topnote"] = csl["topnote"].replace(
+    "all six scenarios calibrated (v4 / comparison v2)",
+    "all six scenarios computed by the production segment-FCFF engine (M3)")
+# ===== end CSL SSOT block =====
 json.dump({"dnl":dnl,"wbc":wbc,"csl":csl}, open(_CFGP,'w'), ensure_ascii=False)
 print("cfgs.json written")
