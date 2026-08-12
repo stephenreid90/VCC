@@ -13,6 +13,44 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 
 ---
 
+## PLANNED NEXT — replicate DNL's engine-wired + workbook end-state onto WBC, then CSL (decided 12 Aug 2026)
+
+**#1 (user-written world scenarios) is PARKED indefinitely until the build phase** (Stephen, 12 Aug).
+Do NOT pick it up in feedback-prototype work; it lives behind the engine service at programming time.
+
+**Now: bring WBC (bank archetype, §15) fully to DNL parity, then CSL (segment FCFF / M3).** "Replicate
+DNL" is a large program per company, not a copy — DNL's Excel workbook was the *last* layer on an engine
+that was already wired; WBC/CSL are not engine-wired at all. Audited gap (12 Aug): neither has (a) a
+valuation engine of its archetype in `src/`, (b) a passing schema, (c) six-scenario data blocks
+(`engine_overlays` + growth-chain `by_scenario`), (d) `build_cfgs` engine wiring, (e) a workbook
+generator, or (f) engine tests. The `30.15 / 203.83` in the UI are hand-typed literals. WBC chosen
+first (fewer blockers than CSL: 48 vs 76 schema errors; CSL also has a null archetype + multi-segment).
+Sequencing: foundations first, one milestone at a time, check in at each. Milestones (task list):
+WBC-1 schema loads · WBC-2 six-scenario bank data · WBC-3 bank engine (Ke, no EV bridge) · WBC-4 wire
+build_cfgs · WBC-5 bank workbook + embed · WBC-6 tests. Then repeat for CSL.
+
+**✅ WBC-1 DONE (commit `0e2b890`).** Made the schemas archetype-aware *additively* (DNL unaffected —
+still validates + typed): `BalanceSheet` gains optional bank capital ratios (CET1/tier-1/total-capital/
+APRA leverage) + `archetype_specific`; `LeveragePosture` gains `prudentially_strong`; `CompanyPosition`
+gains optional bank/positioning extension blocks (`industry_type`, `industry_archetype`,
+`five_forces_company_position`, `net_company_position_offset_summary`, `share_statistics`,
+`bank_specifics`, `archetype_specific`, `capital_actions`); segment positioning-depth fields made
+optional (banks carry abbreviated divisional segments); `MarketTrend` narrative/delta optional.
+`load_inputs` keeps **bank archetypes raw** (`archetype_class: bank` → not the industrial
+`IndustryArchetypeFile`, which stays strict for DNL); nothing reads the archetype as a typed model.
+`ImpactMatrix` tolerates `archetype_class`/`version`. wbc.yaml: the mis-keyed buyback record
+`corporate_actions`→`capital_actions` (CRLF preserved). WBC loads end-to-end; `tests/test_wbc_loads.py`
+(3) locks it. **Suite 99→102, ratchet 8.** CSL fell 76→58 schema errors as a side benefit.
+
+**WBC-2 next — needs input from Stephen/Ben:** the six-scenario bank operating build (NIM, asset/RWA
+growth, cost-to-income, credit losses / cost of risk, CET1 & payout constraint) as `engine_overlays`
+baseline + `by_scenario`, plus a bank "revenue" growth chain equivalent. Source = the
+`wbc_scenarios_comparison` workbook (external, not in repo) + methodology §15. DNL's shared+by_scenario /
+parallel-shift structure is the template. The `coe_method` (Ke) block already exists and rejoins via
+`resolve_normalised_baseline`.
+
+---
+
 ## PLANNED NEXT — two UI features, target = STANDALONE shareable HTML (decided 12 Aug 2026)
 
 Stephen's call: the scenario-interface HTML must be a **standalone, shareable file** — no backend at runtime.
