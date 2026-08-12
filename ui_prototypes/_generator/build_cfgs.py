@@ -384,6 +384,31 @@ def engine_pack(company_id, archetype_id, scen, broker_price):
     return {"base": base, "wacc": r0.wacc, "discount_to_market": r0.discount_to_market,
             "vals": vals, "bars": bars, "asym": asym, "live_name": live[1]}
 
+from vcc_valuations.translator import build_bank_inputs_from_data as _bbi
+from vcc_valuations.dcf.bank_engine import BankEngine as _BankEng
+
+def bank_pack(company_id, archetype_id, scen, broker_price, market_price):
+    """Bank (Ke / DDM, methodology §15) analogue of engine_pack. Runs the bank
+    engine across `scen`; central case is kind=='live'. Returns the UI display pack."""
+    res = {sid: _BankEng().run(_bbi(_li(_ROOT, sid, archetype_id, company_id), sid))
+           for sid, _nm, _kind in scen}
+    live = [t for t in scen if t[2] == "live"][0]
+    r0 = res[live[0]]
+    base = round(r0.value_per_share, 2)
+    vals = {nm: round(res[sid].value_per_share, 2) for sid, nm, _k in scen}
+    bars = []
+    for sid, nm, kind in scen:
+        bars.append({"n": nm, "v": vals[nm], "kind": kind})
+        if kind == "up":
+            bars.append({"n": "Average broker", "v": broker_price, "kind": "broker"})
+    ups = [v - base for v in vals.values() if v > base]
+    downs = [base - v for v in vals.values() if v < base]
+    asym = (max(downs) / max(ups)) if (ups and downs) else None
+    return {"base": base, "ke": r0.cost_of_equity, "discount_to_market": base / market_price - 1.0,
+            "vals": vals, "bars": bars, "asym": asym,
+            "ordinary_equity": {nm: res[sid].ordinary_equity_value for sid, nm, _k in scen},
+            "npat_y5": {nm: res[sid].cash_npat[5] for sid, nm, _k in scen}}
+
 _DNL_SCEN = [
     ("orderly_convergence", "Orderly Convergence", "up"),
     ("muddle_through", "Muddle Through", "live"),
@@ -508,9 +533,67 @@ dnl["_leaseContract"]["leaseLiability"] = round(-_LEAS)
 # formula workbook here and embed it; the download button serves these bytes (feature #2).
 import base64 as _b64
 from engine_workbook import build_dnl_workbook_bytes as _wbk
-dnl["xlsxB64"] = _b64.b64encode(_wbk()).decode("ascii")
+dnl["xlsxB64"] = _b64.b64encode(_wbk(dnl)).decode("ascii")
 dnl["xlsxName"] = "DNL_full_valuation_workbook.xlsx"
 # ===== end SSOT block =====
 
+# ===== SSOT: WBC bank headline + build-up wired to the production bank engine =====
+_WBC_SCEN = [
+    ("orderly_convergence", "Orderly Convergence", "up"),
+    ("muddle_through", "Muddle Through", "live"),
+    ("ai_productivity_lag", "AI Productivity Lag", "down"),
+    ("fragmentation", "Fragmentation", "down"),
+    ("disorderly_climate_crystallisation", "Disorderly Climate", "down"),
+    ("stagflation_persists", "Stagflation Persists", "down"),
+]
+_wp = bank_pack("wbc", "australian_major_banks", _WBC_SCEN, wbc["broker"], wbc["market"])
+_wbase = _wp["base"]; _wke = _wp["ke"]; _wvals = _wp["vals"]; _wasym = _wp["asym"]
+_wdm = abs(_wp["discount_to_market"]) * 100.0
+_WM = "\u2212"
+def _wpct(nm): return (_wvals[nm] / _wbase - 1.0) * 100.0
+def _wapct(nm): return abs(_wpct(nm))
+_woc = _wvals["Orderly Convergence"]
+
+wbc["cp"]["base"] = _wbase
+wbc["cp"]["re0"] = round(_wke, 6)
+wbc["scenarios"] = _wp["bars"]
+wbc["metric4"] = {"label": "Asymmetry (down/up)", "value": ("%.2f\u00d7" % _wasym)}
+for _s in wbc["sliders"]:
+    if _s["k"] == "re":
+        _s["def"] = round(_wke * 100.0, 2)
+
+# narrative numeric claims, engine-sourced
+_wn = wbc["narr"]
+_wn["Muddle Through"] = (_wn["Muddle Through"]
+    .replace("Why AUD 30.15, ~15% below market?", "Why AUD %.2f, ~%.0f%% below market?" % (_wbase, _wdm))
+    .replace("essentially the Orderly Convergence scenario (AUD 35.46)", "essentially the Orderly Convergence scenario (AUD %.2f)" % _woc))
+_wn["Orderly Convergence"] = (_wn["Orderly Convergence"]
+    .replace("At AUD 35.46 it sits essentially at market", "At AUD %.2f it sits essentially at market" % _woc)
+    .replace("+17.6% vs Muddle Through.", "+%.1f%% vs Muddle Through." % _wpct("Orderly Convergence")))
+_wn["AI Productivity Lag"] = _wn["AI Productivity Lag"].replace(
+    "\u22121.3% vs Muddle Through", "%s%.1f%% vs Muddle Through" % (_WM, _wapct("AI Productivity Lag")))
+_wn["Fragmentation"] = _wn["Fragmentation"].replace(
+    "\u22129.5%.", "%s%.1f%%." % (_WM, _wapct("Fragmentation")))
+_wn["Disorderly Climate"] = _wn["Disorderly Climate"].replace(
+    "\u221223%.", "%s%.0f%%." % (_WM, _wapct("Disorderly Climate")))
+_wn["Stagflation Persists"] = _wn["Stagflation Persists"].replace(
+    "NPAT Y5 AUD 3.7bn vs MT AUD 8.9bn. \u221233%.",
+    "NPAT Y5 AUD %.1fbn vs MT AUD %.1fbn. %s%.0f%%." % (
+        _wp["npat_y5"]["Stagflation Persists"] / 1000.0, _wp["npat_y5"]["Muddle Through"] / 1000.0,
+        _WM, _wapct("Stagflation Persists")))
+
+# build-up: ordinary equity + per-share -> engine (build-up is already §15-shaped)
+_word_s = "{:,.0f}".format(round(_wp["ordinary_equity"]["Muddle Through"]))
+def _wfix(x):
+    return x.replace("102,960", _word_s).replace("30.15", "%.2f" % _wbase) if isinstance(x, str) else x
+wbc["dcf"] = _wfix(wbc["dcf"])
+wbc["dcfIntro"] = _wfix(wbc["dcfIntro"])
+wbc["dcfRows"] = [[_wfix(c) for c in row] for row in wbc["dcfRows"]]
+wbc["footnote"] = wbc["footnote"].replace(
+    "Calibrated central case: WBC Muddle Through AUD 30.15",
+    "Engine-computed central case: WBC Muddle Through AUD %.2f" % _wbase)
+wbc["topnote"] = wbc["topnote"].replace(
+    "all six scenarios calibrated (v3)", "all six scenarios computed by the production bank engine (\u00a715)")
+# ===== end WBC SSOT block =====
 json.dump({"dnl":dnl,"wbc":wbc,"csl":csl}, open(_CFGP,'w'), ensure_ascii=False)
 print("cfgs.json written")
