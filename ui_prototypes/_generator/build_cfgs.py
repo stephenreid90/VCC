@@ -503,6 +503,13 @@ _dd["mt"]["note"] = ("Muddle Through operating build, straight from the producti
 dnl["shares"] = round(_SH); dnl["netDebt"] = round(_NDincl)
 dnl["netDebtExLeases"] = round(_NDval); dnl["leaseLiab"] = round(-_LEAS)
 dnl["_leaseContract"]["leaseLiability"] = round(-_LEAS)
+# ---- full audited workbook (engine-sourced), base64-embedded for the standalone download ----
+# The static HTML cannot call the Python engine at runtime, so we pre-generate the full
+# formula workbook here and embed it; the download button serves these bytes (feature #2).
+import base64 as _b64
+from engine_workbook import build_dnl_workbook_bytes as _wbk
+dnl["xlsxB64"] = _b64.b64encode(_wbk()).decode("ascii")
+dnl["xlsxName"] = "DNL_full_valuation_workbook.xlsx"
 # ===== end SSOT block =====
 
 json.dump({"dnl":dnl,"wbc":wbc,"csl":csl}, open(_CFGP,'w'), ensure_ascii=False)

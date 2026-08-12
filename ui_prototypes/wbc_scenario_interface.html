@@ -502,6 +502,15 @@ if(typeof module!=='undefined'&&module.exports){module.exports=DNLRICH;}
 
 // ===== VCC formula-workbook download (self-contained; DNL gets the rich book) =====
 function vccDownload(){ try{
+  if(CFG.xlsxB64){
+    var _bin=atob(CFG.xlsxB64), _n=_bin.length, _arr=new Uint8Array(_n);
+    for(var _i=0;_i<_n;_i++){ _arr[_i]=_bin.charCodeAt(_i); }
+    var _b=new Blob([_arr],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    var _u=URL.createObjectURL(_b), _a=document.createElement('a');
+    _a.href=_u; _a.download=CFG.xlsxName||(CFG.companyShort+'_workbook.xlsx'); document.body.appendChild(_a); _a.click();
+    setTimeout(function(){ URL.revokeObjectURL(_u); if(_a.parentNode) _a.parentNode.removeChild(_a); },1500);
+    return;
+  }
   var st={cp:CFG.cp,sliders:CFG.sliders,ccy:CFG.ccy,dp:CFG.dp,companyShort:CFG.companyShort,market:CFG.market,broker:CFG.broker,scenarios:CFG.scenarios};
   var sheets;
   if(CFG.richbook && CFG.beta){ st.beta=CFG.beta; st.shares=CFG.shares; st.netDebt=CFG.netDebt; sheets=DNLRICH.build(st); }
@@ -675,7 +684,7 @@ function vccDownload(){ try{
     if(k==='assum'){ var lab=activeScen().n; var head='';
       if(activeScen().kind!=='broker'){ head='<div style="border:0.5px solid var(--bd); border-left:2.5px solid var(--user-tx); border-radius:8px; padding:11px 13px; margin-bottom:12px;"><div style="font-weight:600; margin-bottom:2px;">Your inputs — '+lab+'</div><div class="sub" style="margin-bottom:8px;">the value-material inputs; type to override (syncs with the sliders and the live value). The full assumption set is below.</div>'+editableInputsTable()+'</div>'; }
       return head+CFG.detail.assum; }
-    if(k==='dcf'){ var _dl='<button style="margin-top:12px; font-size:13px; padding:6px 12px;" id="dlbtn">⤓ download all scenarios to Excel</button><div style="font-size:11px; color:var(--text3); margin-top:4px;">formula workbook · DCF to equity, discount build, comparables/β &amp; charts (DNL) · includes your edits</div>';
+    if(k==='dcf'){ var _dlcap=CFG.xlsxB64?'full audited formula workbook · all six scenarios, DCF build, WACC, tax &amp; equity bridges, comparables/β, Porter&#39;s · engine-sourced, links to one Assumptions sheet':'formula workbook · DCF to equity, discount build, comparables/β &amp; charts (DNL) · includes your edits';var _dllab=CFG.xlsxB64?'⤓ download full valuation workbook (Excel)':'⤓ download all scenarios to Excel';var _dl='<button style="margin-top:12px; font-size:13px; padding:6px 12px;" id="dlbtn">'+_dllab+'</button><div style="font-size:11px; color:var(--text3); margin-top:4px;">'+_dlcap+'</div>';
       var _nar='<p>'+CFG.dcfIntro+'</p>'; CFG.dcfRows.forEach(function(r){ if(r[2]){ _nar+='<details class="thy"><summary style="display:flex; justify-content:space-between; align-items:center;"><span>'+r[0]+'</span><span style="font-weight:600; margin-left:auto;">'+r[1]+'</span></summary><div class="thybody">'+r[2]+'</div></details>'; } else { _nar+='<div style="display:flex; justify-content:space-between; padding:8px 10px; margin-top:5px; font-weight:600; border-top:1px solid var(--bd2);"><span>'+r[0]+'</span><span>'+r[1]+'</span></div>'; } });
       if(!CFG.richbook){ return _nar+_dl; }
       var _sc=activeScen(); if(_sc.kind==='broker'){ _sc=muScenByKind('live')||_sc; }
