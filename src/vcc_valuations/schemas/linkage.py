@@ -92,6 +92,10 @@ class ImpactMatrix(BaseModel):
 
     industry: str
     matrix: List[ImpactMatrixEntry] = Field(..., min_length=1)
+    # Optional provenance / classification carried by some archetype matrices
+    # (e.g. the bank matrix tags archetype_class and a version).
+    archetype_class: Optional[str] = None
+    version: Optional[str] = None
 
 
 # ---- Company overrides (section 10.4) ----

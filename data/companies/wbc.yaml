@@ -757,7 +757,7 @@ company_position:
     trailing_pe: 17.4
     forward_dividend_yield: 0.0436
 
-  corporate_actions:
+  capital_actions:
     - action: on_market_buyback
       status: active
       announced: 2024-11-04

@@ -133,8 +133,10 @@ class MarketTrend(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     direction: str = Field(..., description="gaining | stable | losing")
-    delta_5yr_bps: int = Field(..., description="Quantified change in share, basis points.")
-    narrative: str
+    delta_5yr_bps: Optional[int] = Field(
+        None, description="Quantified change in share, basis points (optional where not disclosed)."
+    )
+    narrative: Optional[str] = None
 
 
 class MarketPosition(BaseModel):
@@ -166,17 +168,22 @@ class Segment(BaseModel):
     segment: str
     industry_archetype: str = Field(..., description="FK to Layer 2 industry archetype id.")
     functional_currency: str
-    functional_currency_rationale: str
+    # Positioning depth varies by archetype: full-positioning single-segment companies
+    # (e.g. DNL) carry the whole block, while whole-company archetypes valued as a unit
+    # (e.g. banks, methodology §15) may carry abbreviated divisional segments. The deep
+    # positioning fields below are therefore optional; strictness for full-positioning
+    # companies is enforced by review, not the schema.
+    functional_currency_rationale: Optional[str] = None
     revenue_share: float = Field(..., ge=0.0, le=1.0)
     ebit_share: float
     notes: Optional[str] = None
-    market_positions: List[MarketPosition]
-    moat: Moat
-    competitive_position: CompetitivePosition
+    market_positions: Optional[List[MarketPosition]] = None
+    moat: Optional[Moat] = None
+    competitive_position: Optional[CompetitivePosition] = None
     innovation_position: Optional[InnovationPosition] = None
     franchise_assets: Optional[FranchiseAssets] = None
-    capability_profile: CapabilityProfile
-    risk_exposures: RiskExposures
+    capability_profile: Optional[CapabilityProfile] = None
+    risk_exposures: Optional[RiskExposures] = None
     archetype_specific: Optional[Dict[str, Any]] = Field(
         None,
         description=(
@@ -201,6 +208,17 @@ class BalanceSheet(BaseModel):
     )
     leverage_posture: LeveragePosture
     liquidity: str
+
+    # Bank-archetype capital ratios — the regulatory-capital replacement for
+    # net_debt_ebitda (methodology §15). Present only for banks; null otherwise.
+    cet1_ratio: Optional[float] = None
+    cet1_ratio_level_1: Optional[float] = None
+    tier_1_ratio: Optional[float] = None
+    total_capital_ratio: Optional[float] = None
+    apra_leverage_ratio: Optional[float] = None
+    archetype_specific: Optional[Dict[str, Any]] = Field(
+        None, description="Opaque home for any further archetype-specific balance-sheet metrics."
+    )
 
 
 class CapitalAllocation(BaseModel):
@@ -291,6 +309,24 @@ class CompanyPosition(BaseModel):
     scenario_sensitivity_overrides_global: Optional[ScenarioSensitivityOverrides] = None
     segments: List[Segment] = Field(..., min_length=1)
     corporate_actions: List[CorporateAction] = []
+
+    # Optional company-level classification and positioning-summary blocks. Some
+    # archetypes carry these at company level (e.g. WBC/CSL: industry_type /
+    # industry_archetype; whole-company five-forces + net-offset summaries). Left
+    # loosely typed until formalised; consumers reach archetype detail through
+    # normalised_baseline, not these.
+    industry_type: Optional[str] = None
+    industry_archetype: Optional[str] = None
+    five_forces_company_position: Optional[Dict[str, Any]] = None
+    net_company_position_offset_summary: Optional[Dict[str, Any]] = None
+    share_statistics: Optional[Dict[str, Any]] = None
+    # Bank-archetype (methodology §15) positioning: NIM, cost-to-income, credit
+    # losses, CET1, loan book, deposit funding. Opaque until the bank schema lands.
+    bank_specifics: Optional[Dict[str, Any]] = None
+    archetype_specific: Optional[Dict[str, Any]] = None
+    # Non-reshaping capital events (buybacks, special dividends). Distinct from
+    # corporate_actions, which reshape segment weights at an effective year (§8.4).
+    capital_actions: Optional[List[Dict[str, Any]]] = None
 
 
 class CompanyPositionFile(BaseModel):

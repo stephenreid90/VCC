@@ -170,9 +170,16 @@ def load_inputs(
     financials_path = repo_root / "data" / "financials" / f"{company_id}.yaml"
 
     scenario = ScenarioFile.model_validate(_load(scenario_path)).scenario
-    archetype = IndustryArchetypeFile.model_validate(
-        _load(archetype_path)
-    ).industry_archetype
+    archetype_raw = _load(archetype_path)
+    _ia = archetype_raw.get("industry_archetype", archetype_raw)
+    if isinstance(_ia, dict) and (_ia.get("archetype_class") == "bank" or "bank_archetype" in _ia):
+        # Bank archetypes follow the methodology §15 bank spec, not the industrial
+        # IndustryArchetypeFile. Keep the raw mapping until the bank archetype schema
+        # is formalised (WBC engine milestone); the bank valuation path consumes
+        # normalised_baseline, and nothing reads the archetype as a typed model.
+        archetype = _ia
+    else:
+        archetype = IndustryArchetypeFile.model_validate(archetype_raw).industry_archetype
     company_raw = _load(company_path)
     company = CompanyPositionFile.model_validate(company_raw).company_position
     matrix = ImpactMatrix.model_validate(_load(matrix_path))

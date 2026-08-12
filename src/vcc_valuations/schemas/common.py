@@ -46,11 +46,18 @@ class Confidence(str, Enum):
 
 
 class LeveragePosture(str, Enum):
-    """Company-level capital-structure stance (section 8.2)."""
+    """Company-level capital-structure stance (section 8.2).
+
+    ``prudentially_strong`` is the bank-archetype posture: banks are not scored on
+    net-debt/EBITDA leverage (that field is null for banks — see BalanceSheet); their
+    capital-structure stance is a regulatory capital-adequacy judgement (CET1 vs the
+    APRA "unquestionably strong" floor), captured here rather than the generic scale.
+    """
 
     LOW = "low"
     MODERATE = "moderate"
     HIGH = "high"
+    PRUDENTIALLY_STRONG = "prudentially_strong"
 
 
 class Durability(str, Enum):
