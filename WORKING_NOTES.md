@@ -79,12 +79,29 @@ the committed `build_dnl_workbook_bytes()` took no arg; a clean checkout couldn'
 GitHub is consistent and buildable. Always `git fetch` before trusting `ahead N` — pushes go via the
 token URL so the local `origin/main` ref lags.
 
-**WBC-5 next (bank workbook + embed):** build the WBC audited Excel workbook — bank-shaped (NO EV bridge):
-Assumptions (yellow inputs) · AIEA/NIM chain · operating build (NII/non-int income/cost-to-income/credit
-losses → NPAT, six scenarios) · DDM + ROE-fade terminal · §15.7 equity bridge (less AT1/NCI/treasury) ·
-Ke build · comparability (CBA/NAB/ANZ/MQG) · P/E & P/B multiples · Scenarios summary — all formula-linked,
-recalc-tie to the engine (MT 30.03) — then base64-embed in the WBC HTML download (extend
-`engine_workbook.py` with a `build_wbc_workbook_bytes`, or a bank variant). Then WBC-6 (tests) and CSL.
+**✅ WBC-5 + WBC-6 DONE (commit `845c921`). WBC IS NOW AT FULL DNL PARITY.** `build_wbc_workbook_bytes`
+in engine_workbook.py builds the bank-shaped audited workbook (8 sheets, NO EV bridge, all formula-linked
+to one Assumptions sheet): Assumptions · Ke build · AIEA/NIM chain · P&L Forecast (six scenarios × periods)
+· Valuation (DDM + ROE-fade terminal, §15.7 bridge) · Comparability & β (CBA/NAB/WBC cluster; ANZ/MQG
+excluded) · Multiples (bank P/E & P/B, model vs market) · Scenarios summary. LibreOffice recalc ties the
+engine to the cent (MT 30.0304, all six, ordinary equity 102,551, Ke 0.0805). build_cfgs embeds it as
+`wbc.xlsxB64`; gen_ui's download serves `CFG.xlsxB64` for any company (already generalised). `_wbc_full.xlsx`
+gitignored + in sandbox_cleanup.cmd. WBC-6 verification: engine tests `tests/dcf/test_wbc_bank.py` (4) lock
+the numbers; workbook recalc ties. **Suite 106, ratchet 8** (peer betas ssot-allow'd; market from cfg).
+
+**WBC COMPLETE — all six milestones done** (schema → data → engine → UI → workbook → tests). WBC now has,
+like DNL: engine-sourced headline + six scenarios + build-up + narrative, AND a downloadable full audited
+Excel workbook. The bank archetype (§15: residual-income/DDM on equity, Ke discount, no WACC/EV bridge) is
+now a reusable engine in `src/vcc_valuations/dcf/bank_engine.py`.
+
+**NEXT = CSL** (segment FCFF / M3 — the third test company). Same six-milestone program. CSL is the bigger
+lift: (a) clear the residual 58 `CompanyPositionFile` schema errors (my WBC-1 relaxations already dropped it
+76→58; remaining are CSL-specific: segment `ebit_share`/`operating_result_share`/`five_forces_company_position`
+/`demerger_status` etc.); (b) null `industry_archetype` to wire; (c) a NEW multi-segment FCFF engine (per-
+segment forecast → firm aggregation → Ke discount, USD→AUD FX, binding-terminal-margin fix) — none exists;
+(d) six-scenario segment data; (e) wire build_cfgs (base 203.83 literal); (f) segment workbook + embed; (g)
+tests. Source workbooks in `analyses/csl/` (csl_muddle_through_valuation_v4 + csl_scenarios_comparison). DNL/
+WBC are the templates (DNL for FCFF mechanics, WBC for the archetype-fork pattern).
 
 ---
 
