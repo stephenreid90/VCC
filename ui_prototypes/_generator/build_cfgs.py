@@ -69,7 +69,7 @@ DNL_DID = {
  "erp":"<b>5.0%</b> — a Damodaran-style mature-Australia premium, deliberately ~100bps below the 6.0% Australian-expert convention, with a small country premium baked in.",
  "beta":"Peer triangulation, rejecting the measured <b>0.36</b> (unreliable post-demerger): Orica ~1.05 / Yara ~1.20 / ICL ~1.10 cluster (Sasol 1.45 excluded) → selected <b>1.10</b>.",
  "debt":"<b>6.00%</b> pre-tax = an AUD investment-grade BBB-tier spread (~170bps) over the 10-year sovereign; after-tax 6.00% × (1−0.30) = 4.20%.",
- "gearing":"Market-value weights <b>E/V 79% / D/V 21%</b> (equity = 1,884m shares × AUD 3.61; debt = reported net debt). Market-value basis using reported net debt.",
+ "gearing":"Market-value weights <b>E/V 83.5% / D/V 16.5%</b> (equity = 1,770m shares × AUD 3.61 ≈ 6,390; debt = net debt 1,261 at the 31 Mar 2026 anchor, §5.3). Market-value basis.",
  "wacc":"<b>WACC ≈ 8.88%</b> (Re 9.80% at β 1.10; 83.5% equity + 16.5% debt at 4.20% after-tax). Held constant across scenarios (§3.5).",
 }
 WBC_DID = {
@@ -143,13 +143,13 @@ dnl = {
    ["Risk-free rate","4.30%","disclosed","10y Commonwealth Govt bond YTM"],
    ["Equity risk premium","5.00%","judgment","Damodaran-style mature-Australia ERP"],
    ["Beta (selected)","1.10","judgment","Peer cluster Orica/ICL/Yara; measured 0.36 unreliable"],
-   ["WACC","~8.9%","derived","79% equity × Re 9.80% + 21% debt × 6.0%(1−t)"],
+   ["WACC","~8.9%","derived","83.5% equity × Re 9.80% + 16.5% debt × 6.0%(1−t)"],
    ["Normalised EBIT margin","13.5%","judgment","Through-cycle; corporate already in segment guidance"],
    ["Gas roll-off drag","−50/−100/−150 bps","judgment","Cumulative Y3/Y4/Y5 as US gas contracts roll off (§3.2.1)"],
    ["Terminal growth g","2.5%","judgment","Demographic trajectory pulls toward 2.0% long-run"],
    ["Blended tax rate","27.5%","derived","Jurisdiction-weighted statutory; effective glides to this"],
-   ["Net debt","AUD 1,300m","disclosed","Normalised steady-state"],
-   ["Shares","1,884m","disclosed","Latest reported, paired to net-debt anchor"]],
+   ["Net debt","AUD 1,224m","derived","At valuation date: 31 Mar anchor walked over Period A (§7)"],
+   ["Shares","1,770m","disclosed","Issued at the 31 Mar 2026 H1 anchor (§5.3)"]],
  "dcf": bridge([["Enterprise value (DCF)","8,064"],["Less: net debt (ex-leases)","(1,300)"],["Less: AASB 16 lease liabilities","(212)"],["Equity value","6,552"],["÷ shares (m)","1,884"],["Value per share AUD","3.48"]],
    "AUD m. Five-year FCFF (stub + FY27–FY31), single WACC ~8.9%, terminal g 2.5%, with the gas roll-off built into the margin path. Per-scenario detail in dnl_scenarios_comparison_v4."),
  "dcfIntro":"AUD m. Click any line to see its make-up. Five-year FCFF (stub + FY27\u2013FY31), single WACC ~8.9%, terminal g 2.5%, gas roll-off in the margin path.",
@@ -431,6 +431,78 @@ dnl["footnote"] = dnl["footnote"].replace(
     "Engine-computed central case: DNL Muddle Through AUD %.2f (market AUD 3.61)" % _base)
 dnl["topnote"] = dnl["topnote"].replace(
     "all six scenarios calibrated (v4)", "all six scenarios computed by the production engine")
+
+# --- build-up bridge + operating build, wired to the engine (central case) ---
+from vcc_valuations.translator import equity_bridge_from_data as _ebd
+_cs = "muddle_through"
+_cinp = _li(_ROOT, _cs, "industrial_explosives", "dnl")
+_cbuilt = _bi(_cinp, _cs)
+_cr = _Eng().run(_cbuilt)
+_eb = _ebd(_cinp, _cs)
+def _cm(v): return "{:,.0f}".format(round(v))
+def _pr(v): return "(%s)" % _cm(abs(v))     # parenthesised negative
+_EV = _eb["B27"].value; _NDv = _eb["B28"].value; _ADJ = _eb["B29"].value
+_LEAS = _eb["B30"].value; _EQ = _eb["B31"].value; _SH = _cr.shares_outstanding
+_ANCH = _eb["B6"].value; _OCF = _eb["B7"].value; _CPX = _eb["B8"].value; _NDval = _eb["B11"].value
+_NDincl = _NDval + (-_LEAS)
+_vps = "%.2f" % _cr.value_per_share
+
+dnl["dcf"] = bridge([
+    ["Enterprise value (DCF)", _cm(_EV)],
+    ["Less: net debt at valuation date", _pr(_NDv)],
+    ["Less: equity-bridge adjustments (net)", _pr(_ADJ)],
+    ["Less: AASB 16 lease liabilities", _pr(_LEAS)],
+    ["Equity value", _cm(_EQ)],
+    ["÷ shares (m)", _cm(_SH)],
+    ["Value per share AUD", _vps]],
+    "AUD m. Five-year FCFF (stub + FY27–FY31) from the production engine, single WACC %.2f%%, terminal g 2.5%%; the gas roll-off is in the margin path. Per-scenario detail across all six worlds." % (_cr.wacc * 100))
+
+dnl["dcfIntro"] = ("AUD m. Click any line to see its make-up. Stub + five explicit years of FCFF "
+    "(FY27–FY31) from the production engine, single WACC %.2f%%, terminal g 2.5%%; gas roll-off in the margin path." % (_cr.wacc * 100))
+
+dnl["dcfRows"] = [
+    ["Enterprise value (DCF)", _cm(_EV), "Stub + five explicit years of FCFF discounted at the single WACC %.2f%%, plus a Gordon-growth terminal at g 2.5%% (terminal ~%.0f%% of EV). Straight from the production engine — the same number the headline uses." % (_cr.wacc * 100, _cr.terminal_share_of_ev * 100)],
+    ["Less: net debt at valuation date", _pr(_NDv), "Net debt at the 31 Mar 2026 anchor (%s) walked to the 25 May 2026 valuation date over Period A — less operating cash flow generated, plus capex paid (methodology §7). Ex-leases; leases are the next line." % _cm(_ANCH)],
+    ["Less: equity-bridge adjustments (net)", _pr(_ADJ), "Fertilisers-separation one-offs sitting outside net debt (methodology §4.2): declared dividend, Phosphate Hill ARO/inventory, Geelong and Gibson Island remediation, transaction costs — less the probability-weighted receivables (Perdaman, IPF, PH contingent). Net %s. Previously folded into the net-debt anchor; now shown explicitly." % _cm(_ADJ)],
+    ["Less: AASB 16 lease liabilities", _pr(_LEAS), "AASB 16 lease liability treated as debt (Approach A), consistent with the post-AASB 16 EBITDA used above."],
+    ["Equity value", _cm(_EQ), "Enterprise value %s less net debt %s, adjustments %s and leases %s." % (_cm(_EV), _cm(_NDv), _cm(_ADJ), _cm(_LEAS))],
+    ["÷ shares (m)", _cm(_SH), "Issued shares at the 31 Mar 2026 H1 anchor (§5.3), paired to the net-debt anchor date; no buyback projection is modelled (value-neutral)."],
+    ["Value per share AUD", _vps, ""]]
+
+_dd = dnl["dcfDetail"]
+_dd["leaseMat"]["ev"] = round(_EV); _dd["leaseMat"]["shares"] = round(_SH)
+_dd["leaseMat"]["liab"] = round(-_LEAS); _dd["leaseMat"]["netDebtIncl"] = round(_NDincl)
+_dd["netDebt"] = [
+    ["Net debt at 31 Mar 2026 anchor (ex-leases)", round(_ANCH)],
+    ["less: operating cash flow in Period A", round(_OCF)],
+    ["plus: capex paid in Period A", round(_CPX)],
+    ["Net debt at valuation date (ex-leases)", round(_NDval), "sub"],
+    ["Add: AASB 16 lease liabilities", round(-_LEAS)],
+    ["Net debt used in the bridge (lease-inclusive)", round(_NDincl), "tot"]]
+_dd["netDebtNote"] = ("Approach A (leases = debt). Net debt is anchored at the 31 Mar 2026 H1 balance-sheet "
+    "date and walked to the 25 May 2026 valuation date over Period A (methodology §7): less operating "
+    "cash flow generated, plus capex paid. The AUD %s AASB 16 lease liability is added on its own line. "
+    "The Fertilisers-separation one-offs are NOT in net debt — they sit on their own equity-bridge line "
+    "(methodology §4.2)." % _cm(-_LEAS))
+_dd["mt"]["years"] = ["FY27", "FY28", "FY29", "FY30", "FY31"]
+_dd["mt"]["revenue"] = [round(x) for x in _cr.revenue[1:]]
+_dd["mt"]["ebit"] = [round(x) for x in _cr.ebit[1:]]
+_dd["mt"]["taxGlide"] = [round(x * 100, 2) for x in _cr.applied_tax_rate[1:]]
+_dd["mt"]["baseMargin"] = round(_cbuilt.base_ebit_margin * 100, 1)
+_dd["mt"]["peerGap"] = [round(x * 10000) for x in _cbuilt.margin_transformation]
+_dd["mt"]["gasRolloff"] = [round(x * 10000) for x in _cbuilt.margin_gas_rolloff]
+_dd["mt"]["note"] = ("Muddle Through operating build, straight from the production engine (methodology §11: "
+    "industry baseline + company offset shown explicitly). Revenue is on the ratified FY26 continuing-ops "
+    "base of AUD 3,400m (excludes the discontinued Phosphate Hill revenue in the reported ~3,905 TTM; "
+    "methodology §5), growing at the chain-derived ~6.2%% p.a. EBIT margin is the 14.1%% FY26 base plus the "
+    "peer-gap-closure overlay less the US gas-contract roll-off. NOPAT = EBIT × (1−applied tax); FCFF adds "
+    "D&A (~7.3%% of revenue), deducts capex (~7–8%%) and working-capital investment. Every line is the "
+    "engine's own output — the same build behind the headline 3.07.")
+
+# balance-sheet figures used by the multiples EV bridge (engine-anchored)
+dnl["shares"] = round(_SH); dnl["netDebt"] = round(_NDincl)
+dnl["netDebtExLeases"] = round(_NDval); dnl["leaseLiab"] = round(-_LEAS)
+dnl["_leaseContract"]["leaseLiability"] = round(-_LEAS)
 # ===== end SSOT block =====
 
 json.dump({"dnl":dnl,"wbc":wbc,"csl":csl}, open(_CFGP,'w'), ensure_ascii=False)

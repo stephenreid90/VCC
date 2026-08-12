@@ -47,6 +47,18 @@ engine-sourced but the build-up drill-down lags.
 engine-sourced narrative numbers. Roll the SAME onto WBC and CSL once their scenarios resolve (WBC bank fork,
 CSL segment FCFF/M3).
 
+**UPDATE (same session): the "Valuation build-up" gap is now CLOSED.** The DCF bridge, dcfRows, the lease
+panel, the net-debt table and the per-year operating build are all wired to the engine via
+`equity_bridge_from_data` + the central-case `FcfDcfResult`. The build-up now shows: EV **7,009** → net debt
+at valuation **(1,224)** (Period-A walk from the 1,261 anchor, §7) → **equity-bridge adjustments (152)** now
+shown as their OWN line (§4.2, previously hidden in the anchor) → leases **(194)** → equity **5,439** ÷
+**1,770** → **3.07** — matches the headline. Operating build re-based to the ratified **3,400** continuing-ops
+base (revenue [3609,3831,4067,4318,4583]; the stale 3,905 note dropped). Net-debt table rebuilt to the
+Period-A walk; leaseMat/richbook/multiples anchors updated (shares 1,770, nd-incl 1,418, leases 194.3);
+discount drill-down gearing text → E/V 83.5/16.5 off 1,770m. `node --check` OK on all three; WBC/CSL base
+30.15/203.83 unchanged; suite 99. **DNL is now single-sourced end to end — headline AND build-up.** Remaining
+UI item: WBC/CSL still hand-calibrated (roll the same pattern).
+
 DNL now values end-to-end from data across ALL SIX scenarios (was MT only). Restructured the
 scenario-specific blocks into the methodology's baseline + overlay shape and added the five non-MT
 scenarios from `dnl_scenarios_comparison_v4`. Pushed. **Suite 90 → 99.**
