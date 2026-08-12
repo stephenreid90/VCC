@@ -42,12 +42,33 @@ optional (banks carry abbreviated divisional segments); `MarketTrend` narrative/
 `corporate_actions`→`capital_actions` (CRLF preserved). WBC loads end-to-end; `tests/test_wbc_loads.py`
 (3) locks it. **Suite 99→102, ratchet 8.** CSL fell 76→58 schema errors as a side benefit.
 
-**WBC-2 next — needs input from Stephen/Ben:** the six-scenario bank operating build (NIM, asset/RWA
-growth, cost-to-income, credit losses / cost of risk, CET1 & payout constraint) as `engine_overlays`
-baseline + `by_scenario`, plus a bank "revenue" growth chain equivalent. Source = the
-`wbc_scenarios_comparison` workbook (external, not in repo) + methodology §15. DNL's shared+by_scenario /
-parallel-shift structure is the template. The `coe_method` (Ke) block already exists and rejoins via
-`resolve_normalised_baseline`.
+**✅ WBC-2 + WBC-3 DONE (commit `80e76e0`).** Source material was in-repo after all:
+`analyses/wbc/valuations/wbc_muddle_through_valuation_v4_formulas.xlsx` (MT, the §15 worked example)
+and `wbc_scenarios_comparison_v2.xlsx` (six worlds).
+- **WBC-2 (data):** `data/companies/wbc.yaml` `normalised_baseline.bank_build` — 1H26 income/balance-sheet
+  anchors, forecast drivers, the AIEA/NIM chain (industry anchor + company Five-Forces offset as SEPARATE
+  rows per standing rule 1 + per-scenario macro deltas), per-year overlays (NIM / cost-to-income /
+  credit-loss glides + terminal ROE/g) baseline + by_scenario for all six. One structural constant kept
+  in data: `aiea_y1_time_factor: 1.18` (FY27 average-balance offset). CRLF preserved.
+- **WBC-3 (engine):** `src/vcc_valuations/dcf/bank_engine.py` — residual-income / DDM on equity (§15),
+  NO WACC / NO EV bridge: NII = AIEA×NIM×period + non-interest income; cost-to-income opex; credit
+  impairment (loss rate × loans); tax; dividends = NPAT×payout; discount at Ke; terminal = closing book
+  equity ×(ROE−g)/(Ke−g); less AT1/NCI/treasury → ordinary equity → per share. `.derivation()` traces it.
+  `translator.build_bank_inputs_from_data(inputs, scenario_id)` resolves the overlays (parallel-shift
+  NIM/CTI/credit, AIEA growth, terminal) and Ke = Rf + β×ERP (single-Ke, held across scenarios).
+- **Ties the workbook to the cent:** MT vps **30.0304** (closing equity 83,682.1; terminal 128,741.7;
+  NPAT vector exact). Six from the same path, downside-skewed: **OC 35.71 > MT 30.03 > AIPL 29.70 >
+  Frag 27.11 > DClim 22.58 > Stag 18.65** — the engine's own output, superseding the older v2 comparison
+  and the hand-calibrated UI 30.15 (exactly as DNL 3.484→3.073). `tests/dcf/test_wbc_bank.py` (4).
+  **Suite 102→106, ratchet baselined 137→139** (two coincidental collisions).
+
+**WBC-4 next (wire the UI):** replace the hand-typed WBC config in `build_cfgs.py` (base 30.15 line 175,
+scenario bars line 185, DCF bridge line 229) with a `bank_pack` (build_bank_inputs_from_data + BankEngine)
+mirroring DNL's `engine_pack`: inject base 30.03, re0 0.0805, six scenario bars, asymmetry, engine-sourced
+narrative. The build-up drill-down is a bank DDM/equity bridge (NOT an EV bridge) — the WBC UI build-up
+needs re-shaping to the §15.7 bridge (like DNL's build-up slice followed its headline). Then WBC-5 (bank
+workbook: no EV bridge; Ke build, operating build, DDM, comparability, P/E & P/B multiples) + embed, WBC-6
+tests. Then repeat the whole program for CSL (segment FCFF / M3; also has the 58 residual schema errors).
 
 ---
 
