@@ -97,6 +97,19 @@ no runtime backend, fully downstream of the one Python engine.
    `_dnl_full.xlsx` (the module's `__main__` artifact) is gitignored; `sandbox_cleanup.cmd` extended
    to clear it plus the stray `.git/objects/**/tmp_obj_*` push corpses.
 
+**UPDATE (same day, commit `a577148`): workbook made much more comprehensive + generated outputs
+untracked.** Three sheets added (now 12): **Comparability metrics** (financial leverage / operating
+leverage / revenue cyclicality for DNL + the 4 peers, from `beta_data` `det`; the drivers behind the
+β triangulation); **Trading multiples** (peer EV/EBITDA·EV/EBIT·P/E ttm+fwd computed by formula from
+each peer's `mfin`; DNL earnings bases FY25u/FY26/FY27 our-build vs consensus; DNL implied value/share
+via peer-median multiples bridged to equity ≈ 2.2–2.8; market-implied read EV/EBITDA ~9.3× / P/E ~17×;
+DCF cross-check 3.073); **Lease detail** (AASB 16 maturity, PV-at-IBR check ~209 vs liability 194.3,
+EBITDAR add-back). `build_dnl_workbook_bytes(cfg)` now takes the `dnl` cfg (multiples/lease) and reads
+`beta_data`; `build_cfgs` passes it in. **Generated build outputs are now gitignored + untracked**
+(`cfgs_gen.json` + the three `*_scenario_interface.html`) — they carried the base64 workbook as
+100k+char single lines that swamped GitHub diffs; rebuild them with `build_cfgs.py && gen_ui.py`.
+Repo tracks source only. Suite 99, ratchet 8, node --check OK, bases 3.073/30.15/203.83.
+
 **Next = #1** (user writes their own world scenario → macros → Porter's → company → valuation).
 Per the PLANNED NEXT decision: build at build time in the Python engine layer, pre-compute one or
 two illustrative user-authored scenarios into the standalone file as worked examples, demo the live
