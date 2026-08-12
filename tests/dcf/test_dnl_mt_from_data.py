@@ -22,6 +22,7 @@ from vcc_valuations.translator import (
     load_inputs,
     build_engine_inputs_from_data,
     revenue_growth_from_data,
+    revenue_growth_chain_from_data,
 )
 from vcc_valuations.dcf.fcf_engine import FcfEngine
 from tests.dcf.golden.dnl_mt_inputs import (
@@ -58,6 +59,39 @@ def test_revenue_growth_chain_derived_from_data_ties_golden():
     g = revenue_growth_from_data(_load(), "muddle_through")
     assert g is not None
     assert abs(g - _revenue_growth_chain()) < 1e-12
+
+
+def test_chain_intermediate_steps_tie_v6_row_by_row():
+    """Full V6 traceability: every derived row of the chain (workbook B25-B42)
+    is exposed as an auditable step and ties its workbook value to the cent."""
+    d = revenue_growth_chain_from_data(_load(), "muddle_through")
+    assert d is not None
+    expected = {
+        "B25": 0.03275,        # industry volume growth   = 1.15 x 0.025 + 0.004
+        "B29": 0.0285,         # industry pricing growth  = 0.7 x 0.025 + 0.3 x 0.02 + 0.005
+        "B30": 0.062183375,    # industry nominal growth  = (1+vol)(1+price) - 1
+        "B33": 0.90,           # DM weighting (US 0.55 + AU 0.35), derived from geo-concentration
+        "B34": 0.10,           # EM weighting (RoW 0.10)
+        "B36": 1.03,           # geo-mix multiplier       = 0.9 + 0.1 x 1.3
+        "B41": -0.0025,        # net company offset       = -0.003 -0.001 +0.0015 +0
+        "B42": 0.06154887625,  # company nominal growth   = B30 x B36 + B41
+    }
+    for cell, want in expected.items():
+        assert abs(d[cell].value - want) < 1e-9, f"{cell}={d[cell].value} != {want}"
+    assert d.result == d["B42"].value
+
+
+def test_chain_steps_carry_formula_and_provenance():
+    """Each step is self-describing — a formula, the inputs it consumed, and the
+    originating workbook cell — so the build reads out of the engine, not Excel."""
+    d = revenue_growth_chain_from_data(_load(), "muddle_through")
+    assert [s.cell for s in d] == ["B25", "B29", "B30", "B33", "B34", "B36", "B41", "B42"]
+    for s in d:
+        assert s.formula and s.label and s.inputs, f"{s.cell} under-described"
+    # the DM/EM weighting is genuinely derived from the concentration data, not a
+    # stored 0.9/0.1: its inputs name the regions that were summed.
+    assert set(d["B33"].inputs) == {"United States", "Australia"}
+    assert set(d["B34"].inputs) == {"Rest of World"}
 
 
 def test_assembled_inputs_match_the_golden_field_by_field():

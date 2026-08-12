@@ -313,25 +313,30 @@ def _geographic_regions(company_raw: dict) -> list:
     return []
 
 
-def revenue_growth_from_data(inputs: dict, scenario_id: str):
-    """Company nominal revenue growth for a scenario, from the §11 chain.
+def revenue_growth_chain_from_data(inputs: dict, scenario_id: str):
+    """The §11 revenue-growth chain as a fully-traceable :class:`Derivation`.
 
-    Reproduces workbook Assumptions B42 as a DERIVATION rather than a stored
-    scalar (methodology §11 / standing rule 1 — industry baseline and company
-    offset kept as separate rows):
+    Reproduces the workbook Assumptions B18-B42 build at full V6 granularity:
+    the yellow-cell inputs come from ``revenue_growth_chain[scenario_id]`` in the
+    data; every DERIVED row is computed here and exposed as a named, formula-
+    annotated step (never stored back into the data). The eight derived rows,
+    with their workbook cells:
 
-        volume          = mining_beta x mining_real_growth + volume_intercept
-        pricing         = infl_weight x inflation + gas_weight x gas_growth
-                          + pricing_productivity
-        industry_nominal = (1 + volume)(1 + pricing) - 1
-        geo_mix         = DM_weight + EM_weight x EM_premium   (DM/EM weights
-                          derived from the segment geographic_concentration)
-        net_ff_offset   = rivalry + product_mix + new_entrants + other
-        company_nominal = industry_nominal x geo_mix + net_ff_offset
+        B25 industry volume growth   = a x mining_real + b
+        B29 industry pricing growth  = w_infl x DM_inflation + w_gas x gas + prod
+        B30 industry nominal growth  = (1 + volume)(1 + pricing) - 1
+        B33 DM weighting             = sum of developed-market revenue shares
+        B34 EM weighting             = sum of the remaining revenue shares
+        B36 geo-mix multiplier       = DM_weight + EM_weight x EM_premium
+        B41 net company offset       = rivalry + product_mix + entrants + other
+        B42 company nominal growth   = industry_nominal x geo_mix + net_offset
 
-    Returns ``None`` if the company carries no ``revenue_growth_chain`` for the
-    scenario.
+    B33/B34 are derived from the segment ``geographic_concentration`` (so the
+    workbook's hardcoded DM/EM weighting becomes an auditable step), which is
+    finer than V6. Returns ``None`` if the company carries no chain for the scenario.
     """
+    from vcc_valuations.derivation import DerivationBuilder
+
     company_raw = inputs.get("company_raw") or {}
     nb = company_raw.get("normalised_baseline") or {}
     chain = (nb.get("revenue_growth_chain") or {}).get(scenario_id)
@@ -339,25 +344,85 @@ def revenue_growth_from_data(inputs: dict, scenario_id: str):
         return None
 
     ib = chain["industry_baseline"]
-    volume = ib["volume_mining_beta"] * ib["mining_real_growth"] + ib["volume_intercept"]
-    pricing = (
-        ib["inflation_weight"] * ib["inflation"]
-        + ib["gas_weight"] * ib["gas_price_growth"]
-        + ib["pricing_productivity"]
-    )
-    industry_nominal = (1.0 + volume) * (1.0 + pricing) - 1.0
-
     co = chain["company_offset"]
+    b = DerivationBuilder(f"revenue_growth_chain[{scenario_id}]")
+
+    a = ib["volume_coefficient_a"]
+    mining = ib["global_mining_real_growth"]
+    b_const = ib["volume_constant_b"]
+    volume = b.step(
+        "B25", "Industry volume growth", a * mining + b_const,
+        "a * mining_real_growth + b",
+        {"a": a, "mining_real_growth": mining, "b": b_const}, cell="B25", units="%",
+    )
+
+    w_infl = ib["pricing_weight_inflation"]
+    dm_infl = ib["dm_inflation"]
+    w_gas = ib["pricing_weight_gas"]
+    gas = ib["gas_price_growth"]
+    prod = ib["productivity_sharing"]
+    pricing = b.step(
+        "B29", "Industry pricing growth", w_infl * dm_infl + w_gas * gas + prod,
+        "w_infl * DM_inflation + w_gas * gas_growth + productivity",
+        {"w_infl": w_infl, "DM_inflation": dm_infl, "w_gas": w_gas,
+         "gas_growth": gas, "productivity": prod}, cell="B29", units="%",
+    )
+
+    industry_nominal = b.step(
+        "B30", "Industry nominal growth", (1.0 + volume) * (1.0 + pricing) - 1.0,
+        "(1 + volume)(1 + pricing) - 1",
+        {"volume": volume, "pricing": pricing}, cell="B30", units="%",
+    )
+
     developed = set(co["developed_market_regions"])
     regions = _geographic_regions(company_raw)
-    dm_weight = sum(r["share_of_revenue"] for r in regions if r["geo"] in developed)
-    em_weight = sum(r["share_of_revenue"] for r in regions if r["geo"] not in developed)
-    geo_mix = dm_weight + em_weight * co["em_growth_premium"]
+    dm_weight = b.step(
+        "B33", "DM weighting", sum(r["share_of_revenue"] for r in regions if r["geo"] in developed),
+        "sum of developed-market revenue shares",
+        {r["geo"]: r["share_of_revenue"] for r in regions if r["geo"] in developed},
+        cell="B33", units="%",
+    )
+    em_weight = b.step(
+        "B34", "EM weighting", sum(r["share_of_revenue"] for r in regions if r["geo"] not in developed),
+        "sum of the remaining (emerging-market) revenue shares",
+        {r["geo"]: r["share_of_revenue"] for r in regions if r["geo"] not in developed},
+        cell="B34", units="%",
+    )
+    em_premium = co["em_growth_premium"]
+    geo_mix = b.step(
+        "B36", "Geographic-mix multiplier", dm_weight + em_weight * em_premium,
+        "DM_weight + EM_weight * EM_premium",
+        {"DM_weight": dm_weight, "EM_weight": em_weight, "EM_premium": em_premium},
+        cell="B36",
+    )
 
     ff = co["five_forces_offset"]
-    net_offset = ff["rivalry"] + ff["product_mix"] + ff["new_entrants"] + ff["other"]
+    net_offset = b.step(
+        "B41", "Net company-position offset",
+        ff["rivalry_competitive_position"] + ff["rivalry_product_mix"]
+        + ff["new_entrants_pipeline_uplift"] + ff["buyer_supplier_substitutes"],
+        "rivalry + product_mix + new_entrants + buyer_supplier_substitutes",
+        dict(ff), cell="B41", units="%",
+    )
 
-    return industry_nominal * geo_mix + net_offset
+    b.step(
+        "B42", "Company nominal revenue growth", industry_nominal * geo_mix + net_offset,
+        "industry_nominal * geo_mix_multiplier + net_offset",
+        {"industry_nominal": industry_nominal, "geo_mix_multiplier": geo_mix,
+         "net_offset": net_offset}, cell="B42", units="%",
+    )
+
+    return b.build(result_key="B42")
+
+
+def revenue_growth_from_data(inputs: dict, scenario_id: str):
+    """Company nominal revenue growth (workbook B42) for a scenario.
+
+    Thin wrapper over :func:`revenue_growth_chain_from_data` returning just the
+    headline scalar for the engine assembler; ``None`` if there is no chain.
+    """
+    chain = revenue_growth_chain_from_data(inputs, scenario_id)
+    return None if chain is None else chain.result
 
 
 def build_engine_inputs_from_data(inputs: dict, scenario_id: str):

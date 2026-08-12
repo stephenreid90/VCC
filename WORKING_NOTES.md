@@ -14,6 +14,56 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 
 ---
 
+## CHAT HANDOVER — 12 August 2026 (b) (revenue-growth chain to FULL V6 traceability; the reference pattern for the whole model)
+
+Stephen's steer (important, model-wide): the model must be **at least as granular as the V6 workbook**, and
+Excel must NOT be the source of truth — it's an incidental scratchpad for eyeballing, not a driver/source.
+Today's commit removed the last workbook-sourced constants from the DNL-MT production path (block below);
+this one makes the revenue-growth chain's *derivation* as granular and auditable as V6, as the reference
+pattern to roll across the other derived sheets (Tax Bridge, WACC Build, margin/gas glide, Equity Bridge).
+Pushed. **Suite 80 → 86.**
+
+1. **New `src/vcc_valuations/derivation.py`** — the model-wide primitive. `DerivationStep` (key, label,
+   value, formula, inputs, workbook `cell`, units) + `Derivation` (ordered steps, lookup by key/cell,
+   `.result`, `.as_rows()`) + a `DerivationBuilder`. The code-side equivalent of a workbook's labelled
+   derived rows: inputs are the yellow cells (data); every *formula* row is computed here and exposed as a
+   named, self-describing step — never stored back into the data. Generic on purpose (5 tests).
+2. **`data/companies/dnl.yaml` revenue_growth_chain relabelled to V6 nomenclature, INPUTS ONLY** — DM
+   inflation (B18), global mining real growth (B19), gas price growth (B20), volume coefficient a / constant
+   b (B23/B24), pricing weights (B26/B27), productivity sharing (B28), em_growth_premium (B35), the named
+   Five-Forces sub-offsets (B37-B40), plus the B17 DM real GDP growth carried as a `macro_context` memo
+   (explicitly NOT consumed — the chain keys off B19 + B18). `developed_market_regions` [US, Australia]
+   classifies the geo split. No derived value is stored.
+3. **`translator.revenue_growth_chain_from_data(inputs, scenario_id) -> Derivation`** exposes all eight V6
+   derived rows: B25 industry volume, B29 industry pricing, B30 industry nominal, **B33 DM weighting /
+   B34 EM weighting (now DERIVED from the segment `geographic_concentration` — finer than V6, which hardcoded
+   0.9/0.1)**, B36 geo-mix multiplier, B41 net company offset, B42 company nominal — each with formula + cell
+   + the inputs it consumed. `revenue_growth_from_data` is now a thin wrapper returning `.result` for the
+   engine assembler. Ties V6 row-by-row (B25 .03275, B29 .0285, B30 .062183375, B33 .9, B34 .1, B36 1.03,
+   B41 −.0025, B42 .06154887625) and the golden to 1e-12; **DNL MT still 3.073 / EV 7,009.2**.
+4. **Tests:** `test_derivation.py` (5, the primitive); `test_dnl_mt_from_data.py` +2 — every intermediate
+   pinned to its V6 value, and each step asserted to carry formula + inputs + cell provenance (incl. that
+   DM/EM weighting names the regions it summed, proving it's derived not stored).
+5. **Ratchet:** no baseline change (relabel kept values identical). One transient trip — the regex scanner
+   read the numerals "0.9/0.1" out of a **docstring**; reworded the prose to "DM/EM weighting" (the scan is
+   comment-blind to intent, so keep domain numbers out of `.py` prose). Baseline stays 138.
+
+**The pattern to reuse (Stephen wants full V6 traceability model-wide, one sheet at a time).** Inputs → data
+(yellow cells); each workbook *derived row* → a `DerivationStep` computed in code (formula + cell + inputs),
+never stored. Next candidates, same treatment: the **Tax Bridge** (effective→statutory glide), the **WACC
+Build** (Rf/ERP/β → Ke → WACC with E/V weights), the **margin/gas glide** (base + transformation + roll-off
+per year, already data but the derived per-year EBIT margin should surface as steps), and the **Equity
+Bridge** (EV → net-debt walk → adjustments → leases → per-share). A human-readable "workings" view rendered
+from `Derivation.as_rows()` (the inverted, byproduct-not-source relationship) was **deferred** — Stephen
+picked the code-traceability pattern first.
+
+**Next.** (1) Roll the derivation pattern across the sheets above. (2) The other five DNL scenarios (each
+needs `engine_overlays[scenario]` + `revenue_growth_chain[scenario]`). (3) M3 segment FCFF for CSL. (4) The
+inflation basis note: workbook DM inflation 2.5% (normalising) vs scenario `cpi_inflation_advanced` 3.0%
+(sticky) — same concept, different assumed value; reconcile when the macro layer is formalised.
+
+---
+
 ## CHAT HANDOVER — 12 August 2026 (M2 — full engine input assembled from data; DNL MT reproduces 3.073 with ZERO hand-typed constants)
 
 The M2 assembly milestone for DNL Muddle Through: `translator.build_engine_inputs_from_data(inputs, scenario_id)`
