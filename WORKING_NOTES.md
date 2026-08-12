@@ -13,6 +13,41 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 
 ---
 
+## ✅ ALL THREE TEST COMPANIES COMPLETE — engine-wired UI + downloadable audited workbook (12 Aug 2026)
+
+DNL, WBC and CSL are now each valued end-to-end by an archetype-appropriate production engine, every one
+tying its audited workbook to the cent, with an engine-sourced scenario UI (headline + six worlds +
+build-up + narrative) and a base64-embedded full formula workbook on the download button. The three
+engines live in `src/vcc_valuations/dcf/`:
+
+1. **DNL** — `fcf_engine.py` (industrial single-segment FCFF, WACC, EV→equity bridge). MT **3.073**.
+2. **WBC** — `bank_engine.py` (bank §15: residual-income / DDM on equity, Ke, no WACC/EV bridge). MT **30.03**.
+3. **CSL** — `segment_engine.py` (multi-segment FCFF / M3: per-segment build → group FCFF → Ke → USD→AUD FX).
+   MT **USD 134.52 / AUD 203.83**.
+
+Each has: a `*_pack` in build_cfgs (engine_pack / bank_pack / segment_pack) injecting base/scenarios/build-up;
+a `build_*_workbook_bytes` in engine_workbook.py (all formula-linked to one Assumptions sheet, recalc-tie the
+engine); engine + load tests. **Suite 113, ratchet 8, node --check OK, bases 3.073 / 30.03 / 203.83.** The
+generated HTML/cfgs are gitignored (rebuild: `build_cfgs.py && gen_ui.py`); source only in the repo.
+
+**CSL milestones (commits `51ef8b7` schema/load, `35403b6` data+engine, `eabf491` UI, `9a5c4e3` workbook):**
+CSL-1 additive schema (segment `operating_result_share`, multi-segment company blocks; `load_inputs`
+tolerates the absent consolidated archetype/matrix — resolved per segment). CSL-2 `normalised_baseline.segment_fcff`
+(six-scenario segment drivers; FX 1.5152). CSL-3 the M3 engine (terminal normalises to a binding EBIT margin,
+terminal capex = D&A). CSL-4/5 UI + workbook. Tests `test_csl_loads.py` (3) + `test_csl_segment.py` (4).
+
+**What's genuinely reusable now:** three archetype engines + the `archetype-fork` pattern (schema stays strict
++ additive; `load_inputs` branches on archetype_class / segment-level; the engine reads `normalised_baseline`).
+Adding a 4th company = pick/extend an engine, author its data block, wire the pack, build the workbook.
+
+**Possible next threads (all optional, none blocking):** (a) per-year P&L `Derivation` surfacing (parity item,
+all three); (b) the human-readable workings view from `Derivation.as_rows()` (long-deferred); (c) DM-inflation
+basis reconciliation (DNL); (d) roll the DNL comprehensive-workbook sheets (comparability/multiples/lease) onto
+WBC/CSL if wanted; (e) formalise the bank + biopharma industry-archetype schemas (currently raw/tolerant);
+(f) the parked user-written-scenarios feature at build phase. Ben still owes real peer gearings/betas feeds.
+
+---
+
 ## PLANNED NEXT — replicate DNL's engine-wired + workbook end-state onto WBC, then CSL (decided 12 Aug 2026)
 
 **#1 (user-written world scenarios) is PARKED indefinitely until the build phase** (Stephen, 12 Aug).
