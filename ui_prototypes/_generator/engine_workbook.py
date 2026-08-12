@@ -632,13 +632,204 @@ class Book:
         ws.cell(rr, 3, "\u2190 same value, cross-checked").font = NOTE
         ws.column_dimensions["A"].width = 40; ws.column_dimensions["B"].width = 16; ws.column_dimensions["C"].width = 26
 
+    # ---- Comparability metrics (drivers behind the beta triangulation) -----
+    def build_comparability(self, beta):
+        ws = self.wb.create_sheet("Comparability metrics")
+        ws.cell(1, 1, "Comparability drivers — what makes each peer more or less like DNL (MOCK, pending feed)"); ws.cell(1, 1).font = HDR
+        ws.cell(2, 1, "Read across the three drivers to judge asset-beta comparability; higher = more exposed. Financial leverage regears beta; operating leverage and cyclicality shape the asset beta."); ws.cell(2, 1).font = NOTE
+        hr = 4
+        cols = [("Name", 1), ("Financial leverage (net debt/EBITDA)", 2), ("Operating leverage (DOL)", 3),
+                ("Revenue cyclicality (0-1)", 4), ("Gearing D/E", 5), ("Tax", 6), ("Role", 7)]
+        for t, c in cols:
+            cc = ws.cell(hr, c, t); cc.font = BOLD; cc.alignment = Alignment(wrap_text=True, vertical="top")
+        rr = hr + 1
+        subj = beta["subject"]; sdet = subj["det"]
+        ws.cell(rr, 1, subj["name"] + " (subject)").font = BOLD
+        for c, v, fmt in ((2, sdet["ndeb"], NUM1 + "0"), (3, sdet["dol"], NUM1 + "0"), (4, sdet["cyc"], NUM1 + "00"),
+                          (5, subj["de"], NUM1 + "00"), (6, subj["tax"], PCT2)):
+            cell = ws.cell(rr, c, v); cell.fill = YELLOW; cell.font = BLUEFONT; cell.number_format = fmt
+        ws.cell(rr, 7, "Subject")
+        rr += 1
+        subj_rows = []
+        for comp in beta["comparables"]:
+            det = comp.get("det") or {}
+            ws.cell(rr, 1, comp["name"])
+            for c, v, fmt in ((2, det.get("ndeb"), NUM1 + "0"), (3, det.get("dol"), NUM1 + "0"), (4, det.get("cyc"), NUM1 + "00"),
+                              (5, comp.get("gearingDE"), NUM1 + "00"), (6, comp.get("tax"), PCT2)):
+                cell = ws.cell(rr, c, v); cell.fill = YELLOW; cell.font = BLUEFONT; cell.number_format = fmt
+            ws.cell(rr, 7, "Peer" if comp.get("selected") else "Peer (outlier)")
+            subj_rows.append(rr); rr += 1
+        rr += 1
+        ws.cell(rr, 1, "Peer average (all listed)").font = BOLD
+        for c, fmt in ((2, NUM1 + "0"), (3, NUM1 + "0"), (4, NUM1 + "00"), (5, NUM1 + "00"), (6, PCT2)):
+            col = _col(c)
+            ws.cell(rr, c, f"=AVERAGE({col}{subj_rows[0]}:{col}{subj_rows[-1]})").number_format = fmt
+        rr += 2
+        ws.cell(rr, 1, beta.get("detNote", "").replace("<b>", "").replace("</b>", "").replace("&rsquo;", "'").replace("&mdash;", "—")[:600]); ws.cell(rr, 1).font = NOTE
+        ws.column_dimensions["A"].width = 26
+        for c in "BCDEFG":
+            ws.column_dimensions[c].width = 16
+
+    # ---- Trading multiples (peers + DNL implied + market-implied) ----------
+    def build_multiples(self, beta, cfg):
+        ws = self.wb.create_sheet("Trading multiples")
+        R = self.ref
+        MULT = '0.0"x"'
+        ws.cell(1, 1, "Trading multiples — peer comps, DNL implied value, and the market-implied read"); ws.cell(1, 1).font = HDR
+        ws.cell(2, 1, "Peer EV = market cap + net debt; multiples computed by formula. DNL implied value applies the peer median to DNL's own earnings, then bridges to equity."); ws.cell(2, 1).font = NOTE
+        # DNL net debt incl leases (lease-inclusive), from Assumptions run-rates
+        ndincl = f"({R['nd_anchor']}-{R['ocf_rr']}*{R['pa_days']}/365+{R['capex_rr']}*{R['pa_days']}/365+{R['leases']})"
+
+        # ---- peer table ----
+        hr = 4
+        heads = ["Peer", "Price", "Shares (m)", "Net debt", "Market cap", "EV",
+                 "EV/EBITDA (ttm)", "EV/EBITDA (fwd)", "EV/EBIT (ttm)", "P/E (ttm)", "P/E (fwd)"]
+        for j, t in enumerate(heads):
+            cc = ws.cell(hr, 1 + j, t); cc.font = BOLD; cc.alignment = Alignment(wrap_text=True, vertical="top")
+        rr = hr + 1
+        peer_rows = []
+        for comp in beta["comparables"]:
+            m = comp["mfin"]
+            ws.cell(rr, 1, comp["name"])
+            for c, v, fmt in ((2, m["price"], NUM1 + "0"), (3, m["shares"], NUM0), (4, m["netDebt"], NUM0)):
+                cell = ws.cell(rr, c, v); cell.fill = YELLOW; cell.font = BLUEFONT; cell.number_format = fmt
+            # hidden yellow earnings to the right (cols 12-17): EBITDA ttm/fwd, EBIT ttm, NI ttm/fwd
+            for c, v in ((12, m["ebitda"]["ttm"]), (13, m["ebitda"]["fwd"]), (14, m["ebit"]["ttm"]),
+                         (15, m["ni"]["ttm"]), (16, m["ni"]["fwd"])):
+                cell = ws.cell(rr, c, v); cell.fill = YELLOW; cell.font = BLUEFONT; cell.number_format = NUM0
+            ws.cell(rr, 5, f"=B{rr}*C{rr}").number_format = NUM0          # market cap
+            ws.cell(rr, 6, f"=E{rr}+D{rr}").number_format = NUM0          # EV
+            ws.cell(rr, 7, f"=F{rr}/L{rr}").number_format = MULT          # EV/EBITDA ttm
+            ws.cell(rr, 8, f"=F{rr}/M{rr}").number_format = MULT          # EV/EBITDA fwd
+            ws.cell(rr, 9, f"=F{rr}/N{rr}").number_format = MULT          # EV/EBIT ttm
+            ws.cell(rr, 10, f"=E{rr}/O{rr}").number_format = MULT         # P/E ttm
+            ws.cell(rr, 11, f"=E{rr}/P{rr}").number_format = MULT         # P/E fwd
+            peer_rows.append(rr); rr += 1
+        # median row
+        med_r = rr
+        ws.cell(rr, 1, "Peer median").font = BOLD
+        for c in range(7, 12):
+            col = _col(c)
+            cell = ws.cell(rr, c, f"=MEDIAN({col}{peer_rows[0]}:{col}{peer_rows[-1]})"); cell.number_format = MULT; cell.font = BOLD
+        self._mult_med = {"evebitda_ttm": f"G{med_r}", "evebitda_fwd": f"H{med_r}", "evebit_ttm": f"I{med_r}",
+                          "pe_ttm": f"J{med_r}", "pe_fwd": f"K{med_r}"}
+        rr += 2
+
+        # ---- DNL earnings bases ----
+        ws.cell(rr, 1, "DNL earnings bases (our build; consensus where shown)"); ws.cell(rr, 1).font = SUB; rr += 1
+        bh = rr
+        for j, t in enumerate(["Base", "EBITDA", "EBIT", "Net income", "EBITDA (consensus)", "EBIT (cons.)", "NI (cons.)"]):
+            ws.cell(bh, 1 + j, t).font = BOLD
+        rr += 1
+        bases = cfg["multiples"]["bases"]
+        base_order = [k for k in ("fy25u", "fy26", "fy27") if k in bases]
+        base_rows = {}
+        for k in base_order:
+            b = bases[k]
+            ws.cell(rr, 1, b.get("label", k))
+            for c, v in ((2, b["ebitda"]), (3, b["ebit"]), (4, b["ni"])):
+                cell = ws.cell(rr, c, v); cell.fill = YELLOW; cell.font = BLUEFONT; cell.number_format = NUM0
+            cons = b.get("consensus")
+            if cons:
+                for c, v in ((5, cons["ebitda"]), (6, cons["ebit"]), (7, cons["ni"])):
+                    cell = ws.cell(rr, c, v); cell.fill = YELLOW; cell.font = BLUEFONT; cell.number_format = NUM0
+            base_rows[k] = rr; rr += 1
+        rr += 1
+
+        # ---- DNL implied value per share (apply peer median to DNL earnings) ----
+        ws.cell(rr, 1, "DNL implied value per share (peer median x DNL earnings, bridged to equity)"); ws.cell(rr, 1).font = SUB; rr += 1
+        ih = rr
+        for j, t in enumerate(["Base", "via EV/EBITDA", "via EV/EBIT", "via P/E"]):
+            ws.cell(ih, 1 + j, t).font = BOLD
+        rr += 1
+        # use fwd multiples for forward bases, ttm for the trailing FY25u
+        for k in base_order:
+            br = base_rows[k]
+            fwd = (k != "fy25u")
+            evebitda = self._mult_med["evebitda_fwd"] if fwd else self._mult_med["evebitda_ttm"]
+            pe = self._mult_med["pe_fwd"] if fwd else self._mult_med["pe_ttm"]
+            evebit = self._mult_med["evebit_ttm"]
+            ws.cell(rr, 1, bases[k].get("label", k))
+            ws.cell(rr, 2, f"=({evebitda}*B{br}-{ndincl})/{R['shares']}").number_format = NUM1 + "00"
+            ws.cell(rr, 3, f"=({evebit}*C{br}-{ndincl})/{R['shares']}").number_format = NUM1 + "00"
+            ws.cell(rr, 4, f"={pe}*D{br}/{R['shares']}").number_format = NUM1 + "00"
+            rr += 1
+        rr += 1
+
+        # ---- market-implied read ----
+        ws.cell(rr, 1, "Market-implied read (what the tape pays on DNL's own earnings)"); ws.cell(rr, 1).font = SUB; rr += 1
+        fy26 = base_rows.get("fy26", base_rows[base_order[-1]])
+        ws.cell(rr, 1, "DNL market cap = price x shares"); ws.cell(rr, 2, f"={R['mkt']}*{R['shares']}").number_format = NUM0; mc = rr; rr += 1
+        ws.cell(rr, 1, "DNL EV = market cap + net debt (incl leases)"); ws.cell(rr, 2, f"=B{mc}+{ndincl}").number_format = NUM0; ev = rr; rr += 1
+        ws.cell(rr, 1, "Market EV/EBITDA (on FY26 EBITDA)"); ws.cell(rr, 2, f"=B{ev}/B{fy26}").number_format = MULT; rr += 1
+        ws.cell(rr, 1, "Market EV/EBIT (on FY26 EBIT)"); ws.cell(rr, 2, f"=B{ev}/C{fy26}").number_format = MULT; rr += 1
+        ws.cell(rr, 1, "Market P/E (on FY26 NI)"); ws.cell(rr, 2, f"=B{mc}/D{fy26}").number_format = MULT; rr += 1
+        rr += 1
+        ws.cell(rr, 1, "Cross-check: DCF value per share (Muddle Through)").font = BOLD
+        ws.cell(rr, 2, f"={R['vps:muddle_through']}").number_format = NUM1 + "00"; ws.cell(rr, 2).font = BOLD; rr += 1
+        ws.cell(rr, 1, cfg["multiples"].get("note", "")[:300]); ws.cell(rr, 1).font = NOTE
+
+        for c in "A":
+            ws.column_dimensions[c].width = 42
+        for c in "BCDEFGHIJK":
+            ws.column_dimensions[c].width = 13
+        for c in ("L", "M", "N", "O", "P"):
+            ws.column_dimensions[c].width = 11
+
+    # ---- AASB 16 lease detail ---------------------------------------------
+    def build_lease(self, cfg):
+        ws = self.wb.create_sheet("Lease detail")
+        R = self.ref
+        lc = cfg.get("_leaseContract", {})
+        ws.cell(1, 1, "AASB 16 lease detail (treated as debt, Approach A) — MOCK shape pending EODHD feed"); ws.cell(1, 1).font = HDR
+        rr = 3
+        ws.cell(rr, 1, "Lease liability (from Assumptions)"); ws.cell(rr, 2, f"={R['leases']}").number_format = NUM1; rr += 1
+        ws.cell(rr, 1, "Annual lease cost (RoU dep + interest)"); c = ws.cell(rr, 2, lc.get("annualLeaseCost")); c.fill = YELLOW; c.font = BLUEFONT; c.number_format = NUM1; alc = rr; rr += 1
+        ws.cell(rr, 1, "Incremental borrowing rate (IBR)"); c = ws.cell(rr, 2, lc.get("incrementalBorrowingRate")); c.fill = YELLOW; c.font = BLUEFONT; c.number_format = PCT2; ibr = rr; rr += 1
+        rr += 1
+        ws.cell(rr, 1, "Undiscounted lease maturity"); ws.cell(rr, 1).font = SUB; rr += 1
+        mh = rr
+        ws.cell(mh, 1, "Year").font = BOLD; ws.cell(mh, 2, "Undisc. payment").font = BOLD; ws.cell(mh, 3, "Discount factor").font = BOLD; ws.cell(mh, 4, "PV at IBR").font = BOLD
+        rr += 1
+        mat = lc.get("leaseMaturityUndisc", {})
+        seq = [("y1", 1), ("y2", 2), ("y3", 3), ("y4", 4), ("y5", 5), ("beyond5", 7)]
+        pv_cells = []; pay_cells = []
+        for key, t in seq:
+            if key not in mat:
+                continue
+            ws.cell(rr, 1, "Beyond 5 (mid-pt)" if key == "beyond5" else f"Year {t}")
+            cp = ws.cell(rr, 2, mat[key]); cp.fill = YELLOW; cp.font = BLUEFONT; cp.number_format = NUM1
+            ws.cell(rr, 3, f"=1/(1+B{ibr})^{t}").number_format = NUM1 + "000"
+            ws.cell(rr, 4, f"=B{rr}*C{rr}").number_format = NUM1
+            pv_cells.append(f"D{rr}"); pay_cells.append(f"B{rr}"); rr += 1
+        ws.cell(rr, 1, "Total undiscounted").font = BOLD
+        ws.cell(rr, 2, "=" + "+".join(pay_cells)).number_format = NUM1; ws.cell(rr, 2).font = BOLD; rr += 1
+        ws.cell(rr, 1, "PV of lease payments (check vs liability)").font = BOLD
+        ws.cell(rr, 2, "=" + "+".join(pv_cells)).number_format = NUM1; ws.cell(rr, 2).font = BOLD; rr += 2
+        ws.cell(rr, 1, "Lease-neutral view (EBITDAR)"); ws.cell(rr, 1).font = SUB; rr += 1
+        ws.cell(rr, 1, "Add back annual lease cost to EBITDA (peer-uniform comparison)")
+        ws.cell(rr, 2, f"=B{alc}").number_format = NUM1; rr += 1
+        ws.cell(rr, 1, lc.get("contractNote", "")[:400]); ws.cell(rr, 1).font = NOTE
+        ws.column_dimensions["A"].width = 46
+        for c in "BCD":
+            ws.column_dimensions[c].width = 15
+
     def to_bytes(self):
         buf = io.BytesIO()
         self.wb.save(buf)
         return buf.getvalue()
 
 
-def build_dnl_workbook_bytes():
+def build_dnl_workbook_bytes(cfg=None):
+    """cfg is the assembled ``dnl`` config dict (has ``multiples``, ``_leaseContract``,
+    ``beta``). When called from build_cfgs it is passed in; for a standalone run it is
+    read from cfgs_gen.json so the multiples / lease / comparability sheets can build."""
+    import json as _json
+    import beta_data as _bd
+    if cfg is None:
+        _cfp = _ROOT / "ui_prototypes" / "_generator" / "cfgs_gen.json"
+        cfg = _json.load(open(_cfp))["dnl"] if _cfp.exists() else {}
+    beta = _bd.DNL
     inp = _load_central()
     craw = inp["company_raw"]; nb = craw["normalised_baseline"]
     coff = nb["revenue_growth_chain"]["shared"]["company_offset"]
@@ -656,7 +847,12 @@ def build_dnl_workbook_bytes():
     b.build_dcf()         # six-scenario DCF; defines EV/vps refs
     b.finish_equity()     # per-share bridge (central case) links DCF EV
     b.build_comps()
+    b.build_comparability(beta)
     b.build_porters()
+    if cfg.get("multiples"):
+        b.build_multiples(beta, cfg)
+    if cfg.get("_leaseContract"):
+        b.build_lease(cfg)
     b.build_scenarios()
     return b.to_bytes()
 

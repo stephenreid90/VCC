@@ -17,3 +17,9 @@ htmlcov/
 
 # engine_workbook.py standalone-run artifact (not committed)
 ui_prototypes/_generator/_dnl_full.xlsx
+
+# generated build outputs (reproducible from ui_prototypes/_generator/*.py; contain the base64 workbook)
+ui_prototypes/_generator/cfgs_gen.json
+ui_prototypes/dnl_scenario_interface.html
+ui_prototypes/wbc_scenario_interface.html
+ui_prototypes/csl_scenario_interface.html
