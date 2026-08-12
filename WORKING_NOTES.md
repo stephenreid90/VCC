@@ -62,13 +62,29 @@ and `wbc_scenarios_comparison_v2.xlsx` (six worlds).
   and the hand-calibrated UI 30.15 (exactly as DNL 3.484→3.073). `tests/dcf/test_wbc_bank.py` (4).
   **Suite 102→106, ratchet baselined 137→139** (two coincidental collisions).
 
-**WBC-4 next (wire the UI):** replace the hand-typed WBC config in `build_cfgs.py` (base 30.15 line 175,
-scenario bars line 185, DCF bridge line 229) with a `bank_pack` (build_bank_inputs_from_data + BankEngine)
-mirroring DNL's `engine_pack`: inject base 30.03, re0 0.0805, six scenario bars, asymmetry, engine-sourced
-narrative. The build-up drill-down is a bank DDM/equity bridge (NOT an EV bridge) — the WBC UI build-up
-needs re-shaping to the §15.7 bridge (like DNL's build-up slice followed its headline). Then WBC-5 (bank
-workbook: no EV bridge; Ke build, operating build, DDM, comparability, P/E & P/B multiples) + embed, WBC-6
-tests. Then repeat the whole program for CSL (segment FCFF / M3; also has the 58 residual schema errors).
+**✅ WBC-4 DONE (commit `a1f01f1`).** New `bank_pack` in build_cfgs.py (the §15 analogue of
+`engine_pack`): runs the bank engine across the six worlds and injects into the WBC config —
+base 30.15→**30.03**, re0 0.0805 (Ke), all six scenario bars (OC 35.71 / MT 30.03 / AIPL 29.70 /
+Frag 27.11 / DClim 22.58 / Stag 18.65), asymmetry 1.90×→**2.00×**, slider default, and engine-sourced
+narrative (MT ~15% below market; per-scenario deltas; Stag NPAT Y5 3.9bn vs MT 9.1bn). The WBC build-up
+was already §15-shaped (DDM/equity bridge, no EV bridge) so it only needed engine values (ordinary equity
+102,551, per share 30.03). DNL/CSL bases unchanged (3.073 / 203.83); node --check OK; suite 106; ratchet 8.
+**WBC's UI is now engine-wired end-to-end — matches DNL's state.** (build_cfgs.py is tracked; the generated
+HTML/cfgs are gitignored — rebuild with `build_cfgs.py && gen_ui.py`.)
+
+**Housekeeping fix (commit `bdd8f57`):** the earlier "comprehensive workbook" commit `a577148` had left
+two working-tree changes uncommitted — `engine_workbook.py`'s 3 new sheets (Comparability / Multiples /
+Lease) and the `.gitignore` untrack lines — so HEAD was inconsistent (build_cfgs called `_wbk(dnl)` while
+the committed `build_dnl_workbook_bytes()` took no arg; a clean checkout couldn't build). Now committed;
+GitHub is consistent and buildable. Always `git fetch` before trusting `ahead N` — pushes go via the
+token URL so the local `origin/main` ref lags.
+
+**WBC-5 next (bank workbook + embed):** build the WBC audited Excel workbook — bank-shaped (NO EV bridge):
+Assumptions (yellow inputs) · AIEA/NIM chain · operating build (NII/non-int income/cost-to-income/credit
+losses → NPAT, six scenarios) · DDM + ROE-fade terminal · §15.7 equity bridge (less AT1/NCI/treasury) ·
+Ke build · comparability (CBA/NAB/ANZ/MQG) · P/E & P/B multiples · Scenarios summary — all formula-linked,
+recalc-tie to the engine (MT 30.03) — then base64-embed in the WBC HTML download (extend
+`engine_workbook.py` with a `build_wbc_workbook_bytes`, or a bank variant). Then WBC-6 (tests) and CSL.
 
 ---
 
