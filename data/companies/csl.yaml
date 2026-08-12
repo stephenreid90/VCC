@@ -479,7 +479,7 @@ company_position:
     aud_per_usd_fx_assumption: 0.66
       # Used for AUD/USD translation at the reporting date
 
-  corporate_actions:
+  capital_actions:
     - action: share_buyback_multi_year
       status: active
       announced: 2025-08-19

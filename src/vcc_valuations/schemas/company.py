@@ -175,7 +175,10 @@ class Segment(BaseModel):
     # companies is enforced by review, not the schema.
     functional_currency_rationale: Optional[str] = None
     revenue_share: float = Field(..., ge=0.0, le=1.0)
-    ebit_share: float
+    # ebit_share OR operating_result_share (multi-segment companies, e.g. CSL, disclose
+    # the latter). Optional so either naming validates; the engine reads whichever is present.
+    ebit_share: Optional[float] = None
+    operating_result_share: Optional[float] = None
     notes: Optional[str] = None
     market_positions: Optional[List[MarketPosition]] = None
     moat: Optional[Moat] = None
@@ -184,6 +187,13 @@ class Segment(BaseModel):
     franchise_assets: Optional[FranchiseAssets] = None
     capability_profile: Optional[CapabilityProfile] = None
     risk_exposures: Optional[RiskExposures] = None
+    # Segment-level positioning summaries + corporate-event flags carried by some
+    # multi-segment companies (e.g. CSL): opaque until formalised.
+    five_forces_company_position: Optional[Dict[str, Any]] = None
+    net_company_position_offset_summary: Optional[Dict[str, Any]] = None
+    acquired: Optional[Any] = None
+    demerger_status: Optional[str] = None
+    demerger_notes: Optional[str] = None
     archetype_specific: Optional[Dict[str, Any]] = Field(
         None,
         description=(
@@ -320,6 +330,15 @@ class CompanyPosition(BaseModel):
     five_forces_company_position: Optional[Dict[str, Any]] = None
     net_company_position_offset_summary: Optional[Dict[str, Any]] = None
     share_statistics: Optional[Dict[str, Any]] = None
+    # Multi-segment / segment-level-valuation companies (e.g. CSL) carry a per-segment
+    # archetype map + a consolidated archetype id, a segment-level valuation flag, and
+    # company-level method overlays. Opaque until formalised; the engine reads them directly.
+    industry_archetype_consolidated: Optional[str] = None
+    industry_archetype_by_segment: Optional[Dict[str, Any]] = None
+    segment_level_valuation: Optional[bool] = None
+    segment_level_valuation_rationale: Optional[str] = None
+    peer_gap_closure_overlay: Optional[Dict[str, Any]] = None
+    patent_exposure_overlay: Optional[Dict[str, Any]] = None
     # Bank-archetype (methodology §15) positioning: NIM, cost-to-income, credit
     # losses, CET1, loan book, deposit funding. Opaque until the bank schema lands.
     bank_specifics: Optional[Dict[str, Any]] = None
