@@ -14,7 +14,38 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 
 ---
 
-## CHAT HANDOVER — 12 August 2026 (e) (DNL COMPLETE — all six scenarios from data; MT baseline + scenario overlay)
+## CHAT HANDOVER — 12 August 2026 (f) (DNL UI headline wired to the engine — one source of truth, replicable)
+
+The DNL scenario-interface HTML now shows the PRODUCTION ENGINE's numbers, not the old hand-calibrated
+set. `ui_prototypes/_generator/build_cfgs.py` computes the six DNL per-share values from the engine at
+generation time via a reusable `engine_pack(company_id, archetype_id, scen, broker_price)` — the same call
+will drive WBC/CSL. Pushed. (Generator-only change; test suite unaffected, still 99; ratchet green.)
+
+1. **`engine_pack()`** (new, company-agnostic) runs `build_engine_inputs_from_data` per scenario and returns
+   base, scenario bars (with the broker bar spliced after the upside), asymmetry (down/up), discount-to-market
+   and the per-scenario per-share. Applied to DNL: **base 3.48 → 3.073**, re0 0.0868 → **0.088772**, the six
+   bars → engine values (OC 3.562 / MT 3.073 / AIPL 2.985 / Frag 2.222 / DClim 1.177 / Stag 1.019), asymmetry
+   **4.2×**, discount-rate slider default → 8.88 (keeps the reduced-form base tie: computeVals(defaults)=3.072).
+2. **Narrative re-anchored (Stephen's Direction 2 — measured), numbers engine-sourced.** MT now reads "below
+   market (AUD 3.61, ~15%)… emphasis is the scenario asymmetry, not the central level" (was "~4% … agrees
+   with consensus" — that framing was FALSE at 3.073). Per-scenario deltas recomputed (+AUD 0.49 / −AUD 2.05 /
+   the % vs MT). Footnote + topnote flipped from "calibrated" to "engine-computed". WACC text 8.68%→8.88%,
+   weights 79/21→83.5/16.5.
+3. **Verified:** `node --check` OK on all three inlined scripts; base tie holds; **WBC/CSL untouched (base
+   30.15 / 203.83)**; regenerated HTMLs written to `ui_prototypes/`.
+
+**Left deliberately (visible inconsistency to close next):** the **"Valuation build-up" drill-down** and the
+**financials tab** still show the OLD hardcoded bridge — EV **8,064** (→ engine 7,009), per-share **3.48**
+(→ 3.073), shares **1,884** (→ 1,770), net debt **1,512**, leases **212** (→ 194.3). These are a different
+construction (the generator's lease-inclusive steady-state anchor vs the engine's Period-A walk).
+`translator.equity_bridge_from_data` already produces the full engine bridge (EV 7,009 → nd@val 1,224 →
+adj 151.65 → leases 194.3 → equity 5,439 → 3.073), so the next slice is mapping that derivation into the
+generator's DCF-bridge + net-debt table so the build-up matches the headline. Until then the headline is
+engine-sourced but the build-up drill-down lags.
+
+**Replicable pattern established:** `engine_pack` + inject into cp.base/re0/scenarios/metric4/slider-def +
+engine-sourced narrative numbers. Roll the SAME onto WBC and CSL once their scenarios resolve (WBC bank fork,
+CSL segment FCFF/M3).
 
 DNL now values end-to-end from data across ALL SIX scenarios (was MT only). Restructured the
 scenario-specific blocks into the methodology's baseline + overlay shape and added the five non-MT

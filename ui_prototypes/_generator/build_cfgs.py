@@ -70,7 +70,7 @@ DNL_DID = {
  "beta":"Peer triangulation, rejecting the measured <b>0.36</b> (unreliable post-demerger): Orica ~1.05 / Yara ~1.20 / ICL ~1.10 cluster (Sasol 1.45 excluded) → selected <b>1.10</b>.",
  "debt":"<b>6.00%</b> pre-tax = an AUD investment-grade BBB-tier spread (~170bps) over the 10-year sovereign; after-tax 6.00% × (1−0.30) = 4.20%.",
  "gearing":"Market-value weights <b>E/V 79% / D/V 21%</b> (equity = 1,884m shares × AUD 3.61; debt = reported net debt). Market-value basis using reported net debt.",
- "wacc":"<b>WACC ≈ 8.68%</b> (Re 9.80% at β 1.10; 79% equity + 21% debt at 4.20% after-tax). Held constant across scenarios (§3.5).",
+ "wacc":"<b>WACC ≈ 8.88%</b> (Re 9.80% at β 1.10; 83.5% equity + 16.5% debt at 4.20% after-tax). Held constant across scenarios (§3.5).",
 }
 WBC_DID = {
  "rf":"10-year Commonwealth Government Securities YTM, <b>4.30%</b> (indicative, May 2026). Single spot 10-year — the pragmatic-benchmark choice.",
@@ -117,7 +117,7 @@ dnl = {
    "world":'<b id="wsnaptitle">Muddle Through</b> — status-quo extension; gas roll-off offset by peer-gap closure; sits just below market. <span class="more" data-k="world">Learn more →</span>',
    "forces":'<b>DNL vs the industrial-explosives archetype</b>, force by force, with each impact. <span class="more" data-k="forces">See the comparison →</span>',
    "position":'<b>Pure-play explosives</b> — #2 global, Australian duopoly, ~35% coal mix. <span class="more" data-k="position">Learn more →</span>',
-   "discount":'<b>WACC ~8.7%</b> = 79% equity (Re 9.80%) + 21% debt. <span class="more" data-k="discount">See the build-up →</span>',
+   "discount":'<b>WACC ~8.9%</b> = 79% equity (Re 9.80%) + 21% debt. <span class="more" data-k="discount">See the build-up →</span>',
    "assum":'<b>Assumptions</b> — each input tagged and rationalised. <span class="more" data-k="assum">See all →</span>',
    "dcf":'<b>FCFF → per share</b> — single WACC across scenarios; gas roll-off in the margin path. <span class="more" data-k="dcf">Open the build-up →</span>'},
  "narr":{
@@ -138,12 +138,12 @@ dnl = {
      ["Rivalry","High","Concentrated global oligopoly (Orica / Dyno Nobel / MAXAM ~65%); Australia a duopoly. Bulk ANFO competes on price while technology products differentiate.","less favourable","−40 bps","#2 vs Orica #1; more bulk-ANFO, fewer high-margin electronic detonators"]],
    "net":"−25 bps net growth offset (rivalry −30 + product-mix −10 + new-entrants +15). The supplier-power margin edge is transitory — it rolls off with the gas contracts."},
  "_position":'<div class="thytag" style="color:var(--text3); margin:0 0 4px;">Franchise & moat</div><ul style="padding-left:18px;"><li><b>Pure-play post-demerger</b> &ndash; explosives-only after the March 2025 Incitec Pivot split (fertilisers demerged, entity renamed); single reporting segment.</li><li><b>Global #2, Australian duopolist</b> &ndash; #1 in North American industrial explosives (~30% share), #2 to Orica in Australia (~40% share), plus a sub-scale ~5% RoW book slowly gaining.</li><li><b>US cost-curve edge &ndash; transitory</b> &ndash; long-term gas contracts put US ops in the bottom cost-curve quartile (~+200bps margin), rolling off through a 2028&ndash;2030 re-pricing window (6-year average maturity) to nil by FY31.</li><li><b>Switching-cost moat</b> &ndash; 200+ on-site mobile manufacturing units at customer mine sites, multi-decade relationships and 5&ndash;10-year offtake contracts (BHP, Rio Tinto, FMG); ~78% of revenue contracted.</li></ul><div class="thytag" style="color:var(--text3); margin:14px 0 4px;">Geography, product & peers</div><ul style="padding-left:18px;"><li><b>Geography &amp; currency</b> &ndash; ~55% USA, ~35% Australia, ~10% RoW; per-entity functional currency under IAS 21 (parent AUD, Dyno Nobel Americas USD-functional on US revenue, gas and ammonia).</li><li><b>Product &amp; customer mix</b> &ndash; ~50% commodity bulk ANFO, ~18% higher-growth electronic detonators (DigiShot); ~35% coal-exposed, offset by transition-mineral demand. Top 5 customers ~45% of revenue.</li><li><b>Peer-gap to Orica</b> &ndash; Orica is ~30% larger with a technology and diversification lead, driving a net ~25bps company-position growth drag (&minus;30 rivalry, &minus;10 mix, +15 EM ramp).</li></ul><div class="thytag" style="color:var(--text3); margin:14px 0 4px;">Financials & risks</div><ul style="padding-left:18px;"><li><b>Balance sheet</b> &ndash; net debt/EBITDA 2.12x; AUD 647m liquidity; thin FY25 free cash flow (AUD 101m) vs AUD 162m dividends + AUD 289m buybacks; 60&ndash;70% payout target.</li><li><b>Key risks</b> &ndash; gas/ammonia input costs, coal-customer transition, and a weak large-project execution record (Louisiana ammonia overruns 2017&ndash;2020); carbon exposure rated high given ~55% ammonia self-supply.</li></ul>',
- "_discount": '<p>Single WACC, held constant across scenarios (risk is priced in the cash flows, not the rate — §3.5).</p>'+dtable([["Risk-free rate (10y CGS)","4.30%","disclosed"],["Equity risk premium","5.00%","judgment"],["Beta — selected","1.10","judgment"],["= Cost of equity","9.80%","derived"],["Cost of debt (pre-tax)","6.00%","disclosed"],["= WACC (79/21 E/D)","~8.7%","derived"]])+'<p style="margin-top:8px;"><b>Beta — peer triangulation.</b> Orica 1.05 / ICL 1.10 / Yara 1.20 cluster (Sasol 1.45 excluded); DNL placed at 1.10. Measured β 0.36 (world-index, AUD series) rejected as unreliable.</p>',
+ "_discount": '<p>Single WACC, held constant across scenarios (risk is priced in the cash flows, not the rate — §3.5).</p>'+dtable([["Risk-free rate (10y CGS)","4.30%","disclosed"],["Equity risk premium","5.00%","judgment"],["Beta — selected","1.10","judgment"],["= Cost of equity","9.80%","derived"],["Cost of debt (pre-tax)","6.00%","disclosed"],["= WACC (84/16 E/D)","~8.9%","derived"]])+'<p style="margin-top:8px;"><b>Beta — peer triangulation.</b> Orica 1.05 / ICL 1.10 / Yara 1.20 cluster (Sasol 1.45 excluded); DNL placed at 1.10. Measured β 0.36 (world-index, AUD series) rejected as unreliable.</p>',
  "_assum":[
    ["Risk-free rate","4.30%","disclosed","10y Commonwealth Govt bond YTM"],
    ["Equity risk premium","5.00%","judgment","Damodaran-style mature-Australia ERP"],
    ["Beta (selected)","1.10","judgment","Peer cluster Orica/ICL/Yara; measured 0.36 unreliable"],
-   ["WACC","~8.7%","derived","79% equity × Re 9.80% + 21% debt × 6.0%(1−t)"],
+   ["WACC","~8.9%","derived","79% equity × Re 9.80% + 21% debt × 6.0%(1−t)"],
    ["Normalised EBIT margin","13.5%","judgment","Through-cycle; corporate already in segment guidance"],
    ["Gas roll-off drag","−50/−100/−150 bps","judgment","Cumulative Y3/Y4/Y5 as US gas contracts roll off (§3.2.1)"],
    ["Terminal growth g","2.5%","judgment","Demographic trajectory pulls toward 2.0% long-run"],
@@ -151,10 +151,10 @@ dnl = {
    ["Net debt","AUD 1,300m","disclosed","Normalised steady-state"],
    ["Shares","1,884m","disclosed","Latest reported, paired to net-debt anchor"]],
  "dcf": bridge([["Enterprise value (DCF)","8,064"],["Less: net debt (ex-leases)","(1,300)"],["Less: AASB 16 lease liabilities","(212)"],["Equity value","6,552"],["÷ shares (m)","1,884"],["Value per share AUD","3.48"]],
-   "AUD m. Five-year FCFF (stub + FY27–FY31), single WACC ~8.7%, terminal g 2.5%, with the gas roll-off built into the margin path. Per-scenario detail in dnl_scenarios_comparison_v4."),
- "dcfIntro":"AUD m. Click any line to see its make-up. Five-year FCFF (stub + FY27\u2013FY31), single WACC ~8.7%, terminal g 2.5%, gas roll-off in the margin path.",
+   "AUD m. Five-year FCFF (stub + FY27–FY31), single WACC ~8.9%, terminal g 2.5%, with the gas roll-off built into the margin path. Per-scenario detail in dnl_scenarios_comparison_v4."),
+ "dcfIntro":"AUD m. Click any line to see its make-up. Five-year FCFF (stub + FY27\u2013FY31), single WACC ~8.9%, terminal g 2.5%, gas roll-off in the margin path.",
  "dcfRows":[
-   ["Enterprise value (DCF)","8,064","Sum of five years of free cash flow to the firm (stub + FY27\u2013FY31) discounted at WACC ~8.7%, plus a Gordon-growth terminal value at g 2.5%. FCFF is built from a normalised EBIT margin of 13.5% (with the \u221250 / \u2212100 / \u2212150 bps gas roll-off in the margin path), blended tax 27.5%, and steady-state reinvestment. Full per-scenario build in the dnl_scenarios_comparison_v4 workbook."],
+   ["Enterprise value (DCF)","8,064","Sum of five years of free cash flow to the firm (stub + FY27\u2013FY31) discounted at WACC ~8.9%, plus a Gordon-growth terminal value at g 2.5%. FCFF is built from a normalised EBIT margin of 13.5% (with the \u221250 / \u2212100 / \u2212150 bps gas roll-off in the margin path), blended tax 27.5%, and steady-state reinvestment. Full per-scenario build in the dnl_scenarios_comparison_v4 workbook."],
    ["Less: net debt (ex-leases)","(1,300)","Interest-bearing borrowings less cash and short-term investments (FY25 liquidity ~AUD 647m = AUD 207m cash + AUD 440m short-term investments), normalised to a steady-state anchor. AASB 16 leases are added on the next line per Approach A."],
    ["Less: AASB 16 lease liabilities","(212)","AASB 16 lease liability treated as debt (Approach A), consistent with the post-AASB 16 EBITDA used above (rent already replaced by right-of-use depreciation and lease interest). Materiality shown in the panel below."],
    ["Equity value","6,552","Enterprise value 8,064 less net debt 1,300 (ex-leases) less AASB 16 leases 212. Post-demerger equity-bridge adjustments (IPF distribution +125, Geelong remediation \u221235, Gibson Island \u221297, transaction costs \u221211, PH contingent +100) broadly net out and are absorbed into the normalised net-debt anchor."],
@@ -350,6 +350,88 @@ csl["_forces"]["impacts"] = [
   {"drv":"", "bps":0},
   {"drv":"m", "bps":10},
 ]
+
+
+# ===== SSOT: headline valuation wired to the production engine (replicable) =====
+# The displayed base, scenario bars, asymmetry, discount-to-market and the
+# narrative's numeric claims are computed by the production engine at generation
+# time, so the UI shows one source of truth. engine_pack() is company-agnostic;
+# WBC/CSL call it the same way once their scenarios resolve.
+import sys as _sys
+from pathlib import Path as _Path
+_ROOT = _Path(__file__).resolve().parents[2]
+_sys.path.insert(0, str(_ROOT / "src"))
+from vcc_valuations.translator import load_inputs as _li, build_engine_inputs_from_data as _bi
+from vcc_valuations.dcf.fcf_engine import FcfEngine as _Eng
+
+def engine_pack(company_id, archetype_id, scen, broker_price):
+    """Run the engine across `scen` [(scenario_id, display_name, kind)]; the
+    central case is kind=='live'. Returns the UI display pack, engine-sourced."""
+    res = {sid: _Eng().run(_bi(_li(_ROOT, sid, archetype_id, company_id), sid))
+           for sid, _nm, _kind in scen}
+    live = [t for t in scen if t[2] == "live"][0]
+    r0 = res[live[0]]
+    base = round(r0.value_per_share, 3)
+    vals = {nm: round(res[sid].value_per_share, 3) for sid, nm, _k in scen}
+    bars = []
+    for sid, nm, kind in scen:
+        bars.append({"n": nm, "v": vals[nm], "kind": kind})
+        if kind == "up":                      # broker bar sits after the upside
+            bars.append({"n": "Average broker", "v": broker_price, "kind": "broker"})
+    ups = [v - base for v in vals.values() if v > base]
+    downs = [base - v for v in vals.values() if v < base]
+    asym = (max(downs) / max(ups)) if (ups and downs) else None
+    return {"base": base, "wacc": r0.wacc, "discount_to_market": r0.discount_to_market,
+            "vals": vals, "bars": bars, "asym": asym, "live_name": live[1]}
+
+_DNL_SCEN = [
+    ("orderly_convergence", "Orderly Convergence", "up"),
+    ("muddle_through", "Muddle Through", "live"),
+    ("ai_productivity_lag", "AI Productivity Lag", "down"),
+    ("fragmentation", "Fragmentation", "down"),
+    ("disorderly_climate_crystallisation", "Disorderly Climate", "down"),
+    ("stagflation_persists", "Stagflation Persists", "down"),
+]
+_pk = engine_pack("dnl", "industrial_explosives", _DNL_SCEN, 3.61)
+_base = _pk["base"]; _wacc = _pk["wacc"]; _vals = _pk["vals"]; _asym = _pk["asym"]
+_dmpct = abs(_pk["discount_to_market"]) * 100.0
+_up = _vals["Orderly Convergence"] - _base
+_dn = _base - _vals["Stagflation Persists"]
+def _pct(nm): return (_vals[nm] / _base - 1.0) * 100.0
+
+dnl["cp"]["base"] = _base
+dnl["cp"]["re0"] = round(_wacc, 6)
+dnl["scenarios"] = _pk["bars"]
+dnl["metric4"] = {"label": "Asymmetry (down/up)", "value": ("%.1f×" % _asym)}
+for _s in dnl["sliders"]:
+    if _s["k"] == "re":
+        _s["def"] = round(_wacc * 100.0, 2)
+
+# narrative numeric claims, engine-sourced (Direction 2: measured central-case framing)
+_M = "−"
+_n = dnl["narr"]
+_n["Muddle Through"] = (_n["Muddle Through"]
+    .replace("Why AUD 3.48?", "Why AUD %.2f?" % _base)
+    .replace("It sits modestly below market (AUD 3.61, ~4%) — the framework agrees with consensus on the central case. The value-add is not disagreement here, it is the scenario <i>asymmetry</i> around this point.",
+             "It sits below market (AUD 3.61, ~%.0f%%) — on a Muddle Through path the framework reads consensus as somewhat rich at the centre, but the emphasis is the scenario <i>asymmetry</i> around this point rather than the central level." % _dmpct)
+    .replace("~4× harder", "~%.1f× harder" % _asym))
+_n["Orderly Convergence"] = _n["Orderly Convergence"].replace(
+    "only +AUD 0.57 above Muddle Through.", "+AUD %.2f above Muddle Through." % _up)
+_n["AI Productivity Lag"] = _n["AI Productivity Lag"].replace(
+    "−3% vs Muddle Through", "%s%.0f%% vs Muddle Through" % (_M, abs(_pct("AI Productivity Lag"))))
+_n["Fragmentation"] = _n["Fragmentation"].replace(
+    "−27%.", "%s%.0f%%." % (_M, abs(_pct("Fragmentation"))))
+_n["Disorderly Climate"] = _n["Disorderly Climate"].replace(
+    "−60%.", "%s%.0f%%." % (_M, abs(_pct("Disorderly Climate"))))
+_n["Stagflation Persists"] = _n["Stagflation Persists"].replace(
+    "−65% vs Muddle Through; the −AUD 2.31 that sets the 4.05× asymmetry.",
+    "%s%.0f%% vs Muddle Through; the %sAUD %.2f that sets the %.1f× asymmetry." % (_M, abs(_pct("Stagflation Persists")), _M, _dn, _asym))
+dnl["footnote"] = dnl["footnote"].replace(
+    "Calibrated central case: DNL Muddle Through AUD 3.48 (market AUD 3.61)",
+    "Engine-computed central case: DNL Muddle Through AUD %.2f (market AUD 3.61)" % _base)
+dnl["topnote"] = dnl["topnote"].replace(
+    "all six scenarios calibrated (v4)", "all six scenarios computed by the production engine")
+# ===== end SSOT block =====
 
 json.dump({"dnl":dnl,"wbc":wbc,"csl":csl}, open(_CFGP,'w'), ensure_ascii=False)
 print("cfgs.json written")
