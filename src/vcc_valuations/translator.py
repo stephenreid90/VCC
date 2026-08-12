@@ -248,6 +248,31 @@ def build_wacc_from_inputs(inputs: dict, default_tax: float = 0.30):
     )
 
 
+def wacc_build_from_data(inputs: dict):
+    """The WACC build as a traceable :class:`Derivation` (workbook WACC Build).
+
+    Thin bridge from the data-driven :class:`WaccBuild` to its full six-row
+    derivation (B8/B13/B18/B19/B20/B23). ``None`` for cost-of-equity companies
+    (banks / CSL) which carry no ``wacc_build``.
+    """
+    wacc = build_wacc_from_inputs(inputs)
+    return None if wacc is None else wacc.derivation()
+
+
+def equity_bridge_from_data(inputs: dict, scenario_id: str):
+    """The equity bridge as a traceable :class:`Derivation` (workbook Equity Bridge).
+
+    Assembles the engine input from data, runs the DCF for the enterprise value,
+    then traces the Period-A net-debt walk (B6-B11) and the per-share bridge
+    (B27-B37). The headline (B33) ties the engine's ``value_per_share``.
+    """
+    from vcc_valuations.dcf.fcf_engine import FcfEngine
+
+    inp = build_engine_inputs_from_data(inputs, scenario_id)
+    result = FcfEngine().run(inp)
+    return inp.equity_bridge.derivation(result.enterprise_value)
+
+
 def equity_bridge_adjustments_net_from_data(company_raw: dict):
     """Sum the structured ``equity_bridge_adjustments`` (methodology §4.2).
 

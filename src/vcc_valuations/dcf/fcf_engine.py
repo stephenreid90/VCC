@@ -58,6 +58,13 @@ class EquityBridge:
     fx_rate: float = 1.0                  # per-share FX; applied ONLY at the per-share line
     market_reference_price: Optional[float] = None
 
+    # Period-A walk inputs, retained so the bridge can trace itself (workbook
+    # Equity Bridge B6-B11). None when the bridge was built without a walk.
+    net_debt_anchor: Optional[float] = None
+    period_a_years: Optional[float] = None
+    operating_cash_flow_run_rate: Optional[float] = None
+    capex_run_rate: Optional[float] = None
+
     @classmethod
     def from_anchor(
         cls,
@@ -89,7 +96,94 @@ class EquityBridge:
             shares_outstanding=shares_outstanding,
             fx_rate=fx_rate,
             market_reference_price=market_reference_price,
+            net_debt_anchor=net_debt_anchor,
+            period_a_years=period_a_years,
+            operating_cash_flow_run_rate=operating_cash_flow_run_rate,
+            capex_run_rate=capex_run_rate,
         )
+
+    def derivation(self, enterprise_value: float):
+        """The equity bridge as a fully-traceable derivation (workbook Equity Bridge).
+
+        Given the DCF enterprise value, exposes the Period-A net-debt walk
+        (B6-B11, when the walk inputs are present) and the per-share bridge
+        (B27 EV -> B28 net debt -> B29 adjustments -> B30 leases -> B31 equity
+        -> B33 value per share, plus B37 discount to market). Every row is a
+        named step with its formula; nothing derived is stored.
+        """
+        from vcc_valuations.derivation import DerivationBuilder
+
+        b = DerivationBuilder("equity_bridge")
+
+        if self.period_a_years is not None:
+            anchor = b.step(
+                "B6", "Net debt at anchor", self.net_debt_anchor, "from financials (§5.3 anchor)",
+                {"net_debt_anchor": self.net_debt_anchor}, cell="B6", units="AUD m",
+            )
+            less_ocf = b.step(
+                "B7", "less: operating cash flow in Period A",
+                -self.operating_cash_flow_run_rate * self.period_a_years,
+                "-OCF_run_rate * period_a_years",
+                {"OCF_run_rate": self.operating_cash_flow_run_rate,
+                 "period_a_years": self.period_a_years}, cell="B7", units="AUD m",
+            )
+            plus_capex = b.step(
+                "B8", "plus: capex paid in Period A",
+                self.capex_run_rate * self.period_a_years,
+                "capex_run_rate * period_a_years",
+                {"capex_run_rate": self.capex_run_rate,
+                 "period_a_years": self.period_a_years}, cell="B8", units="AUD m",
+            )
+            subtotal = b.step(
+                "B10", "Net debt walk subtotal", less_ocf + plus_capex,
+                "B7 + B8", {"B7": less_ocf, "B8": plus_capex}, cell="B10", units="AUD m",
+            )
+            b.step(
+                "B11", "Net debt at valuation date", anchor + subtotal,
+                "B6 + B10", {"B6": anchor, "B10": subtotal}, cell="B11", units="AUD m",
+            )
+
+        ev = b.step(
+            "B27", "Enterprise value (from DCF)", enterprise_value, "from DCF Worksheet",
+            {"enterprise_value": enterprise_value}, cell="B27", units="AUD m",
+        )
+        less_nd = b.step(
+            "B28", "less: net debt at valuation", -self.net_debt_at_valuation,
+            "-net_debt_at_valuation", {"net_debt_at_valuation": self.net_debt_at_valuation},
+            cell="B28", units="AUD m",
+        )
+        less_adj = b.step(
+            "B29", "less: equity-bridge adjustments (net)", -self.equity_bridge_adjustments_net,
+            "-equity_bridge_adjustments_net",
+            {"equity_bridge_adjustments_net": self.equity_bridge_adjustments_net},
+            cell="B29", units="AUD m",
+        )
+        less_leases = b.step(
+            "B30", "less: AASB 16 lease liabilities", -self.lease_liabilities,
+            "-lease_liabilities", {"lease_liabilities": self.lease_liabilities},
+            cell="B30", units="AUD m",
+        )
+        equity_value = b.step(
+            "B31", "Equity value", ev + less_nd + less_adj + less_leases,
+            "B27 + B28 + B29 + B30",
+            {"B27": ev, "B28": less_nd, "B29": less_adj, "B30": less_leases},
+            cell="B31", units="AUD m",
+        )
+        vps = b.step(
+            "B33", "Value per share", equity_value / self.shares_outstanding,
+            "equity_value / shares_outstanding",
+            {"equity_value": equity_value, "shares_outstanding": self.shares_outstanding},
+            cell="B33", units="AUD/sh",
+        )
+        if self.market_reference_price:
+            b.step(
+                "B37", "Discount / (premium) vs market",
+                vps * self.fx_rate / self.market_reference_price - 1.0,
+                "value_per_share / market_reference_price - 1",
+                {"value_per_share": vps * self.fx_rate,
+                 "market_reference_price": self.market_reference_price}, cell="B37", units="%",
+            )
+        return b.build(result_key="B33")
 
 
 @dataclass

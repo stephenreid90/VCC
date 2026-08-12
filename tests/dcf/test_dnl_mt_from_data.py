@@ -23,6 +23,8 @@ from vcc_valuations.translator import (
     build_engine_inputs_from_data,
     revenue_growth_from_data,
     revenue_growth_chain_from_data,
+    wacc_build_from_data,
+    equity_bridge_from_data,
 )
 from vcc_valuations.dcf.fcf_engine import FcfEngine
 from tests.dcf.golden.dnl_mt_inputs import (
@@ -122,6 +124,37 @@ def test_assembled_inputs_match_the_golden_field_by_field():
     # The one intended difference: β (data ratified 1.10, golden 0.95).
     assert data.wacc.beta == 1.10
     assert gold.wacc.beta == 0.95
+
+
+def test_wacc_build_derivation_traces_v6_rows_at_ratified_inputs():
+    """The WACC build exposes its six V6 derived rows (B8/B13/B18/B19/B20/B23).
+    Values reflect the RATIFIED inputs (beta 1.10, tax 0.30), superseding the v6
+    sheet's cached beta 0.95 / tax 0.275 — the row structure matches, the number
+    is the production discount rate."""
+    d = wacc_build_from_data(_load())
+    assert [s.cell for s in d] == ["B8", "B13", "B18", "B19", "B20", "B23"]
+    assert abs(d["B8"].value - 0.098) < 1e-9        # Re = 0.043 + 1.10 x 0.05
+    assert abs(d["B13"].value - 0.042) < 1e-9       # Rd_at = 0.06 x (1 - 0.30)
+    assert abs(d["B18"].value - 7650.8) < 1e-6      # V = 6390 + 1260.8
+    assert abs(d["B19"].value - 0.8352) < 1e-3      # E/V
+    assert abs(d.result - 0.088772) < 1e-4          # B23 WACC, ratified
+    for s in d:
+        assert s.formula and s.inputs
+
+
+def test_equity_bridge_derivation_traces_walk_and_per_share():
+    """The equity bridge exposes the Period-A walk (B6-B11) and the per-share
+    chain (B27-B37); B11 ties the golden net-debt walk and B33 ties the engine."""
+    d = equity_bridge_from_data(_load(), "muddle_through")
+    assert [s.cell for s in d] == \
+        ["B6", "B7", "B8", "B10", "B11", "B27", "B28", "B29", "B30", "B31", "B33", "B37"]
+    assert abs(d["B11"].value - 1224.0329) < 1e-3   # net debt at valuation (golden)
+    assert abs(d["B29"].value - (-151.65)) < 1e-2   # adjustments net (§4.2)
+    assert round(d.result, 3) == 3.073              # B33 value per share
+    # B33 must equal the engine's own value_per_share, not a re-derivation drift.
+    inp = build_engine_inputs_from_data(_load(), "muddle_through")
+    from vcc_valuations.dcf.fcf_engine import FcfEngine
+    assert abs(d.result - FcfEngine().run(inp).value_per_share) < 1e-9
 
 
 def test_geo_mix_is_derived_from_geographic_concentration():

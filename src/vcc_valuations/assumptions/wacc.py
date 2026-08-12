@@ -22,7 +22,10 @@ blended-statutory rate, for internal consistency.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List
+from typing import TYPE_CHECKING, List
+
+if TYPE_CHECKING:
+    from vcc_valuations.derivation import Derivation
 
 
 @dataclass(frozen=True)
@@ -71,6 +74,61 @@ class WaccBuild:
             self.equity_weight * self.cost_of_equity
             + self.debt_weight * self.after_tax_cost_of_debt
         )
+
+    def derivation(self) -> "Derivation":
+        """The WACC build as a fully-traceable derivation (workbook WACC Build sheet).
+
+        Exposes the six derived rows at V6 granularity — B8 cost of equity, B13
+        after-tax cost of debt, B18 enterprise value, B19 E/V, B20 D/V, B23 WACC
+        — each with its formula and the inputs it consumed. The seven inputs (Rf,
+        ERP, beta, Rd_pretax, tax, E, D) are the yellow cells; nothing derived is
+        stored.
+
+        NB for DNL: the values reflect the RATIFIED inputs (the owner-ratified
+        beta and the normalised tax rate), which supersede the v6 WACC Build
+        sheet's cached cells (the earlier beta and the Tax-Bridge blended rate).
+        The row STRUCTURE matches V6; the numbers are the production discount
+        rate, not the stale workbook cache.
+        """
+        from vcc_valuations.derivation import DerivationBuilder
+
+        b = DerivationBuilder("wacc_build")
+        b.step(
+            "B8", "Cost of equity (Re)", self.cost_of_equity,
+            "Rf + beta * ERP",
+            {"Rf": self.risk_free_rate, "beta": self.beta,
+             "ERP": self.equity_risk_premium}, cell="B8", units="%",
+        )
+        b.step(
+            "B13", "Cost of debt, after-tax", self.after_tax_cost_of_debt,
+            "Rd_pretax * (1 - tax)",
+            {"Rd_pretax": self.cost_of_debt_pretax, "tax": self.tax_rate},
+            cell="B13", units="%",
+        )
+        b.step(
+            "B18", "Enterprise value (V = E + D)", self.total_capital,
+            "E + D",
+            {"E": self.equity_market_value, "D": self.debt_market_value},
+            cell="B18", units="AUD m",
+        )
+        b.step(
+            "B19", "E/V", self.equity_weight, "E / V",
+            {"E": self.equity_market_value, "V": self.total_capital},
+            cell="B19", units="%",
+        )
+        b.step(
+            "B20", "D/V", self.debt_weight, "D / V",
+            {"D": self.debt_market_value, "V": self.total_capital},
+            cell="B20", units="%",
+        )
+        b.step(
+            "B23", "Baseline WACC", self.wacc,
+            "(E/V) * Re + (D/V) * Rd_after_tax",
+            {"E/V": self.equity_weight, "Re": self.cost_of_equity,
+             "D/V": self.debt_weight, "Rd_after_tax": self.after_tax_cost_of_debt},
+            cell="B23", units="%",
+        )
+        return b.build(result_key="B23")
 
     def describe(self) -> List[str]:
         """One-line-per-component description for printable headers / traces."""
