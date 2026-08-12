@@ -607,9 +607,25 @@ normalised_baseline:
       base_ebit_margin: 0.141              # workbook B10
       margin_transformation: [0.006, 0.018, 0.02, 0.02, 0.02]   # B45..B49 (cum pp)
       margin_gas_rolloff: [0.0, 0.0, -0.005, -0.01, -0.015]     # B52..B56 (cum pp, <=0)
-      stub_tax_rate: 0.225                 # B59
-      tax_rate_glide: [0.225, 0.2375, 0.25, 0.2625, 0.275]      # Tax Bridge B12..B16
+      # NB: stub_tax_rate + tax_rate_glide are NO LONGER stored here — they were
+      # derived values (effective rate gliding to blended statutory). See the
+      # tax_bridge block below; translator.tax_bridge_from_data derives them.
       capex_pct_stub: 0.08                 # B12 (transition)
       capex_pct: [0.08, 0.08, 0.07, 0.07, 0.07]                 # B12 (Y1,Y2), B11 (Y3..Y5)
       da_pct_revenue: 0.073                # B13
       terminal_growth: 0.025               # B77
+
+  # --- Tax Bridge (workbook Tax Bridge sheet; migrated 2026-08-12). INPUTS ONLY:
+  # the FY26 effective rate (B59), the per-jurisdiction statutory rates (C5-C7,
+  # keyed to the geographic_concentration region names so the revenue WEIGHTS are
+  # DERIVED, not restated), and the gap-closing glide fractions (E12-E16). The
+  # blended statutory rate (D8) and the per-year tax glide (B12-B16) are derived by
+  # translator.tax_bridge_from_data and exposed as auditable steps — never stored
+  # (they previously sat in engine_overlays as stored-derived values; removed). ---
+  tax_bridge:
+    effective_tax_rate: 0.225            # B59: FY26 effective (management guidance midpoint 20-25%)
+    statutory_rate_by_region:            # C5-C7; revenue weights derived from geographic_concentration
+      United States: 0.26                # Dyno Nobel Americas (US federal + state blended)
+      Australia: 0.30                    # Dyno Nobel Asia Pacific (AU statutory)
+      Rest of World: 0.27                # Dyno Nobel EMEA & LATAM (blended)
+    glide_fractions: [0.0, 0.25, 0.5, 0.75, 1.0]   # E12-E16: fraction of the effective->statutory gap closed

@@ -14,7 +14,42 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 
 ---
 
-## CHAT HANDOVER — 12 August 2026 (c) (derivation pattern rolled onto the WACC Build + Equity Bridge)
+## CHAT HANDOVER — 12 August 2026 (d) (Tax Bridge to V6 traceability — and a real SSOT fix: stored tax glide removed)
+
+Rolled the traceability pattern onto the Tax Bridge, which doubled as a genuine single-source-of-truth
+fix: the per-year `tax_rate_glide` was a STORED derived value in `engine_overlays` (the effective rate
+gliding to blended statutory) — exactly the "stored answer" the protocol targets. Now derived. Pushed.
+**Suite 88 → 90.**
+
+1. **`data/companies/dnl.yaml`** — new `normalised_baseline.tax_bridge` block, INPUTS ONLY: `effective_tax_rate`
+   0.225 (B59), `statutory_rate_by_region` (US 0.26 / Australia 0.30 / Rest of World 0.27, keyed to the
+   geographic_concentration region names so the revenue WEIGHTS are derived, not restated), and
+   `glide_fractions` [0, .25, .5, .75, 1] (E12-E16). **Removed `stub_tax_rate` and `tax_rate_glide` from
+   `engine_overlays.muddle_through`** — both were derived, now sourced from the bridge.
+2. **`translator.tax_bridge_from_data(inputs) -> Derivation`** exposes the V6 rows: per-region contributions
+   D5-D7 (revenue_weight x statutory_rate), blended statutory **D8 = 0.275** (0.55x0.26 + 0.35x0.30 +
+   0.10x0.27), and the applied-tax glide B12-B16 = effective + (blended − effective) x fraction =
+   [0.225, 0.2375, 0.25, 0.2625, 0.275] — reproducing the value that used to be hardcoded.
+   `build_engine_inputs_from_data` now sources stub + glide from here; the ratified overlays test updated
+   to match. **DNL MT still 3.073 / EV 7,009.2.**
+3. **Tests +2** (`test_dnl_mt_from_data.py`): D8 + glide pinned and shown derived (nine steps D5-B16); and a
+   guard that `tax_rate_glide`/`stub_tax_rate` are GONE from the stored overlays. Fixed the field-by-field
+   test to compare the glide with tolerance (float artifact 0.2375 vs 0.23750000000000002).
+4. **Ratchet 138 → 136** — the diff is instructive: three `0.275` entries *removed* (wacc/beta_data/build_cfgs)
+   because 0.275 is no longer a stored data value (it's derived D8), so those code copies stopped being
+   duplicates; one `0.26` added (US statutory rate coincidentally in gen_ui.py). Regenerated + verified.
+
+**Traceability status — all five derived sheets now at V6 granularity:** revenue-growth chain (b), WACC
+Build (c), Equity Bridge (c), **Tax Bridge (this block)**. The `Derivation` primitive now has four worked
+examples (translator-built: revenue chain, tax bridge; dataclass-method: WaccBuild, EquityBridge). The
+only remaining parity item is surfacing the **per-year P&L margin build** (base + transformation +
+gas-rolloff, and the applied-tax glide as it lands per year) as a `Derivation` — but those values already
+appear in the engine's per-period `FcfDcfResult`, so it's presentation, not new logic.
+
+**Next.** (1) The other five DNL scenarios (each needs `engine_overlays[scenario]` +
+`revenue_growth_chain[scenario]`; tax_bridge is company-level and shared unless a scenario overrides).
+(2) M3 segment FCFF for CSL. (3) Deferred: the human-readable workings view from `Derivation.as_rows()`.
+(4) The inflation-basis note (workbook DM inflation 2.5% normalising vs scenario CPI 3.0% sticky).
 
 Continued rolling the full-V6-traceability pattern (from block (b)) onto two more sheets. Same discipline:
 inputs are the yellow cells (data); every workbook *derived row* is a named `DerivationStep` computed in

@@ -90,18 +90,21 @@ def test_engine_overlays_data_driven_reproduce_headline():
     """Per-year overlays (margin/gas/tax/capex glides) now come from data; fed
     into the engine with the data-driven WACC they reproduce the ratified 3.073."""
     import yaml
-    from vcc_valuations.translator import engine_overlays_from_data
+    from vcc_valuations.translator import engine_overlays_from_data, tax_bridge_from_data
 
     raw = yaml.safe_load((ROOT / "data" / "companies" / "dnl.yaml").read_text(encoding="utf-8"))
     ov = engine_overlays_from_data(raw, "muddle_through")
+    # Applied tax now comes from the derived Tax Bridge, not stored overlays.
+    tax = tax_bridge_from_data(_load())
+    glide = [tax[f"B{11 + i}"].value for i in range(1, 6)]
     inp = dataclasses.replace(
         dnl_muddle_through_inputs(),
         wacc=build_wacc_from_inputs(_load()),
         base_ebit_margin=ov["base_ebit_margin"],
         margin_transformation=ov["margin_transformation"],
         margin_gas_rolloff=ov["margin_gas_rolloff"],
-        stub_tax_rate=ov["stub_tax_rate"],
-        tax_rate_glide=ov["tax_rate_glide"],
+        stub_tax_rate=raw["normalised_baseline"]["tax_bridge"]["effective_tax_rate"],
+        tax_rate_glide=glide,
         capex_pct_stub=ov["capex_pct_stub"],
         capex_pct=ov["capex_pct"],
         da_pct_revenue=ov["da_pct_revenue"],

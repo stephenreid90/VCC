@@ -25,6 +25,7 @@ from vcc_valuations.translator import (
     revenue_growth_chain_from_data,
     wacc_build_from_data,
     equity_bridge_from_data,
+    tax_bridge_from_data,
 )
 from vcc_valuations.dcf.fcf_engine import FcfEngine
 from tests.dcf.golden.dnl_mt_inputs import (
@@ -110,7 +111,8 @@ def test_assembled_inputs_match_the_golden_field_by_field():
     assert data.base_ebit_margin == gold.base_ebit_margin
     assert data.margin_transformation == gold.margin_transformation
     assert data.margin_gas_rolloff == gold.margin_gas_rolloff
-    assert data.tax_rate_glide == gold.tax_rate_glide
+    assert len(data.tax_rate_glide) == len(gold.tax_rate_glide)
+    assert all(abs(a - b) < 1e-9 for a, b in zip(data.tax_rate_glide, gold.tax_rate_glide))
     assert data.capex_pct == gold.capex_pct
     assert data.terminal_growth == gold.terminal_growth
 
@@ -124,6 +126,29 @@ def test_assembled_inputs_match_the_golden_field_by_field():
     # The one intended difference: β (data ratified 1.10, golden 0.95).
     assert data.wacc.beta == 1.10
     assert gold.wacc.beta == 0.95
+
+
+def test_tax_bridge_derivation_derives_blended_statutory_and_glide():
+    """The Tax Bridge derives the blended statutory rate (D8) from revenue-weighted
+    jurisdictional rates and the applied-tax glide (B12-B16) as the effective rate
+    closing the gap to statutory — reproducing the golden glide, which used to be
+    STORED. Weights come from geographic_concentration (US .55/AU .35/RoW .10)."""
+    d = tax_bridge_from_data(_load())
+    assert d is not None
+    assert abs(d["D8"].value - 0.275) < 1e-9        # 0.55x0.26 + 0.35x0.30 + 0.10x0.27
+    glide = [d[f"B{11 + i}"].value for i in range(1, 6)]
+    golden = [0.225, 0.2375, 0.25, 0.2625, 0.275]   # the value that used to be hardcoded
+    assert all(abs(a - b) < 1e-9 for a, b in zip(glide, golden))
+    # D8 depends on the statutory rates, so it is genuinely derived, not stored:
+    assert [s.cell for s in d] == ["D5", "D6", "D7", "D8", "B12", "B13", "B14", "B15", "B16"]
+
+
+def test_tax_glide_is_no_longer_stored_in_overlays():
+    """SSOT: the tax glide is gone from the stored engine_overlays — it is derived."""
+    from vcc_valuations.translator import engine_overlays_from_data
+    ov = engine_overlays_from_data(_load()["company_raw"], "muddle_through")
+    assert "tax_rate_glide" not in ov
+    assert "stub_tax_rate" not in ov
 
 
 def test_wacc_build_derivation_traces_v6_rows_at_ratified_inputs():

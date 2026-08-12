@@ -248,6 +248,62 @@ def build_wacc_from_inputs(inputs: dict, default_tax: float = 0.30):
     )
 
 
+def tax_bridge_from_data(inputs: dict):
+    """The Tax Bridge as a fully-traceable :class:`Derivation` (workbook Tax Bridge).
+
+    From the yellow-cell inputs (effective rate, per-jurisdiction statutory rates,
+    glide fractions) derives, at V6 granularity: the per-region contributions
+    (D5-D7, weight x statutory where the WEIGHT comes from
+    ``geographic_concentration``), the blended statutory rate (D8), and the
+    per-year applied-tax glide (B12-B16, the effective rate closing the gap to
+    the blended statutory over the horizon). ``None`` if no ``tax_bridge``.
+
+    The glide and D8 were previously STORED in ``engine_overlays``; they are now
+    derived here so a change to any statutory rate flows through automatically.
+    """
+    from vcc_valuations.derivation import DerivationBuilder
+
+    company_raw = inputs.get("company_raw") or {}
+    nb = company_raw.get("normalised_baseline") or {}
+    tb = nb.get("tax_bridge")
+    if not tb:
+        return None
+
+    regions = _geographic_regions(company_raw)
+    rate_by_region = tb["statutory_rate_by_region"]
+    b = DerivationBuilder("tax_bridge")
+
+    contributions = []
+    for i, r in enumerate(regions):
+        geo = r["geo"]
+        weight = r["share_of_revenue"]
+        rate = rate_by_region[geo]
+        contributions.append(
+            b.step(
+                f"D{5 + i}", f"{geo} tax contribution", weight * rate,
+                "revenue_weight * statutory_rate",
+                {"revenue_weight": weight, "statutory_rate": rate},
+                cell=f"D{5 + i}", units="%",
+            )
+        )
+    blended = b.step(
+        "D8", "Blended statutory rate", sum(contributions),
+        "sum of jurisdictional contributions",
+        {f"D{5 + i}": c for i, c in enumerate(contributions)}, cell="D8", units="%",
+    )
+
+    effective = tb["effective_tax_rate"]
+    for i, frac in enumerate(tb["glide_fractions"], start=1):
+        b.step(
+            f"B{11 + i}", f"FY{26 + i} applied tax rate (Y{i})",
+            effective + (blended - effective) * frac,
+            "effective + (blended - effective) * fraction",
+            {"effective": effective, "blended": blended, "fraction": frac},
+            cell=f"B{11 + i}", units="%",
+        )
+    return b.build(result_key="D8")
+
+
 def wacc_build_from_data(inputs: dict):
     """The WACC build as a traceable :class:`Derivation` (workbook WACC Build).
 
@@ -486,6 +542,13 @@ def build_engine_inputs_from_data(inputs: dict, scenario_id: str):
         raise ValueError(f"{company.id}: no revenue_growth_chain for scenario {scenario_id!r}.")
     adjustments_net = equity_bridge_adjustments_net_from_data(company_raw)
 
+    # Applied tax: effective rate (stub) + the derived effective->statutory glide.
+    tax = tax_bridge_from_data(inputs)
+    if tax is None:
+        raise ValueError(f"{company.id}: no tax_bridge.")
+    stub_tax_rate = nb["tax_bridge"]["effective_tax_rate"]
+    tax_rate_glide = [tax[f"B{11 + i}"].value for i in range(1, nb["horizon_years"] + 1)]
+
     rr = nb["equity_bridge_run_rates"]
     net_debt_anchor = financials["derived_metrics"]["net_debt"]                 # §5.3 anchor, 31 Mar 2026
     shares_outstanding = financials["share_statistics"]["shares_outstanding"] / 1_000_000
@@ -520,8 +583,8 @@ def build_engine_inputs_from_data(inputs: dict, scenario_id: str):
         base_ebit_margin=overlays["base_ebit_margin"],
         margin_transformation=overlays["margin_transformation"],
         margin_gas_rolloff=overlays["margin_gas_rolloff"],
-        stub_tax_rate=overlays["stub_tax_rate"],
-        tax_rate_glide=overlays["tax_rate_glide"],
+        stub_tax_rate=stub_tax_rate,
+        tax_rate_glide=tax_rate_glide,
         da_pct_revenue=overlays["da_pct_revenue"],
         capex_pct_stub=overlays["capex_pct_stub"],
         capex_pct=overlays["capex_pct"],
