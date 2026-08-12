@@ -16,8 +16,13 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 ## PLANNED NEXT — two UI features, target = STANDALONE shareable HTML (decided 12 Aug 2026)
 
 Stephen's call: the scenario-interface HTML must be a **standalone, shareable file** — no backend at runtime.
-That decision shapes both features below, because a static file cannot call the Python engine at runtime
-(today the engine runs only at GENERATION time inside `build_cfgs.py`).
+**Goal:** share with Ben + a few select others for feedback, THEN push forward to programming. So this is a
+feedback prototype, not the production architecture. Standalone is the right call for everything PRE-COMPUTED
+(the six scenarios, full analysis, comps, Porter's, Excel export — all generated from the engine at build
+time, so the static file stays downstream of the one source of truth). **Proviso (important): do NOT
+reimplement the engine in the browser to make anything live** — that recreates the dual-source-of-truth
+problem this session killed. The only feature that wants runtime compute is the live user-scenario (#1);
+handle it per the decision in #1 below (build at build time; demo live; service at programming), not a JS port.
 
 **DO #2 FIRST (bounded, capstone of the traceability work): "download EVERYTHING to Excel".**
 - Want: the download button emits a full workbook — all six scenarios, the DCF build, WACC build, Tax
@@ -32,27 +37,29 @@ That decision shapes both features below, because a static file cannot call the 
   the six-scenario roll-out).
 
 **THEN #1 (bigger): user writes their OWN world scenario in free text; the model derives macros → Porter's
-→ subject company → valuation.**
+→ subject company → valuation.** DECIDED 12 Aug 2026 (Stephen) how this is built:
 - Why it's tractable: a scenario in our engine is just a small pack — 4 macro drivers (DM inflation, global
   mining real growth, gas growth, DM GDP) + operating deltas (margin_delta_pp, capex_delta_pp,
   terminal_growth). The six built-ins ARE that pack (dnl.yaml `revenue_growth_chain.by_scenario` +
   `engine_overlays.by_scenario`). A user scenario is "one more by_scenario entry" flowing the identical
   engine path (revenue chain → Porter's offset → overlays → FCFF → per-share + full build-up).
-- Two new pieces for STANDALONE:
-  1. **In-browser compute** — a standalone file can't run the Python engine, so port the FCFF engine +
-     assembler to JS (it's deterministic arithmetic; `fcf_engine.py` ~360 lines) so user scenarios run the
-     REAL math client-side, not just the reduced-form `computeVals`. (Alternative/interim: keep the
-     reduced-form for user scenarios and label it an approximation.)
-  2. **Narrative → macro pack** — turning free text ("protracted war, supply-chain disruption, oil
-     escalation") into the macro/delta pack + a Porter's-force rationale is an LLM step. In a truly offline
-     standalone file this needs runtime model access (a key/service) OR a **guided macro-pack form** as the
-     offline fallback (user sets the drivers with narrative prompts, engine does the rest).
-- Opportunity: user scenarios could be made genuinely **Porter's-responsive** (derive force impacts from
-  the narrative via the impact matrix + translation rules already in translator.py), which is RICHER than
-  the six built-ins (whose company Porter's offset is currently scenario-invariant, −25bps fixed).
-- Honest tension to resolve first thing: "standalone + real engine + free-text" can't all be fully offline.
-  Cleanest v1 = JS engine port (real math, offline) + guided macro-pack form (offline) OR narrative-parse
-  when model access is present.
+- **BUILD IT AT BUILD TIME, in the Python engine layer.** The narrative→macro-pack translation + the
+  engine run happen in the Python/build pipeline, NOT the browser. **Do NOT port the FCFF engine to JS** —
+  a second in-browser engine recreates the multi-source-of-truth problem this entire session eliminated
+  (the UI must stay downstream of the ONE Python engine). This is the standing decision; revisit only with
+  a very good reason.
+- **For the standalone feedback file:** pre-compute one or two ILLUSTRATIVE user-authored scenarios at
+  build time (e.g. Stephen's "protracted war → supply-chain disruption → oil/gas escalation" example) so
+  the shared static file SHOWS the capability — the narrative, the derived macro pack + Porter's rationale,
+  and the resulting per-share + build-up — as worked examples, even though the file itself isn't live-
+  interactive. The self-serve, type-your-own version is demoed LIVE in Cowork (or a short recording) with
+  reviewers, where the real engine + narrative translation run.
+- **For the programming phase:** the live self-serve feature lives behind a thin engine SERVICE (the UI
+  posts the narrative; the server derives the pack via an LLM, runs the engine, returns valuation + trace).
+  That service is reusable production foundation, not throwaway — the natural home for user scenarios.
+- Opportunity: user scenarios can be made genuinely **Porter's-responsive** (derive force impacts from the
+  narrative via the impact matrix + translation rules already in translator.py), RICHER than the six
+  built-ins (whose company Porter's offset is currently scenario-invariant, −25bps fixed).
 
 
 

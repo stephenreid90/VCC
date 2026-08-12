@@ -29,11 +29,19 @@ engine at runtime, which shapes both). Full plan in the WORKING_NOTES "PLANNED N
   download serves it. All six scenarios + DCF/WACC/Tax/Equity builds + comps + Porter's; standing rule 1
   (formulas, yellow-cell Assumptions). Bounded; reuses everything above.
 - THEN — #1 user-written world scenario → macros → Porter's → company → valuation. A scenario is just a
-  small pack (4 macros + 3 deltas) = one more by_scenario entry flowing the same engine path. Standalone
-  needs: (a) a JS port of the FCFF engine so user scenarios run the REAL math in-browser (fcf_engine.py is
-  ~360 lines of pure arithmetic); (b) narrative→macro-pack translation = an LLM step, needs runtime model
-  access OR a guided macro-pack form offline. Opportunity: make it genuinely Porter's-responsive (impact
-  matrix + translation rules already exist) — richer than the six built-ins (fixed −25bps offset).
+  small pack (4 macros + 3 deltas) = one more by_scenario entry flowing the same engine path. DECISION:
+  BUILD IT AT BUILD TIME in the Python engine layer; DO NOT port the engine to JS (a browser engine =
+  second source of truth, the thing we just killed). For the standalone feedback file, pre-compute one or
+  two ILLUSTRATIVE user scenarios at build time (e.g. the "protracted war → oil/gas escalation" example) so
+  the file SHOWS the capability as worked examples; demo the live type-your-own version in Cowork (real
+  engine + narrative translation). At the programming phase the live feature lives behind a thin engine
+  SERVICE (UI posts narrative → server derives pack via LLM, runs engine, returns valuation) — reusable
+  production foundation, not throwaway. Opportunity: make it genuinely Porter's-responsive (impact matrix +
+  translation rules already exist) — richer than the six built-ins (fixed −25bps offset).
+
+STANDALONE = right call for feedback (share with Ben etc.), no impairment to the direction PROVIDED we never
+reimplement the engine in the browser. Everything pre-computed (six scenarios, analysis, comps, Excel) is
+built from the engine and embedded; only live user-scenarios want runtime compute (handled per #1).
 
 Also open (smaller): roll the engine_pack + build-up wiring onto WBC (bank fork, Ke, §15) and CSL (segment
 FCFF, M3; clear the pre-existing 76-error CompanyPositionFile schema mismatch first); per-year P&L margin
