@@ -298,6 +298,149 @@ def engine_overlays_from_data(company_raw: dict, scenario_id: str):
     return overlays.get(scenario_id)
 
 
+def _geographic_regions(company_raw: dict) -> list:
+    """The segment-level geographic-concentration regions (share-of-revenue).
+
+    DNL is single-segment; returns the first segment's
+    ``risk_exposures.geographic_concentration.regions`` list, or ``[]``.
+    """
+    cp = (company_raw or {}).get("company_position") or {}
+    for seg in cp.get("segments") or []:
+        gc = (seg.get("risk_exposures") or {}).get("geographic_concentration") or {}
+        regions = gc.get("regions")
+        if regions:
+            return regions
+    return []
+
+
+def revenue_growth_from_data(inputs: dict, scenario_id: str):
+    """Company nominal revenue growth for a scenario, from the §11 chain.
+
+    Reproduces workbook Assumptions B42 as a DERIVATION rather than a stored
+    scalar (methodology §11 / standing rule 1 — industry baseline and company
+    offset kept as separate rows):
+
+        volume          = mining_beta x mining_real_growth + volume_intercept
+        pricing         = infl_weight x inflation + gas_weight x gas_growth
+                          + pricing_productivity
+        industry_nominal = (1 + volume)(1 + pricing) - 1
+        geo_mix         = DM_weight + EM_weight x EM_premium   (DM/EM weights
+                          derived from the segment geographic_concentration)
+        net_ff_offset   = rivalry + product_mix + new_entrants + other
+        company_nominal = industry_nominal x geo_mix + net_ff_offset
+
+    Returns ``None`` if the company carries no ``revenue_growth_chain`` for the
+    scenario.
+    """
+    company_raw = inputs.get("company_raw") or {}
+    nb = company_raw.get("normalised_baseline") or {}
+    chain = (nb.get("revenue_growth_chain") or {}).get(scenario_id)
+    if not chain:
+        return None
+
+    ib = chain["industry_baseline"]
+    volume = ib["volume_mining_beta"] * ib["mining_real_growth"] + ib["volume_intercept"]
+    pricing = (
+        ib["inflation_weight"] * ib["inflation"]
+        + ib["gas_weight"] * ib["gas_price_growth"]
+        + ib["pricing_productivity"]
+    )
+    industry_nominal = (1.0 + volume) * (1.0 + pricing) - 1.0
+
+    co = chain["company_offset"]
+    developed = set(co["developed_market_regions"])
+    regions = _geographic_regions(company_raw)
+    dm_weight = sum(r["share_of_revenue"] for r in regions if r["geo"] in developed)
+    em_weight = sum(r["share_of_revenue"] for r in regions if r["geo"] not in developed)
+    geo_mix = dm_weight + em_weight * co["em_growth_premium"]
+
+    ff = co["five_forces_offset"]
+    net_offset = ff["rivalry"] + ff["product_mix"] + ff["new_entrants"] + ff["other"]
+
+    return industry_nominal * geo_mix + net_offset
+
+
+def build_engine_inputs_from_data(inputs: dict, scenario_id: str):
+    """Assemble the whole ``FcfEngineInputs`` for one company x scenario from data.
+
+    This is the M2 payload: it composes the already-data-driven pieces
+    (``build_wacc_from_inputs``, ``engine_overlays_from_data``,
+    ``equity_bridge_adjustments_net_from_data``, ``revenue_growth_from_data``)
+    with the migrated valuation base / timing scalars and the equity-bridge
+    run-rates, so the engine input carries ZERO hand-typed constants — every
+    field traces to a data file. The net-debt anchor and issued share count come
+    from the §5.3-anchored ``data/financials/<id>.yaml`` (31 Mar 2026), not
+    re-typed here.
+
+    DNL (single-segment industrial, WACC discipline) only for now; segment FCFF
+    (CSL / M3) is a separate assembler.
+    """
+    from vcc_valuations.dcf.fcf_engine import EquityBridge, FcfEngineInputs
+
+    company = inputs["company"]
+    company_raw = inputs.get("company_raw") or {}
+    financials = inputs["financials"]
+    nb = company_raw.get("normalised_baseline") or {}
+
+    wacc = build_wacc_from_inputs(inputs)
+    if wacc is None:
+        raise ValueError(
+            f"{company.id}: no data-driven WACC (build_engine_inputs_from_data "
+            "handles WACC-discipline companies only; banks / CSL use Ke / M3)."
+        )
+    overlays = engine_overlays_from_data(company_raw, scenario_id)
+    if overlays is None:
+        raise ValueError(f"{company.id}: no engine_overlays for scenario {scenario_id!r}.")
+    revenue_growth = revenue_growth_from_data(inputs, scenario_id)
+    if revenue_growth is None:
+        raise ValueError(f"{company.id}: no revenue_growth_chain for scenario {scenario_id!r}.")
+    adjustments_net = equity_bridge_adjustments_net_from_data(company_raw)
+
+    rr = nb["equity_bridge_run_rates"]
+    net_debt_anchor = financials["derived_metrics"]["net_debt"]                 # §5.3 anchor, 31 Mar 2026
+    shares_outstanding = financials["share_statistics"]["shares_outstanding"] / 1_000_000
+    reporting_ccy = financials.get("reporting_currency")
+    functional_ccy = (company_raw.get("company_position") or {}).get(
+        "functional_currency", reporting_ccy
+    )
+    # Single reporting currency for DNL (AUD functional == AUD reporting); FX is
+    # applied only at the per-share line and is 1.0 when the two agree.
+    fx_rate = 1.0 if functional_ccy == reporting_ccy else 1.0
+
+    bridge = EquityBridge.from_anchor(
+        net_debt_anchor=net_debt_anchor,
+        period_a_years=rr["period_a_days"] / 365.0,
+        operating_cash_flow_run_rate=rr["operating_cash_flow_run_rate"],
+        capex_run_rate=rr["capex_run_rate"],
+        equity_bridge_adjustments_net=adjustments_net,
+        lease_liabilities=rr["lease_liabilities"],
+        shares_outstanding=shares_outstanding,
+        fx_rate=fx_rate,
+        market_reference_price=rr["market_reference_price"],
+    )
+
+    return FcfEngineInputs(
+        company_id=company.id,
+        scenario_id=scenario_id,
+        functional_currency=functional_ccy,
+        horizon_years=nb["horizon_years"],
+        stub_years=nb["stub_years"],
+        base_year_revenue=nb["base_year_revenue"],
+        revenue_growth=revenue_growth,
+        base_ebit_margin=overlays["base_ebit_margin"],
+        margin_transformation=overlays["margin_transformation"],
+        margin_gas_rolloff=overlays["margin_gas_rolloff"],
+        stub_tax_rate=overlays["stub_tax_rate"],
+        tax_rate_glide=overlays["tax_rate_glide"],
+        da_pct_revenue=overlays["da_pct_revenue"],
+        capex_pct_stub=overlays["capex_pct_stub"],
+        capex_pct=overlays["capex_pct"],
+        wacc=wacc,
+        terminal_growth=overlays["terminal_growth"],
+        equity_bridge=bridge,
+    )
+
+
 # ----------------------------------------------------------------------
 # Translator
 # ----------------------------------------------------------------------

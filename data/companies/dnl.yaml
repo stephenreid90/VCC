@@ -309,6 +309,91 @@ normalised_baseline:
     statement TTM notes above).
 
 
+  # --- Valuation base and timing (workbook Assumptions B6, B9, B78; migrated
+  # from the hand-typed tests/dcf/golden/dnl_mt_inputs.py on 2026-08-12). The
+  # normalised continuing-ops base, the explicit horizon, and the stub fraction
+  # (valuation date -> first FY-end). ---
+  base_year_revenue: 3400.0
+  base_year_revenue_rationale: >
+    Normalised continuing-operations base (workbook B9). Excludes the residual
+    Phosphate Hill / demerger revenue carried in the TTM-to-31-Mar-2026 reported
+    3,905.4 (data/financials/dnl.yaml) — that basis question was ruled on: 3,400
+    is the clean forward base for the surviving explosives business; 3,905 mixes
+    in separated activity and 4,139 is an FY27 figure, not a base.
+  horizon_years: 5
+  horizon_years_rationale: >
+    Five explicit forecast years (workbook B78) before the Gordon-growth
+    terminal. Short enough that structural shifts (e.g. §9.7 demographics) sit
+    beyond it; long enough to carry the margin-transformation and gas-roll-off
+    glides to steady state.
+  stub_years: 0.351
+  stub_years_rationale: >
+    Fractional stub from the valuation date to the first fiscal year-end
+    (workbook B6; ~128 days / 365). Revenue for the stub is base-year revenue
+    x this fraction; mid-period discounting measures the stub from the valuation
+    date (methodology §7 / engine mechanics).
+
+  # --- Equity-bridge run-rates (workbook Assumptions B84, B86, B87, B108, B110;
+  # migrated from the hand-typed golden on 2026-08-12). The Period-A net-debt
+  # walk inputs (methodology §7), the AASB-16 lease line and the market
+  # reference. The net-debt anchor itself (1,260.8 @ 31 Mar 2026) and the issued
+  # share count (1,770m) already live in data/financials/dnl.yaml under the §5.3
+  # anchor, so they are NOT duplicated here. ---
+  equity_bridge_run_rates:
+    period_a_days: 55                     # B84: anchor (31 Mar 2026) -> valuation date, in days
+    operating_cash_flow_run_rate: 500.0   # B86: OCF generated over Period A (reduces net debt)
+    capex_run_rate: 256.0                 # B87: capex paid over Period A (raises net debt)
+    lease_liabilities: 194.3              # B108: AASB 16, Approach A. A later date than the
+                                          #   211.5 FY25-close capital_lease_obligations in financials.
+    market_reference_price: 3.61          # B110: Wall St target (share price at anchor 3.6061)
+
+  # --- Revenue-growth chain, scenario-keyed (methodology §11; migrated from the
+  # hand-typed tests/dcf/golden/dnl_mt_inputs.py on 2026-08-12). Company nominal
+  # revenue growth (workbook B42) = industry_nominal x geo_mix + net Five-Forces
+  # offset. The industry baseline and the company offset are kept as SEPARATE
+  # rows per standing rule 1 / §11 (industry-archetype baseline + company-position
+  # offset explicit; the company figure derived, never direct-input).
+  #
+  # NOTE on layering: the industry_baseline coefficients below are, in principle,
+  # archetype-level (industrial_explosives) and the two macro drivers
+  # (mining_real_growth, inflation, gas_price_growth) are scenario-level. They
+  # sit here for now because (a) the strict IndustryArchetypeFile schema forbids
+  # extra keys, and (b) these Muddle-Through macro values are the DNL v6 workbook's
+  # own Assumptions-sheet figures and DIFFER from data/scenarios/muddle_through.yaml
+  # (world GDP 2.3%, CPI 3.0%) — reconciling the workbook basis to the published
+  # scenario macros is separate, later work. Promoting industry_baseline to the
+  # archetype file (with a schema field) is a follow-up. ---
+  revenue_growth_chain:
+    muddle_through:
+      # Industry baseline (workbook B18-B28). Volume = explosives-volume beta to
+      # mining real growth + a structural intercept; pricing = a weighted blend of
+      # general inflation and gas-price growth plus a productivity contribution.
+      # industry_nominal = (1 + volume) x (1 + pricing) - 1.
+      industry_baseline:
+        volume_mining_beta: 1.15          # B23: explosives volume beta to mining real growth
+        mining_real_growth: 0.025         # B19: scenario mining real-output growth (MT workbook basis)
+        volume_intercept: 0.004           # B24: structural volume floor
+        inflation: 0.025                  # B18: general inflation (MT workbook basis)
+        inflation_weight: 0.7             # B26: share of pricing tied to general inflation
+        gas_price_growth: 0.02            # B20: gas-price growth (MT workbook basis)
+        gas_weight: 0.3                   # B27: share of pricing tied to gas
+        pricing_productivity: 0.005       # B28: productivity contribution to pricing
+      # Company offset (workbook B33-B40). Geo-mix scales industry nominal for
+      # DNL's developed/emerging revenue split, DERIVED from the segment's
+      # geographic_concentration (United States + Australia = developed; Rest of
+      # World = emerging), with an EM growth premium. The net Five-Forces offset
+      # carries DNL's competitive-position deltas verbatim from the workbook.
+      company_offset:
+        em_growth_premium: 1.3            # B35: EM markets grow at 1.3x the DM rate
+        developed_market_regions:         # classifies geographic_concentration into DM vs EM
+          - United States
+          - Australia
+        five_forces_offset:               # B37-B40 (net -0.0025)
+          rivalry: -0.003
+          product_mix: -0.001
+          new_entrants: 0.0015
+          other: 0.0
+
   # Net-debt override
   net_debt: 1300.0
   net_debt_rationale: >

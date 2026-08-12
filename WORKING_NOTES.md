@@ -14,6 +14,63 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 
 ---
 
+## CHAT HANDOVER — 12 August 2026 (M2 — full engine input assembled from data; DNL MT reproduces 3.073 with ZERO hand-typed constants)
+
+The M2 assembly milestone for DNL Muddle Through: `translator.build_engine_inputs_from_data(inputs, scenario_id)`
+composes the WHOLE `FcfEngineInputs` from the YAML files, so the ratified β-1.10 valuation
+(**3.073/share, EV 7,009.2, WACC 8.8772%**) now reproduces with no hand-typed constant anywhere.
+Every field traces to a data file. Pushed. **Suite 76 → 80.**
+
+1. **`data/companies/dnl.yaml` `normalised_baseline`** gained the last three hand-typed groups
+   (migrated from `tests/dcf/golden/dnl_mt_inputs.py`, all with workbook cell refs):
+   (a) valuation base / timing — `base_year_revenue` 3400 (B9, normalised continuing-ops base, ≠ the
+   3,905 TTM), `horizon_years` 5 (B78), `stub_years` 0.351 (B6);
+   (b) `equity_bridge_run_rates` — `period_a_days` 55 (B84), `operating_cash_flow_run_rate` 500 (B86),
+   `capex_run_rate` 256 (B87), `lease_liabilities` 194.3 (B108, a later date than the 211.5 FY25-close
+   in financials), `market_reference_price` 3.61 (B110). Net-debt anchor 1,260.8 and shares 1,770m are
+   NOT duplicated — they come from the §5.3-anchored `data/financials/dnl.yaml`;
+   (c) `revenue_growth_chain.muddle_through` (§11) — split into SEPARATE rows per standing rule 1:
+   `industry_baseline` (volume: mining_beta 1.15 / mining_real 0.025 / intercept 0.004; pricing:
+   infl 0.025 ×0.7 + gas 0.02 ×0.3 + productivity 0.005) and `company_offset` (em_premium 1.3,
+   `developed_market_regions` [US, Australia], the net Five-Forces offset −0.003/−0.001/+0.0015/0).
+2. **`translator.revenue_growth_from_data(inputs, scenario_id)`** reproduces workbook B42 as a
+   DERIVATION (industry_nominal × geo_mix + net_offset), not a stored scalar. Geo-mix is derived from
+   the segment's `geographic_concentration` (US+AU = DM ~90%, RoW = EM ~10%) × em_premium — a change to
+   the concentration data moves the chain (test pins this). **`build_engine_inputs_from_data`** then
+   assembles the full input from the four data-driven pieces (WACC, overlays, revenue chain, bridge
+   adjustments) + the migrated scalars/run-rates. Ties the golden bit-for-bit: revenue_growth
+   0.061548876…, net_debt_at_valuation 1,224.03, adjustments 151.65.
+3. **New `tests/dcf/test_dnl_mt_from_data.py` (4 tests):** end-to-end 3.073/EV/WACC from data;
+   revenue-chain derivation ties `_revenue_growth_chain()` to 1e-12; field-by-field match to the golden
+   (β excepted — data 1.10, golden 0.95); geo-mix responds to a concentration perturbation.
+4. **Ratchet:** 15 new coincidental collisions (500, 1.3, 0.7, 1.15, 256 vs generic literals in the
+   generator / estimate_emrp / stub — NOT the engine reading a migrated value). Baseline regenerated
+   123 → 138 via `scripts/ssot_lint_baseline.py`; diff verified to be exactly those 15 additions.
+
+**Layering note / follow-up.** The `revenue_growth_chain.industry_baseline` coefficients are in
+principle archetype-level and the two macro drivers scenario-level, but they sit in `dnl.yaml` for now
+because (a) `IndustryArchetypeFile` is `extra="forbid"` (strict), so promoting them needs a schema
+field, and (b) the workbook's MT macro values (mining_real 2.5%, infl 2.5%, gas 2.0%) DIFFER from
+`data/scenarios/muddle_through.yaml` (world GDP 2.3%, CPI 3.0%) — reconciling the workbook basis to the
+published scenario macros is separate, later work. Promoting `industry_baseline` to the archetype file
+(with a schema field) is the clean follow-up. Stephen approved keeping the block in the loosely-typed
+company layer this slice (option 1-alt).
+
+**`dnl_mt_inputs.py` is now oracle-only.** Nothing in the production path imports it: it survives as the
+cross-check in `test_dnl_mt_from_data.py` and as the β-0.95 engine-mechanics oracle in
+`test_e2e_dnl_mt.py` (3.484). The whole DNL-MT production number is now data-driven end to end.
+
+**Next.** (1) The OTHER FIVE DNL scenarios — each needs its own `engine_overlays[scenario]` +
+`revenue_growth_chain[scenario]` block, then `build_engine_inputs_from_data` produces all six from data;
+worth a shared derivation check against the generator's calibrated per-share set. (2) Then M3 — segment
+FCFF for CSL (a separate assembler; `build_engine_inputs_from_data` is single-segment / WACC-discipline
+only, raises for banks / CSL). (3) Aside still open (pre-existing): CSL `company_position` doesn't
+validate against `CompanyPositionFile` (76 schema mismatches) — worth a pass before CSL hits the engine.
+(4) Follow-up: promote `industry_baseline` to the archetype schema and reconcile the workbook macro
+basis to the scenario file.
+
+---
+
 ## CHAT HANDOVER — 11 August 2026 (f) (M2 — per-year engine overlays data-driven)
 
 Final M2 slice this session: migrated the Muddle Through per-year overlays out of the hand-typed
