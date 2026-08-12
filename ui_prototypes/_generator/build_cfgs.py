@@ -669,6 +669,10 @@ csl["footnote"] = csl["footnote"].replace(
 csl["topnote"] = csl["topnote"].replace(
     "all six scenarios calibrated (v4 / comparison v2)",
     "all six scenarios computed by the production segment-FCFF engine (M3)")
+# full audited CSL segment-FCFF workbook (engine-sourced), base64-embedded for the download
+from engine_workbook import build_csl_workbook_bytes as _cwbk
+csl["xlsxB64"] = _b64.b64encode(_cwbk(csl)).decode("ascii")
+csl["xlsxName"] = "CSL_full_valuation_workbook.xlsx"
 # ===== end CSL SSOT block =====
 json.dump({"dnl":dnl,"wbc":wbc,"csl":csl}, open(_CFGP,'w'), ensure_ascii=False)
 print("cfgs.json written")

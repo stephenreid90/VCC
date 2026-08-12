@@ -14,6 +14,7 @@ del /q "%~dp0.git\*.lock" 2>nul
 REM engine_workbook.py standalone-run artifact (gitignored; only created when the module is run directly)
 del /q "%~dp0ui_prototypes\_generator\_dnl_full.xlsx" 2>nul
 del /q "%~dp0ui_prototypes\_generator\_wbc_full.xlsx" 2>nul
+del /q "%~dp0ui_prototypes\_generator\_csl_full.xlsx" 2>nul
 REM stray loose-object temp files git push could not unlink under the mount
 for /d %%D in ("%~dp0.git\objects\*") do del /q "%%D\tmp_obj_*" 2>nul
 del /q "%~dp0.git\objects\pack\tmp_*" 2>nul

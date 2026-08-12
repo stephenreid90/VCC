@@ -1170,6 +1170,214 @@ def build_wbc_workbook_bytes(cfg=None):
     buf = io.BytesIO(); wb.save(buf); return buf.getvalue()
 
 
+# ======================================================================
+# CSL segment-FCFF workbook (M3): bottom-up multi-segment FCFF, Ke discount
+# ======================================================================
+
+def build_csl_workbook_bytes(cfg=None):
+    """Full audited CSL segment-FCFF workbook, formula-linked, tying the engine (MT USD 134.52 / AUD 203.83)."""
+    from vcc_valuations.translator import (
+        load_inputs as _li, resolve_normalised_baseline as _rnb,
+        build_segment_inputs_from_data as _sgi,
+    )
+    if cfg is None:
+        import json as _json
+        _cfp = _ROOT / "ui_prototypes" / "_generator" / "cfgs_gen.json"
+        cfg = _json.load(open(_cfp))["csl"] if _cfp.exists() else {}
+    inp = _li(_ROOT, "muddle_through", "biopharmaceuticals", "csl")
+    nb = inp["company_raw"]["normalised_baseline"]; sf = nb["segment_fcff"]
+    coe = _rnb(inp)["cost_of_equity_build"]
+    fin_segs = inp["financials"]["segments"]
+    corp = sf["corporate"]; drv = sf["drivers"]; anch = sf["anchors"]
+    SC = sf["by_scenario"]
+    SIDS = [sid for sid, _ in SCEN]
+    SEGS = [(s["segment"], s["segment"].split("_")[-1], s["fy25_revenue"], s["fy25_or_margin"]) for s in fin_segs]
+    YRS = ["FY25", "FY26", "FY27", "FY28", "FY29", "FY30", "FY31"]  # index 0..6
+
+    wb = Workbook(); wb.calculation.fullCalcOnLoad = True
+    R = {}
+
+    # ---------------- Assumptions ----------------
+    ws = wb.active; ws.title = "Assumptions"; ws.sheet_properties.tabColor = "FFD966"
+    r = [1]
+    def head(t): ws.cell(r[0], 1, t).font = HDR; r[0] += 1
+    def sub(t): ws.cell(r[0], 1, t).font = SUB; r[0] += 1
+    def note(t): ws.cell(r[0], 1, t).font = NOTE; r[0] += 1
+    def line(label, value, key, fmt=None):
+        ws.cell(r[0], 1, label); c = ws.cell(r[0], 2, value); c.fill = YELLOW; c.font = BLUEFONT
+        if fmt: c.number_format = fmt
+        R[key] = f"'Assumptions'!$B${r[0]}"; r[0] += 1
+    head("CSL — Assumptions (yellow cells are the only inputs; segment FCFF / M3)")
+    note("Every other sheet links here by formula. Sourced from the production segment engine's data.")
+    r[0] += 1
+    sub("Cost of equity (single Ke; applied to FCFF, no WACC)")
+    line("Risk-free rate Rf", coe["risk_free_rate"], "rf", PCT2)
+    line("Equity risk premium ERP", coe["equity_risk_premium"], "erp", PCT2)
+    line("Beta (peer-triangulated)", coe["beta"], "beta", NUM1 + "0")
+    r[0] += 1
+    sub("Shared drivers & anchors")
+    line("Capex / revenue", drv["capex_pct_revenue"], "capex", PCT2)
+    line("D&A / revenue", drv["da_pct_revenue"], "da", PCT2)
+    line("Terminal capex / revenue", drv["terminal_capex_pct_revenue"], "tcapex", PCT2)
+    line("Working-capital change / revenue change", drv["wc_change_pct_revenue_change"], "wc", PCT2)
+    line("Corporate / unallocated FY25", corp["unallocated_fy25"], "corp0", NUM0)
+    line("Corporate growth p.a.", corp["unallocated_growth"], "corpg", PCT2)
+    line("Net debt at anchor", anch["net_debt"], "nd", NUM0)
+    line("Restructuring cash to come", anch["restructuring_cash_to_come"], "restr", NUM0)
+    line("Shares outstanding (m)", anch["shares_outstanding_m"], "shares", NUM1)
+    line("FX (AUD per USD)", sf["fx_aud_per_usd"], "fx", NUM1 + "000")
+    line("Market price (AUD)", cfg.get("market", 0), "mkt", NUM1 + "0")
+    r[0] += 1
+    sub("Segment FY25 anchors (USD m; operating-result margin)")
+    for sid, stem, rev0, marg0 in SEGS:
+        line(f"{stem.title()} FY25 revenue", rev0, f"rev0:{stem}", NUM0)
+        line(f"{stem.title()} FY25 OR margin", marg0, f"marg0:{stem}", PCT2)
+    r[0] += 1
+    # per-scenario driver tables (scenarios as columns C..H)
+    def scen_hdr():
+        hr = r[0]; ws.cell(hr, 1, "Driver").font = BOLD
+        for j, (sid, nm) in enumerate(SCEN):
+            cc = ws.cell(hr, 3 + j, nm); cc.font = BOLD; cc.alignment = Alignment(horizontal="right", wrap_text=True)
+        r[0] += 1
+    def scen_row(label, key, fn, fmt):
+        ws.cell(r[0], 1, label)
+        for j, sid in enumerate(SIDS):
+            c = ws.cell(r[0], 3 + j, fn(sid)); c.fill = YELLOW; c.font = BLUEFONT; c.number_format = fmt
+            R[f"{key}:{sid}"] = f"'Assumptions'!${_col(3 + j)}${r[0]}"
+        r[0] += 1
+    sub("Behring revenue growth path by scenario (FY26..FY31)")
+    scen_hdr()
+    for y in range(6):
+        scen_row(f"  Behring growth {YRS[y+1]}", f"behring_g{y}",
+                 lambda sid, y=y: SC[sid]["behring_growth"][y], PCT2)
+    sub("Segment CAGR / margin uplift / terminal by scenario")
+    scen_hdr()
+    scen_row("Seqirus revenue CAGR", "seqirus_cagr", lambda sid: SC[sid]["seqirus_cagr"], PCT2)
+    scen_row("Vifor revenue CAGR", "vifor_cagr", lambda sid: SC[sid]["vifor_cagr"], PCT2)
+    scen_row("Behring margin uplift (cum FY31)", "up_behring", lambda sid: SC[sid]["behring_margin_uplift"], PCT2)
+    scen_row("Seqirus margin uplift (cum FY31)", "up_seqirus", lambda sid: SC[sid]["seqirus_margin_uplift"], PCT2)
+    scen_row("Vifor margin uplift (cum FY31)", "up_vifor", lambda sid: SC[sid]["vifor_margin_uplift"], PCT2)
+    scen_row("Terminal EBIT margin", "tmargin", lambda sid: SC[sid]["terminal_ebit_margin"], PCT2)
+    scen_row("Terminal growth g", "tg", lambda sid: SC[sid]["terminal_growth"], PCT2)
+    scen_row("Effective tax rate", "tax", lambda sid: SC[sid]["tax_rate"], PCT2)
+    ws.column_dimensions["A"].width = 42
+    for cc in "BCDEFGH": ws.column_dimensions[cc].width = 13
+
+    # ---------------- Ke build ----------------
+    ws = wb.create_sheet("Ke build")
+    ws.cell(1, 1, "Cost of equity (applied to FCFF; no WACC)").font = HDR
+    ws.cell(3, 1, "Re = Rf + beta x ERP"); c = ws.cell(3, 2, f"={R['rf']}+{R['beta']}*{R['erp']}"); c.number_format = PCT3; c.font = BOLD
+    R["ke"] = "'Ke build'!$B$3"; ws.column_dimensions["A"].width = 26
+
+    # ---------------- Segment FCFF (scenarios as columns) ----------------
+    ws = wb.create_sheet("Segment FCFF")
+    ws.cell(1, 1, "Bottom-up segment FCFF, six scenarios (USD m). Revenue x margin -> group EBIT -> unlevered FCFF -> per share.").font = HDR
+    hr = 3; ws.cell(hr, 1, "Line").font = BOLD
+    COLS = [_col(3 + j) for j in range(6)]
+    for j, (sid, nm) in enumerate(SCEN):
+        ws.cell(hr, 3 + j, nm).font = BOLD
+    rr = [hr + 1]; m = {}
+    def band(t): ws.cell(rr[0], 1, t).font = SUB; rr[0] += 1
+    def row(key, label, fmt, fn, bold=False):
+        ws.cell(rr[0], 1, label)
+        if bold: ws.cell(rr[0], 1).font = BOLD
+        for j, sid in enumerate(SIDS):
+            c = ws.cell(rr[0], 3 + j, fn(sid, COLS[j], j)); c.number_format = fmt
+            if bold: c.font = BOLD
+        m[key] = rr[0]; rr[0] += 1
+    # per-segment revenue (FY25..FY31)
+    for sid_seg, stem, rev0, marg0 in SEGS:
+        band(f"{stem.title()} revenue")
+        for p in range(7):
+            def f_rev(s, c, j, p=p, stem=stem):
+                if p == 0: return f"={R[f'rev0:{stem}']}"
+                if stem == "behring":
+                    g = R[f'behring_g{p-1}:{s}']
+                else:
+                    g = R[f'{stem}_cagr:{s}']
+                return f"={c}{m[f'{stem}_rev{p-1}']}*(1+{g})"
+            row(f"{stem}_rev{p}", f"  {YRS[p]}", NUM0, f_rev)
+    # per-segment operating result (rev x margin-glide)
+    for sid_seg, stem, rev0, marg0 in SEGS:
+        band(f"{stem.title()} operating result")
+        for p in range(7):
+            def f_or(s, c, j, p=p, stem=stem):
+                marg = f"({R[f'marg0:{stem}']}+{R[f'up_{stem}:{s}']}*{p}/6)"
+                return f"={c}{m[f'{stem}_rev{p}']}*{marg}"
+            row(f"{stem}_or{p}", f"  {YRS[p]}", NUM0, f_or)
+    # group rollup
+    band("Group")
+    for p in range(7):
+        row(f"grev{p}", f"  Total revenue {YRS[p]}", NUM0,
+            lambda s, c, j, p=p: "=" + "+".join(f"{c}{m[f'{st[1]}_rev{p}']}" for st in SEGS))
+    for p in range(7):
+        row(f"gor{p}", f"  Segment OR {YRS[p]}", NUM0,
+            lambda s, c, j, p=p: "=" + "+".join(f"{c}{m[f'{st[1]}_or{p}']}" for st in SEGS))
+    for p in range(7):
+        row(f"corp{p}", f"  Corporate {YRS[p]}", NUM0,
+            lambda s, c, j, p=p: f"={R['corp0']}*(1+{R['corpg']})^{p}")
+    for p in range(7):
+        row(f"ebit{p}", f"  Group EBIT {YRS[p]}", NUM0,
+            lambda s, c, j, p=p: f"={c}{m[f'gor{p}']}+{c}{m[f'corp{p}']}")
+    # FCFF FY26..FY31 (p=1..6)
+    band("Free cash flow to firm (FY26..FY31)")
+    for p in range(1, 7):
+        def f_fcff(s, c, j, p=p):
+            nopat = f"{c}{m[f'ebit{p}']}*(1-{R[f'tax:{s}']})"
+            da = f"{c}{m[f'grev{p}']}*{R['da']}"
+            capex = f"{c}{m[f'grev{p}']}*{R['capex']}"
+            wc = f"({c}{m[f'grev{p}']}-{c}{m[f'grev{p-1}']})*{R['wc']}"
+            return f"={nopat}+{da}-{capex}-{wc}"
+        row(f"fcff{p}", f"  FCFF {YRS[p]}", NUM1, f_fcff)
+    # discount + PV (FY27..FY31 explicit)
+    for p in range(2, 7):
+        mt = p - 1.5
+        row(f"pv{p}", f"  PV FCFF {YRS[p]}", NUM1,
+            lambda s, c, j, p=p, mt=mt: f"={c}{m[f'fcff{p}']}/(1+{R['ke']})^{mt}")
+    row("pvexp", "PV explicit (FY27-FY31)", NUM1,
+        lambda s, c, j: "=" + "+".join(f"{c}{m[f'pv{p}']}" for p in range(2, 7)), bold=True)
+    # terminal
+    row("tfcff", "Terminal FCFF", NUM1,
+        lambda s, c, j: f"={c}{m['grev6']}*({R[f'tmargin:{s}']}*(1-{R[f'tax:{s}']})+{R['da']}-{R['tcapex']}-{R[f'tg:{s}']}*{R['wc']})*(1+{R[f'tg:{s}']})")
+    row("tv", "Terminal value", NUM0,
+        lambda s, c, j: f"={c}{m['tfcff']}/({R['ke']}-{R[f'tg:{s}']})")
+    row("pvtv", "PV terminal", NUM0,
+        lambda s, c, j: f"={c}{m['tv']}/(1+{R['ke']})^5")
+    row("ev", "Enterprise value", NUM0,
+        lambda s, c, j: f"={c}{m['pvexp']}+{c}{m['pvtv']}", bold=True)
+    row("eq", "Equity value (less net debt, restructuring)", NUM0,
+        lambda s, c, j: f"={c}{m['ev']}-{R['nd']}-{R['restr']}", bold=True)
+    row("vusd", "Value per share USD", NUM1 + "00",
+        lambda s, c, j: f"={c}{m['eq']}/{R['shares']}", bold=True)
+    row("vaud", "Value per share AUD", NUM1 + "00",
+        lambda s, c, j: f"={c}{m['vusd']}*{R['fx']}", bold=True)
+    for j, sid in enumerate(SIDS):
+        R[f"vusd:{sid}"] = f"'Segment FCFF'!{COLS[j]}{m['vusd']}"
+        R[f"vaud:{sid}"] = f"'Segment FCFF'!{COLS[j]}{m['vaud']}"
+        R[f"ev:{sid}"] = f"'Segment FCFF'!{COLS[j]}{m['ev']}"
+    ws.column_dimensions["A"].width = 40
+    for cc in "CDEFGH": ws.column_dimensions[cc].width = 12
+
+    # ---------------- Scenarios summary ----------------
+    ws = wb.create_sheet("Scenarios")
+    ws.cell(1, 1, "Scenario summary — value per share (links to Segment FCFF)").font = HDR
+    hr = 3
+    for j, t in enumerate(["Scenario", "USD/share", "AUD/share", "EV (USD m)", "vs market"]):
+        ws.cell(hr, 1 + j, t).font = BOLD
+    rr2 = hr + 1
+    for sid, nm in SCEN:
+        ws.cell(rr2, 1, nm)
+        ws.cell(rr2, 2, f"={R[f'vusd:{sid}']}").number_format = NUM1 + "00"
+        ws.cell(rr2, 3, f"={R[f'vaud:{sid}']}").number_format = NUM1 + "00"
+        ws.cell(rr2, 4, f"={R[f'ev:{sid}']}").number_format = NUM0
+        ws.cell(rr2, 5, f"={R[f'vaud:{sid}']}/{R['mkt']}-1").number_format = PCT2
+        rr2 += 1
+    ws.column_dimensions["A"].width = 26
+    for cc in "BCDE": ws.column_dimensions[cc].width = 13
+
+    buf = io.BytesIO(); wb.save(buf); return buf.getvalue()
+
+
 if __name__ == "__main__":
     data = build_dnl_workbook_bytes()
     out = _ROOT / "ui_prototypes" / "_generator" / "_dnl_full.xlsx"
@@ -1179,3 +1387,7 @@ if __name__ == "__main__":
     wout = _ROOT / "ui_prototypes" / "_generator" / "_wbc_full.xlsx"
     wout.write_bytes(wdata)
     print("wrote", wout, len(wdata), "bytes")
+    cdata = build_csl_workbook_bytes()
+    cout = _ROOT / "ui_prototypes" / "_generator" / "_csl_full.xlsx"
+    cout.write_bytes(cdata)
+    print("wrote", cout, len(cdata), "bytes")
