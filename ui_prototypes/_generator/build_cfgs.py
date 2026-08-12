@@ -594,6 +594,10 @@ wbc["footnote"] = wbc["footnote"].replace(
     "Engine-computed central case: WBC Muddle Through AUD %.2f" % _wbase)
 wbc["topnote"] = wbc["topnote"].replace(
     "all six scenarios calibrated (v3)", "all six scenarios computed by the production bank engine (\u00a715)")
+# full audited WBC bank workbook (engine-sourced), base64-embedded for the standalone download
+from engine_workbook import build_wbc_workbook_bytes as _wwbk
+wbc["xlsxB64"] = _b64.b64encode(_wwbk(wbc)).decode("ascii")
+wbc["xlsxName"] = "WBC_full_valuation_workbook.xlsx"
 # ===== end WBC SSOT block =====
 json.dump({"dnl":dnl,"wbc":wbc,"csl":csl}, open(_CFGP,'w'), ensure_ascii=False)
 print("cfgs.json written")

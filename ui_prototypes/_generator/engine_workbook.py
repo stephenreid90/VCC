@@ -857,8 +857,325 @@ def build_dnl_workbook_bytes(cfg=None):
     return b.to_bytes()
 
 
+# ======================================================================
+# WBC bank workbook (methodology §15: residual-income / DDM, no EV bridge)
+# ======================================================================
+
+def build_wbc_workbook_bytes(cfg=None):
+    """Full audited WBC bank workbook, formula-linked, tying the bank engine (MT 30.03)."""
+    import beta_data as _bd
+    from vcc_valuations.translator import (
+        load_inputs as _li, resolve_normalised_baseline as _rnb,
+        build_bank_inputs_from_data as _bbi,
+    )
+    from vcc_valuations.dcf.bank_engine import BankEngine as _BE
+
+    if cfg is None:
+        import json as _json
+        _cfp = _ROOT / "ui_prototypes" / "_generator" / "cfgs_gen.json"
+        cfg = _json.load(open(_cfp))["wbc"] if _cfp.exists() else {}
+    inp = _li(_ROOT, "muddle_through", "australian_major_banks", "wbc")
+    nb = inp["company_raw"]["normalised_baseline"]
+    bb = nb["bank_build"]
+    coe = _rnb(inp)["cost_of_equity_build"]
+    chain = bb["aiea_nim_chain"]; shared = chain["shared"]
+    ov = bb["overlays"]; base = ov["baseline"]
+    anchors = bb["balance_sheet_anchors"]; drv = bb["forecast_drivers"]
+    income = bb["income_anchors_1h26"]; timing = bb["timing"]
+
+    wb = Workbook()
+    wb.calculation.fullCalcOnLoad = True
+    R = {}
+    MULT = '0.0"x"'
+
+    # ---------------- Assumptions ----------------
+    ws = wb.active; ws.title = "Assumptions"; ws.sheet_properties.tabColor = "FFD966"
+    r = [1]
+    def head(t): ws.cell(r[0], 1, t).font = HDR; r[0] += 1
+    def sub(t): ws.cell(r[0], 1, t).font = SUB; r[0] += 1
+    def note(t): ws.cell(r[0], 1, t).font = NOTE; r[0] += 1
+    def line(label, value, key, fmt=None):
+        ws.cell(r[0], 1, label)
+        c = ws.cell(r[0], 2, value); c.fill = YELLOW; c.font = BLUEFONT
+        if fmt: c.number_format = fmt
+        R[key] = f"'Assumptions'!$B${r[0]}"; r[0] += 1
+    head("WBC — Assumptions (yellow cells are the only inputs; bank archetype §15)")
+    note("Every other sheet links here by formula. Sourced from the production bank engine's data.")
+    r[0] += 1
+    sub("Cost of equity (single Ke, held across scenarios)")
+    line("Risk-free rate Rf", coe["risk_free_rate"], "rf", PCT2)
+    line("Equity risk premium ERP", coe["equity_risk_premium"], "erp", PCT2)
+    line("Beta (peer-triangulated)", coe["beta"], "beta", NUM1 + "0")
+    r[0] += 1
+    sub("AIEA / NIM chain (industry anchor + company Five-Forces offset; standing rule 1)")
+    line("Industry AIEA growth", shared["industry"]["aiea_growth"], "ind_aiea", PCT2)
+    line("Industry NIM anchor", shared["industry"]["nim_anchor"], "ind_nim", PCT3)
+    line("WBC AIEA growth offset", shared["company_offset"]["aiea_growth_offset"], "off_aiea", PCT2)
+    line("WBC NIM offset", shared["company_offset"]["nim_offset"], "off_nim", PCT3)
+    r[0] += 1
+    sub("1H26 income anchors (AUD m, half-year)")
+    line("Non-interest income (1H26)", income["non_interest_income"], "nonint_1h", NUM0)
+    r[0] += 1
+    sub("Balance-sheet anchors (AUD m, 1H26 close)")
+    line("Average interest-earning assets", anchors["aiea_1h26_average"], "aiea", NUM0)
+    line("Book equity", anchors["book_equity"], "book_eq", NUM0)
+    line("AT1 hybrid", anchors["at1_hybrid"], "at1", NUM0)
+    line("Non-controlling interests", anchors["non_controlling_interests"], "nci", NUM0)
+    line("Treasury shares", anchors["treasury_shares"], "treas", NUM0)
+    line("Shares outstanding (m)", anchors["shares_outstanding_m"], "shares", NUM1)
+    r[0] += 1
+    sub("Forecast drivers")
+    line("Non-interest income growth", drv["non_interest_income_growth"], "ni_g", PCT2)
+    line("Average loans as % of AIEA", drv["avg_loans_pct_aiea"], "loans_pct", PCT2)
+    line("Effective tax rate", drv["effective_tax_rate"], "tax", PCT2)
+    line("Dividend payout ratio", drv["dividend_payout_ratio"], "payout", PCT2)
+    r[0] += 1
+    sub("Timing")
+    line("Stub years", timing["stub_years"], "stub", NUM1 + "00")
+    line("Horizon years", timing["horizon_years"], "horizon", "0")
+    line("AIEA Y1 time factor", timing["aiea_y1_time_factor"], "aiea_y1f", NUM1 + "00")
+    r[0] += 1
+    # per-scenario macro deltas + overlay endpoints (scenarios as columns C..H)
+    sub("Per-scenario drivers")
+    hdr = r[0]; ws.cell(hdr, 1, "Driver").font = BOLD
+    for j, (sid, nm) in enumerate(SCEN):
+        cc = ws.cell(hdr, 3 + j, nm); cc.font = BOLD; cc.alignment = Alignment(horizontal="right", wrap_text=True)
+    r[0] += 1
+    def scen_row(label, key, fn, fmt):
+        ws.cell(r[0], 1, label)
+        for j, (sid, nm) in enumerate(SCEN):
+            c = ws.cell(r[0], 3 + j, fn(sid)); c.fill = YELLOW; c.font = BLUEFONT; c.number_format = fmt
+            R[f"{key}:{sid}"] = f"'Assumptions'!${_col(3 + j)}${r[0]}"
+        r[0] += 1
+    scen_row("AIEA growth delta", "d_aiea", lambda s: chain["by_scenario"][s]["aiea_growth_delta"], PCT2)
+    scen_row("NIM delta (bps)", "d_nimbps", lambda s: chain["by_scenario"][s]["nim_delta_bps"], "0")
+    scen_row("Y5 cost-to-income", "y5cti", lambda s: ov["by_scenario"][s]["y5_cost_to_income"], PCT2)
+    scen_row("Credit-loss delta (bps)", "d_clbps", lambda s: ov["by_scenario"][s]["credit_loss_delta_bps"], "0")
+    scen_row("Terminal ROE", "troe", lambda s: ov["by_scenario"][s]["terminal_roe"], PCT2)
+    scen_row("Terminal growth g", "tg", lambda s: ov["by_scenario"][s]["terminal_growth"], PCT2)
+    r[0] += 1
+    # baseline per-year glides (stub..Y5 as columns C..H)
+    sub("Baseline per-year glides (Muddle Through): [stub, Y1..Y5]")
+    ph = r[0]; ws.cell(ph, 1, "Line").font = BOLD
+    for j, lab in enumerate(["Stub", "Y1", "Y2", "Y3", "Y4", "Y5"]):
+        ws.cell(ph, 3 + j, lab).font = BOLD
+    r[0] += 1
+    def glide_row(label, key, vec, fmt):
+        ws.cell(r[0], 1, label)
+        for j, v in enumerate(vec):
+            c = ws.cell(r[0], 3 + j, v); c.fill = YELLOW; c.font = BLUEFONT; c.number_format = fmt
+            R[f"{key}:{j}"] = f"'Assumptions'!${_col(3 + j)}${r[0]}"
+        r[0] += 1
+    glide_row("NIM applied", "nim", base["nim_applied"], PCT3)
+    glide_row("Cost-to-income", "cti", base["cost_to_income"], PCT2)
+    glide_row("Credit-loss rate", "clr", base["credit_loss_rate"], PCT3)
+    ws.column_dimensions["A"].width = 40
+    for cc in "BCDEFGH": ws.column_dimensions[cc].width = 13
+
+    # ---------------- Ke build ----------------
+    ws = wb.create_sheet("Ke build")
+    ws.cell(1, 1, "Cost of equity (bank archetype — no WACC / EV bridge)").font = HDR
+    ws.cell(3, 1, "Re = Rf + beta x ERP"); c = ws.cell(3, 2, f"={R['rf']}+{R['beta']}*{R['erp']}"); c.number_format = PCT3; c.font = BOLD
+    R["ke"] = "'Ke build'!$B$3"
+    ws.column_dimensions["A"].width = 30
+
+    # ---------------- AIEA/NIM chain ----------------
+    ws = wb.create_sheet("AIEA-NIM chain")
+    ws.cell(1, 1, "AIEA growth & NIM anchor by scenario (industry + company offset + scenario)").font = HDR
+    ws.cell(2, 1, "Standing rule 1: industry anchor and company offset are separate inputs; the applied value is derived.").font = NOTE
+    hr = 4; ws.cell(hr, 1, "Derived").font = BOLD
+    for j, (sid, nm) in enumerate(SCEN):
+        ws.cell(hr, 3 + j, nm).font = BOLD
+    ws.cell(hr + 1, 1, "WBC AIEA growth")
+    ws.cell(hr + 2, 1, "WBC NIM anchor")
+    for j, (sid, nm) in enumerate(SCEN):
+        col = _col(3 + j)
+        ws.cell(hr + 1, 3 + j, f"={R['ind_aiea']}+{R[f'd_aiea:{sid}']}+{R['off_aiea']}").number_format = PCT3
+        ws.cell(hr + 2, 3 + j, f"={R['ind_nim']}+{R[f'd_nimbps:{sid}']}/10000+{R['off_nim']}").number_format = PCT3
+        R[f"aieag:{sid}"] = f"'AIEA-NIM chain'!{col}{hr+1}"
+    ws.column_dimensions["A"].width = 22
+    for cc in "CDEFGH": ws.column_dimensions[cc].width = 15
+
+    # ---------------- P&L Forecast (six scenarios as columns) ----------------
+    ws = wb.create_sheet("P&L Forecast")
+    ws.cell(1, 1, "P&L forecast — six scenarios (AUD m). NII = AIEA x NIM x period; §15 operating build.").font = HDR
+    hr = 3; ws.cell(hr, 1, "Line").font = BOLD
+    SIDS = [sid for sid, _ in SCEN]; SC = [_col(3 + j) for j in range(6)]
+    for j, (sid, nm) in enumerate(SCEN):
+        ws.cell(hr, 3 + j, nm).font = BOLD
+    rr = [hr + 1]; rmap = {}
+    PL = ["Stub", "Y1", "Y2", "Y3", "Y4", "Y5"]
+    def band(t): ws.cell(rr[0], 1, t).font = SUB; rr[0] += 1
+    def prow(key, label, fmt, fn, bold=False):
+        ws.cell(rr[0], 1, label)
+        if bold: ws.cell(rr[0], 1).font = BOLD
+        for j, sid in enumerate(SIDS):
+            c = ws.cell(rr[0], 3 + j, fn(sid, SC[j], j)); c.number_format = fmt
+            if bold: c.font = BOLD
+        rmap[key] = rr[0]; rr[0] += 1
+    # period length memo
+    prow("plen", "Period length (yrs)", NUM1 + "00",
+         lambda s, c, j, : f"={R['stub']}") if False else None
+    band("AIEA (average interest-earning assets)")
+    for p in range(6):
+        def f_aiea(s, c, j, p=p):
+            if p == 0: return f"={R['aiea']}*(1+{R[f'aieag:{s}']}*{R['stub']}/2)"
+            if p == 1: return f"={R['aiea']}*(1+{R[f'aieag:{s}']}*{R['aiea_y1f']})"
+            return f"={c}{rmap[f'aiea{p-1}']}*(1+{R[f'aieag:{s}']})"
+        prow(f"aiea{p}", f"  {PL[p]} AIEA", NUM0, f_aiea)
+    band("NIM applied")
+    for p in range(6):
+        prow(f"nim{p}", f"  {PL[p]} NIM", PCT3,
+             lambda s, c, j, p=p: f"={R[f'nim:{p}']}+{R[f'd_nimbps:{s}']}/10000")
+    band("Net interest income")
+    for p in range(6):
+        plen = f"{R['stub']}" if p == 0 else "1"
+        prow(f"nii{p}", f"  {PL[p]} NII", NUM1,
+             lambda s, c, j, p=p, plen=plen: f"={c}{rmap[f'aiea{p}']}*{c}{rmap[f'nim{p}']}*{plen}")
+    band("Non-interest income")
+    for p in range(6):
+        def f_ni(s, c, j, p=p):
+            if p == 0: return f"={R['nonint_1h']}*{R['stub']}*2"
+            if p == 1: return f"=2*{R['nonint_1h']}*(1+{R['ni_g']})"
+            return f"={c}{rmap[f'ni{p-1}']}*(1+{R['ni_g']})"
+        prow(f"ni{p}", f"  {PL[p]} non-interest income", NUM1, f_ni)
+    band("Total operating income")
+    for p in range(6):
+        prow(f"toi{p}", f"  {PL[p]} total op income", NUM1,
+             lambda s, c, j, p=p: f"={c}{rmap[f'nii{p}']}+{c}{rmap[f'ni{p}']}")
+    band("Operating expenses (cost-to-income, negative)")
+    for p in range(6):
+        prow(f"opex{p}", f"  {PL[p]} opex", NUM1,
+             lambda s, c, j, p=p: f"=-{c}{rmap[f'toi{p}']}*({R[f'cti:{p}']}+({R[f'y5cti:{s}']}-{R['cti:5']}))")
+    band("Credit impairment (loss rate x loans, negative)")
+    for p in range(6):
+        plen = f"{R['stub']}" if p == 0 else "1"
+        prow(f"imp{p}", f"  {PL[p]} impairment", NUM1,
+             lambda s, c, j, p=p, plen=plen: f"=-{c}{rmap[f'aiea{p}']}*{R['loans_pct']}*({R[f'clr:{p}']}+{R[f'd_clbps:{s}']}/10000)*{plen}")
+    band("Cash NPAT")
+    for p in range(6):
+        prow(f"npat{p}", f"  {PL[p]} NPAT", NUM1,
+             lambda s, c, j, p=p: f"=({c}{rmap[f'toi{p}']}+{c}{rmap[f'opex{p}']}+{c}{rmap[f'imp{p}']})*(1-{R['tax']})", bold=(p in (1, 5)))
+    for j, sid in enumerate(SIDS):
+        for p in range(6):
+            R[f"npat:{sid}:{p}"] = f"'P&L Forecast'!{SC[j]}{rmap[f'npat{p}']}"
+    ws.column_dimensions["A"].width = 34
+    for cc in "CDEFGH": ws.column_dimensions[cc].width = 12
+
+    # ---------------- Valuation (DDM + ROE-fade terminal) ----------------
+    ws = wb.create_sheet("Valuation")
+    ws.cell(1, 1, "Valuation — dividend discount + ROE-fade terminal, §15.7 equity bridge (AUD m)").font = HDR
+    hr = 3; ws.cell(hr, 1, "Line").font = BOLD
+    for j, (sid, nm) in enumerate(SCEN):
+        ws.cell(hr, 3 + j, nm).font = BOLD
+    vr = [hr + 1]; vmap = {}
+    def vrow(key, label, fmt, fn, bold=False):
+        ws.cell(vr[0], 1, label)
+        if bold: ws.cell(vr[0], 1).font = BOLD
+        for j, sid in enumerate(SIDS):
+            c = ws.cell(vr[0], 3 + j, fn(sid, SC[j], j)); c.number_format = fmt
+            if bold: c.font = BOLD
+        vmap[key] = vr[0]; vr[0] += 1
+    # dividends per period
+    for p in range(6):
+        vrow(f"div{p}", f"Dividends {PL[p]}", NUM1,
+             lambda s, c, j, p=p: f"={R[f'npat:{s}:{p}']}*{R['payout']}")
+    # discount factor per period (Ke)
+    for p in range(6):
+        mt = f"{R['stub']}/2" if p == 0 else f"{R['stub']}+{p}-0.5"
+        vrow(f"pv{p}", f"PV dividend {PL[p]}", NUM1,
+             lambda s, c, j, p=p, mt=mt: f"={c}{vmap[f'div{p}']}/(1+{R['ke']})^({mt})")
+    vrow("pvexp", "PV of explicit dividends", NUM1,
+         lambda s, c, j: "=" + "+".join(f"{c}{vmap[f'pv{p}']}" for p in range(6)), bold=True)
+    vrow("ret", "Retained earnings (sum NPAT - sum div)", NUM1,
+         lambda s, c, j: "=" + "+".join(f"{R[f'npat:{s}:{p}']}" for p in range(6)) + "-(" + "+".join(f"{c}{vmap[f'div{p}']}" for p in range(6)) + ")")
+    vrow("ceq", "Closing book equity", NUM0,
+         lambda s, c, j: f"={R['book_eq']}+{c}{vmap['ret']}")
+    vrow("tv", "Terminal value (equity x (ROE-g)/(Ke-g))", NUM0,
+         lambda s, c, j: f"={c}{vmap['ceq']}*({R[f'troe:{s}']}-{R[f'tg:{s}']})/({R['ke']}-{R[f'tg:{s}']})")
+    vrow("pvtv", "PV of terminal value", NUM0,
+         lambda s, c, j: f"={c}{vmap['tv']}/(1+{R['ke']})^({R['stub']}+{R['horizon']})")
+    vrow("claim", "Total value of equity claim", NUM0,
+         lambda s, c, j: f"={c}{vmap['pvexp']}+{c}{vmap['pvtv']}", bold=True)
+    vrow("ord", "Less AT1/NCI/treasury -> ordinary equity", NUM0,
+         lambda s, c, j: f"={c}{vmap['claim']}-{R['at1']}-{R['nci']}-{R['treas']}", bold=True)
+    vrow("vps", "Value per share (AUD)", NUM1 + "00",
+         lambda s, c, j: f"={c}{vmap['ord']}/{R['shares']}", bold=True)
+    for j, sid in enumerate(SIDS):
+        R[f"vps:{sid}"] = f"'Valuation'!{SC[j]}{vmap['vps']}"
+        R[f"ord:{sid}"] = f"'Valuation'!{SC[j]}{vmap['ord']}"
+    ws.column_dimensions["A"].width = 40
+    for cc in "CDEFGH": ws.column_dimensions[cc].width = 12
+
+    # ---------------- Comparability & beta (bank peers) ----------------
+    ws = wb.create_sheet("Comparability & beta")
+    ws.cell(1, 1, "Beta triangulation — bank peers (measured betas; peer-cluster selection §15.2(c))").font = HDR
+    ws.cell(2, 1, "ANZ excluded (institutional-dilution outlier); MQG excluded (different archetype). Selected = comparable-cluster midpoint.").font = NOTE
+    hr = 4
+    for j, t in enumerate(["Peer", "Measured beta", "Role"]):
+        ws.cell(hr, 1 + j, t).font = BOLD
+    peers = [("CBA", 0.80, "Comparable"), ("NAB", 0.72, "Comparable"), ("WBC", 0.73, "Subject"),  # ssot-allow: peer reference betas
+             ("ANZ", 0.57, "Excluded (outlier)"), ("MQG", 0.88, "Excluded (archetype)")]  # ssot-allow: peer reference betas
+    rr = hr + 1; incl = []
+    for nm, bv, role in peers:
+        ws.cell(rr, 1, nm)
+        c = ws.cell(rr, 2, bv); c.fill = YELLOW; c.font = BLUEFONT; c.number_format = NUM1 + "0"
+        ws.cell(rr, 3, role)
+        if role in ("Comparable", "Subject"): incl.append(f"B{rr}")
+        rr += 1
+    rr += 1
+    ws.cell(rr, 1, "Comparable-cluster median").font = BOLD
+    ws.cell(rr, 2, "=MEDIAN(" + ",".join(incl) + ")").number_format = NUM1 + "0"; ws.cell(rr, 2).font = BOLD; rr += 1
+    ws.cell(rr, 1, "Beta selected (used in Ke, from Assumptions)").font = BOLD
+    ws.cell(rr, 2, f"={R['beta']}").number_format = NUM1 + "0"; ws.cell(rr, 2).font = BOLD
+    ws.column_dimensions["A"].width = 38
+    for cc in "BC": ws.column_dimensions[cc].width = 16
+
+    # ---------------- Multiples (bank: P/E, P/B) ----------------
+    ws = wb.create_sheet("Multiples")
+    ws.cell(1, 1, "Bank multiples — P/E and P/B on the model's value vs the market").font = HDR
+    mp = cfg.get("market", 0)
+    rr = 3
+    ws.cell(rr, 1, "Market price"); c = ws.cell(rr, 2, mp); c.fill = YELLOW; c.font = BLUEFONT; c.number_format = NUM1 + "0"; mpr = rr; rr += 1
+    ws.cell(rr, 1, "FY27 NPAT (Muddle Through)"); ws.cell(rr, 2, f"={R['npat:muddle_through:1']}").number_format = NUM0; np1 = rr; rr += 1
+    ws.cell(rr, 1, "EPS FY27 = NPAT / shares"); ws.cell(rr, 2, f"=B{np1}/{R['shares']}").number_format = NUM1 + "00"; eps = rr; rr += 1
+    ws.cell(rr, 1, "Book value per share = equity / shares"); ws.cell(rr, 2, f"={R['book_eq']}/{R['shares']}").number_format = NUM1 + "00"; bvps = rr; rr += 1
+    rr += 1
+    ws.cell(rr, 1, "Market P/E (price / FY27 EPS)"); ws.cell(rr, 2, f"=B{mpr}/B{eps}").number_format = MULT; rr += 1
+    ws.cell(rr, 1, "Market P/B (price / book value per share)"); ws.cell(rr, 2, f"=B{mpr}/B{bvps}").number_format = MULT; rr += 1
+    ws.cell(rr, 1, "Model P/E (DDM value / FY27 EPS)").font = BOLD
+    ws.cell(rr, 2, f"={R['vps:muddle_through']}/B{eps}").number_format = MULT; rr += 1
+    ws.cell(rr, 1, "Model P/B (DDM value / book value per share)").font = BOLD
+    ws.cell(rr, 2, f"={R['vps:muddle_through']}/B{bvps}").number_format = MULT; rr += 1
+    ws.cell(rr, 1, "Cross-check: DDM value per share (Muddle Through)").font = BOLD
+    ws.cell(rr, 2, f"={R['vps:muddle_through']}").number_format = NUM1 + "00"; ws.cell(rr, 2).font = BOLD
+    ws.column_dimensions["A"].width = 44; ws.column_dimensions["B"].width = 14
+
+    # ---------------- Scenarios summary ----------------
+    ws = wb.create_sheet("Scenarios")
+    ws.cell(1, 1, "Scenario summary — value per share by world (links to Valuation)").font = HDR
+    hr = 3
+    for j, t in enumerate(["Scenario", "Value/share", "Ordinary equity", "vs market"]):
+        ws.cell(hr, 1 + j, t).font = BOLD
+    rr = hr + 1
+    for sid, nm in SCEN:
+        ws.cell(rr, 1, nm)
+        ws.cell(rr, 2, f"={R[f'vps:{sid}']}").number_format = NUM1 + "00"
+        ws.cell(rr, 3, f"={R[f'ord:{sid}']}").number_format = NUM0
+        ws.cell(rr, 4, f"={R[f'vps:{sid}']}/{mp}-1").number_format = PCT2
+        rr += 1
+    ws.column_dimensions["A"].width = 26
+    for cc in "BCD": ws.column_dimensions[cc].width = 15
+
+    buf = io.BytesIO(); wb.save(buf); return buf.getvalue()
+
+
 if __name__ == "__main__":
     data = build_dnl_workbook_bytes()
     out = _ROOT / "ui_prototypes" / "_generator" / "_dnl_full.xlsx"
     out.write_bytes(data)
     print("wrote", out, len(data), "bytes")
+    wdata = build_wbc_workbook_bytes()
+    wout = _ROOT / "ui_prototypes" / "_generator" / "_wbc_full.xlsx"
+    wout.write_bytes(wdata)
+    print("wrote", wout, len(wdata), "bytes")
