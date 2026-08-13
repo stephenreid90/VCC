@@ -170,6 +170,26 @@ class BankEngine:
             shares_outstanding_m=inp.shares_outstanding_m, value_per_share=vps,
         )
 
+    def per_year_derivation(self, result: BankResult):
+        """The per-year operating build as an auditable Derivation (parity item, §11).
+
+        One step per period for the income, earnings and dividend lines, so the whole
+        year-by-year build reads out of the engine's own output (``.as_rows()`` for a
+        workings view). Headline = the final year's dividend.
+        """
+        b = DerivationBuilder(f"per_year_build[{result.scenario_id}]")
+        n = len(result.period_labels)
+        for i in range(n):
+            lab = result.period_labels[i]
+            b.step(f"{lab}_toi", f"{lab} total operating income", result.total_operating_income[i],
+                   "NII (AIEA x NIM x period) + non-interest income",
+                   {"aiea": result.aiea[i], "nim": result.nim[i]}, units="AUD m")
+            b.step(f"{lab}_npat", f"{lab} cash NPAT", result.cash_npat[i],
+                   "(pre-provision profit - impairment) x (1 - tax)", {}, units="AUD m")
+            b.step(f"{lab}_div", f"{lab} dividend", result.dividends[i],
+                   "NPAT x payout ratio", {}, units="AUD m")
+        return b.build(result_key=f"{result.period_labels[-1]}_div")
+
     def derivation(self, inp: BankInputs, result: BankResult):
         """The §15.7/§15.8 equity bridge as an auditable Derivation (headline = value per share)."""
         b = DerivationBuilder(f"bank_value[{inp.scenario_id}]")

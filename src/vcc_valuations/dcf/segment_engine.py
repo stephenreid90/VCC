@@ -162,6 +162,24 @@ class SegmentEngine:
             terminal_share_of_ev=(pv_terminal / ev if ev else 0.0),
         )
 
+    def per_year_derivation(self, r: SegmentResult):
+        """The per-year group build as an auditable Derivation (parity item).
+
+        One step per forecast year for group revenue, group EBIT and FCFF, so the
+        year-by-year build reads out of the engine (``.as_rows()`` for a workings view).
+        Skips the FY25 anchor. Headline = the final year's FCFF.
+        """
+        b = DerivationBuilder(f"per_year_build[{r.scenario_id}]")
+        for y in range(1, len(r.year_labels)):        # FY26..FY31
+            lab = r.year_labels[y]
+            b.step(f"{lab}_rev", f"{lab} group revenue", r.group_revenue[y],
+                   "sum of segment revenue (revenue x growth path)", {}, units="USD m")
+            b.step(f"{lab}_ebit", f"{lab} group EBIT", r.group_ebit[y],
+                   "segment operating result - corporate/unallocated", {}, units="USD m")
+            b.step(f"{lab}_fcff", f"{lab} FCFF", r.fcff[y - 1],
+                   "EBIT x (1-tax) + D&A - capex - dWC", {}, units="USD m")
+        return b.build(result_key=f"{r.year_labels[-1]}_fcff")
+
     def derivation(self, inp: SegmentInputs, r: SegmentResult):
         """The §4 FCFF->per-share bridge as an auditable trace (headline = value per share AUD)."""
         b = DerivationBuilder(f"segment_value[{inp.scenario_id}]")

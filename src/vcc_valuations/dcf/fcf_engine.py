@@ -452,3 +452,23 @@ class FcfEngine:
             warnings=warnings,
             notes=notes,
         )
+
+    def per_year_derivation(self, result: "FcfDcfResult"):
+        """The per-year operating build as an auditable Derivation (parity item, §11).
+
+        One step per period for revenue, EBIT and FCFF, so the year-by-year build reads
+        out of the engine's own output (``.as_rows()`` for a workings view). Headline =
+        the final year's FCFF.
+        """
+        from vcc_valuations.derivation import DerivationBuilder
+
+        b = DerivationBuilder(f"per_year_build[{result.scenario_id}]")
+        for i, lab in enumerate(result.period_labels):
+            b.step(f"{lab}_rev", f"{lab} revenue", result.revenue[i],
+                   "base-year revenue grown at the chain rate (stub is a part-year)", {}, units="AUD m")
+            b.step(f"{lab}_ebit", f"{lab} EBIT", result.ebit[i],
+                   "revenue x EBIT margin (base + transformation - gas roll-off)",
+                   {"margin": result.ebit_margin[i]}, units="AUD m")
+            b.step(f"{lab}_fcff", f"{lab} FCFF", result.fcff[i],
+                   "NOPAT + D&A - capex - dWC", {}, units="AUD m")
+        return b.build(result_key=f"{result.period_labels[-1]}_fcff")
