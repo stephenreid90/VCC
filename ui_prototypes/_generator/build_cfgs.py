@@ -625,6 +625,14 @@ wbc["topnote"] = wbc["topnote"].replace(
 from engine_workbook import build_wbc_workbook_bytes as _wwbk
 wbc["xlsxB64"] = _b64.b64encode(_wwbk(wbc)).decode("ascii")
 wbc["xlsxName"] = "WBC_full_valuation_workbook.xlsx"
+_wr = _BankEng().run(_bbi(_li(_ROOT, "muddle_through", "australian_major_banks", "wbc"), "muddle_through"))
+def _wrow(label, arr): return {"label": label, "vals": [round(x) for x in arr], "pct": False}
+wbc.setdefault("dcfDetail", {})["workings"] = {"title": "Per-year operating build \u2014 Muddle Through (AUD m)",
+    "note": "The \u00a715 bank build from the production engine: net interest income (AIEA \u00d7 NIM) + non-interest income, less cost-to-income operating expenses and credit impairment \u2192 cash NPAT \u2192 dividends. Stub is a part-year.",
+    "years": _wr.period_labels,
+    "rows": [_wrow("Net interest income", _wr.nii), _wrow("Non-interest income", _wr.non_interest_income),
+             _wrow("Total operating income", _wr.total_operating_income), _wrow("Operating expenses", _wr.operating_expenses),
+             _wrow("Credit impairment", _wr.credit_impairment), _wrow("Cash NPAT", _wr.cash_npat), _wrow("Dividends", _wr.dividends)]}
 # ===== end WBC SSOT block =====
 # ===== SSOT: CSL segment-FCFF headline + build-up wired to the production engine =====
 _CSL_SCEN = [
@@ -673,6 +681,17 @@ csl["topnote"] = csl["topnote"].replace(
 from engine_workbook import build_csl_workbook_bytes as _cwbk
 csl["xlsxB64"] = _b64.b64encode(_cwbk(csl)).decode("ascii")
 csl["xlsxName"] = "CSL_full_valuation_workbook.xlsx"
+_cr2 = _SegEng().run(_sgi(_li(_ROOT, "muddle_through", "biopharmaceuticals", "csl"), "muddle_through"))
+def _crow(label, arr): return {"label": label, "vals": [round(x) for x in arr], "pct": False}
+csl.setdefault("dcfDetail", {})["workings"] = {"title": "Per-year segment build \u2014 Muddle Through (USD m)",
+    "note": "Bottom-up from the M3 engine: per-segment revenue \u00d7 margin glide \u2192 group operating result less corporate \u2192 group EBIT \u2192 unlevered FCFF (EBIT\u00d7(1\u2212tax) + D&A \u2212 capex \u2212 \u0394WC). FY26 is the anchor.",
+    "years": _cr2.year_labels[1:],
+    "rows": [_crow("CSL Behring revenue", _cr2.segment_revenue["csl_behring"][1:]),
+             _crow("CSL Seqirus revenue", _cr2.segment_revenue["csl_seqirus"][1:]),
+             _crow("CSL Vifor revenue", _cr2.segment_revenue["csl_vifor"][1:]),
+             _crow("Group revenue", _cr2.group_revenue[1:]),
+             _crow("Group EBIT", _cr2.group_ebit[1:]),
+             _crow("FCFF (FY26\u2013FY31)", _cr2.fcff)]}
 # ===== end CSL SSOT block =====
 json.dump({"dnl":dnl,"wbc":wbc,"csl":csl}, open(_CFGP,'w'), ensure_ascii=False)
 print("cfgs.json written")

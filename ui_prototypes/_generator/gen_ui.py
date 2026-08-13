@@ -678,6 +678,16 @@ function vccDownload(){ try{
     var vm=(sc.v/CFG.market-1)*100;
     return '<p style="margin-top:0;">Your own scenario, starting from Muddle Through and re-priced live by the browser-side reduced-form. Value <b>'+CFG.ccy+' '+sc.v.toFixed(CFG.dp)+'</b> ('+(vm>=0?'+':'')+vm.toFixed(0)+'% vs market).</p><table style="width:100%; font-size:13px;"><tr><td class="sub" style="padding:2px 8px 2px 0;">Input</td><td class="sub" style="padding:2px 8px; text-align:right;">Your value</td><td class="sub" style="padding:2px 0; text-align:right;">vs MT</td></tr>'+rows+'</table><p class="sub" style="margin-top:8px;">Edit these on the <b>Assumptions</b> tab (or the sliders), the discount rate in the <b>β workbench</b>, and the Five Forces impacts on the <b>Five Forces</b> tab.</p>'; }
   function worldOverrideNote(sc){ if(!isOverridden(sc)) return ''; return '<div style="margin-top:10px; background:var(--secondary); border-radius:8px; padding:9px 11px; font-size:12.5px;"><b>You&rsquo;ve adjusted this case.</b> Value now <b>'+CFG.ccy+' '+sc.v.toFixed(CFG.dp)+'</b> vs the assessed <b>'+CFG.ccy+' '+sc.anchor.toFixed(CFG.dp)+'</b>. ↻ reset restores it.</div>'; }
+  function workingsHTML(){
+    var w = CFG.dcfDetail && CFG.dcfDetail.workings; if(!w) return '';
+    var h='<div style="margin-top:14px; border-top:0.5px solid var(--bd); padding-top:10px;"><div class="hd" style="margin-bottom:2px;">'+w.title+'</div><div class="sub" style="margin-bottom:8px;">'+w.note+'</div><div style="overflow-x:auto;"><table style="font-size:12px; border-collapse:collapse; white-space:nowrap;">';
+    h+='<tr><td class="sub" style="padding:3px 8px 3px 0; position:sticky; left:0; background:var(--primary);"></td>'+w.years.map(function(y){return '<td class="sub" style="padding:3px 8px; text-align:right;">'+y+'</td>';}).join('')+'</tr>';
+    w.rows.forEach(function(r){
+      h+='<tr style="border-top:0.5px solid var(--bd2);"><td style="padding:4px 8px 4px 0; position:sticky; left:0; background:var(--primary);">'+r.label+'</td>'+r.vals.map(function(v){return '<td style="padding:4px 8px; text-align:right;">'+(r.pct?(v*100).toFixed(1)+'%':Math.round(v).toLocaleString())+'</td>';}).join('')+'</tr>';
+    });
+    h+='</table></div><div class="sub" style="margin-top:6px;">Straight from the production engine \u2014 the same per-year build behind the headline and the downloadable workbook.</div></div>';
+    return h;
+  }
   function detailHTML(k){
     if(k==='world'){ var sc=activeScen(); if(sc.kind==='user'){ return userWorldHTML(sc); } var nm=sc.n;
       var wd=(CFG.worldDesc&&CFG.worldDesc[nm])?'<div class="thytag" style="color:var(--text3); margin:0 0 4px;">The world</div>'+CFG.worldDesc[nm]:'';
@@ -689,7 +699,7 @@ function vccDownload(){ try{
       return head+CFG.detail.assum; }
     if(k==='dcf'){ var _dlcap=CFG.xlsxB64?'full audited formula workbook · all six scenarios, DCF build, WACC, tax &amp; equity bridges, comparables/β, Porter&#39;s · engine-sourced, links to one Assumptions sheet':'formula workbook · DCF to equity, discount build, comparables/β &amp; charts (DNL) · includes your edits';var _dllab=CFG.xlsxB64?'⤓ download full valuation workbook (Excel)':'⤓ download all scenarios to Excel';var _dl='<button style="margin-top:12px; font-size:13px; padding:6px 12px;" id="dlbtn">'+_dllab+'</button><div style="font-size:11px; color:var(--text3); margin-top:4px;">'+_dlcap+'</div>';
       var _nar='<p>'+CFG.dcfIntro+'</p>'; CFG.dcfRows.forEach(function(r){ if(r[2]){ _nar+='<details class="thy"><summary style="display:flex; justify-content:space-between; align-items:center;"><span>'+r[0]+'</span><span style="font-weight:600; margin-left:auto;">'+r[1]+'</span></summary><div class="thybody">'+r[2]+'</div></details>'; } else { _nar+='<div style="display:flex; justify-content:space-between; padding:8px 10px; margin-top:5px; font-weight:600; border-top:1px solid var(--bd2);"><span>'+r[0]+'</span><span>'+r[1]+'</span></div>'; } });
-      if(!CFG.richbook){ return _nar+_dl; }
+      if(!CFG.richbook){ return _nar+workingsHTML()+_dl; }
       var _sc=activeScen(); if(_sc.kind==='broker'){ _sc=muScenByKind('live')||_sc; }
       var _tg='<div style="display:flex; gap:6px; align-items:center; margin-bottom:10px;"><span class="sub">View:</span><button class="dcf_view" data-v="narr" style="font-size:12px; '+(dcfView==='narr'?'border-color:var(--bdinfo); color:var(--info-tx);':'')+'">Narrative</button><button class="dcf_view" data-v="table" style="font-size:12px; '+(dcfView==='table'?'border-color:var(--bdinfo); color:var(--info-tx);':'')+'">DCF table</button></div>';
       return _tg+(dcfView==='table'?dcfTableHTML(_sc):_nar)+_dl; }
