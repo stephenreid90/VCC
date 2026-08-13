@@ -59,6 +59,12 @@ DNL = {
   ],
 }
 
+# OUTSTANDING (pending Ben's EODHD / broker feed): the WBC and CSL comparables below carry
+# det=None and mfin=None, so the Comparability-metrics sheet and the peer-multiples grid are NOT
+# built for them (only for DNL). WBC needs a BANK set — det {business-mix, credit-cyclicality,
+# CET1 buffer} and mfin {price, shares, ni ttm/fwd, book_equity, dividend} -> P/E, P/B, yield (no
+# EV/EBITDA). CSL needs the DNL shape — det {ndeb, dol, cyc} and mfin {price, shares, netDebt,
+# ebitda/ebit/ni ttm+fwd}. See WORKING_NOTES.md "OUTSTANDING — blocked on peer data".
 WBC = {
  "mock": True, "subject": {"name": "Westpac", "ticker": "WBC.AX", "selectedBeta": 0.75, "tax": 0.30, "de": 0.0,
    "measuredNote": "Measured β 0.73 (documented alongside; used as a cross-check, not mechanically)."},

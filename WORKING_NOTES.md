@@ -49,6 +49,22 @@ literals); suite 113, ratchet 8. Note: DNL-style Comparability *metrics* (financ
 cyclicality) NOT ported — `det` data is DNL-only; and peer *mfin* (financials for a peer-multiples grid) is
 DNL-only too, so WBC/CSL multiples are own-vs-market, not a peer grid.
 
+**⏳ OUTSTANDING — blocked on peer data (Ben's EODHD / broker feed):** the DNL-style **Comparability
+metrics** sheet and the **peer multiples grid** are NOT built for WBC/CSL because the peer driver data
+(`det`) and peer financials (`mfin`) slots in `beta_data.py` are `null` for the WBC and CSL comparables
+(populated for DNL only). To build these, per peer + subject:
+- **CSL (pharma, same shape as DNL):** for Grifols / Takeda / Sanofi + CSL — `det: {ndeb (net debt/EBITDA),
+  dol (operating leverage), cyc (revenue cyclicality 0-1)}` and `mfin: {price, shares, netDebt,
+  ebitda{ttm,fwd}, ebit{ttm,fwd}, ni{ttm,fwd}}`. Drops straight into the DNL-shaped sheet code.
+- **WBC (bank — different set; EV/EBITDA & net-debt/EBITDA don't apply):** for CommBank / NAB / ANZ /
+  Macquarie + WBC — a bank comparability triple (business-mix retail-vs-institutional, credit cyclicality,
+  CET1/leverage buffer) and a bank multiples block `{price, shares, ni{ttm,fwd}, book_equity, dividend}`
+  → P/E, P/B, yield (NOT EV/EBITDA). Needs a small bank-specific sheet variant.
+All of this is real market data (prices, share counts, net debt, consensus earnings, book equity), so it
+waits on the feed rather than being invented. When the data lands: populate the `det`/`mfin` slots in
+`beta_data.py`, then extend `build_csl_workbook_bytes` (DNL-shape) and add a P/E-P/B variant for
+`build_wbc_workbook_bytes`. Stephen: can't source it for now (noted 12 Aug 2026).
+
 **Possible next threads (all optional, none blocking):** (a) per-year P&L `Derivation` surfacing (parity item,
 all three); (b) the human-readable workings view from `Derivation.as_rows()` (long-deferred); (c) DM-inflation
 basis reconciliation (DNL); (d) roll the DNL comprehensive-workbook sheets (comparability/multiples/lease) onto
