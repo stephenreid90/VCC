@@ -65,11 +65,15 @@ waits on the feed rather than being invented. When the data lands: populate the 
 `beta_data.py`, then extend `build_csl_workbook_bytes` (DNL-shape) and add a P/E-P/B variant for
 `build_wbc_workbook_bytes`. Stephen: can't source it for now (noted 12 Aug 2026).
 
-**Possible next threads (all optional, none blocking):** (a) per-year P&L `Derivation` surfacing (parity item,
-all three); (b) the human-readable workings view from `Derivation.as_rows()` (long-deferred); (c) DM-inflation
-basis reconciliation (DNL); (d) roll the DNL comprehensive-workbook sheets (comparability/multiples/lease) onto
-WBC/CSL if wanted; (e) formalise the bank + biopharma industry-archetype schemas (currently raw/tolerant);
-(f) the parked user-written-scenarios feature at build phase. Ben still owes real peer gearings/betas feeds.
+**Possible next threads (all optional, none blocking):**
+- ✅ (a) per-year P&L `Derivation` — **DONE** (commit `76c4ef1`): `per_year_derivation()` on all three engines.
+- ✅ (b) human-readable workings view — **DONE** (commit `a14407c`): `workingsHTML()` in gen_ui shows the
+  engine's per-year build in the WBC/CSL build-up tab (DNL already had `dcfDetail.mt`); all three now show it.
+- ✅ (d) roll comprehensive workbook sheets onto WBC/CSL — **DONE** (commit `514a4b7`), except the peer
+  comparability-metrics + multiples-grid which are the ⏳ OUTSTANDING data item above (blocked on Ben's feed).
+- Still open: (c) DM-inflation basis reconciliation (DNL, small); (e) formalise the bank + biopharma
+  industry-archetype schemas (currently raw/tolerant in `load_inputs`); (f) the parked user-written-scenarios
+  feature at build phase. Ben still owes real peer gearings/betas + the `det`/`mfin` peer feeds.
 
 ---
 
