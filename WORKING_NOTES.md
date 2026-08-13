@@ -71,9 +71,17 @@ waits on the feed rather than being invented. When the data lands: populate the 
   engine's per-year build in the WBC/CSL build-up tab (DNL already had `dcfDetail.mt`); all three now show it.
 - ✅ (d) roll comprehensive workbook sheets onto WBC/CSL — **DONE** (commit `514a4b7`), except the peer
   comparability-metrics + multiples-grid which are the ⏳ OUTSTANDING data item above (blocked on Ben's feed).
-- Still open: (c) DM-inflation basis reconciliation (DNL, small); (e) formalise the bank + biopharma
-  industry-archetype schemas (currently raw/tolerant in `load_inputs`); (f) the parked user-written-scenarios
-  feature at build phase. Ben still owes real peer gearings/betas + the `det`/`mfin` peer feeds.
+- ✅ (c) DM-inflation basis — **DONE** (commit `f8d7d28`): documented in dnl.yaml (chain normalising input
+  vs scenario sticky CPI; no value change; formal wiring deferred to Stephen as a methodology decision).
+- ✅ (e) formalise bank + biopharma archetype schemas — **DONE** (commit `b24f04b`): evolved
+  `IndustryArchetypeFile` to §7.4-v2 (accepts both five-forces generations, `ArchetypeRating` superset,
+  optional industrial-only blocks, `archetype_class`/`bank_archetype`); all five archetype files now
+  validate strictly; `load_inputs` no longer keeps bank archetypes raw. `tests/test_archetypes_validate.py`.
+- Still open (deferred / blocked): (f) the parked user-written-scenarios feature (build phase); the ⏳
+  OUTSTANDING peer `det`/`mfin` data (Ben's feed) for the comparability-metrics + multiples grid; and the
+  optional creation of a consolidated `biopharmaceuticals.yaml` (CSL currently loads with `archetype=None`,
+  documented — the segment engine reads `normalised_baseline`, so it's cosmetic). **All non-blocked
+  optional threads are now complete.** Suite 122, ratchet 8, bases 3.073/30.03/203.83.
 
 ---
 
