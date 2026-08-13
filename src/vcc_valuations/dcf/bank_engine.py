@@ -25,6 +25,7 @@ from dataclasses import dataclass, field
 from typing import List, Optional
 
 from vcc_valuations.derivation import DerivationBuilder
+from vcc_valuations.dcf.fcf_engine import terminal_share_warning
 
 
 @dataclass
@@ -95,6 +96,10 @@ class BankResult:
     ordinary_equity_value: float
     shares_outstanding_m: float
     value_per_share: float
+    # §11.4.2 diagnostics. The bank terminal is a share of the *equity claim*
+    # (PV dividends + PV terminal), there being no EV bridge in the §15 fork.
+    terminal_share_of_claim: float = 0.0
+    warnings: List[str] = field(default_factory=list)
 
 
 class BankEngine:
@@ -152,6 +157,12 @@ class BankEngine:
         ordinary = total_claim - inp.at1_hybrid - inp.non_controlling_interests - inp.treasury_shares
         vps = ordinary / inp.shares_outstanding_m
 
+        terminal_share = pv_terminal / total_claim if total_claim else 0.0
+        warnings: List[str] = []
+        tv_warning = terminal_share_warning(terminal_share, "the equity claim")
+        if tv_warning:
+            warnings.append(tv_warning)
+
         return BankResult(
             company_id=inp.company_id, scenario_id=inp.scenario_id,
             period_labels=labels, period_length=period_length,
@@ -168,6 +179,7 @@ class BankEngine:
             non_controlling_interests=inp.non_controlling_interests,
             treasury_shares=inp.treasury_shares, ordinary_equity_value=ordinary,
             shares_outstanding_m=inp.shares_outstanding_m, value_per_share=vps,
+            terminal_share_of_claim=terminal_share, warnings=warnings,
         )
 
     def per_year_derivation(self, result: BankResult):

@@ -40,7 +40,28 @@ from vcc_valuations.assumptions.wacc import WaccBuild
 # Terminal share of EV above which a sensitivity pass is required (methodology
 # section 11.4.2 / 15.2). Non-blocking by owner decision R3 (25 June 2026):
 # emit a warning that triggers a sensitivity pass; never auto-suppress.
+#
+# Single definition for all three engines: ``bank_engine`` and ``segment_engine``
+# import this constant and :func:`terminal_share_warning` rather than restating
+# the threshold, so there is one number and one message across the archetypes.
 TERMINAL_SHARE_THRESHOLD = 0.70
+
+
+def terminal_share_warning(terminal_share: float, denominator: str = "EV") -> Optional[str]:
+    """The §11.4.2 sensitivity-pass warning, or ``None`` when under threshold.
+
+    ``denominator`` names what the terminal is a share *of*, so the bank engine
+    can say "the equity claim" where the FCFF engines say "EV". Non-blocking:
+    callers append the string to their ``warnings`` list and carry on.
+    """
+    if terminal_share <= TERMINAL_SHARE_THRESHOLD:
+        return None
+    return (
+        f"Terminal value is {terminal_share:.1%} of {denominator} (> "
+        f"{TERMINAL_SHARE_THRESHOLD:.0%}); methodology section 11.4.2 "
+        "requires a sensitivity pass on terminal assumptions "
+        "(non-blocking, per owner decision R3)."
+    )
 
 
 @dataclass
@@ -379,13 +400,9 @@ class FcfEngine:
         enterprise_value = pv_explicit + pv_terminal
         terminal_share = pv_terminal / enterprise_value if enterprise_value else 0.0
 
-        if terminal_share > TERMINAL_SHARE_THRESHOLD:
-            warnings.append(
-                f"Terminal value is {terminal_share:.1%} of EV (> "
-                f"{TERMINAL_SHARE_THRESHOLD:.0%}); methodology section 11.4.2 "
-                "requires a sensitivity pass on terminal assumptions "
-                "(non-blocking, per owner decision R3)."
-            )
+        tv_warning = terminal_share_warning(terminal_share, "EV")
+        if tv_warning:
+            warnings.append(tv_warning)
 
         # ---- Equity bridge ----
         eb = inp.equity_bridge

@@ -23,6 +23,7 @@ from dataclasses import dataclass, field
 from typing import Dict, List
 
 from vcc_valuations.derivation import DerivationBuilder
+from vcc_valuations.dcf.fcf_engine import terminal_share_warning
 
 
 @dataclass
@@ -90,6 +91,8 @@ class SegmentResult:
     value_per_share_usd: float
     value_per_share_aud: float
     terminal_share_of_ev: float
+    # §11.4.2 sensitivity-pass warning, shared with the industrial engine.
+    warnings: List[str] = field(default_factory=list)
 
 
 class SegmentEngine:
@@ -148,6 +151,12 @@ class SegmentEngine:
         vps_usd = equity / inp.shares_outstanding_m
         vps_aud = vps_usd * inp.fx_aud_per_usd
 
+        terminal_share = pv_terminal / ev if ev else 0.0
+        warnings: List[str] = []
+        tv_warning = terminal_share_warning(terminal_share, "EV")
+        if tv_warning:
+            warnings.append(tv_warning)
+
         return SegmentResult(
             company_id=inp.company_id, scenario_id=inp.scenario_id, year_labels=labels,
             segment_revenue=seg_rev, segment_or=seg_or, group_revenue=group_rev,
@@ -159,7 +168,8 @@ class SegmentEngine:
             restructuring_cash_to_come=inp.restructuring_cash_to_come, equity_value=equity,
             shares_outstanding_m=inp.shares_outstanding_m, value_per_share_usd=vps_usd,
             value_per_share_aud=vps_aud,
-            terminal_share_of_ev=(pv_terminal / ev if ev else 0.0),
+            terminal_share_of_ev=terminal_share,
+            warnings=warnings,
         )
 
     def per_year_derivation(self, r: SegmentResult):
