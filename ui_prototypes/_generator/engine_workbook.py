@@ -1151,6 +1151,28 @@ def build_wbc_workbook_bytes(cfg=None):
     ws.cell(rr, 2, f"={R['vps:muddle_through']}").number_format = NUM1 + "00"; ws.cell(rr, 2).font = BOLD
     ws.column_dimensions["A"].width = 44; ws.column_dimensions["B"].width = 14
 
+    # ---------------- Five forces (company-position offsets) ----------------
+    ws = wb.create_sheet("Five forces")
+    ws.cell(1, 1, "Porter's five forces \u2192 company-position offsets (feed the AIEA/NIM chain)").font = HDR
+    ws.cell(2, 1, "Industry rating is the archetype baseline; the offset is WBC's position. Net offsets link to Assumptions and drive the chain.").font = NOTE
+    hr = 4
+    for j, t in enumerate(["Force", "Industry rating", "WBC position", "Assessed impact"]):
+        ws.cell(hr, 1 + j, t).font = BOLD
+    rr = hr + 1
+    for row in (cfg.get("_forces", {}) or {}).get("rows", []):
+        ws.cell(rr, 1, row[0]); ws.cell(rr, 2, row[1])
+        ws.cell(rr, 3, row[3] if len(row) > 3 else "")
+        ws.cell(rr, 4, row[4] if len(row) > 4 else "")
+        rr += 1
+    rr += 1
+    ws.cell(rr, 1, "Net NIM offset (deposit-franchise supplier power)").font = BOLD
+    ws.cell(rr, 2, f"={R['off_nim']}").number_format = PCT3; ws.cell(rr, 2).font = BOLD; rr += 1
+    ws.cell(rr, 1, "Net AIEA-growth offset (rivalry / cost-to-income gap)").font = BOLD
+    ws.cell(rr, 2, f"={R['off_aiea']}").number_format = PCT2; ws.cell(rr, 2).font = BOLD; rr += 1
+    ws.cell(rr, 1, "These are the company_offset rows in the AIEA/NIM chain \u2014 same values.").font = NOTE
+    ws.column_dimensions["A"].width = 40
+    for cc in ("B", "C", "D"): ws.column_dimensions[cc].width = 20
+
     # ---------------- Scenarios summary ----------------
     ws = wb.create_sheet("Scenarios")
     ws.cell(1, 1, "Scenario summary — value per share by world (links to Valuation)").font = HDR
@@ -1357,6 +1379,58 @@ def build_csl_workbook_bytes(cfg=None):
         R[f"ev:{sid}"] = f"'Segment FCFF'!{COLS[j]}{m['ev']}"
     ws.column_dimensions["A"].width = 40
     for cc in "CDEFGH": ws.column_dimensions[cc].width = 12
+
+    # ---------------- Comparability & beta ----------------
+    import beta_data as _bd
+    _cb = _bd.CSL; _idx = _cb["indexDefault"]; _win = _cb["windowDefault"]
+    ws = wb.create_sheet("Comparability & beta")
+    ws.cell(1, 1, "Beta triangulation — biopharma peers (measured betas; peer-cluster selection)").font = HDR
+    ws.cell(2, 1, "Defensive-healthcare cluster. Measured CSL beta rejected (AUD-listed price vs AUD index for a USD earner). Selected = cluster midpoint.").font = NOTE
+    hr = 4
+    for j, t in enumerate(["Peer", "Measured beta", "Role"]):
+        ws.cell(hr, 1 + j, t).font = BOLD
+    rr = hr + 1; incl = []
+    for c in _cb["comparables"]:
+        be = c["data"][_idx][_win]["beta"]
+        ws.cell(rr, 1, c["name"])
+        cc = ws.cell(rr, 2, be); cc.fill = YELLOW; cc.font = BLUEFONT; cc.number_format = NUM1 + "0"
+        ws.cell(rr, 3, "Comparable" if c.get("selected") else "Excluded")
+        if c.get("selected"): incl.append(f"B{rr}")
+        rr += 1
+    rr += 1
+    ws.cell(rr, 1, "Comparable-cluster median").font = BOLD
+    ws.cell(rr, 2, "=MEDIAN(" + ",".join(incl) + ")").number_format = NUM1 + "0"; ws.cell(rr, 2).font = BOLD; rr += 1
+    ws.cell(rr, 1, "Beta selected (used in Ke, from Assumptions)").font = BOLD
+    ws.cell(rr, 2, f"={R['beta']}").number_format = NUM1 + "0"; ws.cell(rr, 2).font = BOLD; rr += 1
+    ws.cell(rr, 1, _cb["subject"].get("measuredNote", "")[:150]).font = NOTE
+    ws.column_dimensions["A"].width = 32
+    for c in ("B", "C"): ws.column_dimensions[c].width = 16
+
+    # ---------------- Multiples (EV/EBITDA, EV/EBIT: model vs market, USD) ----------------
+    ws = wb.create_sheet("Multiples")
+    ws.cell(1, 1, "Multiples \u2014 model EV vs the market-implied EV on FY27 earnings (USD m)").font = HDR
+    ws.cell(2, 1, "CSL is USD-functional; the market price (AUD) is converted at the reporting-date FX. Unlevered model, so EV multiples (not P/E).").font = NOTE
+    _mtcol = COLS[1]  # Muddle Through column
+    rr = 3
+    ws.cell(rr, 1, "Group EBIT FY27 (Muddle Through)"); ws.cell(rr, 2, f"='Segment FCFF'!{_mtcol}{m['ebit2']}").number_format = NUM0; _e = rr; rr += 1
+    ws.cell(rr, 1, "Group revenue FY27"); ws.cell(rr, 2, f"='Segment FCFF'!{_mtcol}{m['grev2']}").number_format = NUM0; _rev = rr; rr += 1
+    ws.cell(rr, 1, "D&A FY27 (revenue x D&A%)"); ws.cell(rr, 2, f"=B{_rev}*{R['da']}").number_format = NUM0; _da = rr; rr += 1
+    ws.cell(rr, 1, "EBITDA FY27 (EBIT + D&A)"); ws.cell(rr, 2, f"=B{_e}+B{_da}").number_format = NUM0; _ebda = rr; rr += 1
+    rr += 1
+    ws.cell(rr, 1, "Model enterprise value (from Segment FCFF)").font = BOLD
+    ws.cell(rr, 2, f"={R['ev:muddle_through']}").number_format = NUM0; _mev = rr; rr += 1
+    ws.cell(rr, 1, "Model EV / EBITDA"); ws.cell(rr, 2, f"=B{_mev}/B{_ebda}").number_format = '0.0"x"'; rr += 1
+    ws.cell(rr, 1, "Model EV / EBIT"); ws.cell(rr, 2, f"=B{_mev}/B{_e}").number_format = '0.0"x"'; rr += 1
+    rr += 1
+    ws.cell(rr, 1, "Market price (AUD)"); ws.cell(rr, 2, f"={R['mkt']}").number_format = NUM1 + "0"; _mp = rr; rr += 1
+    ws.cell(rr, 1, "Market cap (USD) = price/FX x shares"); ws.cell(rr, 2, f"=B{_mp}/{R['fx']}*{R['shares']}").number_format = NUM0; _mc = rr; rr += 1
+    ws.cell(rr, 1, "Market EV (USD) = market cap + net debt"); ws.cell(rr, 2, f"=B{_mc}+{R['nd']}").number_format = NUM0; _mkev = rr; rr += 1
+    ws.cell(rr, 1, "Market EV / EBITDA"); ws.cell(rr, 2, f"=B{_mkev}/B{_ebda}").number_format = '0.0"x"'; rr += 1
+    ws.cell(rr, 1, "Market EV / EBIT"); ws.cell(rr, 2, f"=B{_mkev}/B{_e}").number_format = '0.0"x"'; rr += 1
+    rr += 1
+    ws.cell(rr, 1, "Cross-check: model value per share (AUD)").font = BOLD
+    ws.cell(rr, 2, f"={R['vaud:muddle_through']}").number_format = NUM1 + "00"; ws.cell(rr, 2).font = BOLD
+    ws.column_dimensions["A"].width = 42; ws.column_dimensions["B"].width = 14
 
     # ---------------- Scenarios summary ----------------
     ws = wb.create_sheet("Scenarios")
