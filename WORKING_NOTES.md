@@ -13,6 +13,19 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 
 ---
 
+## 🔎 NEXT SESSION (planned) — full-project review with Claude's best model (Opus)
+
+Stephen's call at session end (12 Aug 2026): before building further, run a rigorous, critical review
+of the ENTIRE project to date using the strongest model. Scope: methodology soundness (the three
+valuation approaches), engine correctness vs the audited workbooks, data integrity / single-source-of-
+truth, traceability coverage, test quality (goldens not circular), the §7.4-v2 archetype-fork + schema
+relaxations, and the standalone-UI + base64-workbook approach. Deliverable is an assessment/findings
+report (correctness bugs → methodology → data/tests/code quality → improvements), NOT code changes.
+A ready-to-paste review brief is in `bridge_note_2026-08-12_review.md` (repo root). Nothing is
+blocking; everything is committed, pushed (HEAD `f91497c`), green (suite 122, ratchet 8).
+
+---
+
 ## ✅ ALL THREE TEST COMPANIES COMPLETE — engine-wired UI + downloadable audited workbook (12 Aug 2026)
 
 DNL, WBC and CSL are now each valued end-to-end by an archetype-appropriate production engine, every one
