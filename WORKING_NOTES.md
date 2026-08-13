@@ -40,6 +40,15 @@ terminal capex = D&A). CSL-4/5 UI + workbook. Tests `test_csl_loads.py` (3) + `t
 + additive; `load_inputs` branches on archetype_class / segment-level; the engine reads `normalised_baseline`).
 Adding a 4th company = pick/extend an engine, author its data block, wire the pack, build the workbook.
 
+**✅ Comprehensive workbooks rolled onto WBC + CSL (commit `514a4b7`).** All three downloads now uniformly
+rich: WBC gained a Five forces sheet (Porter offsets linked to the AIEA/NIM chain) → 9 sheets; CSL gained
+Comparability & β (peer betas Grifols/Takeda/Sanofi → median 0.80 vs selected 0.85) + Multiples (EV/EBITDA
+& EV/EBIT, model vs market on FY27 earnings, FX-converted; unlevered so EV multiples not P/E) → 6 sheets.
+All recalc-tie the engines (WBC 30.03, CSL USD 134.52 / AUD 203.83). Peer betas read from beta_data (no new
+literals); suite 113, ratchet 8. Note: DNL-style Comparability *metrics* (financial/operating leverage,
+cyclicality) NOT ported — `det` data is DNL-only; and peer *mfin* (financials for a peer-multiples grid) is
+DNL-only too, so WBC/CSL multiples are own-vs-market, not a peer grid.
+
 **Possible next threads (all optional, none blocking):** (a) per-year P&L `Derivation` surfacing (parity item,
 all three); (b) the human-readable workings view from `Derivation.as_rows()` (long-deferred); (c) DM-inflation
 basis reconciliation (DNL); (d) roll the DNL comprehensive-workbook sheets (comparability/multiples/lease) onto
