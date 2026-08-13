@@ -68,6 +68,23 @@ class Durability(str, Enum):
     HIGH = "high"
 
 
+class ArchetypeRating(str, Enum):
+    """Finer ordinal used in industry-archetype assessments (§7.4 v2 spec).
+
+    A superset of the three-point ``Rating`` with the ``x_to_y`` gradations and
+    ``very_low`` that the newer archetype files (bank, biopharma) use for force
+    ratings, disruption severity and supply risk. Kept separate from ``Rating`` so
+    company-positioning fields stay on the strict three-point scale.
+    """
+
+    VERY_LOW = "very_low"
+    LOW = "low"
+    LOW_TO_MODERATE = "low_to_moderate"
+    MODERATE = "moderate"
+    MODERATE_TO_HIGH = "moderate_to_high"
+    HIGH = "high"
+
+
 class LifecycleStage(str, Enum):
     """Industry lifecycle stage (section 7.3)."""
 
@@ -84,6 +101,7 @@ class GeographyScope(str, Enum):
     REGIONAL = "regional"
     NATIONAL = "national"
     MULTI_GEOGRAPHIC = "multi_geographic"
+    DOMESTIC_AU_NZ = "domestic_au_nz"  # geography-as-identity for the AU/NZ bank archetype
 
 
 class DriverRole(str, Enum):
@@ -141,6 +159,7 @@ class CyclePhase(str, Enum):
     TROUGH = "trough"
     EARLY = "early"
     MID = "mid"
+    LATE_MID = "late_mid"
     LATE = "late"
     PEAK = "peak"
 

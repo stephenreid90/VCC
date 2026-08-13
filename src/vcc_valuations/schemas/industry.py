@@ -9,11 +9,12 @@ complementary framework where Porter does not adequately serve (section 7.5.1).
 
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
 from vcc_valuations.schemas.common import (
+    ArchetypeRating,
     ConcentrationStructure,
     CycleAmplitude,
     CyclePhase,
@@ -29,21 +30,31 @@ class Force(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    rating: Rating
+    rating: ArchetypeRating
     rationale: str = Field(..., description="Short paragraph; sub-determinants per Porter 2008.")
 
 
 class FiveForces(BaseModel):
     """Porter's Five Forces, populated using the question bank in
-    design/frameworks/five_forces_questions.md."""
+    design/frameworks/five_forces_questions.md.
+
+    Two naming generations coexist: the original ``new_entrants`` / ``substitutes``
+    (industrial archetypes) and the §7.4-v2 ``threat_of_new_entrants`` /
+    ``threat_of_substitutes`` (+ optional ``rivalry_subforces``) used by the newer
+    bank and biopharma archetypes. Both are accepted; at least one form of each
+    force is expected.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
     buyer_power: Force
     supplier_power: Force
-    new_entrants: Force
-    substitutes: Force
+    new_entrants: Optional[Force] = None
+    substitutes: Optional[Force] = None
+    threat_of_new_entrants: Optional[Force] = None
+    threat_of_substitutes: Optional[Force] = None
     rivalry: Force
+    rivalry_subforces: Optional[List[Dict[str, Any]]] = None
 
 
 class CostStructure(BaseModel):
@@ -154,8 +165,8 @@ class DisruptionVector(BaseModel):
     nature: str = Field(..., description="threat | opportunity | both")
     incumbency_position: str = Field(..., description="defender | attacker | neutral")
     time_horizon: str = Field(..., description="'0-3 years' | '3-7 years' | '7+ years'")
-    severity: Rating
-    certainty: Rating
+    severity: ArchetypeRating
+    certainty: ArchetypeRating
     description: str
 
 
@@ -173,13 +184,15 @@ class Cyclicality(BaseModel):
     cycle_length_years: Optional[int] = None
     current_cycle_phase: CyclePhase
     amplitude: CycleAmplitude
+    rationale: Optional[str] = None
 
 
 class InputDependencies(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     critical_inputs: List[str]
-    supply_risk: Rating
+    supply_risk: ArchetypeRating
+    rationale: Optional[str] = None
 
 
 class Concentration(BaseModel):
@@ -211,15 +224,21 @@ class IndustryArchetype(BaseModel):
     submarkets: Optional[List[Submarket]] = None
     five_forces: FiveForces
     complementary_framework: Optional[ComplementaryFramework] = None
-    lifecycle_stage: LifecycleStage
-    lifecycle_rationale: str
-    concentration: Concentration
-    cost_structure: CostStructure
-    scenario_sensitivity: ScenarioSensitivity
+    # Industrial archetypes carry the full lifecycle / concentration / cost-structure /
+    # scenario-sensitivity blocks. The newer bank + biopharma archetypes (§7.4 v2) capture
+    # that structure in archetype-specific blocks instead, so these are optional.
+    lifecycle_stage: Optional[LifecycleStage] = None
+    lifecycle_rationale: Optional[str] = None
+    concentration: Optional[Concentration] = None
+    cost_structure: Optional[CostStructure] = None
+    scenario_sensitivity: Optional[ScenarioSensitivity] = None
     disruption_vectors: List[DisruptionVector] = []
-    regulatory_regime: RegulatoryRegime
+    regulatory_regime: Optional[RegulatoryRegime] = None
     cyclicality: Cyclicality
     input_dependencies: InputDependencies
+    # §7.4-v2 additions carried by the newer archetypes.
+    archetype_class: Optional[str] = None
+    bank_archetype: Optional[Dict[str, Any]] = None
 
 
 class IndustryArchetypeFile(BaseModel):

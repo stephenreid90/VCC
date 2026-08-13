@@ -171,20 +171,14 @@ def load_inputs(
 
     scenario = ScenarioFile.model_validate(_load(scenario_path)).scenario
     if archetype_path.exists():
-        archetype_raw = _load(archetype_path)
-        _ia = archetype_raw.get("industry_archetype", archetype_raw)
-        if isinstance(_ia, dict) and (_ia.get("archetype_class") == "bank" or "bank_archetype" in _ia):
-            # Bank archetypes follow the methodology §15 bank spec, not the industrial
-            # IndustryArchetypeFile. Keep the raw mapping until the bank archetype schema
-            # is formalised (WBC engine milestone); the bank valuation path consumes
-            # normalised_baseline, and nothing reads the archetype as a typed model.
-            archetype = _ia
-        else:
-            archetype = IndustryArchetypeFile.model_validate(archetype_raw).industry_archetype
+        # All archetype files — industrial, bank and biopharma — now validate against the
+        # §7.4-v2 IndustryArchetypeFile (bank/biopharma carry archetype_class, the v2 five-
+        # forces shape and archetype-specific blocks; industrial keeps the original shape).
+        archetype = IndustryArchetypeFile.model_validate(_load(archetype_path)).industry_archetype
     else:
-        # Segment-level-valuation companies (e.g. CSL) have no single consolidated
-        # archetype file — archetypes are resolved per segment from the company file.
-        # The segment-FCFF engine reads normalised_baseline; nothing needs the archetype.
+        # Segment-level-valuation companies (e.g. CSL) have no single consolidated archetype
+        # file — archetypes are resolved per segment from the company file, and the segment-
+        # FCFF engine reads normalised_baseline, so nothing needs a typed archetype here.
         archetype = None
     company_raw = _load(company_path)
     company = CompanyPositionFile.model_validate(company_raw).company_position

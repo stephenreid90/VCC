@@ -35,11 +35,13 @@ def test_wbc_company_file_validates():
 
 
 def test_wbc_loads_through_pipeline():
+    from vcc_valuations.schemas.industry import IndustryArchetype
+
     inp = load_inputs(ROOT, "muddle_through", "australian_major_banks", "wbc")
     assert inp["company"].id == "wbc"
-    # bank archetype kept raw (its §15 schema is not yet formalised)
-    assert isinstance(inp["archetype"], dict)
-    assert inp["archetype"]["archetype_class"] == "bank"
+    # bank archetype now validates strictly against the §7.4-v2 IndustryArchetypeFile
+    assert isinstance(inp["archetype"], IndustryArchetype)
+    assert inp["archetype"].archetype_class == "bank"
     assert inp["matrix"].industry == "australian_major_banks"
 
 

@@ -42,5 +42,7 @@ def test_csl_loads_through_pipeline():
 def test_dnl_and_wbc_paths_unaffected():
     dnl = load_inputs(ROOT, "muddle_through", "industrial_explosives", "dnl")
     assert dnl["archetype"] is not None and dnl["matrix"] is not None
+    from vcc_valuations.schemas.industry import IndustryArchetype
+
     wbc = load_inputs(ROOT, "muddle_through", "australian_major_banks", "wbc")
-    assert isinstance(wbc["archetype"], dict) and wbc["matrix"] is not None
+    assert isinstance(wbc["archetype"], IndustryArchetype) and wbc["matrix"] is not None
