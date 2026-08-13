@@ -404,6 +404,18 @@ normalised_baseline:
       # Per-scenario macro (B18/B19/B20 + B17 context memo). dm_real_gdp_growth is
       # carried for traceability but NOT consumed (the chain keys off mining real
       # growth + DM inflation). Values are the dnl_scenarios_comparison_v4 Inputs sheet.
+      #
+      # DM-INFLATION BASIS (reconciliation, 12 Aug 2026). `dm_inflation` here is a single
+      # NORMALISING, pricing-pass-through developed-market inflation input for the explosives
+      # revenue chain (it enters pricing at the 0.7 weight, above). It is INTENTIONALLY distinct
+      # from the world-scenario file's `cpi_inflation_advanced` (data/scenarios/<id>.yaml), which
+      # is a sticky-headline advanced-economy CPI *time series* (yr 1/3/5/10). The chain value
+      # sits a little BELOW the scenario's near-term sticky headline and moves in the same
+      # direction across worlds — e.g. Muddle Through dm_inflation 2.5% vs scenario CPI 3.0%;
+      # Orderly 2.0% vs 2.8%; Stagflation 4.5% vs 5.0%. Both are correct: the scenario file is the
+      # world headline, this is the through-cycle DM pricing input the engine consumes. The two are
+      # NOT wired together today; formally deriving the chain input from the scenario CPI is a macro-
+      # layer decision that WOULD move the valuation, so it is deferred to Stephen (methodology owner).
       muddle_through:
         macro: {dm_real_gdp_growth: 0.020, dm_inflation: 0.025, global_mining_real_growth: 0.025, gas_price_growth: 0.020}
       orderly_convergence:
