@@ -13,7 +13,50 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 
 ---
 
-## 🔎 NEXT SESSION (planned) — TRIAGE the full-project review findings
+## ▶ IN PROGRESS — executing the triage plan (13 Aug 2026)
+
+The Fable review was triaged by Opus; findings validated, disputed and re-derived in
+`design/reviews/triage_full_project_review_2026-08-13_opus.md`. Execution is running
+through the batches in that document's Part B.
+
+**Batch 1 DONE (`675d931`) — engine lock.** All 18 scenario levels pinned as goldens
+(`tests/dcf/test_scenario_goldens.py`, flagged engine-owned not workbook-owned); the
+§11.4.2 terminal-share warning ported to the bank and segment engines via the shared
+`fcf_engine.terminal_share_warning()`. Suite 122 → 146.
+
+**Batch 2 DONE — UI credibility bugs.** (a) all three pages now open on the live case,
+derived from `kind=='live'` rather than a hard-coded `activeIdx` (CSL was opening on
+the broker bar and showing consensus as its headline); (b) the CSL broker bar is
+sourced from the register and converted at the model's own FX, moving 136.00 → 146.60;
+(c) `cp.re0` and the discount-rate slider default are now one number, so the reduced
+form returns the engine base exactly at defaults (DNL was rendering 3.0719) and the
+spurious "per-scenario discount-rate override" chip is gone from all six DNL bars —
+the unrounded engine rate is retained as `cp.reEngine`; (d) user scenario names are
+escaped before `innerHTML`; (e) deleting a user scenario no longer shifts the
+selection onto a neighbouring world; (f) topnotes redated August 2026.
+
+**⚠ OPEN DATA CONFLICT — CSL sell-side consensus.** Two register figures disagree by
+~6%: `data/financials/csl.yaml market_data.consensus_target_usd` (USD, the one the UI
+now uses, → AUD 146.60 at 1.5152) and `data/companies/csl.yaml
+share_statistics.sell_side_consensus_target_aud` (AUD 138.58). Different feed pulls,
+different dates. **For Ben's next refresh: reconcile these two and retire one.**
+
+**⚠ OPEN — all three market reference prices are struck at 2026-06-15**, i.e. two
+months stale. Affects every "vs market" figure on every page, the D/V weight in the
+CSL WACC question, and the §16.3 gap story. Stephen to decide whether the snapshot is
+deliberate (fixed valuation date) or wants refreshing.
+
+**NEXT — awaiting Stephen:** the Batch 4 methodology decisions. The CSL discount-rate
+fork is written up in full at `design/methodology/csl_discount_rate_fork.md` (three
+options, value impact re-derived: a consistent WACC is worth **+21.5% to +26.6%** on
+CSL, not the +8-15% the review estimated, and it pushes the number *up*, not down as
+the review's fix-order assumed). Still open alongside it: CSL valuation-date anchoring
+(±2%), DNL reinvestment (zero working capital across the whole forecast, −4% to −9%),
+and the WBC CET1 feasibility check.
+
+---
+
+## 🔎 SUPERSEDED — TRIAGE the full-project review findings
 
 A full-project review was produced by **Claude Fable 5** (the review brief is in
 `bridge_note_2026-08-12_review.md`; it covered methodology, engine correctness, SSOT/data integrity,

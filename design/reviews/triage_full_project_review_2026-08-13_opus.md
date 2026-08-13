@@ -371,7 +371,19 @@ Ordered by how much they matter.
    whole story, the page currently shows consensus instead. Related: `liveIdx` is dead
    config, never read by `gen_ui.py`.
 
-3. **The CSL broker number is invented in code and contradicts both data files.**
+3. **The CSL broker number is hard-coded in code and contradicts both data files.**
+
+   > **Correction, added after tracing the provenance (13 Aug 2026).** I first wrote
+   > that 136.0 was "invented". It was not. `analyses/csl/thesis.md:34` records the
+   > sell-side target as USD 96.75 (16-analyst mean) *"≈ AUD 136"* — i.e. 136 is the
+   > correct consensus figure converted at an FX of about 1.406. The model's FX is
+   > now 1.5152, at which the same target is AUD 146.60. So the defect is FX drift in
+   > a hard-coded literal, not a fabricated number. The remedy is the same (source it
+   > from the register and convert at the model's own FX) and the SSOT hole is the
+   > same, but the diagnosis was unfair to whoever wrote the line. **Resolved in
+   > Batch 2:** the bar is now computed from `consensus_target_usd × fx_aud_per_usd`.
+   > The residual issue is that the two register figures still disagree — see below.
+
    `build_cfgs.py:245` hard-codes `broker: 136.0`. `csl.yaml:471` says
    `sell_side_consensus_target_aud: 138.58`; `data/financials/csl.yaml:63` says
    `consensus_target_usd: 96.75` which at the model's own FX of 1.5152 is **AUD 146.60**.

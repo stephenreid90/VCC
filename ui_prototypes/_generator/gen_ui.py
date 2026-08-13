@@ -591,7 +591,7 @@ function vccDownload(){ try{
       var del=(s.kind==='user')?'<span class="delu" data-uid="'+s.uid+'" title="delete scenario" style="cursor:pointer; color:var(--text3); padding:0 3px;">×</span>':'';
       var wr=(s.kind!=='broker'&&s.vals&&Math.abs((s.vals.re!=null?s.vals.re:singleWacc)-singleWacc)>1e-9)?'<span title="per-scenario discount-rate override — differs from the single WACC" style="color:var(--warning-tx); font-weight:500; font-size:11px;"> · r '+s.vals.re.toFixed(2)+'%</span>':'';
       h+='<div class="scbar" data-i="'+i+'" style="display:flex; align-items:center; gap:8px; margin-bottom:5px; cursor:pointer; border-radius:5px; padding:1px 2px; '+(sel?'background:var(--secondary);':'')+'">'
-       +'<div style="width:122px; font-size:12px; color:'+(sel?'var(--text)':'var(--text2)')+'; font-weight:'+(sel?'500':'400')+'; text-align:right; flex:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">'+del+s.n+od+'</div>'
+       +'<div style="width:122px; font-size:12px; color:'+(sel?'var(--text)':'var(--text2)')+'; font-weight:'+(sel?'500':'400')+'; text-align:right; flex:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">'+del+esc(s.n)+od+'</div>'
        +'<div style="flex:1; position:relative; height:19px;"><div style="height:19px; width:'+w+'%; background:'+barColor(s.kind)+'; border-radius:4px; '+(sel?'outline:1.5px solid var(--bdinfo);':'')+'"></div>'
        +'<div style="position:absolute; top:1px; left:calc('+w+'% + 6px); font-size:12px; font-weight:500; color:'+txtColor(s.kind)+'; white-space:nowrap;">'+s.v.toFixed(CFG.dp)+wr+'</div></div></div>';
     });
@@ -618,9 +618,9 @@ function vccDownload(){ try{
   function syncSliders(){ CFG.sliders.forEach(function(s){ inputs[s.k].value=st[s.k]; var o=document.getElementById('o_'+s.k); if(o) o.textContent=fmt(s,st[s.k]); }); }
   function slidersEnabled(on){ sl.style.opacity=on?'1':'0.45'; sl.style.pointerEvents=on?'auto':'none'; }
   function updateEditingUI(){ var e=document.getElementById('editing'); if(!e) return; var sc=activeScen();
-    if(sc.kind==='broker') e.innerHTML='<b>'+sc.n+'</b> — reference line, not editable';
-    else if(sc.kind==='user') e.innerHTML='editing your scenario <b>'+sc.n+'</b> — changes save in this browser';
-    else e.innerHTML='editing <b>'+sc.n+'</b> (our assessed case) — flex any input; ↻ reset restores it'; }
+    if(sc.kind==='broker') e.innerHTML='<b>'+esc(sc.n)+'</b> — reference line, not editable';
+    else if(sc.kind==='user') e.innerHTML='editing your scenario <b>'+esc(sc.n)+'</b> — changes save in this browser';
+    else e.innerHTML='editing <b>'+esc(sc.n)+'</b> (our assessed case) — flex any input; ↻ reset restores it'; }
 
   document.getElementById('reset').addEventListener('click',function(){ var a=activeScen(); if(a.kind==='broker') return; a.vals=defaultVals(); a.forces={}; a.v=scVal(a); st=a.vals; saveLS(); syncSliders(); updateCards(a.v); drawBars(); });
   document.getElementById('allassum').addEventListener('click',function(){ setPanel('assum'); markExplore('assum'); openDetail('assum'); });
@@ -628,7 +628,17 @@ function vccDownload(){ try{
   document.getElementById('addscen').addEventListener('click',function(){ var name=prompt('Name your scenario (starts from Muddle Through, then flex any input):','My scenario '+(CFG.scenarios.filter(function(s){return s.kind==='user';}).length+1));
     if(!name) return; name=(''+name).slice(0,40); var sc={n:name, kind:'user', uid:'u'+Date.now(), anchor:CFG.cp.base, vals:defaultVals(), forces:{}}; sc.v=scVal(sc);
     CFG.scenarios.push(sc); saveLS(); selectBar(CFG.scenarios.length-1); });
-  function delScenario(id){ CFG.scenarios=CFG.scenarios.filter(function(sc){ return sc.uid!==id; }); if(CFG.activeIdx>=CFG.scenarios.length) CFG.activeIdx=0; saveLS(); selectBar(CFG.activeIdx); }
+  function delScenario(id){ var gone=-1;
+    for(var i=0;i<CFG.scenarios.length;i++){ if(CFG.scenarios[i].uid===id){ gone=i; break; } }
+    CFG.scenarios=CFG.scenarios.filter(function(sc){ return sc.uid!==id; });
+    // keep the selection on the SAME scenario: deleting a bar above the active one
+    // shifts every later index down by one. Previously activeIdx was left alone and
+    // the selection silently jumped to a neighbouring world.
+    if(gone>-1 && gone<CFG.activeIdx) CFG.activeIdx--;
+    else if(gone===CFG.activeIdx) CFG.activeIdx=(CFG.liveIdx!=null?CFG.liveIdx:0);
+    if(CFG.activeIdx>=CFG.scenarios.length) CFG.activeIdx=CFG.scenarios.length-1;
+    if(CFG.activeIdx<0) CFG.activeIdx=0;
+    saveLS(); selectBar(CFG.activeIdx); }
 
   // explore — clicking a tab opens the detailed content directly (no brief snapshot)
   var ex=document.getElementById('explore'); var exBtns={};

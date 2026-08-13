@@ -95,7 +95,7 @@ dnl = {
  "richbook":True,"shares":1884,"netDebt":1512,"netDebtExLeases":1300,"leaseLiab":212,
  "_leaseContract":{"_mock":True,"accountingStandard":"AASB 16 / IFRS 16","totalDebtIncludesLeases":False,"leaseLiability":212,"annualLeaseCost":45,"incrementalBorrowingRate":0.055,"leaseMaturityUndisc":{"y1":48,"y2":44,"y3":40,"y4":34,"y5":28,"beyond5":60},"contractNote":"Shape the real EODHD feed must reproduce (for Ben): (1) whether reported total debt includes AASB 16 lease liabilities; (2) the annual rent / lease-cost line (RoU depreciation + lease interest); (3) the undiscounted lease-maturity table, to re-capitalise peers on a uniform house rule; (4) the accounting standard (AASB 16 / IFRS 16 vs US GAAP ASC 842). MOCK values until the feed returns."},
  "mklab":"vs market (3.61)","brlab":"vs broker target (3.61)","metric4":{"label":"Asymmetry (down/up)","value":"4.05×"},
- "pvsub":"","topnote":"Working prototype — all six scenarios calibrated (v4). Slider responses are an illustrative approximation, not the production DCF engine. Reid Advisory, June 2026.",
+ "pvsub":"","topnote":"Working prototype — all six scenarios calibrated (v4). Slider responses are an illustrative approximation, not the production DCF engine. Reid Advisory, August 2026.",
  "footnote":"Prototype for discussion. Calibrated central case: DNL Muddle Through AUD 3.48 (market AUD 3.61). Per-scenario figures from dnl_scenarios_comparison_v4.",
  "cp":{"base":3.48,"re0":0.0868,"g0":0.025,"m0":13.5,"tax0":0.275,"wTerm":0.85,"xKey":"gas","x0":100,"xk":-0.0008},
  "sliders":[
@@ -170,7 +170,7 @@ wbc = {
  "company":"Westpac Banking Corporation (ASX:WBC)","companyShort":"WBC","ccy":"AUD","ccynote":"AUD · cost-of-equity (bank §15)",
  "dp":2,"market":35.32,"broker":33.45,"scale":40.0,"liveIdx":2,"activeIdx":2,
  "mklab":"vs market (35.32)","brlab":"vs broker target (33.45)","metric4":{"label":"Asymmetry (down/up)","value":"1.90×"},
- "pvsub":"","topnote":"Working prototype — all six scenarios calibrated (v3). Slider responses are an illustrative approximation, not the production engine. Bank fork (methodology §15). Reid Advisory, June 2026.",
+ "pvsub":"","topnote":"Working prototype — all six scenarios calibrated (v3). Slider responses are an illustrative approximation, not the production engine. Bank fork (methodology §15). Reid Advisory, August 2026.",
  "footnote":"Prototype for discussion. Calibrated central case: WBC Muddle Through AUD 30.15 (market AUD 35.32). Per-scenario figures from wbc_scenarios_comparison_v2.",
  "cp":{"base":30.15,"re0":0.0805,"g0":0.025,"m0":11.5,"tax0":0.30,"wTerm":0.95,"xKey":"credit","x0":18,"xk":-0.004},
  "sliders":[
@@ -245,7 +245,7 @@ csl = {
  "dp":2,"market":105.53,"broker":136.0,"scale":260.0,"liveIdx":1,"activeIdx":1,
  "mklab":"vs market (105.53)","brlab":"vs average broker (136)","metric4":{"label":"Terminal % of value","value":"75%"},
  "pvsub":"AUD (USD-functional model, at 0.66)",
- "topnote":"Working prototype — all six scenarios calibrated (v4 / comparison v2). Slider responses are an illustrative approximation, not the production DCF engine. USD-functional; per-share shown in AUD at 0.66. Reid Advisory, June 2026.",
+ "topnote":"Working prototype — all six scenarios calibrated (v4 / comparison v2). Slider responses are an illustrative approximation, not the production DCF engine. USD-functional; per-share shown in AUD at 0.66. Reid Advisory, August 2026.",
  "footnote":"Prototype for discussion. Calibrated central case: CSL Muddle Through USD 134.52 / AUD 203.83 (market AUD 105.53). The framework sits ~93% above market — a §16 &lsquo;cause for curiosity&rsquo;, not a calibration error; β held at 0.85 for a repeatable framework. Per-scenario figures from csl_scenarios_comparison_v2 and _muddle_through_v4.",
  "cp":{"base":203.83,"re0":0.0875,"g0":0.03,"m0":30.0,"tax0":0.19,"wTerm":0.752,"xKey":"uplift","x0":150,"xk":0.0004},
  "sliders":[
@@ -360,6 +360,52 @@ csl["_forces"]["impacts"] = [
 import sys as _sys
 from pathlib import Path as _Path
 _ROOT = _Path(__file__).resolve().parents[2]
+
+import yaml as _yaml
+
+
+def _data(rel):
+    """Load a repo data file. Used to source display-only reference values (market
+    price, broker target) from the register rather than restating them here."""
+    with open(_ROOT / rel, encoding="utf-8") as _f:
+        return _yaml.safe_load(_f) or {}
+
+
+def _point_active_at_live(cfg):
+    """Open the page on the central case, whatever index it landed at.
+
+    The *_pack builders insert the broker reference bar after the upside world, so
+    the index of the live case depends on bar order and silently moved when the
+    packs were wired. Deriving it from ``kind`` removes the hard-coded index: CSL
+    was opening on the broker bar and showing consensus as its headline.
+    """
+    for _i, _b in enumerate(cfg["scenarios"]):
+        if _b.get("kind") == "live":
+            cfg["activeIdx"] = _i
+            cfg["liveIdx"] = _i
+            return _i
+    raise ValueError("no scenario with kind=='live'; cannot set the opening bar.")
+
+
+def _align_reduced_form_rate(cfg, engine_rate):
+    """Calibrate the reduced-form slider model to its own default, and record the
+    engine rate separately.
+
+    ``cp.re0`` is the reduced form's *reference* discount rate — the point at which
+    it must return ``cp.base`` exactly — and it is also what the UI displays as the
+    single WACC/Ke (always at 2 dp). The slider default has to sit on a step, so it
+    is the 2 dp value; previously ``re0`` kept full precision, so at defaults the
+    reduced form returned 3.0719 rather than DNL's 3.073 and every bar was flagged
+    as carrying a per-scenario discount-rate override. Both now share one number.
+    The unrounded engine rate stays available as ``cp.reEngine`` for traceability.
+    """
+    _ui = round(engine_rate * 100.0, 2)
+    cfg["cp"]["re0"] = _ui / 100.0
+    cfg["cp"]["reEngine"] = round(engine_rate, 6)
+    for _s in cfg["sliders"]:
+        if _s["k"] == "re":
+            _s["def"] = _ui
+    return _ui
 _sys.path.insert(0, str(_ROOT / "src"))
 from vcc_valuations.translator import load_inputs as _li, build_engine_inputs_from_data as _bi
 from vcc_valuations.dcf.fcf_engine import FcfEngine as _Eng
@@ -452,12 +498,10 @@ _dn = _base - _vals["Stagflation Persists"]
 def _pct(nm): return (_vals[nm] / _base - 1.0) * 100.0
 
 dnl["cp"]["base"] = _base
-dnl["cp"]["re0"] = round(_wacc, 6)
 dnl["scenarios"] = _pk["bars"]
 dnl["metric4"] = {"label": "Asymmetry (down/up)", "value": ("%.1f×" % _asym)}
-for _s in dnl["sliders"]:
-    if _s["k"] == "re":
-        _s["def"] = round(_wacc * 100.0, 2)
+_align_reduced_form_rate(dnl, _wacc)
+_point_active_at_live(dnl)
 
 # narrative numeric claims, engine-sourced (Direction 2: measured central-case framing)
 _M = "−"
@@ -582,12 +626,10 @@ def _wapct(nm): return abs(_wpct(nm))
 _woc = _wvals["Orderly Convergence"]
 
 wbc["cp"]["base"] = _wbase
-wbc["cp"]["re0"] = round(_wke, 6)
 wbc["scenarios"] = _wp["bars"]
 wbc["metric4"] = {"label": "Asymmetry (down/up)", "value": ("%.2f\u00d7" % _wasym)}
-for _s in wbc["sliders"]:
-    if _s["k"] == "re":
-        _s["def"] = round(_wke * 100.0, 2)
+_align_reduced_form_rate(wbc, _wke)
+_point_active_at_live(wbc)
 
 # narrative numeric claims, engine-sourced
 _wn = wbc["narr"]
@@ -643,17 +685,29 @@ _CSL_SCEN = [
     ("fragmentation", "Fragmentation", "down"),
     ("stagflation_persists", "Stagflation Persists", "down"),
 ]
+# Broker reference bar: the 16-analyst mean 12-month price target. It is held in the
+# register in USD (data/financials/csl.yaml market_data.consensus_target_usd) and is
+# converted here at the SAME fx_aud_per_usd the valuation itself uses. It used to be
+# a hard-coded AUD literal — the right consensus figure at a stale exchange rate —
+# so it silently drifted the moment the FX assumption moved. Sourced live now, per
+# Stephen 13 Aug 2026. NB data/companies/csl.yaml carries an AUD-denominated
+# consensus (share_statistics.sell_side_consensus_target_aud) from a different feed
+# pull that does not reconcile with this one; flagged in WORKING_NOTES for Ben's
+# next refresh.
+_csl_fx = _data("data/companies/csl.yaml")["normalised_baseline"]["segment_fcff"]["fx_aud_per_usd"]
+_csl_broker = round(_data("data/financials/csl.yaml")["market_data"]["consensus_target_usd"] * _csl_fx, 2)
+csl["broker"] = _csl_broker
+csl["brlab"] = "vs average broker (%s)" % ("{:,.2f}".format(_csl_broker))
+
 _sp = segment_pack("csl", "biopharmaceuticals", _CSL_SCEN, csl["broker"], csl["market"])
 _sbase = _sp["base"]; _ske = _sp["ke"]; _svals = _sp["vals"]
 _sdm = abs(_sp["discount_to_market"]) * 100.0
 def _sm(v): return "{:,.0f}".format(round(v))
 csl["cp"]["base"] = _sbase
-csl["cp"]["re0"] = round(_ske, 6)
 csl["scenarios"] = _sp["bars"]
 csl["metric4"] = {"label": "Terminal % of value", "value": ("%.0f%%" % (_sp["terminal_share"] * 100))}
-for _s in csl["sliders"]:
-    if _s["k"] == "re":
-        _s["def"] = round(_ske * 100.0, 2)
+_align_reduced_form_rate(csl, _ske)
+_point_active_at_live(csl)
 
 # build-up bridge + rows -> engine (already FCFF-shaped; source the numbers)
 _cmt = "Muddle Through"
