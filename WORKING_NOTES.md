@@ -13,16 +13,18 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 
 ---
 
-## 🔎 NEXT SESSION (planned) — full-project review with Claude's best model (Opus)
+## 🔎 NEXT SESSION (planned) — TRIAGE the full-project review findings
 
-Stephen's call at session end (12 Aug 2026): before building further, run a rigorous, critical review
-of the ENTIRE project to date using the strongest model. Scope: methodology soundness (the three
-valuation approaches), engine correctness vs the audited workbooks, data integrity / single-source-of-
-truth, traceability coverage, test quality (goldens not circular), the §7.4-v2 archetype-fork + schema
-relaxations, and the standalone-UI + base64-workbook approach. Deliverable is an assessment/findings
-report (correctness bugs → methodology → data/tests/code quality → improvements), NOT code changes.
-A ready-to-paste review brief is in `bridge_note_2026-08-12_review.md` (repo root). Nothing is
-blocking; everything is committed, pushed (HEAD `f91497c`), green (suite 122, ratchet 8).
+A full-project review was produced by **Claude Fable 5** (the review brief is in
+`bridge_note_2026-08-12_review.md`; it covered methodology, engine correctness, SSOT/data integrity,
+traceability, tests, the §7.4-v2 schema, the standalone-UI approach, known caveats, and UI/UX). Stephen
+holds the findings. **Next: a critical TRIAGE pass** — independently validate each finding against the
+actual codebase (confirm / dispute / needs-Stephen / UI), produce a prioritised action plan for sign-off,
+and only then execute. Do it with a DIFFERENT strong model (Opus) for an independent second opinion, and
+VERIFY (re-run the suite, re-derive any disputed number against the audited workbook) rather than trust.
+Ready-to-paste triage brief: `bridge_note_2026-08-12_triage.md` (repo root). If Stephen pastes Fable's
+findings, save them to `design/reviews/full_project_review_2026-08-12_fable.md` first, then triage.
+Everything committed/pushed/green (suite 122, ratchet 8, bases 3.073/30.03/203.83).
 
 ---
 
