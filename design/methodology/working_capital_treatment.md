@@ -128,7 +128,7 @@ AIEA/NIM chain: archetype anchor, company offset, applied figure derived.
 | Company | Can the calculation run? | Basis |
 |---|---|---|
 | **CSL** | **Yes — six years** | EODHD annual balance sheet FY20–FY25, plus FY22–FY25 + 1H26 statutory accounts in `historical/csl/` |
-| **DNL** | **One observation only** | 30 Sep 2025 in `financials/dnl.yaml`. No EODHD export exists (the DNL/IPL feed is the one still outstanding), and `historical/` has no DNL directory. |
+| **DNL** | **Yes — see §6.4** | `historical/dnl/` now holds IPL FY22 and FY23 annual reports, the DNL FY25 annual report and results presentation, and the 1H25 and 1H26 results announcements and presentation (filed 20 Aug 2026 from Stephen's archive). Constrained by the demerger, not by data. |
 | **WBC** | Exempt | Bank archetype. (`historical/wbc/` holds FY22–FY25 reports regardless.) |
 
 ### 6.1 CSL — the derived intensity
@@ -169,8 +169,64 @@ separately: one is a bad assumption, the other is an absent one.
 
 ### 6.3 Still outstanding (Ben)
 
-DNL only, and it is the existing DNL/IPL EODHD export already on the list. Until it
-lands, DNL's intensity rests on a single post-demerger balance sheet — see §7.
+Nothing for the working-capital calculation. The outstanding DNL/IPL EODHD export
+remains needed for peer financials and the FY21–FY24 summary statements, but the
+balance-sheet history required here is now in the repo.
+
+### 6.4 DNL — what the filed source documents give us
+
+**The definitional finding, which is the important one.** The FY25 statutory balance
+sheet (`dnl_fy25_annual_report_2025.pdf`, consolidated statement of financial position
+at 30 Sep 2025) confirms the totals in `financials/dnl.yaml` exactly — total current
+assets 2,122.7 and total current liabilities 1,591.3 — but **three of the component
+lines are defined differently in three places**:
+
+| Line | Statutory accounts | `dnl.yaml` (EODHD) | Management's own table |
+|---|---|---|---|
+| Receivables | Trade and other receivables **719.6** | `net_receivables` **840.5** | Trade Debtors **488.0** |
+| Payables | Trade and other payables **733.7** | `accounts_payable` **733.7** | Trade Creditors **398.3** |
+| Current debt | Interest bearing **566.6** + lease **59.7** | `short_term_debt` **626.3** | Current net IBL **566.6** |
+
+The feed's receivables figure is the statutory 719.6 **plus the current tax asset of
+120.9**. Management's "Trade Working Capital" (inventories + trade debtors − trade
+creditors = 608.8) is narrower again.
+
+**This is the empirical case for the broad definition, and it is decisive.** A
+trade-only measure gives three different answers depending on which document you open,
+differing by up to 120.9m — 3.3pp of intensity on DNL. The broad measure is identical
+in all three, because the *totals* agree even where the components do not. That is
+exactly the repeatability the brief asked for.
+
+It also confirms carve-out rule 1 empirically: the current lease liability of **59.7**
+is a real, separately disclosed line, and the feed has already folded it into
+`short_term_debt`. Excluding the feed's short-term debt therefore removes it correctly
+— but only by luck of the feed's convention. A provider that reported interest-bearing
+liabilities at 566.6 and left the lease in "other current liabilities" would leave it
+inside working capital and double-count it against the equity bridge. The rule has to
+be stated, not inferred.
+
+**The history is constrained by the demerger, not by data.** The 1H26 announcement
+carries a nine-period financial-position summary, half-yearly from March 2022 to March
+2026, including management's Trade Working Capital line:
+
+| | Mar 26 | Sep 25 | Mar 25 | Sep 24 | Mar 24 | Sep 23 | Mar 23 | Sep 22 | Mar 22 |
+|---|---|---|---|---|---|---|---|---|---|
+| Trade working capital | 576.8 | 608.8 | 481.3 | 842.1 | 790.5 | 573.7 | 842.2 | 615.9 | 777.6 |
+| Net assets held for sale | (111.5) | – | 329.5 | – | – | 2,207.3 | 2,107.2 | – | – |
+
+Everything to September 2024 and earlier is **IPL including fertilisers** — the held-
+for-sale line shows the business moving in and out of the balance sheet. Only
+**September 2025 and March 2026** are clean single-segment DNL. So DNL has two usable
+observations, not one, and they can be extended once the FY24 comparatives are
+restated on a continuing-operations basis.
+
+**March 2026 matters disproportionately**: it is the model's own anchor date, the same
+date the net debt and share count are struck at. The summary table gives trade working
+capital 576.8, cash 175.4 and current interest-bearing liabilities 21.9 at that date,
+but not total current assets or liabilities — those are in the separate half-year
+financial report (Appendix 4D), which is not in the archive. **Worth retrieving**: it
+would give a broad-definition NCWC at the exact anchor date, which is better than the
+30 September 2025 figure the calculation currently uses.
 
 ## 7. Evidence quality — a caution that applies to DNL specifically
 
