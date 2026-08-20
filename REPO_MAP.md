@@ -3,10 +3,10 @@
 _Generated 2026-08-21 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `35ea0d4 File the DNL source documents; the three-way definitional split settles the working-capital definition` on `main`
-- Unpushed commits: **7**
-- Tracked files: 266
-- Untracked files: 10
+- HEAD: `e4e862d Handover: repo inventory tooling, survey-before-you-conclude directive, session handover` on `main`
+- Unpushed commits: **0**
+- Tracked files: 269
+- Untracked files: 19
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -107,6 +107,9 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `architecture.md` (137.0KB)
   - `build_plan.html` (15.3KB)
   - `engine_implementation_plan.md` (16.5KB)
+  - `open_items.css` (3.5KB)
+  - `open_items.json` (22.1KB)
+  - `open_questions.json` (1.2KB)
   - `scenarios_workshop.md` (13.6KB)
   - `scenarios_workshop_prep.md` (19.7KB)
   - `single_source_of_truth.md` (16.7KB)
@@ -298,14 +301,23 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 Not in git. Either commit them or clear them — an untracked file is invisible
 to anyone who clones the repo, and is the most common way work gets lost.
 
-- `REPO_MAP.md`
-- `bridge_note_2026-07-22c_ssot_executed.md`
-- `bridge_note_2026-07-25.md`
-- `bridge_note_2026-07-25_session-end.md`
-- `bridge_note_2026-08-09.md`
-- `bridge_note_2026-08-11.md`
-- `bridge_note_2026-08-12_review.md`
-- `bridge_note_2026-08-12_triage.md`
-- `bridge_note_2026-08-21.md`
-- `scripts/repo_inventory.py`
+- `DECISIONS.md`
+- `OPEN_ITEMS.html`
+- `design/open_items.css`
+- `design/open_items.json`
+- `design/open_questions.json`
+- `notes/archive/`
+- `notes/bridge/bridge_note_2026-07-22.md`
+- `notes/bridge/bridge_note_2026-07-22b_ssot.md`
+- `notes/bridge/bridge_note_2026-07-22c_ssot_executed.md`
+- `notes/bridge/bridge_note_2026-07-25.md`
+- `notes/bridge/bridge_note_2026-07-25_session-end.md`
+- `notes/bridge/bridge_note_2026-08-09.md`
+- `notes/bridge/bridge_note_2026-08-11.md`
+- `notes/bridge/bridge_note_2026-08-12_review.md`
+- `notes/bridge/bridge_note_2026-08-12_triage.md`
+- `notes/bridge/bridge_note_2026-08-21.md`
+- `scripts/build_open_items.py`
+- `scripts/session_start.py`
+- `session_start.cmd`
 

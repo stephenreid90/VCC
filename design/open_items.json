@@ -1,0 +1,558 @@
+[
+ {
+  "id": "1",
+  "source": "fable-2026-08-13",
+  "area": "Correctness",
+  "issue": "<b>CSL valuation-date mismatch.</b> Discounting anchors the valuation at 30 Jun 2026; net debt and share count are struck at 31 Dec 2025. Six months apart. Fable valued this at AUD 5–6/share; re-derived it is ±2%.",
+  "treatment": "Two self-consistent repairs: (a) roll net debt forward, <b>+1.7%</b>; or (b) move the valuation date back with an H2-FY26 stub, <b>−1.9%</b>. (a) matches how DNL already does it.",
+  "questions": [
+   "Q1"
+  ],
+  "status": "NEEDS",
+  "batch": "Batch 4"
+ },
+ {
+  "id": "2",
+  "source": "fable-2026-08-13",
+  "area": "Correctness",
+  "issue": "<b>Terminal-share warning existed only in the industrial engine</b>, so WBC (76.3%) and CSL (75.2%) — and WBC Stagflation at 84.5% — could not emit it.",
+  "treatment": "Ported via a shared <code>terminal_share_warning()</code>; BankResult gained <code>terminal_share_of_claim</code>, both gained <code>warnings</code>. Six new assertions.",
+  "questions": [],
+  "status": "DONE",
+  "batch": "Batch 1"
+ },
+ {
+  "id": "3",
+  "source": "fable-2026-08-13",
+  "area": "Correctness",
+  "issue": "<b>Dead FX branch</b>, translator.py:591 — both sides of the ternary return 1.0. Latent; DNL is AUD/AUD.",
+  "treatment": "Raise NotImplementedError on the mismatch branch so the first genuine FX company fails loudly.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 6"
+ },
+ {
+  "id": "4",
+  "source": "fable-2026-08-13",
+  "area": "Correctness",
+  "issue": "<b>CSL net_interest fields are populated but never read</b> by the segment engine.",
+  "treatment": "Resolves to <b>delete</b>: D-05 confirms CSL as FCFF/WACC, so interest belongs in the discount rate, not the cash flow.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 6"
+ },
+ {
+  "id": "5a",
+  "source": "fable-2026-08-13",
+  "area": "Correctness",
+  "issue": "build_cfgs.py:697 prints \"cfgs.json written\", writes cfgs_gen.json.",
+  "treatment": "Correct the message.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 6"
+ },
+ {
+  "id": "5b",
+  "source": "fable-2026-08-13",
+  "area": "Correctness",
+  "issue": "translator.py:852–857 computes a gross-margin base then unconditionally overwrites it with 0.0.",
+  "treatment": "Delete the dead branch.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 6"
+ },
+ {
+  "id": "5c",
+  "source": "fable-2026-08-13",
+  "area": "Correctness",
+  "issue": "design/build_plan.html:167 still reads \"Owner: Tara Reid\".",
+  "treatment": "Correct to Stephen. Already a known leftover in CLAUDE.md.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 6"
+ },
+ {
+  "id": "5d",
+  "source": "fable-2026-08-13",
+  "area": "Correctness",
+  "issue": "WORKING_NOTES.md:44 says \"Suite 113\" while the file elsewhere says 122.",
+  "treatment": "<b>Partly disputed</b> — it sits inside a dated 12 Aug historical entry where 113 was true at the time. Annotate as historical rather than rewrite.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 6"
+ },
+ {
+  "id": "6",
+  "source": "fable-2026-08-13",
+  "area": "Methodology",
+  "issue": "<b>CSL discounts unlevered FCFF at the cost of equity, then deducts net debt</b> — charges for the debt twice. Fable estimated +8–15% on EV; re-derived it is <b>+21.5% to +26.6%</b> on the per-share value, and it pushes CSL <b>up</b>, not down as the review's fix-order assumed. The largest open item in the project.",
+  "treatment": "<b>DECIDED 20 Aug 2026 (D-05):</b> build a WACC on a <b>target</b> capital structure. Parameters proposed in <code>csl_cost_of_debt_and_target_structure.md</code>, awaiting confirmation (Q9).",
+  "questions": [
+   "Q9"
+  ],
+  "status": "PLANNED",
+  "batch": "Batch 4 — decided"
+ },
+ {
+  "id": "7",
+  "source": "fable-2026-08-13",
+  "area": "Methodology",
+  "issue": "<b>DNL terminal capitalises capex 7.0% against D&amp;A 7.3%</b> — the asset base runs down in perpetuity while revenue grows 2.5%. Worth <b>−AUD 0.079/share (−2.6%)</b>. Fable's number checks out.",
+  "treatment": "Bundle with the larger working-capital gap (M1) as one DNL reinvestment decision. Changes the audited workbook, not just the engine.",
+  "questions": [
+   "Q4"
+  ],
+  "status": "NEEDS",
+  "batch": "Batch 4"
+ },
+ {
+  "id": "8",
+  "source": "fable-2026-08-13",
+  "area": "Methodology",
+  "issue": "<b>Bank engine has no §15.5 CET1 constraint.</b> Flat 0.75 payout in every world; book equity compounds at 2.6% p.a. against AIEA at 4.35%, so the implied capital ratio falls every year and the model never notices. Stagflation NPAT falls 57.5% with payout unchanged.",
+  "treatment": "Warn-only check first (retained earnings vs AIEA growth × RWA density) — zero base-tie risk. Forced payout cut under stress as a separate second step. CET1 and RWA data already in wbc.yaml:538–568.",
+  "questions": [
+   "Q5"
+  ],
+  "status": "NEEDS",
+  "batch": "Batch 4"
+ },
+ {
+  "id": "9",
+  "source": "fable-2026-08-13",
+  "area": "Methodology",
+  "issue": "<b>Stub construction diverges from §7.2.</b> The text says pro-rate the next full year; the engine pro-rates the base year. The engine ties the audited workbook, so the text is what is wrong.",
+  "treatment": "Align the methodology text to the engine. Text edit, zero regression risk.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 6"
+ },
+ {
+  "id": "10",
+  "source": "fable-2026-08-13",
+  "area": "Methodology",
+  "issue": "<b>CSL sits 93% above market</b> — §16.3 requires the structural-reason treatment.",
+  "treatment": "Price staleness parked by owner decision (D-19) &mdash; 15 June 2026 snapshot stands until Ben's feed returns. The &sect;16.3 write-up follows once item 6 lands.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 4"
+ },
+ {
+  "id": "11",
+  "source": "fable-2026-08-13",
+  "area": "Methodology",
+  "issue": "<b>β triangulation honoured in form, but DNL's peer dataset is flagged mock</b> while the ratified β 1.10 narrative cites those peers.",
+  "treatment": "Annotate the decision record to separate observed from awaited. Also: <code>beta.mock</code> is never read by gen_ui.py, so the mock warning is unconditional and will persist after Ben's feed lands — wire it.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 6"
+ },
+ {
+  "id": "12",
+  "source": "fable-2026-08-13",
+  "area": "Data",
+  "issue": "<b>csl.yaml stores the same layer-2 judgment twice</b> — broader than Fable's four items. Effectively the whole normalised_baseline scalar block mirrors segment_fcff, and only segment_fcff is read. Also duplicated beyond Fable's list: da_pct_revenue, working_capital_change, tax_rate, restructuring_cash_to_come, terminal_ebit_margin.",
+  "treatment": "Delete the non-engine copies, keep the rationale prose beside the surviving copy.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 3"
+ },
+ {
+  "id": "12b",
+  "source": "fable-2026-08-13",
+  "area": "Data",
+  "issue": "<b>The ratchet cannot see intra-YAML duplication</b> — check 3 scans code only. Second hole found: a value invented in <i>code</i> with no register source is also invisible (how the CSL broker literal survived).",
+  "treatment": "Extend the lint with a same-file / cross-file duplicate-scalar check, plus a check for display values in code with no register source.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 3"
+ },
+ {
+  "id": "13",
+  "source": "fable-2026-08-13",
+  "area": "Data",
+  "issue": "<b>§7.5 anchor-date discipline is enforced nowhere.</b> This is the validator that would have caught item 1 automatically.",
+  "treatment": "Warn when net debt, share count and discounting date are not struck at one date. Build alongside the item 1 repair.",
+  "questions": [
+   "Q1"
+  ],
+  "status": "PLANNED",
+  "batch": "Batch 3"
+ },
+ {
+  "id": "14",
+  "source": "fable-2026-08-13",
+  "area": "Data",
+  "issue": "Layer-1/layer-2 split is clean where executed.",
+  "treatment": "Independently spot-checked resolve_normalised_baseline and the WBC AIEA/NIM chain. Genuinely clean — agreed PASS.",
+  "questions": [],
+  "status": "CLOSED",
+  "batch": ""
+ },
+ {
+  "id": "15",
+  "source": "fable-2026-08-13",
+  "area": "Traceability",
+  "issue": "<b>The Derivation layer covers the bridges but not the per-year build</b> — all three engines emit revenue/EBIT/FCFF with empty inputs dicts, so the workbooks explain more than the engines can.",
+  "treatment": "Finish the set: one step per P&amp;L line per period, inputs populated. Low urgency, no risk.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 6"
+ },
+ {
+  "id": "16",
+  "source": "fable-2026-08-13",
+  "area": "Tests",
+  "issue": "<b>Only Muddle Through was pinned.</b> The other five levels per company were asserted by ordering (WBC, CSL) or drivers (DNL), so a regression moving every level while preserving order passed silently.",
+  "treatment": "All 18 pinned in test_scenario_goldens.py, flagged engine-owned not workbook-owned. Suite 122 → 146.",
+  "questions": [],
+  "status": "DONE",
+  "batch": "Batch 1"
+ },
+ {
+  "id": "17",
+  "source": "fable-2026-08-13",
+  "area": "Tests",
+  "issue": "<b>The LibreOffice recalc tie runs ad hoc</b>, not as a suite gate; _recalc.py is a regeneration script and is not collected by pytest.",
+  "treatment": "Add an opt-in pytest marker so it can be run deliberately without making LibreOffice a hard suite dependency.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 6"
+ },
+ {
+  "id": "18",
+  "source": "fable-2026-08-13",
+  "area": "Tests",
+  "issue": "<b>Under-tested areas</b> — engine_workbook.py (1,467 lines) has no coverage; __post_init__ validation errors untested.",
+  "treatment": "Add workbook-builder and input-validation tests. <b>Two of Fable's four claims are wrong:</b> test_e2e_dnl_mt.py:103 <i>does</i> assert the §11.4.2 warning fires, and EquityBridge.from_anchor <i>is</i> exercised end-to-end with a pinned outcome.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 6"
+ },
+ {
+  "id": "19",
+  "source": "fable-2026-08-13",
+  "area": "Schema",
+  "issue": "<b>FiveForces has no model_validator</b> — a block with neither entrants nor substitutes validates, and both naming generations can be supplied with contradictory ratings. bank_archetype and rivalry_subforces are untyped escape hatches.",
+  "treatment": "One model_validator (one-of-each-force, reject dual-generation conflicts) plus a typed BankArchetype block.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 3"
+ },
+ {
+  "id": "20",
+  "source": "fable-2026-08-13",
+  "area": "Schema",
+  "issue": "<b>archetype=None falls back silently on file absence</b>, so a typo'd archetype id degrades instead of raising.",
+  "treatment": "Make the fallback conditional on an explicit segment_level_valuation marker.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 3"
+ },
+ {
+  "id": "21",
+  "source": "fable-2026-08-13",
+  "area": "UI arch",
+  "issue": "Standalone UI + base64 workbook architecture is sound; the \"no JS engine port\" decision held. One gap: no \"reset all\" for localStorage user scenarios.",
+  "treatment": "Agreed PASS on the architecture. Add a reset-all control.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 5"
+ },
+ {
+  "id": "22",
+  "source": "fable-2026-08-13",
+  "area": "UI arch",
+  "issue": "<b>Workbook discipline honoured with exceptions.</b> DNL Equity bridge carries 14 literals (styled as inputs but off Assumptions); WBC Multiples!B3 hard-codes the market price.",
+  "treatment": "Move the DNL bridge inputs onto Assumptions. For WBC the fix needs a step Fable missed: <b>WBC's Assumptions sheet has no market-price row at all</b>, so one must be added first.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 5"
+ },
+ {
+  "id": "23",
+  "source": "fable-2026-08-13",
+  "area": "UI/UX",
+  "issue": "Headline sub-caption pvsub unused — the punchline isn't landed in 5 seconds.",
+  "treatment": "<b>Partly wrong</b> — CSL's <i>is</i> populated. Do it for DNL and WBC: engine-sourced gap sentence.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 5"
+ },
+ {
+  "id": "24",
+  "source": "fable-2026-08-13",
+  "area": "UI/UX",
+  "issue": "Metric card 4 is inconsistent — asymmetry for DNL/WBC, terminal share for CSL.",
+  "treatment": "Show asymmetry for all three; move terminal share into the discount-rate panel beside the §11.4.2 warning.",
+  "questions": [
+   "Q6"
+  ],
+  "status": "PLANNED",
+  "batch": "Batch 5"
+ },
+ {
+  "id": "25",
+  "source": "fable-2026-08-13",
+  "area": "UI/UX",
+  "issue": "DNL's broker bar equals the market price (both 3.61) — the feed's target echoes spot.",
+  "treatment": "<b>Closed by owner decision 13 Aug: leave DNL alone</b> until Ben's feed brings real coverage.",
+  "questions": [],
+  "status": "CLOSED",
+  "batch": ""
+ },
+ {
+  "id": "26",
+  "source": "fable-2026-08-13",
+  "area": "UI/UX",
+  "issue": "Bar values show only the per-share number, no \"% vs MT\".",
+  "treatment": "Add the delta beside each bar value — already computed for the narrative.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 5"
+ },
+ {
+  "id": "27",
+  "source": "fable-2026-08-13",
+  "area": "UI/UX",
+  "issue": "The download button lives only inside detail panels, so the most persuasive traceability artefact is invisible until a reviewer drills down.",
+  "treatment": "Persistent \"Download audited workbook\" in the header, sheet count from cfg.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 5"
+ },
+ {
+  "id": "28",
+  "source": "fable-2026-08-13",
+  "area": "UI/UX",
+  "issue": "No provenance chip — the topnote reads as a disclaimer rather than a feature.",
+  "treatment": "One-line engine/commit/data provenance under the header. Sell the one-source-of-truth story.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 5"
+ },
+ {
+  "id": "29",
+  "source": "fable-2026-08-13",
+  "area": "UI/UX",
+  "issue": "<b>Bars are click-only divs; the whole file has one aria-label; tab selection is border-colour only</b> (WCAG 1.4.1 failure). The file is currently unusable by keyboard.",
+  "treatment": "role/tabindex/Enter-Space/aria-label on bars; aria-pressed and a non-colour cue on tabs.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 5"
+ },
+ {
+  "id": "30",
+  "source": "fable-2026-08-13",
+  "area": "UI/UX",
+  "issue": "Narrow-width overflow: fixed 122px label column, value label at calc(w% + 6px).",
+  "treatment": "Move the value inside the bar above ~80% width. <b>Partly wrong</b> — the DCF workings table is already wrapped; the unwrapped one is the transitory-forces table.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 5"
+ },
+ {
+  "id": "31",
+  "source": "fable-2026-08-13",
+  "area": "UI/UX",
+  "issue": "Slider moves silently swap the engine value for the reduced form.",
+  "treatment": "<b>Partly wrong</b> — the override note already shows both values; the missing word is \"approximation\". The real problem Fable missed is bigger (see M5): the DCF panel is static but captioned as live.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 5"
+ },
+ {
+  "id": "32",
+  "source": "fable-2026-08-13",
+  "area": "UI/UX",
+  "issue": "DNL has 8 explore tabs, WBC/CSL have 6 — reads as unfinished rather than data-blocked.",
+  "treatment": "Add the missing tabs with an explicit \"awaiting peer feed (Ben)\" placeholder, which also advertises the dependency. Fable's five-forces cross-reference claim is <b>wrong as stated</b> — no company's UI panel has one; CSL's <i>workbook</i> has no five-forces sheet at all.",
+  "questions": [
+   "Q7"
+  ],
+  "status": "NEEDS",
+  "batch": "Batch 5"
+ },
+ {
+  "id": "33",
+  "source": "fable-2026-08-13",
+  "area": "UI/UX",
+  "issue": "Scenario narratives are buried one click deep.",
+  "treatment": "Show the first sentence + \"why it lands here\" under the chart on bar selection.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 5"
+ },
+ {
+  "id": "34",
+  "source": "fable-2026-08-13",
+  "area": "UI/UX",
+  "issue": "No onboarding for first-time reviewers.",
+  "treatment": "Dismissible 3-step \"how to read this\" strip aimed at the feedback ask.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 5"
+ },
+ {
+  "id": "35",
+  "source": "fable-2026-08-13",
+  "area": "UI/UX",
+  "issue": "No dedicated CSL market-gap panel.",
+  "treatment": "Build it — but <b>after</b> items 6 and 10 land. Writing \"why we differ\" before knowing whether the gap is 93% or 140% is wasted work.",
+  "questions": [],
+  "status": "NEEDS",
+  "batch": "Batch 5"
+ },
+ {
+  "id": "36",
+  "source": "fable-2026-08-13",
+  "area": "UI/UX",
+  "issue": "No print/PDF stylesheet; the file prints poorly.",
+  "treatment": "Worth doing if the prototype graduates.",
+  "questions": [],
+  "status": "BACKLOG",
+  "batch": ""
+ },
+ {
+  "id": "37",
+  "source": "fable-2026-08-13",
+  "area": "UI/UX",
+  "issue": "No side-by-side scenario comparison.",
+  "treatment": "All the data is already in cfg. Nice-to-have.",
+  "questions": [],
+  "status": "BACKLOG",
+  "batch": ""
+ },
+ {
+  "id": "38",
+  "source": "fable-2026-08-13",
+  "area": "UI/UX",
+  "issue": "Dead store-zip XLSX writer kept for a path no company takes.",
+  "treatment": "<b>Larger than Fable said</b> — VCCXLSX, VCCBOOK <i>and</i> DNLRICH are all dead: ~435 lines, ~32 KB inlined into every generated file (13–17% of each). The module.exports overwrite each other and the node tests they were shared with no longer exist. Delete all three.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 6"
+ },
+ {
+  "id": "M1",
+  "source": "triage-2026-08-13",
+  "area": "Missed",
+  "issue": "<b>DNL assumes zero working capital</b> in every explicit year <i>and</i> the terminal, while growing revenue 6.15% p.a. as an industrial manufacturer with receivables and inventory. Worth <b>−AUD 0.14 to −0.27/share (−4% to −9%)</b> — two to three times Fable's terminal-capex wedge. With item 7, DNL's reinvestment treatment is worth −7% to −11%, moving the discount to market from −15% to about −22%.",
+  "treatment": "Decide whether the working-capital assumption is open for revision. Changes the audited workbook, not just the engine.",
+  "questions": [
+   "Q4"
+  ],
+  "status": "NEEDS",
+  "batch": "Batch 4"
+ },
+ {
+  "id": "M2",
+  "source": "triage-2026-08-13",
+  "area": "Missed",
+  "issue": "<b>CSL page opened on the broker bar</b> — headline read 136.00, not 203.83.",
+  "treatment": "Opening bar now derived from kind=='live' for all three companies.",
+  "questions": [],
+  "status": "DONE",
+  "batch": "Batch 2"
+ },
+ {
+  "id": "M3",
+  "source": "triage-2026-08-13",
+  "area": "Missed",
+  "issue": "<b>CSL broker bar was a hard-coded AUD literal at a stale FX</b> (136.00 = the correct USD consensus at ~1.406).",
+  "treatment": "Now sourced from the register and converted at the model's own FX: 146.60. The two register consensus figures still disagree by ~6% — flagged for Ben's next refresh.",
+  "questions": [],
+  "status": "DONE",
+  "batch": "Batch 2"
+ },
+ {
+  "id": "M4",
+  "source": "triage-2026-08-13",
+  "area": "Missed",
+  "issue": "<b>DNL's slider default rounding put a false \"discount-rate override\" chip on all six bars</b>, contradicting the single-rate standing rule on screen, and rendered 3.0719 instead of 3.073.",
+  "treatment": "cp.re0 and the slider default are now one number; the unrounded engine rate kept as cp.reEngine. Reduced form now returns cp.base exactly.",
+  "questions": [],
+  "status": "DONE",
+  "batch": "Batch 2"
+ },
+ {
+  "id": "M5",
+  "source": "triage-2026-08-13",
+  "area": "Missed",
+  "issue": "<b>The DCF panel is static but captioned \"straight from the production engine\"</b> — after any slider move the headline is the reduced form while the build-up still shows the engine path.",
+  "treatment": "Fix the caption first, the behaviour second. This is the real version of item 31.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 5"
+ },
+ {
+  "id": "M6",
+  "source": "triage-2026-08-13",
+  "area": "Missed",
+  "issue": "<b>DNL's two DCF views disagree by AUD 154m of EV</b> (7,009 vs 6,855 — the table view omits the equity-bridge adjustment), and its \"tie check\" is tautological because the reconstruction is back-solved from the answer.",
+  "treatment": "Reconcile the two views; make the tie check real or remove it.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 5"
+ },
+ {
+  "id": "M7",
+  "source": "triage-2026-08-13",
+  "area": "Missed",
+  "issue": "<b>Cross-company text leak</b> — CSL's β workbench says \"re-lever at <b>DNL</b> gearing D/E\". Present in all three generated files.",
+  "treatment": "Parameterise the label.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 5"
+ },
+ {
+  "id": "M8",
+  "source": "triage-2026-08-13",
+  "area": "Missed",
+  "issue": "<b>Stored self-XSS via user scenario names</b> — from prompt(), unescaped into innerHTML, persisted in localStorage so they re-execute on every load.",
+  "treatment": "esc() applied (the helper already existed).",
+  "questions": [],
+  "status": "DONE",
+  "batch": "Batch 2"
+ },
+ {
+  "id": "M9",
+  "source": "triage-2026-08-13",
+  "area": "Missed",
+  "issue": "<b>build_cfgs.py source still carries superseded numbers</b> (DNL 3.48, WBC 30.15, shares 1884, netDebt 1512). Verified the packs overwrite all of them, so nothing renders wrong today — but a stale headline one edit from being displayed.",
+  "treatment": "Delete the dead literals.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 6"
+ },
+ {
+  "id": "M10",
+  "source": "triage-2026-08-13",
+  "area": "Missed",
+  "issue": "<b>All three market prices are struck at 2026-06-15</b> — two months stale, not just CSL's.",
+  "treatment": "See Q2.",
+  "questions": [],
+  "status": "NEEDS",
+  "batch": "Batch 4"
+ },
+ {
+  "id": "M11",
+  "source": "triage-2026-08-13",
+  "area": "Missed",
+  "issue": "<b>WBC's Assumptions sheet has no market-price row</b>, which is why Multiples!B3 hard-codes it.",
+  "treatment": "Add the row, then link. Prerequisite for item 22.",
+  "questions": [],
+  "status": "PLANNED",
+  "batch": "Batch 5"
+ },
+ {
+  "id": "—",
+  "source": "triage-2026-08-13",
+  "area": "Missed",
+  "issue": "<i>Checked because they looked wrong, and are not:</i> WBC AT1 treatment (no double-count); CSL FX applied only at the per-share line; single-rate discipline holds across all six scenarios in all three engines; all three embedded workbooks recalculate with zero error cells.",
+  "treatment": "No action.",
+  "questions": [],
+  "status": "CLOSED",
+  "batch": ""
+ }
+]

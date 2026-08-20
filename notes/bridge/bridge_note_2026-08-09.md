@@ -1,0 +1,9 @@
+Continuing VCC. Read CLAUDE.md, then WORKING_NOTES.md — start at the "9 August 2026" block and read down for context. Run `git status && git log --oneline -6` before assuming commit state (HEAD should be 107ef59, all pushed; fetch before trusting "ahead by N").
+
+Shipped & pushed this session: UI Workstreams A + C complete (A1 verified; C6 richer scenario descriptions, C7 five-forces industry snapshot, C8 position regroup, C9 global best-practice discount-rate theory + gamma gate); Workstream B — Five-Forces overrides now flow into the number (generic driver-key routing, delta-from-assessed so the base tie holds, transitory forces as FY27–31 year-paths PV-collapsed, forward-compatible with M2).
+
+Locked decisions: discount-rate theory is global/jurisdiction-neutral (2 strands, 6 components, Rf = zero-coupon spot); gamma gated out of the default (GAMMA_COMPONENT + drtheory(did, gamma_did=...)); forces→driver routing is generic by key — add a driver if the 5-forces work needs one; reduced-form is interim, M2 is the faithful per-year engine (forces year-paths already in _forces.impacts[i].path).
+
+Pick next by appetite: (1) Workstream D — β-workbench depth (add/deselect comparables, window toggle, index select; mock beta_data.py); (2) dnl.yaml §5.3 share-count fix (1,770m @ 2026-03-31, equity →~6,390; needs an engine re-run, β settled so unblocked); (3) WBC split (clear stored cost_of_equity) + CSL layer-1 circularity + §5.4 validator, then M2.
+
+House: Australian English; number multi-point lists; plain-text numbered questions (UI drops AskUserQuestion). Generator: edit _generator/*.py sandbox-side, python3 build_cfgs.py && python3 gen_ui.py, verify node --check + base tie (DNL 3.48 / WBC 30.15 / CSL 203.83) + netDebt 1512; never hand-edit HTML. Commit sandbox-side (mv .git/*.lock aside; push with x-access-token URL). Run sandbox_cleanup.cmd to clear orphaned *.bak / *.lock.dead* files. Swap ~20 exchanges.

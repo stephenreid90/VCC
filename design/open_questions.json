@@ -1,0 +1,37 @@
+[
+ {
+  "id": "Q1",
+  "question": "CSL valuation-date anchoring: roll net debt forward to 30 Jun 2026 (+1.7%), or move the valuation date back to 31 Dec 2025 with a stub (&minus;1.9%)?",
+  "blocks": "Items 1, 13"
+ },
+ {
+  "id": "Q4",
+  "question": "DNL working-capital intensity: confirm 13.76% on the broad definition (paper argues for it). Terminal capex = D&amp;A is already agreed.",
+  "blocks": "Items 7, M1"
+ },
+ {
+  "id": "Q5",
+  "question": "WBC CET1: warn-only feasibility check first, or go straight to a forced payout cut under stress?",
+  "blocks": "Item 8"
+ },
+ {
+  "id": "Q6",
+  "question": "Metric card 4: show asymmetry for all three companies and move terminal share into the discount-rate panel?",
+  "blocks": "Item 24"
+ },
+ {
+  "id": "Q7",
+  "question": "Tab parity: add placeholder tabs to WBC/CSL advertising the Ben dependency, or trim DNL to six?",
+  "blocks": "Item 32"
+ },
+ {
+  "id": "Q8",
+  "question": "CSL working-capital intensity: confirm ~35% (six years, 27.6&ndash;46.6%, clean post-Vifor 34.8/36.8) against the assumed 10%.",
+  "blocks": "WC implementation"
+ },
+ {
+  "id": "Q9",
+  "question": "CSL WACC parameters: confirm notional BBB+/A&minus;, kd 5.50%, target 1.8x ND/EBITDA at 14x EV/EBITDA &rarr; D/V 12.9%.",
+  "blocks": "D-06"
+ }
+]
