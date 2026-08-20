@@ -3,10 +3,10 @@
 _Generated 2026-08-21 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `e4e862d Handover: repo inventory tooling, survey-before-you-conclude directive, session handover` on `main`
-- Unpushed commits: **0**
-- Tracked files: 269
-- Untracked files: 19
+- HEAD: `b2c5155 Handover infrastructure: decisions register, durable open-items tracker, session-start script, WORKING_NOTES rewrite` on `main`
+- Unpushed commits: **1**
+- Tracked files: 284
+- Untracked files: 0
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -295,29 +295,4 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `wbc_muddle_through_valuation_v4_formulas.xlsx` (12.5KB)
       - `wbc_scenarios_comparison_v1.xlsx` (11.6KB)
       - `wbc_scenarios_comparison_v2.xlsx` (11.6KB)
-
-## Untracked files
-
-Not in git. Either commit them or clear them — an untracked file is invisible
-to anyone who clones the repo, and is the most common way work gets lost.
-
-- `DECISIONS.md`
-- `OPEN_ITEMS.html`
-- `design/open_items.css`
-- `design/open_items.json`
-- `design/open_questions.json`
-- `notes/archive/`
-- `notes/bridge/bridge_note_2026-07-22.md`
-- `notes/bridge/bridge_note_2026-07-22b_ssot.md`
-- `notes/bridge/bridge_note_2026-07-22c_ssot_executed.md`
-- `notes/bridge/bridge_note_2026-07-25.md`
-- `notes/bridge/bridge_note_2026-07-25_session-end.md`
-- `notes/bridge/bridge_note_2026-08-09.md`
-- `notes/bridge/bridge_note_2026-08-11.md`
-- `notes/bridge/bridge_note_2026-08-12_review.md`
-- `notes/bridge/bridge_note_2026-08-12_triage.md`
-- `notes/bridge/bridge_note_2026-08-21.md`
-- `scripts/build_open_items.py`
-- `scripts/session_start.py`
-- `session_start.cmd`
 

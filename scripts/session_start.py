@@ -92,6 +92,8 @@ def main() -> int:
         print("       cd ui_prototypes/_generator && python build_cfgs.py && python gen_ui.py")
 
     section("4. Git state")
+    # refresh the remote ref first, or "unpushed" reports a stale count
+    run(["git", "fetch", "--quiet", "origin"], timeout=90)
     print(f"   HEAD      {git('log', '-1', '--format=%h %s')[:96]}")
     print(f"   branch    {git('rev-parse', '--abbrev-ref', 'HEAD')}")
     ahead = git("log", "--oneline", "origin/main..HEAD")
