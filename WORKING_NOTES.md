@@ -13,7 +13,87 @@ See `CLAUDE.md` for the canonical session read order. In short: `CLAUDE.md` → 
 
 ---
 
-## ▶ IN PROGRESS — executing the triage plan (13 Aug 2026)
+## 🔴 HANDOVER — session of 19–21 August 2026 (read this first)
+
+**Start by running `python scripts/repo_inventory.py` and reading `REPO_MAP.md`.**
+See the "Survey before you conclude" directive now in `CLAUDE.md`. This session lost
+two round trips to asserting data did not exist when it did.
+
+**State:** suite **146**, ratchet **8**, `node --check` clean, bases unchanged
+**3.073 / 30.03 / 203.83**. **7 commits sit unpushed** (`675d931` … `35ea0d4`) —
+sandbox has no GitHub credentials; push from a normal cmd window.
+
+### What shipped
+
+1. **Batch 1 `675d931` — engine lock.** All 18 scenario levels pinned in
+   `tests/dcf/test_scenario_goldens.py` (engine-owned change detectors, not workbook
+   oracles). §11.4.2 terminal-share warning ported to the bank and segment engines via
+   `fcf_engine.terminal_share_warning()`. Suite 122 → 146.
+2. **Batch 2 `f9e15b7` — UI credibility.** Pages open on the live case (CSL was opening
+   on the broker bar showing 136.00); CSL broker sourced from the register at the
+   model's FX (136.00 → 146.60); `cp.re0` aligned to the slider default so the reduced
+   form returns base exactly and the false override chips are gone; scenario names
+   escaped; delete-index drift fixed; topnotes redated.
+3. **`c7b0d7d` — review tracker.** `design/reviews/review_tracker_2026-08-13.html`,
+   54 items, filterable. **Open the HTML, not the markdown.**
+4. **Four methodology papers** (`97e6a3e`, `a2383ae`, `8c16b1d`): the CSL discount-rate
+   fork, CSL cost of debt and target structure, DNL working-capital derivation, and
+   the working-capital treatment standard.
+5. **`35ea0d4` — DNL source archive filed** to `data/financials/historical/dnl/`.
+
+### Decisions Stephen made (do not reopen)
+
+6. **CSL discount rate:** build a WACC on a **target** capital structure, not spot D/V.
+7. **DNL reinvestment:** fix both working capital and terminal capex; rebuild the
+   audited workbook. *Sizing still open — see below.*
+8. **Market prices:** leave at 15 June 2026. Ben's feed is down; get everything else
+   right first.
+9. **DNL broker bar:** leave alone until real consensus coverage exists.
+10. **Working-capital definition:** the broad measure (current assets less cash, less
+    current liabilities excluding interest-bearing debt) — **not** trade-only.
+
+### Where the work stopped, and what it needs
+
+11. **Working-capital standard is written but NOT implemented.**
+    `design/methodology/working_capital_treatment.md` specifies the definition, three
+    carve-outs (interest-bearing incl. **current lease portions**; held-for-sale; all
+    cash), the bank exemption **by rule not by zero**, the layering, and five
+    enforcement steps. Step 3 — a `working_capital_intensity_from_data()` in the
+    translator — is the load-bearing one. Nothing is coded.
+12. **Derived intensities:** CSL **~35%** (six years, 27.6–46.6%, clean post-Vifor
+    years 34.8/36.8) against an assumed 10% — worth **−4.2%** on CSL. DNL **13.76%**
+    on the broad measure against an assumed zero. Both need Stephen's sign-off on the
+    final figure before implementation.
+13. **CSL WACC parameters proposed, not ratified:** notional BBB+/A−, spread ~100bp off
+    DNL's own 170bp AUD BBB anchor, kd 5.50%; target 1.8× ND/EBITDA converted at a
+    through-cycle 14× EV/EBITDA → D/V 12.9%, WACC ≈8.2%, CSL MT ≈ AUD 228 (+12%). The
+    EV/EBITDA multiple is the one input with no independent support — revisit when
+    peer financials land.
+14. **Both changes retire an audited Muddle Through oracle** and move all 18 goldens.
+    Each needs a workbook rebuild and re-tie, not just an engine edit. Half a day for
+    DNL, a day for CSL.
+
+### Open, needing Stephen
+
+15. Final DNL working-capital intensity (13.76% derived; the paper argues for it).
+16. Final CSL working-capital intensity (~35% derived).
+17. CSL WACC parameters at item 13.
+18. Q5 (WBC CET1 warn-only vs forced payout cut), Q6 (metric card 4), Q7 (tab parity)
+    — all in the tracker, none blocking.
+
+### Worth retrieving
+
+19. **DNL 1H26 Appendix 4D half-year financial report.** The archive has the results
+    announcement but not the statutory half-year accounts, so total current
+    assets/liabilities at **31 March 2026** — the model's own anchor date — are not
+    available. Would let DNL's intensity be struck at the anchor rather than six
+    months before it.
+20. **`data/companies/csl.md` does not exist** (DNL and WBC both have narratives).
+    Surfaced by the new inventory script on its first run.
+
+---
+
+## ▶ SUPERSEDED — executing the triage plan (13 Aug 2026)
 
 The Fable review was triaged by Opus; findings validated, disputed and re-derived in
 `design/reviews/triage_full_project_review_2026-08-13_opus.md`. Execution is running

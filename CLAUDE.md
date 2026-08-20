@@ -32,11 +32,45 @@ that doc only.)*
 
 ## Read order on session start
 
+0. **Run `python scripts/repo_inventory.py` and read the `REPO_MAP.md` it writes.**
+   Do this FIRST, before forming any view about what data does or does not exist.
+   See "Survey before you conclude" below — this is not optional and it is not a
+   formality.
 1. This file.
 2. `WORKING_NOTES.md` — living scratchpad: current state, session handoffs, parked decisions.
 3. `design/architecture.md` — the architecture & methodology spec (currently v0.6).
 4. `design/build_plan.html` — the 12-step build plan and where we're up to.
-5. Optional: `design/frameworks/` for methodology drafts in flight.
+5. `design/reviews/review_tracker_2026-08-13.html` — open items and which owner
+   decisions block them. Check before starting anything; it prevents re-litigating
+   settled questions.
+6. Optional: `design/frameworks/` for methodology drafts in flight.
+
+## Survey before you conclude (standing directive)
+
+**Before asserting that something does not exist — data, a document, a protocol, a
+prior decision — survey the repository.** Not a targeted grep for the thing you
+expect; a scan of the directory that would contain it.
+
+This exists because the failure mode is real and repeated. On 20 August 2026 a
+session concluded CSL had no balance-sheet data, having read the curated
+`data/financials/csl.yaml` summary and never looked at the six-year EODHD export in
+the same directory or the statutory accounts in `data/financials/historical/csl/`.
+The same session concluded DNL had one balance sheet; the archive said otherwise. It
+also proposed a cost-of-debt method from first principles when
+`data/companies/dnl.yaml:549` already implemented the house protocol. Each error cost
+a round trip and produced work that had to be redone.
+
+Three rules follow:
+
+1. **A curated `*.yaml` in `data/` is a summary, not a source.** Multi-year statements
+   live in the raw feed exports (`data/financials/*.csv`) and the primary documents
+   (`data/financials/historical/<company>/`). Absence from the yaml is not absence.
+2. **Before designing a method, search `design/` for an existing one.** `architecture.md`
+   carries the ordered driver list; the three company files carry worked precedents.
+   Assume the framework has already decided, and look for it, before inventing.
+3. **Before reopening a question, check the tracker and the methodology papers in
+   `design/methodology/`.** If it was decided, it is written down. Rehashing settled
+   ground is the single largest source of drift in this project.
 
 ## House style (working preferences)
 
