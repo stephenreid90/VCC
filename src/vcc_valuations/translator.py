@@ -536,6 +536,130 @@ def revenue_growth_from_data(inputs: dict, scenario_id: str):
     return None if chain is None else chain.result
 
 
+def working_capital_intensity_from_data(inputs: dict):
+    """Non-cash working-capital intensity, per
+    ``design/methodology/working_capital_treatment.md``.
+
+    NCWC = (current assets - cash and equivalents) - (current liabilities -
+    interest-bearing current debt, which includes current lease portions).
+    Intensity = NCWC / revenue, struck on the LEVEL (never the marginal
+    year-on-year rate — see the methodology doc §7.1 for why) for each year in
+    the company's judged ``clean_years``, averaged, then rounded per the
+    company's ``rounding`` protocol (standing default: nearest 5 percentage
+    points — a Stephen-ratified rounding convention, 21 Aug 2026, chosen so the
+    applied figure doesn't carry false precision off a handful of noisy years).
+
+    This is the load-bearing step of the methodology's five-step enforcement
+    plan (§5 step 3): every non-exempt company must carry a
+    ``working_capital_history`` (layer 1, ``data/financials/<id>.yaml``) and a
+    ``normalised_baseline.working_capital_intensity.clean_years`` judgement
+    (layer 2, ``data/companies/<id>.yaml``, with rationale) — the applied
+    figure itself is never stored (layer 3, derived here, always).
+
+    Bank-archetype companies (``company_position.industry_type == "bank"``)
+    are EXEMPT BY RULE, not by returning zero: this returns ``None`` for them,
+    which the SSOT ratchet (``tests/test_ssot_lint.py``) treats as a distinct,
+    declared exemption rather than an absent check that merely looks like one
+    (the failure mode the terminal-share warning already hit once — see
+    working_capital_treatment.md §3).
+
+    Returns a :class:`Derivation` (``.result`` = the applied, rounded
+    intensity) for every other company; raises if the data or the judgement
+    is missing, so a company can never silently inherit a zero.
+    """
+    from vcc_valuations.derivation import DerivationBuilder
+
+    company = inputs.get("company")
+    company_id = company.id if company is not None else "<unknown>"
+    company_raw = inputs.get("company_raw") or {}
+    position = company_raw.get("company_position") or {}
+    if position.get("industry_type") == "bank":
+        return None  # exempt by rule, not by zero (methodology §3)
+
+    financials = inputs.get("financials") or {}
+    history = financials.get("working_capital_history")
+    if not history:
+        raise ValueError(
+            f"{company_id}: no working_capital_history in data/financials/{company_id}.yaml "
+            "and not bank-exempt. Every non-exempt company must carry one "
+            "(working_capital_treatment.md §5 step 5) or an explicit "
+            "working_capital_exemption with a stated reason."
+        )
+
+    nb = company_raw.get("normalised_baseline") or {}
+    wci = nb.get("working_capital_intensity")
+    if not wci or not wci.get("clean_years"):
+        raise ValueError(
+            f"{company_id}: working_capital_history is present but "
+            "normalised_baseline.working_capital_intensity.clean_years is not — "
+            "the level judgement of which years are representative must be recorded "
+            "and rationalised, not inferred."
+        )
+
+    by_year = {row["fiscal_year"]: row for row in history}
+    clean_years = wci["clean_years"]
+    b = DerivationBuilder("working_capital_intensity")
+
+    levels = []
+    for i, fy in enumerate(clean_years, start=1):
+        row = by_year.get(fy)
+        if row is None:
+            raise ValueError(
+                f"{company_id}: clean_years references {fy!r}, not in working_capital_history."
+            )
+        ncwc = (
+            (row["total_current_assets"] - row["cash_and_short_term_investments"])
+            - (row["total_current_liabilities"] - row["interest_bearing_current_debt"])
+        )
+        level = ncwc / row["revenue"]
+        levels.append(level)
+        b.step(
+            f"L{i}", f"NCWC intensity, {fy}", level,
+            "(current_assets - cash - (current_liabilities - interest_bearing_current_debt)) / revenue",
+            {
+                "current_assets": row["total_current_assets"],
+                "cash": row["cash_and_short_term_investments"],
+                "current_liabilities": row["total_current_liabilities"],
+                "interest_bearing_current_debt": row["interest_bearing_current_debt"],
+                "revenue": row["revenue"],
+            },
+            units="%",
+        )
+
+    average = sum(levels) / len(levels)
+    b.step(
+        "AVG", f"Average over {len(levels)} clean year(s)", average,
+        "mean(level intensity, clean_years)",
+        {f"L{i}": lv for i, lv in enumerate(levels, start=1)}, units="%",
+    )
+
+    rounding = wci.get("rounding", "nearest_5pct")
+    if rounding == "nearest_5pct":
+        applied = round(average / 0.05) * 0.05  # ssot-allow: rounding-protocol constant (nearest 5pp), not a register value
+    elif rounding == "none":
+        applied = average
+    else:
+        raise ValueError(f"{company_id}: unknown working_capital rounding protocol {rounding!r}.")
+    formula = f"round(average, protocol={rounding!r})"
+
+    # A named, rationalised override of the rounded figure (e.g. DNL: Stephen
+    # elected to hold at the raw single-year 13.76% rather than round a
+    # single noisy observation to 15%, pending a second data point). Distinct
+    # from silently hand-typing the applied value — the override sits beside
+    # the value it overrides and the reason it exists, and the ordinary
+    # average/round steps above still run so the road not taken is visible.
+    if "rounding_override" in wci:
+        applied = wci["rounding_override"]
+        formula = f"override: {wci.get('rounding_override_rationale', 'no rationale recorded').strip()}"
+
+    b.step(
+        "APPLIED", "Applied working-capital intensity", applied,
+        formula,
+        {"average": average}, units="%",
+    )
+    return b.build(result_key="APPLIED")
+
+
 def build_engine_inputs_from_data(inputs: dict, scenario_id: str):
     """Assemble the whole ``FcfEngineInputs`` for one company x scenario from data.
 

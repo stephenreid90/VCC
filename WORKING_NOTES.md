@@ -23,83 +23,93 @@ prints git state.
 
 ---
 
-## 🔴 HANDOVER — session of 19–21 August 2026 (read this first)
+## 🔴 HANDOVER — session of 21 August 2026 (read this first)
 
 **Start by running `python scripts/repo_inventory.py` and reading `REPO_MAP.md`.**
-See the "Survey before you conclude" directive now in `CLAUDE.md`. This session lost
-two round trips to asserting data did not exist when it did.
+See "Survey before you conclude" in `CLAUDE.md`.
 
-**State:** suite **146**, ratchet **8**, `node --check` clean, bases unchanged
-**3.073 / 30.03 / 203.83**. All work pushed through `e4e862d` and the follow-on
-handover commit; working tree clean.
+**State:** suite **152**, ratchet **9**, bases unchanged **3.073 / 30.03 / 203.83**
+(unaffected — see below). Pushed to `origin/main`; the device-mounted repo needs a
+plain `git pull` to catch up (device_bash has no network, so pushes happen from a
+temporary cloud-container clone, not the mount — see "Sandbox architecture,
+clarified" below).
 
 ### What shipped
 
-1. **Batch 1 `675d931` — engine lock.** All 18 scenario levels pinned in
-   `tests/dcf/test_scenario_goldens.py` (engine-owned change detectors, not workbook
-   oracles). §11.4.2 terminal-share warning ported to the bank and segment engines via
-   `fcf_engine.terminal_share_warning()`. Suite 122 → 146.
-2. **Batch 2 `f9e15b7` — UI credibility.** Pages open on the live case (CSL was opening
-   on the broker bar showing 136.00); CSL broker sourced from the register at the
-   model's FX (136.00 → 146.60); `cp.re0` aligned to the slider default so the reduced
-   form returns base exactly and the false override chips are gone; scenario names
-   escaped; delete-index drift fixed; topnotes redated.
-3. **`c7b0d7d` — review tracker.** `design/reviews/review_tracker_2026-08-13.html`,
-   54 items, filterable. **Open the HTML, not the markdown.**
-4. **Four methodology papers** (`97e6a3e`, `a2383ae`, `8c16b1d`): the CSL discount-rate
-   fork, CSL cost of debt and target structure, DNL working-capital derivation, and
-   the working-capital treatment standard.
-5. **`35ea0d4` — DNL source archive filed** to `data/financials/historical/dnl/`.
+1. **Working-capital mechanism implemented and tested** (`working_capital_intensity_
+   from_data()`, `src/vcc_valuations/translator.py`), per `design/methodology/
+   working_capital_treatment.md` §5 step 3. 5 new tests in
+   `tests/test_working_capital.py`; a 9th SSOT ratchet check enforcing every
+   non-exempt company carries the data + judgement.
+2. **Layer-1 data filed:** `working_capital_history` (6 years) added to
+   `data/financials/csl.yaml` — sourced from `csl_eodhd_fundamentals_2026-06-15.csv`
+   and cross-checked against the methodology paper's §6.1 table (exact match on all
+   six years). DNL's single FY2025 observation restated from the existing
+   `balance_sheet` block into the same shape.
+3. **Layer-2 judgement ratified and filed** (D-29/D-30/D-31 in `DECISIONS.md`):
+   - **CSL: 35%.** `clean_years: [FY2024, FY2025]` → average 35.8% → rounds to 35%
+     under the new standing protocol (average of clean years, round to nearest 5pp
+     — D-29, general and replicable, not CSL-specific).
+   - **DNL: 13.76%**, held at the raw figure via a named `rounding_override` rather
+     than the protocol's 15% — one observation is too thin to round with confidence.
+     Revisit once the 1H26 Appendix 4D lands (still not in the archive — see below).
+   - **WBC:** confirmed exempt by the existing `industry_type: bank` field; no data
+     change needed, just a comment pointing at it.
+4. **NOT done, deliberately:** the mechanism is not wired into `build_engine_inputs_
+   from_data` (DNL) or `build_segment_inputs_from_data` (CSL) — those still read the
+   old hand-typed zero / 10%. Doing that plus rebuilding both audited workbooks
+   (formulas, not Python constants) and re-tying all 18 goldens is the next block of
+   work (est. half a day DNL, a day CSL — unchanged from the prior handover). Stephen
+   chose to scope this session to the mechanism + data + ratification rather than
+   rush the engine/workbook rebuild ("do not let the engine become self-certifying").
+5. **Flagged, not built:** Stephen wants the working-capital methodology (intensity,
+   clean-years judgement, rounding/override) disclosed in the UI. Scope TBD, likely
+   alongside the engine wiring above.
 
-### Decisions Stephen made (do not reopen)
+### Sandbox architecture, clarified this session
 
-6. **CSL discount rate:** build a WACC on a **target** capital structure, not spot D/V.
-7. **DNL reinvestment:** fix both working capital and terminal capex; rebuild the
-   audited workbook. *Sizing still open — see below.*
-8. **Market prices:** leave at 15 June 2026. Ben's feed is down; get everything else
-   right first.
-9. **DNL broker bar:** leave alone until real consensus coverage exists.
-10. **Working-capital definition:** the broad measure (current assets less cash, less
-    current liabilities excluding interest-bearing debt) — **not** trade-only.
+6. **`device_bash` (the Cowork desktop bridge / mounted Windows repo) has NO network
+   access** — confirmed by a failed `git fetch` (403 from proxy). CLAUDE.md's note
+   that "sandbox-side git push works directly from Cowork" refers to the **cloud
+   container's own Bash tool**, which clones the repo fresh each session via the PAT
+   (`.github-token`, staged in from the device) and has full network access. That is
+   where suite/ratchet/UI-build/commit/push actually happen now.
+7. **Practical effect:** after a cloud-container session pushes, the device-mounted
+   repo at `C:\Users\steph\vcc-valuations` is behind until Stephen runs `git pull`
+   from his own (non-sandboxed) cmd window — same as the existing "Stephen pushes
+   from his own cmd window" pattern, just `pull` instead of `push`. No lock-file or
+   `sandbox_cleanup.cmd` cleanup was needed this session (the cloud-container clone
+   is separate and disposed of at session end).
 
-### Where the work stopped, and what it needs
+### Decisions Stephen made this session (do not reopen)
 
-11. **Working-capital standard is written but NOT implemented.**
-    `design/methodology/working_capital_treatment.md` specifies the definition, three
-    carve-outs (interest-bearing incl. **current lease portions**; held-for-sale; all
-    cash), the bank exemption **by rule not by zero**, the layering, and five
-    enforcement steps. Step 3 — a `working_capital_intensity_from_data()` in the
-    translator — is the load-bearing one. Nothing is coded.
-12. **Derived intensities:** CSL **~35%** (six years, 27.6–46.6%, clean post-Vifor
-    years 34.8/36.8) against an assumed 10% — worth **−4.2%** on CSL. DNL **13.76%**
-    on the broad measure against an assumed zero. Both need Stephen's sign-off on the
-    final figure before implementation.
-13. **CSL WACC parameters proposed, not ratified:** notional BBB+/A−, spread ~100bp off
-    DNL's own 170bp AUD BBB anchor, kd 5.50%; target 1.8× ND/EBITDA converted at a
-    through-cycle 14× EV/EBITDA → D/V 12.9%, WACC ≈8.2%, CSL MT ≈ AUD 228 (+12%). The
-    EV/EBITDA multiple is the one input with no independent support — revisit when
-    peer financials land.
-14. **Both changes retire an audited Muddle Through oracle** and move all 18 goldens.
-    Each needs a workbook rebuild and re-tie, not just an engine edit. Half a day for
-    DNL, a day for CSL.
+8. **Working-capital rounding protocol (D-29):** average of judged clean years,
+   round to nearest 5pp, as the general rule for every company.
+9. **CSL working-capital intensity ratified at 35%** (D-30).
+10. **DNL working-capital intensity held at raw 13.76%**, not rounded, pending a
+    second observation (D-31).
 
 ### Open, needing Stephen
 
-15. Final DNL working-capital intensity (13.76% derived; the paper argues for it).
-16. Final CSL working-capital intensity (~35% derived).
-17. CSL WACC parameters at item 13.
-18. Q5 (WBC CET1 warn-only vs forced payout cut), Q6 (metric card 4), Q7 (tab parity)
+11. **Scope the engine-wiring + workbook rebuild** (item 4 above) — continue now in
+    a follow-up session, or park. Retires an audited MT oracle for both companies and
+    moves all 18 pinned goldens; needs deliberate workbook re-tie, not a quick edit.
+12. **UI disclosure** for the working-capital methodology (item 5) — scope and
+    placement.
+13. CSL WACC parameters (D-06, still PROVISIONAL — the EV/EBITDA multiple has no
+    independent support).
+14. Q5 (WBC CET1 warn-only vs forced payout cut), Q6 (metric card 4), Q7 (tab parity)
     — all in the tracker, none blocking.
 
 ### Worth retrieving
 
-19. **DNL 1H26 Appendix 4D half-year financial report.** The archive has the results
-    announcement but not the statutory half-year accounts, so total current
-    assets/liabilities at **31 March 2026** — the model's own anchor date — are not
-    available. Would let DNL's intensity be struck at the anchor rather than six
-    months before it.
-20. **`data/companies/csl.md` does not exist** (DNL and WBC both have narratives).
-    Surfaced by the new inventory script on its first run.
+15. **DNL 1H26 Appendix 4D half-year financial report.** Checked this session:
+    `dnl_1h26_results_announcement_2026.pdf` (which IS in the archive) has a 31 March
+    2026 balance sheet on page 11, but in management's NET presentation (Group TWC,
+    Net PP&E, Net debt — Total Assets 5,863.3m), not the statutory GROSS format with
+    separate Total current assets / Total current liabilities the broad-measure
+    formula needs. The full statutory half-year financial report is still not filed.
+16. **`data/companies/csl.md` does not exist** (DNL and WBC both have narratives).
 
 ---
 

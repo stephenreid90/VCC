@@ -138,6 +138,10 @@ company_position:
 
   industry_type: bank
   industry_archetype: australian_major_banks
+  # This field is what working_capital_intensity_from_data() keys off to
+  # exempt WBC BY RULE (not by returning zero) — a bank's current assets and
+  # liabilities ARE its business; netting them per the non-cash working-
+  # capital formula would be meaningless. See working_capital_treatment.md §3.
 
   # ---- Consolidated, parent-level blocks ----
 

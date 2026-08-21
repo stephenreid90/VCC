@@ -55,6 +55,60 @@ balance_sheet:
   net_debt_rationale: >
     1H26 close (USD m); ~1.8x EBITDA. Deducted in the equity bridge at anchor.
 
+# --- WORKING CAPITAL HISTORY (layer 1, USD millions) ---
+# Source: data/financials/csl_eodhd_fundamentals_2026-06-15.csv, EODHD annual
+# balance sheet export (totalCurrentAssets / totalCurrentLiabilities /
+# cashAndShortTermInvestments / shortTermDebt rows), cross-checked against
+# design/methodology/working_capital_treatment.md §6.1 (found 20 Aug 2026 —
+# the curated balance_sheet block above is a SUMMARY that omits this; the raw
+# six-year export is the source, per CLAUDE.md "survey before you conclude").
+# FY22-FY23 span the Vifor acquisition (14 Dec 2021) — the discontinuity
+# shows up as the outlier intensities in those two years; see
+# working_capital_intensity clean_years below.
+working_capital_history:
+  - fiscal_year: FY2025
+    fy_end_date: 2025-06-30
+    revenue: 15430.0
+    total_current_assets: 11850.0
+    total_current_liabilities: 4815.0
+    cash_and_short_term_investments: 2157.0
+    interest_bearing_current_debt: 804.0
+  - fiscal_year: FY2024
+    fy_end_date: 2024-06-30
+    revenue: 14690.0
+    total_current_assets: 10768.0
+    total_current_liabilities: 4950.0
+    cash_and_short_term_investments: 1657.0
+    interest_bearing_current_debt: 944.0
+  - fiscal_year: FY2023
+    fy_end_date: 2023-06-30
+    revenue: 13174.0
+    total_current_assets: 13909.712311
+    total_current_liabilities: 6922.556899
+    cash_and_short_term_investments: 2334.546458
+    interest_bearing_current_debt: 1055.0
+  - fiscal_year: FY2022
+    fy_end_date: 2022-06-30
+    revenue: 10493.1
+    total_current_assets: 23937.613611
+    total_current_liabilities: 10336.944666
+    cash_and_short_term_investments: 15181.106856
+    interest_bearing_current_debt: 6466.7376
+  - fiscal_year: FY2021
+    fy_end_date: 2021-06-30
+    revenue: 10331.934
+    total_current_assets: 7390.060913
+    total_current_liabilities: 3103.751579
+    cash_and_short_term_investments: 1812.492117
+    interest_bearing_current_debt: 375.11152
+  - fiscal_year: FY2020
+    fy_end_date: 2020-06-30
+    revenue: 9406.288
+    total_current_assets: 6446.2
+    total_current_liabilities: 2141.5
+    cash_and_short_term_investments: 1197.7
+    interest_bearing_current_debt: 202.3
+
 # --- OBSERVED MARKET DATA (layer 1) ---
 market_data:
   market_price_aud: 105.53

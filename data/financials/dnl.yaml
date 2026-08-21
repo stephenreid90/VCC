@@ -196,6 +196,33 @@ balance_sheet:
   total_equity: 4431.1
   minority_interests: -1.1
 
+# --- WORKING CAPITAL HISTORY (layer 1, AUD millions) ---
+# Per design/methodology/working_capital_treatment.md: the four fields the
+# broad-measure NCWC formula needs, restated year-by-year so
+# working_capital_intensity_from_data() reads DNL and CSL through one code
+# path. Same figures as balance_sheet above (30 Sep 2025) — DNL has one
+# usable statutory observation; see working_capital_intensity_from_data's
+# docstring and dnl.yaml's working_capital_intensity block for the
+# single-observation caveat. 31 Mar 2026 (the model's anchor date) would
+# extend this to two, but only management's net-presentation balance sheet
+# is filed for that date (dnl_1h26_results_announcement_2026.pdf page 11) —
+# not the full statutory current-assets/current-liabilities split. Worth
+# retrieving: the 1H26 Appendix 4D half-year financial report.
+working_capital_history:
+  - fiscal_year: FY2025
+    fy_end_date: 2025-09-30
+    revenue: 3710.1
+    total_current_assets: 2122.7
+    total_current_liabilities: 1591.3
+    cash_and_short_term_investments: 647.2
+    # short_term_debt; already folds in the 59.7 current lease portion per
+    # the feed's convention (see working_capital_treatment.md §6.4) —
+    # carve-out rule 1 satisfied here by the source, not an explicit split.
+    # A future provider that does NOT fold the lease in would need a
+    # separate current_lease_liabilities field; not required while this
+    # feed's convention holds.
+    interest_bearing_current_debt: 626.3
+
 derived_metrics:
   # Net debt anchored at the 31 Mar 2026 H1 balance-sheet date, paired
   # with the §5.3 share count for the equity bridge (methodology §5.4).

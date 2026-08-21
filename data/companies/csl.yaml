@@ -537,8 +537,34 @@ normalised_baseline:
 
   working_capital_change_pct_revenue_change: 0.10
   working_capital_change_rationale: >
-    Working-capital change as a fraction of the year-on-year revenue change.
-    Plasma inventory and receivables scale modestly with revenue.
+    SUPERSEDED as of 21 Aug 2026 by working_capital_intensity below, which
+    working_capital_intensity_from_data() derives at 35% against this
+    hand-typed 10% (~3.5x understated — plasma is a working-capital-heavy
+    business; FY25 inventory alone is 42% of revenue). This field and
+    segment_fcff.drivers.wc_change_pct_revenue_change (still 0.10, still what
+    the engine actually reads) are NOT yet wired to the derived figure — that
+    is the next phase of work: rewiring build_segment_inputs_from_data,
+    rebuilding the audited MT workbook, and re-tying all 18 CSL goldens
+    (methodology working_capital_treatment.md §8: this retires an audited
+    oracle and must not become self-certifying). Left at 0.10 here
+    deliberately until that rebuild happens.
+
+  # --- Working-capital intensity (D-09/D-29; working_capital_intensity_from_data()) ---
+  working_capital_intensity:
+    clean_years: [FY2024, FY2025]
+    rounding: nearest_5pct
+    rationale: >
+      Ratified 21 Aug 2026. Six years of data (FY20-FY25) span the Dec-2021
+      Vifor acquisition; FY22-FY23 carry the acquisition-year distortion
+      (intensities 46.6% and 43.3%, vs a 27.6-36.8% range either side) so are
+      excluded as not representative of steady-state CSL. FY24 and FY25 are
+      the two clean post-Vifor years (34.8% and 36.8%); their average, 35.8%,
+      rounds to 35% under the standing nearest-5%-protocol. Protocol is
+      intended as the general, replicable rule: judge which years are clean
+      (with a stated reason), average their level intensities, round to the
+      nearest 5 percentage points. Effect on Muddle Through: AUD 203.83 ->
+      approx 195.20 (-4.2%) once wired through, per
+      working_capital_treatment.md §6.1 (that estimate used 35% already).
 
   # Tax
   tax_rate: 0.19

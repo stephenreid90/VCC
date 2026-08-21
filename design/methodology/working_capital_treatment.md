@@ -1,7 +1,9 @@
 # Working capital — definition, derivation and enforcement
 
-**Status: PROPOSED — for ratification. Owner decision 20 August 2026 to adopt the
-broad (non-cash working capital) definition; this document specifies it.**
+**Status, 21 Aug 2026: definition, rounding protocol and both companies' intensities
+RATIFIED (D-09 through D-12, D-29 through D-31). Mechanism implemented and tested
+(`working_capital_intensity_from_data()`). NOT YET wired into the DNL/CSL engines or
+the audited workbooks — see §7.3.**
 
 Purpose: one repeatable working-capital calculation that applies to any company,
 derived from data rather than hand-authored, and enforced so that company four cannot
@@ -263,6 +265,72 @@ and 36.8% — stable enough to use.
 **Standing rule: strike the intensity on the level, averaged over the available years,
 and apply it to ΔRevenue. Never fit the marginal rate directly.** State the number of
 years and the range in the decision record so the reader can see the dispersion.
+
+## 7.2 The rounding protocol (D-29, ratified 21 Aug 2026)
+
+Averaging clean years gives a level intensity to three significant figures
+(35.8% for CSL) that implies more precision than the underlying data supports
+— six balance-sheet dates is not a large sample, and the "clean" judgement
+itself carries uncertainty. The standing rule:
+
+1. **Judge which years are clean**, with a stated reason (an acquisition, a
+   demerger, a one-off working-capital unwind — anything that makes a year
+   unrepresentative of steady state). Record the list as
+   `normalised_baseline.working_capital_intensity.clean_years` in
+   `data/companies/<id>.yaml`, with the rationale.
+2. **Average the level intensities** of the clean years (§7.1: never the
+   marginal rate).
+3. **Round to the nearest 5 percentage points.** The applied figure is a
+   judgement call dressed as an average of noisy inputs; 5pp buckets say so
+   honestly rather than implying the model can tell 34% from 36%.
+
+This is deliberately general — not a CSL-specific rule. `working_capital_
+intensity_from_data()` (`src/vcc_valuations/translator.py`) implements it for
+every company uniformly, reading `data/financials/<id>.yaml`'s
+`working_capital_history` and each company's `clean_years` judgement.
+
+**Single-observation exception.** A company with only one usable
+balance-sheet date (DNL, until the 1H26 Appendix 4D lands) can still run the
+mechanism, but rounding a single noisy figure to the nearest 5pp overstates
+confidence in the wrong direction — it makes one data point look like a
+considered range judgement. DNL's `clean_years` therefore carries a
+`rounding_override` that applies the raw 13.76% instead of the rounded 15%,
+with the override itself named and rationalised beside the value it
+overrides (never a silent hand-type). Remove the override once a second
+observation lands and the ordinary protocol can run unmodified.
+
+**Worked example — CSL.** Six years (FY20–FY25) span the December 2021 Vifor
+acquisition; FY22 (46.6%) and FY23 (43.3%) sit well outside the 27.6–36.8%
+band the other four years occupy, and both years carry the disclosed
+acquisition-accounting distortion (§6.1's own note on FY22–FY23 vs the
+"clean post-Vifor years"). `clean_years: [FY2024, FY2025]` → average 35.8% →
+**applied 35%**.
+
+## 7.3 Status: mechanism implemented, not yet wired into the engine (21 Aug 2026)
+
+`working_capital_intensity_from_data()` exists, is unit-tested
+(`tests/test_working_capital.py`), and is enforced by the SSOT ratchet
+(`tests/test_ssot_lint.py::test_working_capital_intensity_declared_for_every_non_exempt_company`
+— ratchet 9). The layer-1 data (`working_capital_history`) and layer-2
+judgement (`working_capital_intensity`) are filed for CSL, DNL and WBC.
+
+**Not yet done, deliberately:** `build_engine_inputs_from_data` (DNL,
+`fcf_engine`) and `build_segment_inputs_from_data` (CSL, `segment_engine`)
+still read the old hand-typed figures — DNL's engine still defaults
+`delta_wc` to zero, CSL's `segment_fcff.drivers.wc_change_pct_revenue_change`
+is still 0.10. Wiring the derived intensity through the engines, rebuilding
+both audited Muddle Through workbooks with the new figure (formulas, not
+Python-computed constants — standing rule 1), and re-tying all 18 pinned
+scenario goldens is a separate, larger piece of work (D-13, D-14: "do not let
+the engine become self-certifying" — an engine change without a workbook to
+check it against is exactly the failure mode that rule exists to prevent).
+Estimated half a day for DNL, a day for CSL, per the 20 Aug 2026 handover.
+
+**Also flagged, not yet built:** Stephen wants the working-capital
+methodology (the intensity, the clean-years judgement, the rounding — or
+override — applied) disclosed as notes in the UI, not just buried in the
+data files. Scope and placement to be worked out alongside the engine wiring
+above.
 
 ## 8. What this does not decide
 

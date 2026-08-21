@@ -360,3 +360,34 @@ def test_csl_segment_assumptions_live_in_layer2_not_layer1():
 
     assert "normalised_baseline" not in fin
     assert fin["base_year_status"] != "workbook_reverse_engineered"
+
+
+def test_working_capital_intensity_declared_for_every_non_exempt_company():
+    """Working-capital ratchet (working_capital_treatment.md §5 step 5).
+
+    Every company whose archetype is not exempt (bank) must carry both the
+    layer-1 ``working_capital_history`` and the layer-2
+    ``normalised_baseline.working_capital_intensity.clean_years`` judgement —
+    so working_capital_intensity_from_data() can derive an applied figure for
+    it. A bank must be exempt BY the ``industry_type: bank`` rule, never by
+    silently having neither block (which would look, from the outside,
+    identical to an intensity of zero — the exact failure mode the
+    terminal-share warning already hit once, see working_capital_treatment.md
+    §3).
+    """
+    from vcc_valuations.translator import load_inputs, working_capital_intensity_from_data
+
+    cases = [
+        ("dnl", "muddle_through", "industrial_explosives"),
+        ("csl", "muddle_through", "biopharmaceuticals"),
+        ("wbc", "muddle_through", "australian_major_banks"),
+    ]
+    for company_id, scenario_id, archetype_id in cases:
+        inp = load_inputs(ROOT, scenario_id, archetype_id, company_id)
+        is_bank = inp["company_raw"]["company_position"].get("industry_type") == "bank"
+        result = working_capital_intensity_from_data(inp)
+        if is_bank:
+            assert result is None, f"{company_id}: bank must be exempt (None), not a value"
+        else:
+            assert result is not None, f"{company_id}: non-exempt company must produce an intensity"
+            assert 0.0 <= result.result <= 1.0, f"{company_id}: intensity {result.result} out of range"

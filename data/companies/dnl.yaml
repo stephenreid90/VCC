@@ -333,6 +333,27 @@ normalised_baseline:
     x this fraction; mid-period discounting measures the stub from the valuation
     date (methodology §7 / engine mechanics).
 
+  # --- Working-capital intensity (D-09/D-29; working_capital_intensity_from_data()) ---
+  working_capital_intensity:
+    clean_years: [FY2025]
+    rounding: nearest_5pct
+    rationale: >
+      Ratified 21 Aug 2026, PROVISIONAL. Only one statutory balance sheet is
+      filed (30 Sep 2025 -> 13.76% raw, rounds to 15% under the standing
+      nearest-5%-protocol). Stephen elected to proceed with the unrounded
+      13.76% for now rather than the rounded 15%, pending the 1H26 Appendix 4D
+      half-year financial report (31 Mar 2026, the model's own anchor date),
+      which would extend this to two observations and let the standard
+      average-then-round protocol apply properly. Revisit when that document
+      is retrieved — see working_capital_treatment.md §6.4 and §7 (single-
+      observation caution).
+    rounding_override: 0.1376
+    rounding_override_rationale: >
+      Applies the raw single-year figure instead of the rounded 15%, at
+      Stephen's direction (21 Aug 2026) — see rationale above. Remove this
+      override once a second observation lands and the standard protocol can
+      run unmodified.
+
   # --- Equity-bridge run-rates (workbook Assumptions B84, B86, B87, B108, B110;
   # migrated from the hand-typed golden on 2026-08-12). The Period-A net-debt
   # walk inputs (methodology §7), the AASB-16 lease line and the market
