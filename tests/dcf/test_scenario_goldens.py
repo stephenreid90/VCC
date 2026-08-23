@@ -30,7 +30,11 @@ from pathlib import Path
 import pytest
 
 from vcc_valuations.dcf.bank_engine import BankEngine
-from vcc_valuations.dcf.fcf_engine import FcfEngine, TERMINAL_SHARE_THRESHOLD
+from vcc_valuations.dcf.fcf_engine import (
+    FcfEngine,
+    TERMINAL_SHARE_THRESHOLD,
+    terminal_share_warning,
+)
 from vcc_valuations.dcf.segment_engine import SegmentEngine
 from vcc_valuations.translator import (
     build_bank_inputs_from_data,
@@ -52,12 +56,12 @@ SCENARIOS = [
 
 # --- DNL: industrial FCFF / WACC, AUD per share --------------------------------
 DNL_GOLDEN = {
-    "orderly_convergence": 3.5619,
-    "muddle_through": 3.0730,                      # independently audited (v6 workbook)
-    "ai_productivity_lag": 2.9850,
-    "fragmentation": 2.2224,
-    "disorderly_climate_crystallisation": 1.1768,
-    "stagflation_persists": 1.0194,
+    "orderly_convergence": 3.2740,
+    "muddle_through": 2.8307,                      # independently audited (generated workbook, all six)
+    "ai_productivity_lag": 2.7705,
+    "fragmentation": 1.9926,
+    "disorderly_climate_crystallisation": 1.7015,
+    "stagflation_persists": 0.8061,
 }
 
 # --- WBC: bank DDM / Ke (§15), AUD per share -----------------------------------
@@ -120,7 +124,7 @@ def test_csl_scenario_level(scenario):
 # so the two valuations that most need the sensitivity pass can finally say so.
 TERMINAL_BREACH = {
     # (company, scenario) -> terminal share of EV / of the equity claim
-    ("dnl", "muddle_through"): 0.7258,
+    ("dnl", "muddle_through"): 0.7273,
     ("wbc", "muddle_through"): 0.7631,
     ("wbc", "stagflation_persists"): 0.8445,       # worst in the project
     ("csl", "muddle_through"): 0.7516,
@@ -148,15 +152,36 @@ def test_terminal_share_breaches_are_measured_and_warned(key, expected):
 
 
 def test_warning_is_silent_below_the_threshold():
-    """DNL Disorderly Climate sits at 69.3% — under 70%, so no warning fires.
+    """Guards the threshold itself: an unconditional warning would make every
+    other assertion in this block vacuous.
 
-    Guards the threshold itself: a change that made the warning unconditional would
-    make every other assertion in this block vacuous.
+    This used to assert against DNL Disorderly Climate, which sat at 69.3%. It
+    no longer can: normalising DNL's terminal reinvestment (23 Aug 2026) lifted
+    every DNL scenario above 70%, and with WBC and CSL already above it there is
+    now no live valuation in the project below the threshold — which is itself
+    the finding, recorded in WORKING_NOTES. The guard therefore exercises the
+    pure predicate rather than waiting for a company to fall back under it.
     """
-    r = _dnl("disorderly_climate_crystallisation")
-    assert r.terminal_share_of_ev == pytest.approx(0.6928, abs=5e-4)
-    assert r.terminal_share_of_ev < TERMINAL_SHARE_THRESHOLD
-    assert not r.warnings
+    assert terminal_share_warning(TERMINAL_SHARE_THRESHOLD - 0.01) is None
+    assert terminal_share_warning(TERMINAL_SHARE_THRESHOLD) is None
+    warning = terminal_share_warning(TERMINAL_SHARE_THRESHOLD + 0.01)
+    assert warning is not None and "sensitivity pass" in warning
+
+
+def test_every_live_valuation_now_breaches_the_terminal_threshold():
+    """The consequence of the above, pinned so it cannot drift unnoticed.
+
+    All eighteen company x scenario valuations sit above 70%, so all eighteen
+    carry the §11.4.2 sensitivity obligation. If a future change drops one back
+    under, that is a headline movement and should be read, not absorbed.
+    """
+    for scenario in SCENARIOS:
+        for label, share in (
+            ("dnl", _dnl(scenario).terminal_share_of_ev),
+            ("wbc", _wbc(scenario).terminal_share_of_claim),
+            ("csl", _csl(scenario).terminal_share_of_ev),
+        ):
+            assert share > TERMINAL_SHARE_THRESHOLD, f"{label}/{scenario} {share:.4f}"
 
 
 def test_every_scenario_reports_a_terminal_share_on_every_engine():

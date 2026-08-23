@@ -1,9 +1,9 @@
 # Working capital — definition, derivation and enforcement
 
-**Status, 21 Aug 2026: definition, rounding protocol and both companies' intensities
-RATIFIED (D-09 through D-12, D-29 through D-31). Mechanism implemented and tested
-(`working_capital_intensity_from_data()`). NOT YET wired into the DNL/CSL engines or
-the audited workbooks — see §7.3.**
+**Status, 23 Aug 2026: definition, rounding protocol and both companies' intensities
+RATIFIED (D-09 through D-12, D-29 through D-31). Mechanism implemented and tested.
+DNL is now WIRED THROUGH — engine, workbook and goldens (§7.3). CSL is not: it still
+reads the hand-typed 10% and remains the outstanding half of §5 step 4.**
 
 Purpose: one repeatable working-capital calculation that applies to any company,
 derived from data rather than hand-authored, and enforced so that company four cannot
@@ -306,31 +306,73 @@ acquisition-accounting distortion (§6.1's own note on FY22–FY23 vs the
 "clean post-Vifor years"). `clean_years: [FY2024, FY2025]` → average 35.8% →
 **applied 35%**.
 
-## 7.3 Status: mechanism implemented, not yet wired into the engine (21 Aug 2026)
+## 7.3 Status: DNL wired through, CSL outstanding (23 Aug 2026)
 
-`working_capital_intensity_from_data()` exists, is unit-tested
-(`tests/test_working_capital.py`), and is enforced by the SSOT ratchet
-(`tests/test_ssot_lint.py::test_working_capital_intensity_declared_for_every_non_exempt_company`
-— ratchet 9). The layer-1 data (`working_capital_history`) and layer-2
-judgement (`working_capital_intensity`) are filed for CSL, DNL and WBC.
+`working_capital_intensity_from_data()` derives the intensity for every non-exempt
+company, is unit-tested (`tests/test_working_capital.py`) and is enforced by the SSOT
+ratchet (ratchet check 9). The layer-1 history and layer-2 judgement are filed for CSL,
+DNL and WBC.
 
-**Not yet done, deliberately:** `build_engine_inputs_from_data` (DNL,
-`fcf_engine`) and `build_segment_inputs_from_data` (CSL, `segment_engine`)
-still read the old hand-typed figures — DNL's engine still defaults
-`delta_wc` to zero, CSL's `segment_fcff.drivers.wc_change_pct_revenue_change`
-is still 0.10. Wiring the derived intensity through the engines, rebuilding
-both audited Muddle Through workbooks with the new figure (formulas, not
-Python-computed constants — standing rule 1), and re-tying all 18 pinned
-scenario goldens is a separate, larger piece of work (D-13, D-14: "do not let
-the engine become self-certifying" — an engine change without a workbook to
-check it against is exactly the failure mode that rule exists to prevent).
-Estimated half a day for DNL, a day for CSL, per the 20 Aug 2026 handover.
+**DNL is live.** `build_engine_inputs_from_data` now populates `delta_wc` and
+`delta_wc_stub` from the derived intensity, applied to the change in the *annualised*
+revenue run-rate — the stock scales with the run-rate, not with the stub's part-year
+flow, so the stub carries the build from the valuation date to the first year-end and
+year one carries only the remainder. The pieces sum to intensity x (revenue_H − base
+revenue), which is the identity the wiring is tested against.
 
-**Also flagged, not yet built:** Stephen wants the working-capital
-methodology (the intensity, the clean-years judgement, the rounding — or
-override — applied) disclosed as notes in the UI, not just buried in the
-data files. Scope and placement to be worked out alongside the engine wiring
-above.
+### The terminal had to be rebuilt, not just fed
+
+Populating `delta_wc` alone would have been wrong, and quietly so. The DNL engine
+capitalised the grown final-year FCFF, so the terminal inherited whatever
+working-capital build the last explicit year happened to carry — a build struck on
+roughly 6.2% revenue growth, carried into a perpetuity growing at 2.5%. That is about
+two and a half times the drag §1 of this document specifies (intensity x g x
+revenue_final). The same defect applied to capex: the explicit period's capex rate ran
+on forever, which in the Disorderly Climate scenario meant a perpetuity reinvesting at
+10.0% of revenue against D&A of 7.3%.
+
+Both are fixed together, because they are the same error — carrying an explicit-period
+reinvestment rate into steady state. `FcfEngineInputs.terminal_reinvestment` is now a
+**declared** field with no default, either `capitalise_last_fcff` or `normalised`; the
+DNL data file declares `normalised` with `capex_rule: equals_da` (D-13). The normalised
+terminal is the same algebra the segment engine already used for CSL, so both FCFF
+engines now strike the terminal identically.
+
+### What it was worth
+
+Muddle Through moves 3.073 → **2.831** (−7.9%), against a market reference of 3.61 —
+a discount of 21.6% rather than 14.9%. Two consequences worth reading rather than
+absorbing:
+
+1. **Disorderly Climate rises 44.6%** (1.177 → 1.702), against the trend. Its Y5 capex
+   sits at 10.0% of revenue and its terminal growth is the lowest of the six, so
+   normalising reinvestment releases more than the working-capital build consumes. The
+   review characterised the terminal-capex wedge as uniformly flattering; on DNL it is
+   not, and this scenario is the counter-example.
+2. **Every DNL scenario now breaches the 70% terminal-share threshold** (70.2% to
+   79.0%). With WBC and CSL already above it, there is no longer a single live
+   valuation in the project below the line — all eighteen carry the §11.4.2
+   sensitivity obligation. That is a statement about how terminal-heavy this framework
+   is, not about DNL.
+
+### The oracle was rebuilt, not retired
+
+D-13 warned against letting the engine certify itself. The audited v6 workbook could
+not check this change — it has no working-capital rows and no normalised terminal — so
+`tests/dcf/golden/_recalc_dnl_workbook.py` now recalculates the *generated* DNL
+workbook in LibreOffice and pins every DCF line for all six scenarios
+(`tests/dcf/test_dnl_workbook_tie.py`). That workbook is formula-only and regenerates
+from the data files, so unlike a hand-built oracle it cannot silently drift. The v6
+fixture is kept as the `capitalise_last_fcff` mechanics oracle it always was.
+
+**Still outstanding: CSL.** `build_segment_inputs_from_data` reads
+`segment_fcff.drivers.wc_change_pct_revenue_change: 0.10` where the derived figure is
+35% (D-30). That is the larger half of the job — a day, per the estimate — and it
+moves the CSL workbook and the CSL goldens.
+
+**Also flagged, not yet built:** Stephen wants the working-capital methodology (the
+intensity, the clean-years judgement, the rounding or override applied) disclosed as
+notes in the UI, not just in the data files. Scope and placement open.
 
 ## 8. What this does not decide
 

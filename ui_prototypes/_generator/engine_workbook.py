@@ -221,6 +221,63 @@ class Book:
         r[0] += 1
         blank()
 
+        # --- Working capital (working_capital_treatment.md) ---
+        # The four balance-sheet lines and revenue are the ONLY inputs; the
+        # year intensity, the clean-year average, the rounding and the applied
+        # figure are all Excel formulas, so the derivation Stephen ratified can
+        # be re-run and flexed by hand rather than taken on trust.
+        wci = nb["working_capital_intensity"]
+        hist = {row["fiscal_year"]: row for row in fin["working_capital_history"]}
+        ws.cell(r[0], 1, "Working capital — derived intensity (never an input)"); ws.cell(r[0], 1).font = SUB; r[0] += 1
+        wc_hdr = r[0]
+        for cc, lbl in enumerate(
+            ["Clean year", "Total current assets", "Less: cash & equivalents",
+             "Total current liabilities", "Less: interest-bearing (incl. current leases)",
+             "Revenue", "NCWC / revenue"], start=1
+        ):
+            c = ws.cell(wc_hdr, cc, lbl); c.font = BOLD
+            c.alignment = Alignment(horizontal="right", wrap_text=True)
+        r[0] += 1
+        level_cells = []
+        for fy in wci["clean_years"]:
+            row = hist[fy]
+            ws.cell(r[0], 1, fy)
+            for cc, key in enumerate(
+                ["total_current_assets", "cash_and_short_term_investments",
+                 "total_current_liabilities", "interest_bearing_current_debt", "revenue"],
+                start=2,
+            ):
+                c = ws.cell(r[0], cc, row[key]); c.fill = YELLOW; c.font = BLUEFONT; c.number_format = NUM1
+            ca, cash, cl, ibd, rev = (f"${_col(cc)}${r[0]}" for cc in range(2, 7))
+            c = ws.cell(r[0], 7, f"=(({ca}-{cash})-({cl}-{ibd}))/{rev}"); c.number_format = PCT2
+            level_cells.append(f"$G${r[0]}")
+            r[0] += 1
+        line("Average of clean years", None, None, PCT2)
+        ws.cell(r[0] - 1, 2, "=AVERAGE(" + ",".join(level_cells) + ")").number_format = PCT2
+        self.ref["wc_avg"] = f"'Assumptions'!$B${r[0] - 1}"
+        avg = f"$B${r[0] - 1}"
+        line("Rounded (protocol: nearest 5pp)", None, None, PCT2)
+        step = 1.0 / 20.0  # ssot-allow: the D-29 rounding bucket, not a register value
+        ws.cell(r[0] - 1, 2, f"=ROUND({avg}/{step},0)*{step}").number_format = PCT2
+        rounded = f"$B${r[0] - 1}"
+        applied_src = rounded
+        if "rounding_override" in wci:
+            line("Override — raw figure held (single observation)",
+                 wci["rounding_override"], "wc_override", PCT2)
+            applied_src = self.ref["wc_override"].split("!")[1]
+        line("Applied working-capital intensity", None, None, PCT2, style=BOLD)
+        c = ws.cell(r[0] - 1, 2, f"={applied_src}")
+        c.number_format = PCT2; c.font = BOLD
+        self.ref["wc_int"] = f"'Assumptions'!$B${r[0] - 1}"
+        tr = nb["terminal_reinvestment"]
+        self.terminal_mode = tr["mode"]
+        rule = tr["capex_rule"]
+        src = "da_pct" if rule == "equals_da" else f"capex:{len(base['capex_pct']) - 1}"
+        line(f"Terminal capex % of revenue (rule: {rule})", None, None, PCT2)
+        ws.cell(r[0] - 1, 2, "=" + self.ref[src].split("!")[1]).number_format = PCT2
+        self.ref["t_capex"] = f"'Assumptions'!$B${r[0] - 1}"
+        blank()
+
         # --- Equity bridge run-rates ---
         ws.cell(r[0], 1, "Equity bridge run-rates & anchors"); ws.cell(r[0], 1).font = SUB; r[0] += 1
         line("Net debt at anchor (31 Mar 2026, §5.3)", fin["derived_metrics"]["net_debt"], "nd_anchor", NUM1)
@@ -416,11 +473,25 @@ class Book:
                 i = p - 1
                 return f"=-{c}{rmap[f'rev{p}']}*({R[f'capex:{i}']}+{R[f'macro:capex_delta_pp:{s}']})"
             prow(f"cx{p}", f"  {PERIODS[p]} capex", MONEY, f_cx)
+        # Working capital. NCWC is a stock and scales with the ANNUALISED
+        # revenue run-rate, not with the stub's part-year flow — hence the
+        # run-rate row, which differs from the revenue row only in the stub.
+        section("Working capital (intensity x change in annualised revenue)")
+        for p in range(6):
+            def f_rrate(s, c, j, p=p):
+                exp = f"{R['stub_years']}" if p == 0 else f"{p}"
+                return f"={R['base_rev']}*(1+{c}{rmap['g_rev']})^{exp}"
+            prow(f"rrate{p}", f"  {PERIODS[p]} revenue run-rate (annualised)", MONEY, f_rrate)
+        for p in range(6):
+            def f_dwc(s, c, j, p=p):
+                prev = R["base_rev"] if p == 0 else f"{c}{rmap[f'rrate{p-1}']}"
+                return f"=-{R['wc_int']}*({c}{rmap[f'rrate{p}']}-{prev})"
+            prow(f"dwc{p}", f"  {PERIODS[p]} change in working capital", MONEY, f_dwc)
         # FCFF
-        section("FCFF = NOPAT + D&A + Capex")
+        section("FCFF = NOPAT + D&A + Capex + ΔWC")
         for p in range(6):
             prow(f"fcff{p}", f"  {PERIODS[p]} FCFF", MONEY,
-                 lambda s, c, j, p=p: f"={c}{rmap[f'nop{p}']}+{c}{rmap[f'da{p}']}+{c}{rmap[f'cx{p}']}")
+                 lambda s, c, j, p=p: f"={c}{rmap[f'nop{p}']}+{c}{rmap[f'da{p}']}+{c}{rmap[f'cx{p}']}+{c}{rmap[f'dwc{p}']}")
         # mid-times & discount factors
         section("Discounting (single WACC)")
         for p in range(6):
@@ -439,8 +510,20 @@ class Book:
         section("Terminal value & enterprise value")
         prow("pv_expl", "PV of explicit FCFF", MONEY,
              lambda s, c, j: "=" + "+".join(f"{c}{rmap[f'pv{p}']}" for p in range(6)))
-        prow("tfcff", "Terminal FCFF = Y5 FCFF x (1+g)", MONEY,
-             lambda s, c, j: f"={c}{rmap['fcff5']}*(1+{R[f'macro:terminal_growth:{s}']})")
+        if self.terminal_mode == "normalised":
+            # Rebuilt from components: Y5 margin and tax, D&A, terminal capex
+            # (declared rule), and a working-capital drag of g x intensity.
+            # Capitalising Y5 FCFF instead would carry the explicit period's
+            # capex and working-capital build into perpetuity.
+            prow("tfcff", "Terminal FCFF (normalised reinvestment)", MONEY,
+                 lambda s, c, j: (
+                     f"={c}{rmap['rev5']}*(1+{R[f'macro:terminal_growth:{s}']})"
+                     f"*({c}{rmap['m5']}*(1-{c}{rmap['tax5']})+{R['da_pct']}"
+                     f"-{R['t_capex']}-{R[f'macro:terminal_growth:{s}']}*{R['wc_int']})"
+                 ))
+        else:
+            prow("tfcff", "Terminal FCFF = Y5 FCFF x (1+g)", MONEY,
+                 lambda s, c, j: f"={c}{rmap['fcff5']}*(1+{R[f'macro:terminal_growth:{s}']})")
         prow("tv", "Terminal value = TFCFF/(WACC-g)", MONEY,
              lambda s, c, j: f"={c}{rmap['tfcff']}/({R['wacc']}-{R[f'macro:terminal_growth:{s}']})")
         prow("tend", "Terminal end time (stub+H)", NUM1 + "00",

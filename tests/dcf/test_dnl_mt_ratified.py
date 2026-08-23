@@ -50,12 +50,19 @@ def test_discount_rate_is_data_driven():
 
 
 def test_dnl_mt_ratified_per_share():
-    """End-to-end: data-driven WACC into the engine over the (still hand-typed)
-    structural overlays. Pins the ratified beta-1.10 production valuation."""
+    """End-to-end: data-driven WACC into the engine over the hand-typed
+    structural overlays.
+
+    SUPERSEDED AS THE PRODUCTION HEADLINE, 23 Aug 2026. These inputs book no
+    working capital and capitalise the grown final-year FCFF; the live valuation
+    normalises both (D-13) and lands at 2.831. What survives here is the
+    isolation: it holds reinvestment at the old settings so a movement in this
+    number means the WACC or the overlays moved, not the reinvestment side.
+    The live figure is pinned in test_dnl_mt_from_data.py."""
     inp = dataclasses.replace(dnl_muddle_through_inputs(), wacc=build_wacc_from_inputs(_load()))
     r = FcfEngine().run(inp)
     assert abs(r.wacc - 0.088772) < 1e-4
-    assert round(r.value_per_share, 3) == 3.073     # supersedes beta-0.95 3.484
+    assert round(r.value_per_share, 3) == 3.073     # pre-reinvestment oracle; live is 2.831
     assert round(r.enterprise_value, 1) == 7009.2
     # sanity: still a terminal-heavy DCF, below market
     assert r.value_per_share < r.market_reference_price

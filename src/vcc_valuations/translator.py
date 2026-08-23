@@ -696,6 +696,57 @@ def build_engine_inputs_from_data(inputs: dict, scenario_id: str):
         raise ValueError(f"{company.id}: no revenue_growth_chain for scenario {scenario_id!r}.")
     adjustments_net = equity_bridge_adjustments_net_from_data(company_raw)
 
+    # ---- Working capital (working_capital_treatment.md section 5 step 4) ----
+    # The intensity is derived from the balance-sheet history and the clean-years
+    # judgement, never hand-typed. Delta-WC is that intensity applied to the
+    # change in the ANNUALISED revenue run-rate: the stock scales with the
+    # run-rate, not with the stub's partial-period flow, so the stub carries the
+    # build from the valuation date to the first year-end and year 1 carries only
+    # the remainder. The pieces sum to intensity x (revenue_H - base_revenue),
+    # which is the identity to check the wiring against.
+    wc = working_capital_intensity_from_data(inputs)
+    if wc is None:
+        raise ValueError(
+            f"{company.id}: bank-exempt from working capital, but "
+            "build_engine_inputs_from_data is the industrial FCFF assembler."
+        )
+    wc_intensity = wc.result
+    horizon = nb["horizon_years"]
+    stub = nb["stub_years"]
+    base_revenue = nb["base_year_revenue"]
+
+    def _run_rate(t: float) -> float:
+        return base_revenue * (1.0 + revenue_growth) ** t
+
+    delta_wc_stub = wc_intensity * (_run_rate(stub) - base_revenue)
+    delta_wc = [wc_intensity * (_run_rate(1.0) - _run_rate(stub))]
+    delta_wc += [
+        wc_intensity * (_run_rate(k) - _run_rate(k - 1))
+        for k in range(2, horizon + 1)
+    ]
+
+    # ---- Terminal reinvestment (D-13) ----
+    tr = nb.get("terminal_reinvestment")
+    if tr is None:
+        raise ValueError(
+            f"{company.id}: normalised_baseline.terminal_reinvestment is required — "
+            "how the terminal strikes capex and working capital is a declared "
+            "judgement, not an engine default (working_capital_treatment.md section 1)."
+        )
+    mode = tr["mode"]
+    if mode == "normalised":
+        rule = tr["capex_rule"]
+        if rule == "equals_da":
+            terminal_capex_pct = overlays["da_pct_revenue"]
+        elif rule == "final_explicit_year":
+            terminal_capex_pct = overlays["capex_pct"][-1]
+        else:
+            raise ValueError(f"{company.id}: unknown terminal capex_rule {rule!r}.")
+        terminal_wc_intensity = wc_intensity
+    else:
+        terminal_capex_pct = None
+        terminal_wc_intensity = None
+
     # Applied tax: effective rate (stub) + the derived effective->statutory glide.
     tax = tax_bridge_from_data(inputs)
     if tax is None:
@@ -742,6 +793,11 @@ def build_engine_inputs_from_data(inputs: dict, scenario_id: str):
         da_pct_revenue=overlays["da_pct_revenue"],
         capex_pct_stub=overlays["capex_pct_stub"],
         capex_pct=overlays["capex_pct"],
+        delta_wc=delta_wc,
+        delta_wc_stub=delta_wc_stub,
+        terminal_reinvestment=mode,
+        terminal_capex_pct_revenue=terminal_capex_pct,
+        working_capital_intensity=terminal_wc_intensity,
         wacc=wacc,
         terminal_growth=overlays["terminal_growth"],
         equity_bridge=bridge,

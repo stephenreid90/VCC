@@ -47,12 +47,14 @@ def _load():
 
 def test_engine_inputs_assembled_from_data_reproduce_ratified_per_share():
     """The whole engine input is built from data and reproduces the ratified
-    β-1.10 headline: 3.073/share, EV 7,009.2, WACC 8.8772%."""
+    β-1.10 headline. Restated 23 Aug 2026 when working capital and the
+    normalised terminal went live (D-13): 2.831/share, EV 6,580.3, WACC
+    8.8772% — the WACC is untouched, the reinvestment side is not."""
     inp = build_engine_inputs_from_data(_load(), "muddle_through")
     r = FcfEngine().run(inp)
     assert abs(r.wacc - 0.088772) < 1e-4
-    assert round(r.enterprise_value, 1) == 7009.2
-    assert round(r.value_per_share, 3) == 3.073
+    assert round(r.enterprise_value, 1) == 6580.3
+    assert round(r.value_per_share, 3) == 2.831
     assert r.value_per_share < r.market_reference_price
 
 
@@ -175,7 +177,7 @@ def test_equity_bridge_derivation_traces_walk_and_per_share():
         ["B6", "B7", "B8", "B10", "B11", "B27", "B28", "B29", "B30", "B31", "B33", "B37"]
     assert abs(d["B11"].value - 1224.0329) < 1e-3   # net debt at valuation (golden)
     assert abs(d["B29"].value - (-151.65)) < 1e-2   # adjustments net (§4.2)
-    assert round(d.result, 3) == 3.073              # B33 value per share
+    assert round(d.result, 3) == 2.831              # B33 value per share
     # B33 must equal the engine's own value_per_share, not a re-derivation drift.
     inp = build_engine_inputs_from_data(_load(), "muddle_through")
     from vcc_valuations.dcf.fcf_engine import FcfEngine

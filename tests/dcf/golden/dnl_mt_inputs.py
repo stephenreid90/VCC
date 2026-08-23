@@ -94,6 +94,12 @@ def dnl_muddle_through_inputs() -> FcfEngineInputs:
         capex_pct=[0.08, 0.08, 0.07, 0.07, 0.07],  # B12 (Y1,Y2), B11 (Y3..Y5)
         delta_wc=[0.0] * 5,                   # B14 (neutral)
         delta_wc_stub=0.0,
+        # The v6 workbook books no working capital and capitalises the grown
+        # final-year FCFF. That is what this oracle is FOR: it pins the engine's
+        # arithmetic against the audited spreadsheet as built. The live
+        # data-driven path declares "normalised" instead — see
+        # data/companies/dnl.yaml normalised_baseline.terminal_reinvestment.
+        terminal_reinvestment="capitalise_last_fcff",
         wacc=wacc,
         terminal_growth=0.025,                # B77
         equity_bridge=bridge,

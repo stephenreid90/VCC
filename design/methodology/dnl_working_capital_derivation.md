@@ -1,7 +1,23 @@
 # DNL working capital — derivation and the case for changing it
 
-**Status: OPEN — owner decision. No engine or workbook change made.**
-Written 20 August 2026 at Stephen's request, before touching anything.
+**Status: CLOSED and implemented, 23 August 2026.** Superseded in two places by
+what was actually ratified, and kept because the reasoning is still the record of how
+we got there.
+
+1. **The definition moved.** This paper derives a TRADE working-capital intensity of
+   16.87%. D-09 subsequently adopted the BROAD definition, and the ratified DNL figure
+   is **13.76%** (D-31) — see `working_capital_treatment.md` §6.4 for why the trade
+   measure was rejected (it gives three different answers across three DNL documents).
+   Every 16.87% in this paper should be read as superseded arithmetic, not as the live
+   input.
+2. **Section 6's tables are therefore stale.** The implemented outcome across the six
+   scenarios is in `WORKING_NOTES.md`; the mechanism is
+   `working_capital_intensity_from_data()` and the wiring is
+   `build_engine_inputs_from_data`.
+
+What survives unchanged is section 4 (why constant intensity), section 5 (the evidence
+is one observation), and section 8's core argument — that zero was never a considered
+view. Written 20 August 2026 at Stephen's request, before touching anything.
 
 Context: the engine currently books **zero** working-capital investment in every
 explicit year and in the terminal. This document sets out what the balance sheet

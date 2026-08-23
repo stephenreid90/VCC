@@ -1,12 +1,12 @@
 # REPO_MAP — what exists, and where
 
-_Generated 2026-08-21 by `scripts/repo_inventory.py`. **Regenerate at the start of
+_Generated 2026-08-23 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `2057276 session_start: fetch origin before counting unpushed commits (was reporting a stale count)` on `main`
-- Unpushed commits: **0**
-- Tracked files: 284
-- Untracked files: 1
+- HEAD: `fdef28c Working-capital standard: implement the mechanism, ratify CSL and DNL intensities` on `main`
+- Unpushed commits: **1**
+- Tracked files: 285
+- Untracked files: 3
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -19,7 +19,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
 | Path | Present | What it is |
 |---|---|---|
-| `data/companies/dnl.yaml` | yes (35.3KB) | company position + layer-2 method (judgement) |
+| `data/companies/dnl.yaml` | yes (36.3KB) | company position + layer-2 method (judgement) |
 | `data/companies/dnl.md` | yes (13.5KB) | company narrative |
 | `data/companies/dnl_documents.yaml` | yes (8.5KB) | document register |
 | `data/financials/dnl.yaml` | yes (11.1KB) | curated layer-1 financials (a SUMMARY — check for raw sources too) |
@@ -57,7 +57,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `csl.yaml` (32.0KB)
     - `csl_documents.yaml` (8.3KB)
     - `dnl.md` (13.5KB)
-    - `dnl.yaml` (35.3KB)
+    - `dnl.yaml` (36.3KB)
     - `dnl_documents.yaml` (8.5KB)
     - `wbc.md` (7.6KB)
     - `wbc.yaml` (35.6KB)
@@ -121,9 +121,9 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **methodology/**
     - `csl_cost_of_debt_and_target_structure.md` (13.4KB)
     - `csl_discount_rate_fork.md` (11.0KB)
-    - `dnl_working_capital_derivation.md` (10.2KB)
+    - `dnl_working_capital_derivation.md` (11.2KB)
     - `equity_bridge_and_valuation_mechanics.md` (69.6KB)
-    - `working_capital_treatment.md` (19.3KB)
+    - `working_capital_treatment.md` (21.7KB)
   - **reference/**
     - **discount_rate_iers/**
       - `Oil-Search-and-Santos Scheme-Booklet.pdf` (20.0MB)
@@ -152,14 +152,14 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **vcc_valuations/**
     - `__init__.py` (650B)
     - `derivation.py` (4.4KB)
-    - `translator.py` (43.0KB)
+    - `translator.py` (45.4KB)
     - **assumptions/**
       - `__init__.py` (775B)
       - `wacc.py` (6.0KB)
     - **dcf/**
       - `__init__.py` (50B)
       - `bank_engine.py` (10.7KB)
-      - `fcf_engine.py` (20.1KB)
+      - `fcf_engine.py` (24.1KB)
       - `fcf_stub.py` (9.8KB)
       - `segment_engine.py` (9.7KB)
     - **market/**
@@ -196,18 +196,21 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **dcf/**
     - `__init__.py` (0B)
     - `test_csl_segment.py` (2.6KB)
-    - `test_dnl_all_scenarios.py` (3.5KB)
-    - `test_dnl_mt_from_data.py` (9.7KB)
-    - `test_dnl_mt_ratified.py` (5.3KB)
+    - `test_dnl_all_scenarios.py` (3.6KB)
+    - `test_dnl_mt_from_data.py` (9.9KB)
+    - `test_dnl_mt_ratified.py` (5.7KB)
+    - `test_dnl_workbook_tie.py` (4.1KB)
     - `test_e2e_dnl_mt.py` (4.3KB)
     - `test_per_year_derivations.py` (2.3KB)
-    - `test_scenario_goldens.py` (6.5KB)
+    - `test_scenario_goldens.py` (7.7KB)
     - `test_wbc_bank.py` (2.5KB)
     - **golden/**
       - `__init__.py` (0B)
       - `_recalc.py` (4.2KB)
-      - `dnl_mt_inputs.py` (4.5KB)
+      - `_recalc_dnl_workbook.py` (4.7KB)
+      - `dnl_mt_inputs.py` (4.9KB)
       - `dnl_mt_v6.json` (2.6KB)
+      - `dnl_workbook_all_scenarios.json` (10.3KB)
   - **schemas/**
     - `__init__.py` (0B)
     - `test_models.py` (4.9KB)
@@ -216,14 +219,14 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 ## UI generator
 
   - `csl_scenario_interface.html` (190.3KB)
-  - `dnl_scenario_interface.html` (235.9KB)
+  - `dnl_scenario_interface.html` (237.7KB)
   - `wbc_scenario_interface.html` (190.9KB)
   - **_generator/**
     - `README.md` (893B)
     - `beta_data.py` (10.0KB)
     - `build_cfgs.py` (91.3KB)
-    - `cfgs_gen.json` (207.7KB)
-    - `engine_workbook.py` (82.5KB)
+    - `cfgs_gen.json` (209.4KB)
+    - `engine_workbook.py` (87.3KB)
     - `gen_ui.py` (120.0KB)
 
 ## Analyses (workbooks)
@@ -302,5 +305,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 Not in git. Either commit them or clear them — an untracked file is invisible
 to anyone who clones the repo, and is the most common way work gets lost.
 
-- `tests/test_working_capital.py`
+- `tests/dcf/golden/_recalc_dnl_workbook.py`
+- `tests/dcf/golden/dnl_workbook_all_scenarios.json`
+- `tests/dcf/test_dnl_workbook_tie.py`
 

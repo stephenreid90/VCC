@@ -354,6 +354,24 @@ normalised_baseline:
       override once a second observation lands and the standard protocol can
       run unmodified.
 
+  # --- Terminal reinvestment (D-13) ---
+  terminal_reinvestment:
+    mode: normalised
+    capex_rule: equals_da
+    rationale: >
+      Ratified 20 Aug 2026 (D-13) and sized 23 Aug 2026. The terminal is struck
+      from its components rather than by capitalising the final explicit year's
+      FCFF, for two reasons that are really one. Capex: a perpetuity growing at
+      g cannot sustainably reinvest at the explicit period's rate, so terminal
+      capex is set equal to D&A — the steady-state condition. Working capital:
+      capitalising the last explicit year carried a build struck on ~6.2%
+      revenue growth into a perpetuity growing at ~2.5%, roughly two and a half
+      times the drag the terminal actually bears; the normalised terminal
+      applies g x intensity per working_capital_treatment.md §1 instead. This
+      is the same algebra the segment engine already uses for CSL, so both FCFF
+      engines now strike the terminal the same way. Retires the audited
+      capitalise-last-FCFF oracle; see working_capital_treatment.md §7.3.
+
   # --- Equity-bridge run-rates (workbook Assumptions B84, B86, B87, B108, B110;
   # migrated from the hand-typed golden on 2026-08-12). The Period-A net-debt
   # walk inputs (methodology §7), the AASB-16 lease line and the market

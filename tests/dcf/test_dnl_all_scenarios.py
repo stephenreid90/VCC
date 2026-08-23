@@ -5,7 +5,8 @@ Each scenario is built end-to-end via ``build_engine_inputs_from_data`` from the
 DRIVERS (revenue growth, Y5 EBIT margin) tie the ``dnl_scenarios_comparison_v4``
 workbook to the cent; the per-share LEVELS are the engine's own output at the
 ratified WACC (beta 1.10), which supersede that workbook's stale (beta-0.95)
-per-share numbers exactly as MT's 3.073 superseded 3.484.
+per-share numbers exactly as MT's 3.073 superseded 3.484, and as 2.831
+superseded 3.073 when reinvestment was normalised (D-13, 23 Aug 2026).
 
 Scenario margin/capex deltas are applied as a PARALLEL SHIFT across the explicit
 years (owner decision, 12 Aug 2026).
@@ -65,7 +66,7 @@ def test_scenario_drivers_tie_the_comparison_workbook(scenario):
 
 def test_muddle_through_is_the_ratified_headline():
     _, _, r = _run("muddle_through")
-    assert round(r.value_per_share, 3) == 3.073
+    assert round(r.value_per_share, 3) == 2.831
 
 
 def test_scenario_asymmetry_is_downside_skewed():

@@ -23,102 +23,104 @@ prints git state.
 
 ---
 
-## 🔴 HANDOVER — session of 21 August 2026 (read this first)
+## 🔴 HANDOVER — session of 23 August 2026 (read this first)
 
-**Start by running `python scripts/repo_inventory.py` and reading `REPO_MAP.md`.**
+**Start by running `session_start.cmd`** (or `python scripts/session_start.py`).
 See "Survey before you conclude" in `CLAUDE.md`.
 
-**State:** suite **152**, ratchet **9**, bases unchanged **3.073 / 30.03 / 203.83**
-(unaffected — see below). Pushed to `origin/main`; the device-mounted repo needs a
-plain `git pull` to catch up (device_bash has no network, so pushes happen from a
-temporary cloud-container clone, not the mount — see "Sandbox architecture,
-clarified" below).
+**State:** suite **209**, ratchet **9**, bases **2.831 / 30.03 / 203.83** — the DNL base
+moved this session and that is the headline. Two commits unpushed.
 
 ### What shipped
 
-1. **Working-capital mechanism implemented and tested** (`working_capital_intensity_
-   from_data()`, `src/vcc_valuations/translator.py`), per `design/methodology/
-   working_capital_treatment.md` §5 step 3. 5 new tests in
-   `tests/test_working_capital.py`; a 9th SSOT ratchet check enforcing every
-   non-exempt company carries the data + judgement.
-2. **Layer-1 data filed:** `working_capital_history` (6 years) added to
-   `data/financials/csl.yaml` — sourced from `csl_eodhd_fundamentals_2026-06-15.csv`
-   and cross-checked against the methodology paper's §6.1 table (exact match on all
-   six years). DNL's single FY2025 observation restated from the existing
-   `balance_sheet` block into the same shape.
-3. **Layer-2 judgement ratified and filed** (D-29/D-30/D-31 in `DECISIONS.md`):
-   - **CSL: 35%.** `clean_years: [FY2024, FY2025]` → average 35.8% → rounds to 35%
-     under the new standing protocol (average of clean years, round to nearest 5pp
-     — D-29, general and replicable, not CSL-specific).
-   - **DNL: 13.76%**, held at the raw figure via a named `rounding_override` rather
-     than the protocol's 15% — one observation is too thin to round with confidence.
-     Revisit once the 1H26 Appendix 4D lands (still not in the archive — see below).
-   - **WBC:** confirmed exempt by the existing `industry_type: bank` field; no data
-     change needed, just a comment pointing at it.
-4. **NOT done, deliberately:** the mechanism is not wired into `build_engine_inputs_
-   from_data` (DNL) or `build_segment_inputs_from_data` (CSL) — those still read the
-   old hand-typed zero / 10%. Doing that plus rebuilding both audited workbooks
-   (formulas, not Python constants) and re-tying all 18 goldens is the next block of
-   work (est. half a day DNL, a day CSL — unchanged from the prior handover). Stephen
-   chose to scope this session to the mechanism + data + ratification rather than
-   rush the engine/workbook rebuild ("do not let the engine become self-certifying").
-5. **Flagged, not built:** Stephen wants the working-capital methodology (intensity,
-   clean-years judgement, rounding/override) disclosed in the UI. Scope TBD, likely
-   alongside the engine wiring above.
+1. **DNL working capital is live.** `build_engine_inputs_from_data` now populates
+   `delta_wc` / `delta_wc_stub` from `working_capital_intensity_from_data()` at the
+   ratified 13.76%, applied to the change in the *annualised* revenue run-rate.
+2. **The terminal was rebuilt, which mattered more than the working capital.** The
+   engine capitalised the grown final-year FCFF, so the terminal inherited the explicit
+   period's reinvestment rates — a working-capital build struck on 6.2% growth carried
+   into a 2.5% perpetuity (about 2.5x the correct drag), and whatever capex rate year
+   five happened to run. `FcfEngineInputs.terminal_reinvestment` is now a **declared**
+   field with no default (`normalised` | `capitalise_last_fcff`); DNL declares
+   `normalised` with `capex_rule: equals_da` (D-13, D-32). Same algebra the segment
+   engine already used for CSL.
+3. **A better oracle, not a retired one.** The v6 workbook cannot check any of this —
+   it has no working-capital rows. `tests/dcf/golden/_recalc_dnl_workbook.py`
+   recalculates the *generated* DNL workbook in LibreOffice and
+   `tests/dcf/test_dnl_workbook_tie.py` pins every DCF line across all six scenarios.
+   Engine and spreadsheet agree to 4e-15. That workbook regenerates from the data files,
+   so unlike a hand-built oracle it cannot drift.
+4. **All six DNL goldens re-pinned** (D-33), plus the UI base and the generated prose.
 
-### Sandbox architecture, clarified this session
+### The numbers, and the two that need reading
 
-6. **`device_bash` (the Cowork desktop bridge / mounted Windows repo) has NO network
-   access** — confirmed by a failed `git fetch` (403 from proxy). CLAUDE.md's note
-   that "sandbox-side git push works directly from Cowork" refers to the **cloud
-   container's own Bash tool**, which clones the repo fresh each session via the PAT
-   (`.github-token`, staged in from the device) and has full network access. That is
-   where suite/ratchet/UI-build/commit/push actually happen now.
-7. **Practical effect:** after a cloud-container session pushes, the device-mounted
-   repo at `C:\Users\steph\vcc-valuations` is behind until Stephen runs `git pull`
-   from his own (non-sandboxed) cmd window — same as the existing "Stephen pushes
-   from his own cmd window" pattern, just `pull` instead of `push`. No lock-file or
-   `sandbox_cleanup.cmd` cleanup was needed this session (the cloud-container clone
-   is separate and disposed of at session end).
+| Scenario | Was | Now | Change |
+|---|---|---|---|
+| Orderly Convergence | 3.5619 | 3.2740 | −8.1% |
+| Muddle Through | 3.0730 | **2.8307** | −7.9% |
+| AI Productivity Lag | 2.9850 | 2.7705 | −7.2% |
+| Fragmentation | 2.2224 | 1.9926 | −10.3% |
+| Disorderly Climate | 1.1768 | 1.7015 | **+44.6%** |
+| Stagflation Persists | 1.0194 | 0.8061 | −20.9% |
 
-### Decisions Stephen made this session (do not reopen)
-
-8. **Working-capital rounding protocol (D-29):** average of judged clean years,
-   round to nearest 5pp, as the general rule for every company.
-9. **CSL working-capital intensity ratified at 35%** (D-30).
-10. **DNL working-capital intensity held at raw 13.76%**, not rounded, pending a
-    second observation (D-31).
+5. **Disorderly Climate rises 44.6%.** Its Y5 capex is 10.0% of revenue against D&A of
+   7.3%, and its terminal growth is the lowest of the six, so normalising reinvestment
+   releases far more than the working-capital build consumes. The review called the
+   terminal-capex wedge uniformly flattering; on DNL it is not. **This is the one number
+   worth arguing with** — if a climate-stressed world should keep reinvesting above D&A
+   in perpetuity, `capex_rule` is the place to say so, and `final_explicit_year` is
+   already implemented as the alternative.
+6. **Every live valuation now breaches the 70% terminal-share threshold** (DNL 70.2–79.0%,
+   WBC 73.97–84.45%, CSL 73.43–76.69%). There is no longer a single valuation in the
+   project below the line, so all eighteen carry the §11.4.2 sensitivity obligation.
+   `test_warning_is_silent_below_the_threshold` had to be rewritten against the pure
+   predicate because no live case remains under it.
 
 ### Open, needing Stephen
 
-11. **Scope the engine-wiring + workbook rebuild** (item 4 above) — continue now in
-    a follow-up session, or park. Retires an audited MT oracle for both companies and
-    moves all 18 pinned goldens; needs deliberate workbook re-tie, not a quick edit.
-12. **UI disclosure** for the working-capital methodology (item 5) — scope and
-    placement.
-13. CSL WACC parameters (D-06, still PROVISIONAL — the EV/EBITDA multiple has no
+7. **Ratify or push back on the six re-pinned levels** (D-33), Disorderly Climate in
+   particular. MT is now 21.6% below the market reference of 3.61, not 14.9%.
+8. **CSL is the other half of the same job** — `build_segment_inputs_from_data` still
+   reads `wc_change_pct_revenue_change: 0.10` where the derived figure is 35% (D-30).
+   Estimated a day; moves the CSL workbook and the CSL goldens. The CSL segment engine
+   already normalises its terminal, so only the intensity is in question.
+9. **UI disclosure** of the working-capital methodology (intensity, clean years,
+   rounding/override) — flagged by Stephen, scope still open.
+10. CSL WACC parameters (D-06, still PROVISIONAL — the EV/EBITDA multiple has no
     independent support).
-14. Q5 (WBC CET1 warn-only vs forced payout cut), Q6 (metric card 4), Q7 (tab parity)
+11. Q5 (WBC CET1 warn-only vs forced payout cut), Q6 (metric card 4), Q7 (tab parity)
     — all in the tracker, none blocking.
+
+### Housekeeping from this session
+
+12. **Pushing does not work from the cloud container any more.** The git proxy refuses
+    `stephenreid90/VCC` ("not in this session's authorized repository set"); clone and
+    fetch still work, push returns 403. Stephen pushes from his own cmd window.
+13. **Two stale `.git` lock files** (`index.lock`, `HEAD.lock`, both zero-byte, left by
+    the 21 Aug session) were moved aside on the mount so `git pull`/`push` can run.
+    `sandbox_cleanup.cmd` clears the `.dead*` files.
+14. `_to_delete/` in the repo root holds one scratch bundle; the mount still refuses
+    `rm`, so it needs deleting from a normal cmd window.
+15. The DNL UI footnote still cites `dnl_scenarios_comparison_v4` as the source of the
+    per-scenario figures. Those now come from the engine; the reference is stale.
 
 ### Worth retrieving
 
-15. **DNL 1H26 Appendix 4D half-year financial report.** Checked this session:
-    `dnl_1h26_results_announcement_2026.pdf` (which IS in the archive) has a 31 March
-    2026 balance sheet on page 11, but in management's NET presentation (Group TWC,
-    Net PP&E, Net debt — Total Assets 5,863.3m), not the statutory GROSS format with
-    separate Total current assets / Total current liabilities the broad-measure
-    formula needs. The full statutory half-year financial report is still not filed.
-16. **`data/companies/csl.md` does not exist** (DNL and WBC both have narratives).
+16. **DNL 1H26 Appendix 4D half-year financial report** — would give total current
+    assets/liabilities at 31 March 2026 (the model's own anchor date) and turn DNL's
+    single working-capital observation into two, letting D-29's rounding protocol run
+    unmodified and retiring the `rounding_override`.
+17. **`data/companies/csl.md` does not exist** (DNL and WBC both have narratives).
 
 ---
 
 ## Active threads
 
-1. **Working-capital standard — specified, not implemented.**
-   `design/methodology/working_capital_treatment.md` is complete. Five enforcement
-   steps; step 3 (a `working_capital_intensity_from_data()` in the translator) is the
-   load-bearing one. Blocked only on Stephen confirming the two intensities (Q4, Q8).
+1. **Working-capital standard — DNL done, CSL outstanding.** Definition, protocol and
+   both intensities ratified; mechanism, DNL engine wiring, workbook oracle and goldens
+   all shipped (23 Aug). What remains is `build_segment_inputs_from_data` for CSL: the
+   hand-typed 10% against the derived 35% (D-30), worth about −4.2% on CSL. Estimated a
+   day, including the CSL workbook and its goldens.
 2. **CSL WACC — decided in principle (D-05), parameters proposed (D-06, Q9).**
    Implementation retires the audited MT oracle and moves all 18 goldens.
 3. **Review batches 3, 5 and 6** — mechanical, no decisions needed, ~1.5 days total.
@@ -157,8 +159,13 @@ clarified" below).
 ## Housekeeping
 
 14. Sandbox commits can orphan `.git/*.lock.dead*` files and `*.bak` backups. Run
-    `sandbox_cleanup.cmd` from a normal cmd window. File deletion is now permitted in
-    the Cowork mount, so a session can usually clear these itself.
+    `sandbox_cleanup.cmd` from a normal cmd window. **Deletion is NOT permitted in the
+    Cowork mount** (`rm` returns "Operation not permitted", verified 23 Aug 2026 — the
+    earlier note here saying otherwise was wrong). A session can only `mv` files aside;
+    clearing them needs Stephen's own cmd window.
 15. The GitHub PAT lives at `.github-token` (gitignored, untracked — verified 21 Aug
-    2026). Sandbox-side push:
+    2026), but **the cloud container can no longer push**: the git proxy allows clone
+    and fetch and refuses push with "not in this session's authorized repository set"
+    (403, verified 23 Aug 2026). Stephen pushes from his own cmd window. For the record,
+    the command that used to work:
     `git push "https://x-access-token:$(cat .github-token)@github.com/stephenreid90/VCC.git" main`

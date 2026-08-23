@@ -46,6 +46,10 @@ from vcc_valuations.assumptions.wacc import WaccBuild
 # the threshold, so there is one number and one message across the archetypes.
 TERMINAL_SHARE_THRESHOLD = 0.70
 
+# How the terminal FCFF is struck. Declared per valuation, never defaulted —
+# see FcfEngineInputs.terminal_reinvestment.
+TERMINAL_REINVESTMENT_MODES = ("capitalise_last_fcff", "normalised")
+
 
 def terminal_share_warning(terminal_share: float, denominator: str = "EV") -> Optional[str]:
     """The §11.4.2 sensitivity-pass warning, or ``None`` when under threshold.
@@ -242,8 +246,25 @@ class FcfEngineInputs:
     da_pct_revenue: float
     capex_pct_stub: float
     capex_pct: List[float]                # year 1..H capex/revenue (len H)
+    # Terminal reinvestment mode. Declared, never defaulted: an engine that
+    # silently capitalises the last explicit FCFF looks identical, from the
+    # outside, to one that has normalised reinvestment properly — the same
+    # failure the bank working-capital exemption is written to avoid
+    # (working_capital_treatment.md section 3).
+    #   "capitalise_last_fcff" — grow the final explicit FCFF at g. Carries the
+    #       explicit period's capex and working-capital drag into perpetuity.
+    #   "normalised" — rebuild terminal FCFF from the final margin, with capex
+    #       set to terminal_capex_pct_revenue and the working-capital drag at
+    #       g x working_capital_intensity (working_capital_treatment.md
+    #       section 1; the same shape the segment engine already uses).
+    terminal_reinvestment: str
+
     delta_wc: List[float] = field(default_factory=list)   # year 1..H (len H); [] -> zeros
     delta_wc_stub: float = 0.0
+
+    # Required when terminal_reinvestment == "normalised", forbidden otherwise.
+    working_capital_intensity: Optional[float] = None
+    terminal_capex_pct_revenue: Optional[float] = None
 
     # Discounting
     wacc: Union[WaccBuild, float] = 0.085
@@ -268,6 +289,25 @@ class FcfEngineInputs:
             self.delta_wc = [0.0] * H
         elif len(self.delta_wc) != H:
             raise ValueError(f"delta_wc must have length {H}, got {len(self.delta_wc)}")
+
+        if self.terminal_reinvestment not in TERMINAL_REINVESTMENT_MODES:
+            raise ValueError(
+                f"terminal_reinvestment must be one of {TERMINAL_REINVESTMENT_MODES}, "
+                f"got {self.terminal_reinvestment!r}"
+            )
+        needed = (self.working_capital_intensity, self.terminal_capex_pct_revenue)
+        if self.terminal_reinvestment == "normalised":
+            if any(x is None for x in needed):
+                raise ValueError(
+                    "terminal_reinvestment='normalised' requires both "
+                    "working_capital_intensity and terminal_capex_pct_revenue."
+                )
+        elif any(x is not None for x in needed):
+            raise ValueError(
+                "working_capital_intensity / terminal_capex_pct_revenue are only "
+                "read when terminal_reinvestment='normalised'; passing them with "
+                "'capitalise_last_fcff' would silently do nothing."
+            )
 
     @property
     def wacc_scalar(self) -> float:
@@ -305,6 +345,9 @@ class FcfDcfResult:
     # Terminal
     terminal_growth: float
     terminal_fcff: float
+    terminal_reinvestment: str
+    terminal_capex_pct_revenue: Optional[float]
+    terminal_working_capital_intensity: Optional[float]
     terminal_value: float
     terminal_end_time: float
     terminal_discount_factor: float
@@ -386,11 +429,28 @@ class FcfEngine:
         discount_factors = [1.0 / (1.0 + wacc) ** t for t in mid_times]
         pv_fcff = [f * df for f, df in zip(fcff, discount_factors)]
 
-        # ---- Terminal value (Gordon on last explicit FCFF grown at g) ----
-        # NB: the CSL/M3 segment engine rebuilds terminal FCFF from a *binding*
-        # terminal EBIT margin with terminal capex = D&A. DNL's audited workbook
-        # capitalises the grown last-year FCFF directly; this engine matches it.
-        terminal_fcff = fcff[-1] * (1.0 + g)
+        # ---- Terminal value (Gordon) ----
+        # Two declared modes (no default — see FcfEngineInputs).
+        #
+        # "capitalise_last_fcff" grows the final explicit FCFF at g. It is the
+        # original DNL workbook's treatment, and it silently carries the final
+        # explicit year's capex/revenue and working-capital build into
+        # perpetuity — which is wrong whenever explicit growth differs from g.
+        #
+        # "normalised" rebuilds the terminal from its components: the final
+        # margin and tax rate, D&A, a stated terminal capex, and a
+        # working-capital drag of g x intensity (working_capital_treatment.md
+        # section 1). Same algebra the segment engine uses for CSL, so the two
+        # FCFF engines strike the terminal the same way.
+        if inp.terminal_reinvestment == "normalised":
+            terminal_fcff = revenue[-1] * (1.0 + g) * (
+                ebit_margin[-1] * (1.0 - applied_tax_rate[-1])
+                + inp.da_pct_revenue
+                - inp.terminal_capex_pct_revenue
+                - g * inp.working_capital_intensity
+            )
+        else:
+            terminal_fcff = fcff[-1] * (1.0 + g)
         terminal_value = terminal_fcff / (wacc - g)
         terminal_end_time = inp.stub_years + H
         terminal_discount_factor = 1.0 / (1.0 + wacc) ** terminal_end_time
@@ -427,6 +487,20 @@ class FcfEngine:
             f"Single WACC {wacc:.4%} applied to all {H} explicit years, the stub, "
             "and the terminal (section 3.5 single-discount-rate discipline)."
         )
+        if inp.terminal_reinvestment == "normalised":
+            # Components are carried on the result (terminal_capex_pct_revenue,
+            # terminal_working_capital_intensity) rather than restated here.
+            notes.append(
+                "Terminal reinvestment normalised: terminal capex set to the "
+                "declared terminal rate and the working-capital drag struck at "
+                "g x intensity, not carried over from the final explicit year."
+            )
+        else:
+            notes.append(
+                "Terminal FCFF capitalises the final explicit year's FCFF grown "
+                "at g; the explicit period's capex and working-capital rates "
+                "carry into perpetuity."
+            )
 
         return FcfDcfResult(
             company_id=inp.company_id,
@@ -450,6 +524,9 @@ class FcfEngine:
             pv_fcff=pv_fcff,
             terminal_growth=g,
             terminal_fcff=terminal_fcff,
+            terminal_reinvestment=inp.terminal_reinvestment,
+            terminal_capex_pct_revenue=inp.terminal_capex_pct_revenue,
+            terminal_working_capital_intensity=inp.working_capital_intensity,
             terminal_value=terminal_value,
             terminal_end_time=terminal_end_time,
             terminal_discount_factor=terminal_discount_factor,
