@@ -1,0 +1,87 @@
+@echo off
+setlocal
+REM ============================================================================
+REM  land_vcc.cmd - the ONE command Stephen ever needs to run for this repo.
+REM
+REM  Why this exists: the Cowork cloud container cannot push (the git proxy
+REM  refuses this repo with a 403) and the Cowork mount cannot delete or replace
+REM  files (so git merge / checkout / branch -D all fail there). Finished work
+REM  therefore travels as session.bundle, and this script lands it.
+REM
+REM  This file and session.bundle are BOTH gitignored, so they can never collide
+REM  with the merge they are carrying. The command never changes between
+REM  sessions. See "Landing a session" in CLAUDE.md.
+REM
+REM  Safe to run twice. Safe to run when there is nothing to land.
+REM ============================================================================
+
+set REPO=C:\Users\steph\vcc-valuations
+cd /d "%REPO%" || (echo Could not find %REPO% & goto :done)
+
+echo.
+echo == 1. clearing stale git locks ==
+REM /s recurses. A stale .git\refs\heads\incoming.lock silently defeats
+REM "git branch -D" and then blocks the bundle fetch - it cost a landing on
+REM 24 August 2026.
+del /s /q "%REPO%\.git\*.lock" 2>nul
+del /s /q "%REPO%\.git\*.lock.dead*" 2>nul
+
+echo.
+echo == 2. discarding regenerated files so the merge can fast-forward ==
+git checkout -- REPO_MAP.md 2>nul
+git checkout -- OPEN_ITEMS.html 2>nul
+
+echo.
+echo == 3. removing leftover scratch branches ==
+git branch -D incoming 2>nul
+git branch -D incoming2 2>nul
+
+if not exist "%REPO%\session.bundle" (
+  echo.
+  echo == no session.bundle found - nothing to land ==
+  echo    Skipping to the push in case an earlier run merged but did not push.
+  goto :push
+)
+
+echo.
+echo == 4. merging session.bundle ==
+git fetch "%REPO%\session.bundle" main:incoming || goto :fail
+git merge --ff-only incoming || goto :fail
+git branch -D incoming 2>nul
+
+:push
+echo.
+echo == 5. pushing to GitHub ==
+git push origin main || goto :fail
+
+echo.
+echo == 6. cleaning up ==
+del /q "%REPO%\session.bundle" 2>nul
+REM superseded per-session landing scripts and bundles from before land_vcc.cmd
+del /q "%REPO%\land_session.cmd" 2>nul
+del /q "%REPO%\land_c856194.cmd" 2>nul
+del /q "%REPO%\land_working_capital.cmd" 2>nul
+del /q "%REPO%\vcc_*.bundle" 2>nul
+del /q "%REPO%\c856194_dnl_reinvestment.bundle" 2>nul
+call "%REPO%\sandbox_cleanup.cmd"
+
+echo.
+echo == landed. current state ==
+git log --oneline -7
+git status --short --branch
+echo.
+echo All done. Tell Claude it has finished - it will verify the result itself.
+goto :done
+
+:fail
+echo.
+echo ****************************************************************
+echo  SOMETHING WENT WRONG at the step above.
+echo  Nothing has been lost. Leave this window open and tell Claude
+echo  what the last few lines say - it can read the repo from here.
+echo ****************************************************************
+
+:done
+echo.
+pause
+endlocal

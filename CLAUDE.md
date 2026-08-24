@@ -106,6 +106,21 @@ and audit the draft against it before handing it back.
    why the number lands where it does. Add a mental short-cut at the end. Format: a flowing-prose
    sub-section after the scenario-table introduction.
 
+3. **Command discipline — Stephen does not use CMD or git directly.** He is the domain
+   expert, not a shell user, and asking him to assemble, adapt or interpret a command is a
+   defect in the handover, not a gap on his side. Whenever a session needs something run on
+   his machine:
+   - Give **one complete, pasteable command** — never a script name to find, never a
+     sequence of steps to stitch together, never bare `git` verbs to type.
+   - Render it in a **copy-button widget**, never a blockquote or a fenced block he has to
+     select by hand.
+   - Say in plain words what it will do, what "finished" looks like on screen, and what to
+     do if it stops early.
+   - **Verify the result yourself over the device bridge afterwards.** Never ask him to
+     copy terminal output back; read `git log`, `git status` and the working tree directly.
+   The standing landing command is `land_vcc.cmd` (see "Landing a session" below) and it
+   never changes. Prefer it to a bespoke one-off script.
+
 ## Test companies
 
 1. **DNL** — industrial explosives, single-segment post-demerger (formerly IPL; renamed
@@ -146,8 +161,24 @@ the opposite. Read them before planning any git work.**
   UI build, commits), then hand Stephen a `git bundle` plus a `.cmd` that clears stale
   locks, fetches from the bundle, fast-forwards, pushes and runs `sandbox_cleanup.cmd`.
   `land_session.cmd` in the repo root is the worked example.
-- **Cleanup script + standing rule.** Because the sandbox can't delete, each session
-  orphans `*.bak` backups and `.git/*.lock.dead*` files. Run **`sandbox_cleanup.cmd`**
-  (repo root) from a normal cmd window to clear them all in one go. Standing rule for
-  Claude: whenever a session leaves sandbox-orphaned files, always give Stephen the exact
-  CMD to run — rendered as a copy-button widget, not a blockquote — and point at this script.
+- **Cleanup script.** Because the sandbox can't delete, each session orphans `*.bak`
+  backups and `.git/*.lock*` files. `sandbox_cleanup.cmd` (repo root) clears them all,
+  recursing into `.git/refs/` — a stale `.git/refs/heads/incoming.lock` silently defeated
+  `git branch -D` on 24 August 2026 and blocked a landing. `land_vcc.cmd` calls it, so it
+  rarely needs running on its own.
+
+## Landing a session
+
+The cloud container cannot push and the mount cannot delete, so finished work travels as a
+`git bundle` and Stephen lands it from his own cmd window. **The command never changes:**
+
+```
+C:\Users\steph\vcc-valuations\land_vcc.cmd
+```
+
+`land_vcc.cmd` and `session.bundle` are both gitignored, so they never collide with the
+merge they are carrying. At session end, write the bundle to `session.bundle` in the repo
+root (via `SendUserFile` + `device_commit_files`), refresh `land_vcc.cmd` if it has changed,
+and give Stephen that one line in a copy-button widget. The script clears every stale lock
+under `.git`, deletes leftover scratch branches, fast-forwards from the bundle, pushes,
+removes the bundle and runs `sandbox_cleanup.cmd`. It is safe to re-run.

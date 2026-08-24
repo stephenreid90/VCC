@@ -10,7 +10,10 @@ REM      sandbox_cleanup.cmd
 REM ============================================================================
 del /q "%~dp0ui_prototypes\_generator\*.bak" 2>nul
 del /q "%~dp0.git\*.lock.dead*" 2>nul
-del /q "%~dp0.git\*.lock" 2>nul
+REM /s recurses: a stale .git\refs\heads\*.lock silently defeats "git branch -D"
+REM and blocks the bundle fetch. This bit us on 24 August 2026.
+del /s /q "%~dp0.git\*.lock" 2>nul
+del /s /q "%~dp0.git\*.lock.dead*" 2>nul
 REM engine_workbook.py standalone-run artifact (gitignored; only created when the module is run directly)
 del /q "%~dp0ui_prototypes\_generator\_dnl_full.xlsx" 2>nul
 del /q "%~dp0ui_prototypes\_generator\_wbc_full.xlsx" 2>nul

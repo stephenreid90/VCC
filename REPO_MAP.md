@@ -3,10 +3,10 @@
 _Generated 2026-08-24 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `783e904 Batch 3: close four of five, and grow the ratchet from nine checks to twelve` on `main`
-- Unpushed commits: **6**
-- Tracked files: 295
-- Untracked files: 1
+- HEAD: `485a0ba Batch 3 item 19 complete: type the schema escape hatches; session handover` on `main`
+- Unpushed commits: **0**
+- Tracked files: 296
+- Untracked files: 0
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -305,11 +305,4 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `wbc_muddle_through_valuation_v4_formulas.xlsx` (12.5KB)
       - `wbc_scenarios_comparison_v1.xlsx` (11.6KB)
       - `wbc_scenarios_comparison_v2.xlsx` (11.6KB)
-
-## Untracked files
-
-Not in git. Either commit them or clear them — an untracked file is invisible
-to anyone who clones the repo, and is the most common way work gets lost.
-
-- `notes/bridge/bridge_note_2026-08-23.md`
 
