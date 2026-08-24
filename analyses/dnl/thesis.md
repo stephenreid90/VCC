@@ -1,35 +1,160 @@
 # DNL — Cross-scenario investment thesis
 
 **Company:** Dyno Nobel Limited (ASX:DNL)
-**Version:** 2026-Q2-v2 (refreshed 9 June 2026 with v4 numbers + Five Forces spine alignment)
+**Version:** 2026-Q3-v3 (restated 23 August 2026 — engine numbers, post-reinvestment)
 **Type:** Cross-scenario investment view per §16.1 item 6. Rollup synthesis across the six per-scenario impact analyses in `analyses/dnl/scenarios/`.
 
 ---
 
 ## One-paragraph thesis
 
-Post-demerger Dyno Nobel is a pure-play industrial-explosives company with a structurally defensible position — co-leader globally, duopolist in Australia, US cost-curve advantage from long-term gas contracts — but with material exposure to cyclical mining-customer demand, energy and ammonia input costs, and a coal-customer mix that is structurally declining over the long horizon. Across our six scenarios, DNL is **negatively asymmetric** — the downside scenarios (Stagflation, Disorderly Climate, Fragmentation) compress value materially more than the upside scenario (Orderly Convergence) lifts it (downside / upside ratio ~4.0×, per v4 calibration). The framework's central case (Muddle Through, AUD 3.59) sits **essentially at market** (AUD 3.61, -0.5%); the framework's value-add is not in disagreement with consensus on the central case but in the scenario asymmetry around it. The single most consequential firm-specific variable remains the **US gas-contract roll-off in the 2028-2030 window**, captured as a structural-headwind overlay per methodology §3.2.1 (-50 / -100 / -150 bps cumulative margin drag Y3 / Y4 / Y5). DNL's outcome is most sensitive to **Stagflation Persists** (AUD 1.28, -65% vs MT) and **Disorderly Climate** (AUD 1.44, -60% vs MT); least sensitive to **AI Productivity Lag** (AUD 3.48, -3% vs MT). The framework's value-add over conventional analyst views is the explicit treatment of: per-entity functional currency (most Australian DCFs collapse to AUD); the supplier-power-blocks-cost-pass-through dynamic under Stagflation; the bifurcated exposure under Disorderly Climate (coal-customer attrition vs transition-mineral demand); the structural Fragmentation exposure from the US-Australia operating split; and the Step 3 company-position translation organised force-by-force per methodology §3.3 (rivalry vs Orica -30bps + product-mix -10bps + new-entrants/DNEL +15bps = -25bps net).
+Post-demerger Dyno Nobel is a pure-play industrial-explosives company with a structurally
+defensible position — co-leader globally, duopolist in Australia, a US cost-curve advantage
+from long-term gas contracts — carrying material exposure to cyclical mining demand, energy
+and ammonia input costs, and a coal-customer mix in structural decline. Across the six
+scenarios DNL is **negatively asymmetric**: the downside worlds compress value roughly four
+and a half times harder than the upside world lifts it. The central case (Muddle Through,
+**AUD 2.83**) now sits **21.6 per cent below market** (AUD 3.61). That is a change of kind
+from the previous version of this thesis, which had the central case essentially at market
+and located the framework's contribution entirely in the scenario asymmetry. The
+contribution is now in both places, and the central-case disagreement is the more
+interesting of the two, because of where it comes from: not from a more pessimistic view of
+revenue or margin — those paths are unchanged — but from charging DNL for the working
+capital and the terminal reinvestment its growth actually requires. The single most
+consequential firm-specific variable remains the **US gas-contract roll-off in the 2028–2030
+window**, carried as a structural-headwind overlay per methodology §3.2.1 (−50 / −100 / −150
+bps cumulative margin drag, Y3 / Y4 / Y5).
 
 ## Where the asymmetry sits
 
-| Scenario | v4 per share | vs Muddle Through | Dominant driver |
-|---|---:|---:|---|
-| Orderly Convergence | AUD 4.16 | +16% | Mining capex healthy; transition-mineral demand; modest margin lift |
-| Muddle Through (central) | AUD 3.59 | baseline | Status-quo extension; gas roll-off offset by peer-gap closure |
-| AI Productivity Lag | AUD 3.48 | -3% | Modest labour-cost benefit on SG&A; otherwise neutral |
-| Fragmentation | AUD 2.63 | -27% | Bloc-aligned trade exposure; supply-chain duplication |
-| Disorderly Climate | AUD 1.44 | -60% | Coal-customer attrition + carbon-cost flow-through + capex |
-| Stagflation Persists | AUD 1.28 | -65% | Input-cost pass-through fails; mining capex slows |
+| Scenario | Per share | vs Muddle Through | vs market | Terminal share of EV | Dominant driver |
+|---|---:|---:|---:|---:|---|
+| Orderly Convergence | AUD 3.27 | +15.7% | −9.3% | 74.3% | Mining capex healthy; transition-mineral demand; modest margin lift |
+| **Muddle Through (central)** | **AUD 2.83** | baseline | **−21.6%** | 72.7% | Status-quo extension; gas roll-off offset by peer-gap closure |
+| AI Productivity Lag | AUD 2.77 | −2.1% | −23.3% | 71.6% | Modest labour-cost benefit on SG&A; otherwise neutral |
+| Fragmentation | AUD 1.99 | −29.6% | −44.8% | 71.8% | Bloc-aligned trade exposure; supply-chain duplication |
+| Disorderly Climate | AUD 1.70 | −39.9% | −52.9% | 79.0% | Coal-customer attrition + carbon-cost flow-through |
+| Stagflation Persists | AUD 0.81 | −71.5% | −77.7% | 70.2% | Input-cost pass-through fails; mining capex stops |
 
-Market reference (21 May 2026): AUD 3.61 (consensus target also AUD 3.61). Muddle Through sits essentially at market (-0.5%), confirming that the framework's discriminating power is in the scenario asymmetry rather than central-case disagreement with consensus.
+Market reference AUD 3.61 (15 June 2026 snapshot, held per D-19 until the price feed
+returns; the consensus target is also AUD 3.61).
 
-Per-share-value asymmetry, anchored numerically:
+Anchored numerically, the asymmetry is:
 
-- Upside (Orderly − MT): +AUD 0.57
-- Downside (MT − Stagflation): −AUD 2.31
-- Ratio: 4.05× (downside compresses ~4× harder than upside lifts)
+- Upside (Orderly − Muddle Through): +AUD 0.44
+- Downside (Muddle Through − Stagflation): −AUD 2.02
+- Ratio: **4.57×**
 
-The asymmetry is structural to DNL's cyclical-industrial profile: cyclical names compress harder under bad outcomes than they expand under good ones. This is in contrast to a quality-growth name like CSL, which would re-rate more sharply on the upside under Orderly Convergence via multiple expansion.
+The asymmetry is structural to a cyclical industrial: such names compress harder under bad
+outcomes than they expand under good ones, because the cost base does not shrink with the
+order book. It widened from 4.05× as reinvestment came in, and the reason is worth holding
+onto — working capital is a claim on *growth*, not on *margin*, so it is charged in full in
+the worlds where margin is thinnest. Stagflation is where that bites hardest: an EBIT margin
+of 7.1 per cent in year five, still funding the receivables and inventory that revenue
+growth requires.
+
+## Why the central case moved to a 21.6 per cent discount
+
+The previous version of this thesis had Muddle Through at AUD 3.59, half a percentage point
+below market, and drew the obvious conclusion — that the framework and consensus agreed on
+the central case and differed only in the tails. Two changes have since retired that
+reading, and neither touched the operating forecast.
+
+The first was the move onto the engine's own numbers with the ratified beta of 1.10, which
+took the central case from the v4 workbook's AUD 3.59 to AUD 3.07. The second, in August
+2026, was reinvestment. The engine had been booking **zero** working
+capital: revenue compounding at 6.2 per cent a year, from AUD 3,609m in year one to AUD
+4,583m in year five, funded by no incremental receivables or inventory at all. That is not a
+conservative assumption. It is the claim that DNL shrinks its working capital by exactly the
+amount its growth requires, every year, in perpetuity. At the derived intensity of 13.8 per
+cent of the change in revenue, the explicit period alone absorbs AUD 163m. The terminal was
+worse in a subtler way: it capitalised the final explicit year's cash flow, so a
+working-capital build struck on 6.2 per cent growth ran forever in a perpetuity growing at
+2.5 per cent, and whatever capex rate year five happened to carry ran forever alongside it.
+
+So the honest description of the gap to market is this. The revenue path is not aggressive,
+the margin path is not aggressive, and the discount rate is unremarkable. What the framework
+does that a conventional DCF of DNL typically does not is fund the growth it forecasts. The
+21.6 per cent discount is very largely the price of that consistency.
+
+Whether the market is wrong or the framework is is a separate question, and the honest answer
+is that this valuation is 72.7 per cent terminal — as is every other scenario, and as is
+every live valuation in this project. A number that terminal-weighted is a statement about
+the fade assumptions more than about the next five years, and it carries a §11.4.2
+sensitivity obligation rather than a conclusion.
+
+## The scenarios, and why each number lands where it does
+
+**Muddle Through (AUD 2.83) — the central case.** Developed-market growth around 2 per cent,
+inflation sticky at 2.5, global mining capex growing 2.5 per cent real. Nothing breaks and
+nothing resolves. DNL's volumes track mining activity, the peer-gap closure delivers its
+margin uplift, and the US gas contracts hold through the explicit period before beginning to
+roll. The number lands below market because the cash flow, not the story, is thinner than
+consensus: reinvestment takes AUD 163m out of the explicit period and the terminal reinvests
+at D&A rather than below it.
+
+**Orderly Convergence (AUD 3.27, +15.7 per cent) — the upside boundary.** Inflation
+re-anchors, real rates normalise, mining real growth lifts to 4 per cent and gas prices ease
+to 1.5. Two channels do the work: volume, through the mining capex cycle, and a modest
+half-point of margin as input costs relax. The instructive point is how *contained* the
+upside is. A duopolist supplying a cyclical customer base does not re-rate the way a
+quality-growth name does; there is no operating-leverage explosion waiting in bulk ANFO. The
+upside is a good business in a kind world, and it is worth 44 cents.
+
+**AI Productivity Lag (AUD 2.77, −2.1 per cent) — almost indistinguishable from the centre.**
+Growth disappoints slightly at 1.7 per cent, mining real growth eases to 2, and DNL picks up
+the same half-point of margin as Orderly through labour-cost relief on SG&A. The margin
+benefit and the volume drag very nearly cancel. This scenario earns its place by showing
+what DNL is *not* exposed to: a productivity disappointment in the broad economy barely
+touches a business whose demand is set by tonnes moved.
+
+**Fragmentation (AUD 1.99, −29.6 per cent).** Trade barriers harden, inflation runs at 3.5,
+mining real growth slows to 1.5 and gas prices rise 4 per cent. DNL's exposure is structural
+rather than cyclical: roughly 55 per cent USA and 35 per cent Australia, both in the
+US-aligned bloc, which in this world is the slower-growing one, while the China-aligned
+upside accrues elsewhere. Three points of margin come off. The partial offset is Australia's
+strategic-mineral position — nickel, iron ore for green steel, copper and lithium — which
+pulls demand from within the bloc rather than across it.
+
+**Disorderly Climate (AUD 1.70, −39.9 per cent).** The transition crystallises disorderly:
+carbon-cost pass-through runs inflation at 3.5, gas prices rise 6 per cent, and DNL is hit
+from both ends — ammonia production is energy-intensive and carbon-priced, while its
+coal-mining customers, about 35 per cent of the mix, are themselves under pressure and
+resist price increases. Three points of margin come off and capex runs three points higher.
+Terminal growth is the lowest of the six at 1.75 per cent, which is the coal-attrition
+judgement expressed as a fade.
+
+This scenario moved the most in the restatement, and *upwards* — from AUD 1.18 to AUD 1.70.
+It is the one number in this thesis worth arguing with. Under the old terminal, its elevated
+capex ran in perpetuity, so a world defined by a temporary transition shock was charged for
+that shock forever; normalising terminal capex to D&A released more value than the
+working-capital build consumed. That is defensible if you read the elevated capex as a
+transition-period burden. It is not, if you think a carbon-constrained explosives business
+genuinely reinvests above depreciation for all time — in which case the terminal capex rule
+in `data/companies/dnl.yaml` is the place to say so. Note also that this scenario carries
+the highest terminal share in the project at 79 per cent, so it is the one most exposed to
+exactly that judgement.
+
+**Stagflation Persists (AUD 0.81, −71.5 per cent) — the downside boundary.** Inflation
+un-anchors above 4.5 per cent, real growth falls to 0.5, mining capex growth goes to zero
+and gas rises 5 per cent. This is the clearest illustration of the thesis, because volumes
+hold up reasonably well — mines keep blasting — and the entire stress arrives as margin.
+Supplier power is at full stretch on gas and ammonia while mining customers, squeezed
+themselves, block the pass-through; seven and a half points of margin come off, leaving 7.1
+per cent in year five. Substituting the Stagflation margin overlay into Muddle Through and
+changing nothing else reproduces 96 per cent of the fall, which is as clean a demonstration
+as this framework produces that DNL's downside is a pass-through story and not a volume one.
+Reinvestment then presses on what is left: working capital is a claim on growth regardless
+of margin, so it absorbs 11.4 per cent of pre-working-capital cash flow here against 6.7 per
+cent in the central case — the same build, funded out of half the cash.
+
+**The mental short-cut.** DNL's value is set by two things in sequence: how many tonnes get
+moved, and what share of the price DNL keeps. Volume determines whether the business grows;
+pass-through determines whether growth is worth anything. Scenarios that hurt volume cost
+DNL a little (AI Lag, −2 per cent). Scenarios that break pass-through cost it everything
+(Stagflation, −72 per cent). Fragmentation and Disorderly Climate sit in between because
+they do some of each. And because the framework now charges DNL for funding its own growth,
+every one of those numbers is roughly a fifth lower than a conventional DCF would put it.
 
 ## Three transmission channels that distinguish DNL's scenario exposures (mapped to Five Forces)
 
@@ -134,9 +259,14 @@ For DNL specifically, the most likely areas of divergence:
 - Impact matrix: `data/impact_matrix/by_industry/industrial_explosives.yaml`.
 - Base-year financials: `data/financials/dnl.yaml` (v4 calibration: `normalised_baseline` block, slide 27-29 references).
 - Document register: `data/companies/dnl_documents.yaml` (methodology §14 ingestion discipline).
-- v4 Muddle Through worked example: `analyses/dnl/valuations/dnl_muddle_through_valuation_v4_5forces.xlsx`.
-- v4 Scenario comparison: `analyses/dnl/valuations/dnl_scenarios_comparison_v4.xlsx`.
-- v4 Briefing pack (Ben meeting): `analyses/dnl/dnl_briefing_pack_v4_2026-06-09.{docx,pdf}`.
+- Live valuation oracle: the generated DNL workbook, recalculated in LibreOffice and pinned
+  line-by-line across all six scenarios in `tests/dcf/test_dnl_workbook_tie.py`. The v4 and
+  v6 workbooks in `analyses/dnl/valuations/` are superseded as oracles — v4 predates the
+  ratified beta, v6 predates reinvestment — and are kept as the historical record.
+- Reinvestment treatment: `design/methodology/working_capital_treatment.md` §7.3 (D-13, D-32,
+  D-33).
+- v4 Briefing pack (Ben meeting): `analyses/dnl/dnl_briefing_pack_v4_2026-06-09.{docx,pdf}` —
+  carries the superseded v4 numbers throughout.
 - Methodology: `design/methodology/equity_bridge_and_valuation_mechanics.md` (sections 3.2.1, 3.3, 3.5, 3.6, 4, 14).
 - Architecture spec principles applied: §1 (cost-of-capital convergence), §6.2 (scenarios as boundary cases), §7.5 (Five Forces transmission), §8.4 (corporate-action overlay — currently empty for DNL), §9.7 item 9 (terminal-growth-from-demographic-trajectory), §10.2 (encoding conventions), §10.6 (defended-exception discipline), §11.4.2 (consistency checks), §15.1 (calibration angles), §16.1 (narrative deliverables).
 - Per-scenario valuation notes `analyses/dnl/valuations/<scenario>.md` are deferred to Phase 3.5 smoke-test DCF per build plan; this thesis stands as the integrated view until those are produced.

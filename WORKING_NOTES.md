@@ -29,7 +29,7 @@ prints git state.
 See "Survey before you conclude" in `CLAUDE.md`.
 
 **State:** suite **240**, ratchet **9**, bases **2.831 / 30.03 / 195.78** — both FCFF
-companies moved this session and that is the headline. Three commits unpushed; the
+companies moved this session and that is the headline. Four commits unpushed; the
 cloud container can no longer push (see 13 below), so they travel as a bundle.
 
 ### What shipped
@@ -101,41 +101,62 @@ cloud container can no longer push (see 13 below), so they travel as a bundle.
    all five enforcement steps in `working_capital_treatment.md` §5 are in force.
    What remains of it is presentation, not mechanism.
 
+### Both theses restated
+
+9. **`analyses/dnl/thesis.md` and `analyses/csl/thesis.md`** now carry engine numbers.
+   DNL's was two revisions behind (still on v4's AUD 3.59) and its central claim had
+   inverted: it said Muddle Through sat "essentially at market (−0.5%)" and located the
+   framework's contribution purely in the tails. At AUD 2.83 it is 21.6% below market, and
+   the disagreement is now the more interesting half — it comes from funding the growth the
+   model forecasts, not from a dimmer view of revenue or margin. DNL also had no
+   per-scenario narrative section, which standing rule 2 requires; one is now written.
+   CSL's numbers moved ~4% and its qualitative claims all survived, including the Seqirus
+   cushion putting Disorderly Climate above Fragmentation.
+10. **The §3.5.7 market-implied cross-check was recomputed**, not just re-worded: to justify
+    CSL's market price the implied Ke is now 12.7% (β 1.64), terminal margin 14.8%, or
+    perpetual growth −3.8%. A stressed β of 1.2 takes Muddle Through to AUD 144 and closes
+    three-fifths of the gap, not half.
+11. **One narrative claim did not survive checking.** A draft sentence attributed two-thirds
+    of DNL's Stagflation fall to margin. Substituting the Stagflation margin overlay into
+    Muddle Through and changing nothing else reproduces **96%** of it — the downside is
+    almost purely a pass-through story. Corrected before it shipped, and worth remembering
+    as the reason to compute rather than estimate these decompositions.
+
 ### Open, needing Stephen
 
-9. **Ratify or push back on the twelve re-pinned levels** (D-33 for DNL, D-34 for CSL).
+12. **Ratify or push back on the twelve re-pinned levels** (D-33 for DNL, D-34 for CSL).
    DNL Muddle Through is now 21.6% below the 3.61 market reference rather than 14.9%;
    Disorderly Climate is the one number worth arguing with (see 5 above).
-10. **UI disclosure** of the working-capital methodology (intensity, clean years,
+13. **UI disclosure** of the working-capital methodology (intensity, clean years,
    rounding/override) — flagged by Stephen, scope still open.
-11. **CSL WACC (D-06, still PROVISIONAL)** — the EV/EBITDA multiple has no independent
+14. **CSL WACC (D-06, still PROVISIONAL)** — the EV/EBITDA multiple has no independent
     support. Note this will move the CSL goldens a *second* time and needs another
     workbook re-tie; that was the accepted cost of not pinning numbers to an
     unsupported input.
-12. Q5 (WBC CET1 warn-only vs forced payout cut), Q6 (metric card 4), Q7 (tab parity)
+15. Q5 (WBC CET1 warn-only vs forced payout cut), Q6 (metric card 4), Q7 (tab parity)
     — all in the tracker, none blocking. Batch 3 (5 schema/validator items), Batch 5
     (18 UI items) and Batch 6 (13 correctness items) remain planned.
 
 ### Housekeeping from this session
 
-13. **Pushing does not work from the cloud container any more.** The git proxy refuses
+16. **Pushing does not work from the cloud container any more.** The git proxy refuses
     `stephenreid90/VCC` ("not in this session's authorized repository set"); clone and
     fetch still work, push returns 403. Stephen pushes from his own cmd window.
-14. **Two stale `.git` lock files** (`index.lock`, `HEAD.lock`, both zero-byte, left by
+17. **Two stale `.git` lock files** (`index.lock`, `HEAD.lock`, both zero-byte, left by
     the 21 Aug session) were moved aside on the mount so `git pull`/`push` can run.
     `sandbox_cleanup.cmd` clears the `.dead*` files.
-15. `_to_delete/` in the repo root holds one scratch bundle; the mount still refuses
+18. `_to_delete/` in the repo root holds one scratch bundle; the mount still refuses
     `rm`, so it needs deleting from a normal cmd window.
-16. The DNL UI footnote still cites `dnl_scenarios_comparison_v4` as the source of the
+19. The DNL UI footnote still cites `dnl_scenarios_comparison_v4` as the source of the
     per-scenario figures. Those now come from the engine; the reference is stale.
 
 ### Worth retrieving
 
-17. **DNL 1H26 Appendix 4D half-year financial report** — would give total current
+20. **DNL 1H26 Appendix 4D half-year financial report** — would give total current
     assets/liabilities at 31 March 2026 (the model's own anchor date) and turn DNL's
     single working-capital observation into two, letting D-29's rounding protocol run
     unmodified and retiring the `rounding_override`.
-18. **`data/companies/csl.md` does not exist** (DNL and WBC both have narratives).
+21. **`data/companies/csl.md` does not exist** (DNL and WBC both have narratives).
 
 ---
 

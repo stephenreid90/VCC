@@ -3,10 +3,10 @@
 _Generated 2026-08-24 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `c856194 DNL reinvestment: wire working capital through the engine and normalise the terminal` on `main`
-- Unpushed commits: **2**
-- Tracked files: 288
-- Untracked files: 2
+- HEAD: `be1d9f6 CSL working capital: derive the intensity, delete the stored 10%` on `main`
+- Unpushed commits: **3**
+- Tracked files: 290
+- Untracked files: 0
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -236,7 +236,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **csl/**
     - `csl_discussion_v1_2026-06-25.docx` (17.8KB)
     - `csl_discussion_v1_2026-06-25.pdf` (125.4KB)
-    - `thesis.md` (20.3KB)
+    - `thesis.md` (21.4KB)
     - **valuations/**
       - `csl_muddle_through_valuation_v1.xlsx` (14.2KB)
       - `csl_muddle_through_valuation_v2.xlsx` (16.2KB)
@@ -263,7 +263,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `dnl_discussion_v5_2026-06-09.pdf` (200.1KB)
     - `dnl_discussion_v6_2026-06-09.docx` (22.5KB)
     - `dnl_discussion_v6_2026-06-09.pdf` (215.2KB)
-    - `thesis.md` (14.8KB)
+    - `thesis.md` (22.3KB)
     - **scenarios/**
       - `ai_productivity_lag.md` (7.2KB)
       - `disorderly_climate_crystallisation.md` (10.7KB)
@@ -301,12 +301,4 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `wbc_muddle_through_valuation_v4_formulas.xlsx` (12.5KB)
       - `wbc_scenarios_comparison_v1.xlsx` (11.6KB)
       - `wbc_scenarios_comparison_v2.xlsx` (11.6KB)
-
-## Untracked files
-
-Not in git. Either commit them or clear them — an untracked file is invisible
-to anyone who clones the repo, and is the most common way work gets lost.
-
-- `tests/dcf/golden/csl_workbook_all_scenarios.json`
-- `tests/dcf/test_csl_workbook_tie.py`
 
