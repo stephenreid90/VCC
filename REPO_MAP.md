@@ -3,9 +3,9 @@
 _Generated 2026-08-24 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `9abd544 Batch 6: close all thirteen correctness, methodology and test-gap items` on `main`
-- Unpushed commits: **5**
-- Tracked files: 294
+- HEAD: `783e904 Batch 3: close four of five, and grow the ratchet from nine checks to twelve` on `main`
+- Unpushed commits: **6**
+- Tracked files: 295
 - Untracked files: 1
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
@@ -82,7 +82,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `vaccines.yaml` (4.3KB)
   - **industries/**
     - `australian_major_banks.md` (7.3KB)
-    - `australian_major_banks.yaml` (15.5KB)
+    - `australian_major_banks.yaml` (16.3KB)
     - `industrial_explosives.md` (14.5KB)
     - `industrial_explosives.yaml` (9.6KB)
     - `plasma_derived_therapies.yaml` (7.1KB)
@@ -108,7 +108,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `build_plan.html` (14.9KB)
   - `engine_implementation_plan.md` (16.5KB)
   - `open_items.css` (3.5KB)
-  - `open_items.json` (23.8KB)
+  - `open_items.json` (26.3KB)
   - `open_questions.json` (1.2KB)
   - `scenarios_workshop.md` (13.5KB)
   - `scenarios_workshop_prep.md` (19.5KB)
@@ -173,7 +173,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `company.py` (11.7KB)
       - `driver.py` (4.0KB)
       - `frameworks.py` (4.4KB)
-      - `industry.py` (9.1KB)
+      - `industry.py` (14.6KB)
       - `linkage.py` (6.9KB)
       - `scenario.py` (4.8KB)
 
@@ -184,7 +184,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `ssot_intra_file_baseline.json` (593B)
   - `ssot_lint_baseline.json` (6.3KB)
   - `test_adjustments.py` (1.6KB)
-  - `test_archetypes_validate.py` (3.5KB)
+  - `test_archetypes_validate.py` (6.6KB)
   - `test_comps.py` (653B)
   - `test_csl_loads.py` (2.0KB)
   - `test_dcf.py` (1.4KB)
@@ -311,5 +311,5 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 Not in git. Either commit them or clear them — an untracked file is invisible
 to anyone who clones the repo, and is the most common way work gets lost.
 
-- `tests/ssot_intra_file_baseline.json`
+- `notes/bridge/bridge_note_2026-08-23.md`
 

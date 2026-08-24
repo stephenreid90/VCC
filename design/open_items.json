@@ -234,9 +234,9 @@
     "source": "fable-2026-08-13",
     "area": "Schema",
     "issue": "<b>FiveForces has no model_validator</b> — a block with neither entrants nor substitutes validates, and both naming generations can be supplied with contradictory ratings. bank_archetype and rivalry_subforces are untyped escape hatches.",
-    "treatment": "Partly done 23 Aug 2026 — FiveForces model_validator added: rejects a missing force under either naming generation, and rejects both generations being supplied (loudly when the ratings contradict). The typed BankArchetype block is NOT done and remains open.",
+    "treatment": "Done 23 Aug 2026. FiveForces model_validator rejects a missing force under either naming generation and rejects both generations being supplied (loudly when the ratings contradict). BankArchetype, Cet1Floor, CreditCycleAnchor, RwaDensityAnchor, PeerBeta, BankCostOfEquityAnchor and RivalrySubforce are all typed — the Dict[str, Any] escape hatches are gone. The new validators found a live data defect on their first run: the CET1 components sum to 12.5% against a stated floor of 11.5% (see M10).",
     "questions": [],
-    "status": "PARTLY DONE",
+    "status": "DONE",
     "batch": "Batch 3"
   },
   {
@@ -553,6 +553,16 @@
     "treatment": "No action.",
     "questions": [],
     "status": "CLOSED",
+    "batch": ""
+  },
+  {
+    "id": "M12",
+    "source": "Batch 3 item 19, found by the new schema validators",
+    "area": "Data",
+    "issue": "<b>APRA CET1 floor does not reconcile.</b> australian_major_banks.yaml lists regulatory_minimum 8.0% + capital_conservation_buffer 2.5% + countercyclical_buffer 1.0% + d_sib_surcharge 1.0% = 12.5%, against a stated total_floor of 11.5%. The block's own rationale (regionals at 10.5% with no surcharge) implies the countercyclical buffer sits OUTSIDE the stated floor, which reconciles to 11.5%.",
+    "treatment": "Recorded, not resolved — it is a domain call. The typed schema now requires a <code>components_in_total</code> declaration naming which components the floor comprises, and the file declares minimum + conservation buffer + D-SIB surcharge, which reconciles without changing a number. <b>Stephen to confirm</b> the CCyB genuinely sits outside the floor for this archetype, or correct total_floor to 12.5%. Nothing downstream reads total_floor today, so this is not blocking.",
+    "questions": "Does the countercyclical buffer sit inside or outside the archetype CET1 floor?",
+    "status": "NEEDS",
     "batch": ""
   }
 ]

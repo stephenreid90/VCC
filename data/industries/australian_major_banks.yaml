@@ -270,6 +270,20 @@ industry_archetype:
       countercyclical_buffer: 0.01
       d_sib_surcharge: 0.01
       total_floor: 0.115
+      # Names which components the stated floor comprises. Added 23 Aug 2026 when
+      # the block was typed (batch 3, item 19) and the schema found that the four
+      # components sum to 12.5% against a stated floor of 11.5% — the
+      # countercyclical buffer is carried here but is NOT inside the stated
+      # figure. That is consistent with the rationale below (regionals at 10.5%
+      # = minimum + conservation buffer, plus 1.0% D-SIB surcharge = 11.5%), so
+      # the declaration records the treatment that reconciles rather than
+      # changing a domain number.
+      # OPEN FOR STEPHEN: confirm the CCyB genuinely sits outside the floor for
+      # this archetype, or correct total_floor to 0.125.
+      components_in_total:
+        - regulatory_minimum
+        - capital_conservation_buffer
+        - d_sib_surcharge
       rationale: >
         APRA's "unquestionably strong" framework, current state. Big
         Four are designated D-SIB and carry the +1.0% surcharge.

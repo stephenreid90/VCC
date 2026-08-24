@@ -34,6 +34,21 @@ class Force(BaseModel):
     rationale: str = Field(..., description="Short paragraph; sub-determinants per Porter 2008.")
 
 
+class RivalrySubforce(BaseModel):
+    """One named dimension of rivalry, where a single rating is too blunt.
+
+    Typed 23 Aug 2026 (batch 3, item 19). It was ``Dict[str, Any]``, so a
+    sub-force with no rating — or with the rating under a misspelt key —
+    validated cleanly and then read as absent downstream.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    sub_dimension: str
+    rating: ArchetypeRating
+    rationale: str
+
+
 class FiveForces(BaseModel):
     """Porter's Five Forces, populated using the question bank in
     design/frameworks/five_forces_questions.md.
@@ -54,7 +69,7 @@ class FiveForces(BaseModel):
     threat_of_new_entrants: Optional[Force] = None
     threat_of_substitutes: Optional[Force] = None
     rivalry: Force
-    rivalry_subforces: Optional[List[Dict[str, Any]]] = None
+    rivalry_subforces: Optional[List[RivalrySubforce]] = None
 
     @model_validator(mode="after")
     def _each_force_present_once(self) -> "FiveForces":
@@ -273,7 +288,142 @@ class IndustryArchetype(BaseModel):
     input_dependencies: InputDependencies
     # §7.4-v2 additions carried by the newer archetypes.
     archetype_class: Optional[str] = None
-    bank_archetype: Optional[Dict[str, Any]] = None
+    bank_archetype: Optional[BankArchetype] = None
+
+
+# ---------------------------------------------------------------- §7.4-v2 bank
+# These were one ``Dict[str, Any]`` until 23 Aug 2026 (batch 3, item 19). The
+# block carries the capital floor, the credit-cycle anchor and the cost-of-equity
+# anchor that the bank engine's own inputs are calibrated against, so a typo in
+# any key was a silent zero-or-absent rather than a validation error — which is
+# the same failure mode the working-capital exemption rule exists to prevent.
+class Cet1Floor(BaseModel):
+    """Regulatory CET1 floor, built from its named components.
+
+    ``components_in_total`` must name exactly which components the stated floor
+    comprises, and the total is checked against those. It exists because the
+    naive sum of every component is NOT always the floor — a countercyclical
+    buffer can be tracked without sitting inside the headline requirement — and
+    a total that silently disagrees with its own components is unreadable either
+    way. Naming them turns "these do not add up" into "here is what adds up, and
+    here is what is deliberately outside it".
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    regulatory_minimum: float
+    capital_conservation_buffer: float
+    countercyclical_buffer: float
+    d_sib_surcharge: float = 0.0
+    total_floor: float
+    components_in_total: List[str]
+    rationale: str
+
+    @model_validator(mode="after")
+    def _total_matches_its_declared_components(self) -> "Cet1Floor":
+        allowed = {"regulatory_minimum", "capital_conservation_buffer",
+                   "countercyclical_buffer", "d_sib_surcharge"}
+        unknown = [c for c in self.components_in_total if c not in allowed]
+        if unknown:
+            raise ValueError(f"cet1_floor.components_in_total names unknown components: {unknown}")
+        total = sum(getattr(self, c) for c in self.components_in_total)
+        if abs(total - self.total_floor) > 1e-9:
+            raise ValueError(
+                f"cet1_floor.total_floor {self.total_floor} does not equal the sum of "
+                f"the components it declares ({', '.join(self.components_in_total)} = "
+                f"{total}). Fix the total, the components, or the declaration."
+            )
+        return self
+
+
+class CreditCycleAnchor(BaseModel):
+    """Through-cycle, peak and benign credit-loss anchors, in basis points."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    through_cycle_loss_rate_bps: float
+    peak_cycle_loss_rate_bps: float
+    benign_cycle_loss_rate_bps: float
+    rationale: str
+
+    @model_validator(mode="after")
+    def _ordered_benign_through_peak(self) -> "CreditCycleAnchor":
+        if not (self.benign_cycle_loss_rate_bps
+                <= self.through_cycle_loss_rate_bps
+                <= self.peak_cycle_loss_rate_bps):
+            raise ValueError(
+                "credit_cycle_anchor must run benign <= through-cycle <= peak, got "
+                f"{self.benign_cycle_loss_rate_bps} / "
+                f"{self.through_cycle_loss_rate_bps} / {self.peak_cycle_loss_rate_bps}."
+            )
+        return self
+
+
+class RwaDensityAnchor(BaseModel):
+    """Indicative risk-weighted-asset density by exposure class."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    housing_mortgages: float
+    business_lending: float
+    institutional: float
+    sovereign_and_high_grade: float
+    rationale: str
+
+
+class PeerBeta(BaseModel):
+    """One peer in the archetype's beta dataset (§3.5.3 triangulation)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    bank: str
+    beta_measured: float
+    inclusion: str
+    notes: str
+
+
+class BankCostOfEquityAnchor(BaseModel):
+    """The archetype-level Ke anchor and the peer evidence behind it.
+
+    Ranges are ``[low, high]`` and are validated as such: a reversed pair would
+    otherwise read as a range nobody could see was backwards.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    risk_free_rate: float
+    equity_risk_premium: float
+    beta_range_measured: List[float]
+    beta_range_comparable_cluster: List[float]
+    beta_anchor_selected: float
+    cost_of_equity_range_measured: List[float]
+    cost_of_equity_range_comparable: List[float]
+    cost_of_equity_anchor_selected: float
+    peer_beta_dataset_2026_06_15: List[PeerBeta]
+    rationale: str
+
+    @model_validator(mode="after")
+    def _ranges_are_low_then_high(self) -> "BankCostOfEquityAnchor":
+        for name in ("beta_range_measured", "beta_range_comparable_cluster",
+                     "cost_of_equity_range_measured", "cost_of_equity_range_comparable"):
+            pair = getattr(self, name)
+            if len(pair) != 2 or pair[0] > pair[1]:
+                raise ValueError(f"{name} must be [low, high], got {pair}.")
+        return self
+
+
+class BankArchetype(BaseModel):
+    """§7.4-v2 bank-specific archetype block."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    regulator: str
+    secondary_regulators: List[str] = []
+    cet1_floor: Cet1Floor
+    cet1_management_buffer_typical: float
+    credit_cycle_anchor: CreditCycleAnchor
+    rwa_density_anchor: RwaDensityAnchor
+    cost_of_equity_anchor: BankCostOfEquityAnchor
 
 
 class IndustryArchetypeFile(BaseModel):

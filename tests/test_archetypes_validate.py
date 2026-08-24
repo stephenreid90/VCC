@@ -83,3 +83,74 @@ def test_five_forces_accepts_either_generation_alone():
         new_entrants=None, substitutes=None,
         threat_of_new_entrants=force, threat_of_substitutes=force,
     ))
+
+
+# ---------------------------------------------- typed bank archetype (item 19)
+def test_bank_archetype_is_typed_not_a_free_dict():
+    """The block was ``Dict[str, Any]``: any key could be missing or misspelt."""
+    from vcc_valuations.schemas.industry import BankArchetype
+
+    bank = IndustryArchetypeFile.model_validate(
+        yaml.safe_load(open(ROOT / "data" / "industries" / "australian_major_banks.yaml"))
+    ).industry_archetype
+    assert isinstance(bank.bank_archetype, BankArchetype)
+    assert bank.bank_archetype.regulator == "APRA"
+    assert len(bank.bank_archetype.cost_of_equity_anchor.peer_beta_dataset_2026_06_15) == 5
+
+
+def _cet1(**overrides):
+    base = {
+        "regulatory_minimum": 0.08, "capital_conservation_buffer": 0.025,
+        "countercyclical_buffer": 0.01, "d_sib_surcharge": 0.01,
+        "total_floor": 0.115,
+        "components_in_total": ["regulatory_minimum", "capital_conservation_buffer",
+                                "d_sib_surcharge"],
+        "rationale": "x",
+    }
+    base.update(overrides)
+    return base
+
+
+def test_cet1_floor_total_must_match_its_declared_components():
+    from vcc_valuations.schemas.industry import Cet1Floor
+
+    Cet1Floor.model_validate(_cet1())
+    with pytest.raises(ValidationError, match="does not equal the sum"):
+        Cet1Floor.model_validate(_cet1(total_floor=0.125))
+    with pytest.raises(ValidationError, match="unknown components"):
+        Cet1Floor.model_validate(_cet1(components_in_total=["regulatory_minimum", "typo"]))
+
+
+def test_credit_cycle_anchor_must_be_ordered():
+    from vcc_valuations.schemas.industry import CreditCycleAnchor
+
+    ok = {"through_cycle_loss_rate_bps": 20, "peak_cycle_loss_rate_bps": 80,
+          "benign_cycle_loss_rate_bps": 5, "rationale": "x"}
+    CreditCycleAnchor.model_validate(ok)
+    with pytest.raises(ValidationError, match="benign <= through-cycle <= peak"):
+        CreditCycleAnchor.model_validate({**ok, "peak_cycle_loss_rate_bps": 10})
+
+
+def test_cost_of_equity_ranges_must_be_low_then_high():
+    from vcc_valuations.schemas.industry import BankCostOfEquityAnchor
+
+    bank = IndustryArchetypeFile.model_validate(
+        yaml.safe_load(open(ROOT / "data" / "industries" / "australian_major_banks.yaml"))
+    ).industry_archetype
+    payload = bank.bank_archetype.cost_of_equity_anchor.model_dump()
+    payload["beta_range_measured"] = [0.88, 0.57]
+    with pytest.raises(ValidationError, match=r"beta_range_measured must be \[low, high\]"):
+        BankCostOfEquityAnchor.model_validate(payload)
+
+
+def test_rivalry_subforces_are_typed():
+    """A sub-force with no rating used to validate as a free dict."""
+    from vcc_valuations.schemas.industry import RivalrySubforce
+
+    bank = IndustryArchetypeFile.model_validate(
+        yaml.safe_load(open(ROOT / "data" / "industries" / "australian_major_banks.yaml"))
+    ).industry_archetype
+    subs = bank.five_forces.rivalry_subforces
+    assert subs and all(isinstance(x, RivalrySubforce) for x in subs)
+    with pytest.raises(ValidationError):
+        RivalrySubforce.model_validate({"sub_dimension": "x", "rationale": "y"})

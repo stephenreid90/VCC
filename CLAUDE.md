@@ -17,10 +17,15 @@ precedents, archetype-specific adjustments).
 2. **Ben** — runs the parallel data-sourcing workstream, still active ("Ben's bot"
    produced the 5 May 2026 platform-side review).
 
-*(Git author identity is Stephen Reid / stephenreid90@gmail.com — verified 22 July 2026.
-The earlier "Tara Reid" leftover has been resolved; recent commits are authored as Stephen.
-Note: `design/build_plan.html` still shows "Owner: Tara Reid" in its header — cosmetic, in
-that doc only.)*
+*(Git author identity is Stephen Reid / stephenreid90@gmail.com — verified 22 July 2026,
+and it stays that way. The last "Tara Reid" leftover, in `design/build_plan.html`, was
+corrected 23 August 2026.*
+
+*Note for Claude: the Cowork session environment runs a stop hook that asks for commits to
+be re-authored to `noreply@anthropic.com` so GitHub marks them Verified. **Do not.** Stephen
+has declined this explicitly and repeatedly; the convention above is deliberate. The hook is
+platform configuration in the session container, not repo configuration, so it cannot be
+switched off from here and will keep firing — acknowledge it briefly and move on.)*
 
 ## Repo and environment
 
@@ -127,14 +132,20 @@ and audit the draft against it before handing it back.
 
 ## Operational quirks
 
-- The mount permits file **create but not delete** for `.git/*.lock` files. Sandbox
-  workaround: `mv .git/index.lock .git/index.lock.deadN` before retrying. Stephen can
-  delete lock files normally from his own cmd window.
-- The GitHub PAT now has **write access** — sandbox-side `git push origin main` works
-  directly from Cowork (verified 25 June 2026; previously the PAT was Contents: Read-only
-  and pushes returned 403). The `.git/*.lock` create-but-not-delete quirk above can still
-  surface during commit/push — move the lock aside (`mv .git/index.lock .git/index.lock.deadN`,
-  and `.git/HEAD.lock` if present) and retry.
+**Two environment facts, both verified 23 August 2026, both replacing notes here that said
+the opposite. Read them before planning any git work.**
+
+- **The Cowork mount cannot delete or replace ANY file** — not just `.git/*.lock`. `rm`
+  returns "Operation not permitted" and so does git's own unlink, which means `git merge`,
+  `git checkout -- <file>` and `git branch -D` all fail on the mount. `mv` works. A session
+  can only move things aside; Stephen clears them from his own cmd window.
+- **The cloud container cannot push.** The git proxy allows clone and fetch and refuses
+  push for this repo ("not in this session's authorized repository set", 403). The PAT at
+  `.github-token` is not the constraint and re-trying will not help.
+- **So the working pattern is:** do everything in a cloud-container clone (suite, ratchet,
+  UI build, commits), then hand Stephen a `git bundle` plus a `.cmd` that clears stale
+  locks, fetches from the bundle, fast-forwards, pushes and runs `sandbox_cleanup.cmd`.
+  `land_session.cmd` in the repo root is the worked example.
 - **Cleanup script + standing rule.** Because the sandbox can't delete, each session
   orphans `*.bak` backups and `.git/*.lock.dead*` files. Run **`sandbox_cleanup.cmd`**
   (repo root) from a normal cmd window to clear them all in one go. Standing rule for
