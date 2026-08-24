@@ -1,9 +1,10 @@
 # Working capital — definition, derivation and enforcement
 
-**Status, 23 Aug 2026: definition, rounding protocol and both companies' intensities
-RATIFIED (D-09 through D-12, D-29 through D-31). Mechanism implemented and tested.
-DNL is now WIRED THROUGH — engine, workbook and goldens (§7.3). CSL is not: it still
-reads the hand-typed 10% and remains the outstanding half of §5 step 4.**
+**Status, 23 Aug 2026: COMPLETE for the three companies in scope.** Definition,
+rounding protocol and both intensities ratified (D-09 through D-12, D-29 through D-31);
+mechanism implemented and tested; DNL and CSL both wired through the engine, the
+workbook and the goldens (§7.3); WBC exempt by rule. All five enforcement steps in §5
+are now in force. What remains is presentation — the UI disclosure flagged in §7.3.
 
 Purpose: one repeatable working-capital calculation that applies to any company,
 derived from data rather than hand-authored, and enforced so that company four cannot
@@ -365,10 +366,32 @@ workbook in LibreOffice and pins every DCF line for all six scenarios
 from the data files, so unlike a hand-built oracle it cannot silently drift. The v6
 fixture is kept as the `capitalise_last_fcff` mechanics oracle it always was.
 
-**Still outstanding: CSL.** `build_segment_inputs_from_data` reads
-`segment_fcff.drivers.wc_change_pct_revenue_change: 0.10` where the derived figure is
-35% (D-30). That is the larger half of the job — a day, per the estimate — and it
-moves the CSL workbook and the CSL goldens.
+### CSL, done the same day
+
+`build_segment_inputs_from_data` now calls `working_capital_intensity_from_data()`. The
+hand-typed `wc_change_pct_revenue_change: 0.10` was **deleted rather than corrected**:
+under D-16 the applied intensity is a derived quantity and storing it beside its own
+inputs is the defect, not the number it happened to hold.
+
+CSL needed no engine change at all. The segment engine already applied working capital
+the way §1 specifies — on the change in group revenue across the explicit years, and at
+g x intensity in the terminal — so only the input moved. That is worth noting as
+evidence for the definition: the mechanism was right and under-fed, where DNL's was
+absent entirely (§6.2 called this out and it held).
+
+Muddle Through moves USD 134.52 → **129.21**, AUD 203.83 → **195.78** (−3.9%), and the
+six scenarios move −3.7% to −4.2%. §6.1 estimated −4.2% / AUD 195.20 before the work;
+the implemented figure is AUD 195.78, the difference being that the estimate did not
+carry the terminal's own g x intensity drag through the FX and equity bridge. Close
+enough that the estimate was sound, far enough that it was worth doing properly.
+
+The oracle was replaced on the same pattern as DNL: the v4 workbook tie in
+`test_csl_segment.py` was struck at the old 10% and no longer arbitrates, so
+`test_csl_workbook_tie.py` now pins the generated CSL workbook — recalculated in
+LibreOffice, all six scenarios, group revenue / EBIT / working capital / FCFF and the
+whole terminal block. The working-capital charge was also broken out onto its own row
+in that workbook: at a 35% intensity it is the second-largest claim on group cash flow
+and it was previously buried inside the FCFF formula.
 
 **Also flagged, not yet built:** Stephen wants the working-capital methodology (the
 intensity, the clean-years judgement, the rounding or override applied) disclosed as

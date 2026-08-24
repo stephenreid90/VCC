@@ -535,19 +535,16 @@ normalised_baseline:
     the intangible-amortisation excess runs off by the terminal. Correcting
     this trimmed every scenario ~5% (CSL MT USD 141.78 -> 134.52).
 
-  working_capital_change_pct_revenue_change: 0.10
   working_capital_change_rationale: >
-    SUPERSEDED as of 21 Aug 2026 by working_capital_intensity below, which
-    working_capital_intensity_from_data() derives at 35% against this
-    hand-typed 10% (~3.5x understated — plasma is a working-capital-heavy
-    business; FY25 inventory alone is 42% of revenue). This field and
-    segment_fcff.drivers.wc_change_pct_revenue_change (still 0.10, still what
-    the engine actually reads) are NOT yet wired to the derived figure — that
-    is the next phase of work: rewiring build_segment_inputs_from_data,
-    rebuilding the audited MT workbook, and re-tying all 18 CSL goldens
-    (methodology working_capital_treatment.md §8: this retires an audited
-    oracle and must not become self-certifying). Left at 0.10 here
-    deliberately until that rebuild happens.
+    The hand-typed 10% that used to live here (and in
+    segment_fcff.drivers.wc_change_pct_revenue_change) was REMOVED on 23 Aug
+    2026 when build_segment_inputs_from_data was rewired to
+    working_capital_intensity_from_data(). It was understated by roughly 3.5x —
+    plasma is a working-capital-heavy business and FY25 inventory alone is 42%
+    of revenue — but the reason it is gone rather than corrected is D-16: the
+    applied intensity is a derived quantity and storing it beside its own
+    inputs is the defect, not the number. The judgement that drives it is
+    working_capital_intensity below; the arithmetic is the engine's.
 
   # --- Working-capital intensity (D-09/D-29; working_capital_intensity_from_data()) ---
   working_capital_intensity:
@@ -675,7 +672,9 @@ normalised_baseline:
     drivers:
       capex_pct_revenue: 0.045
       da_pct_revenue: 0.06
-      wc_change_pct_revenue_change: 0.10
+      # wc_change_pct_revenue_change is DERIVED, not stored (D-16) — see
+      # normalised_baseline.working_capital_intensity and
+      # working_capital_intensity_from_data().
       terminal_capex_pct_revenue: 0.06   # = D&A in steady state
     anchors:
       net_debt: 9100

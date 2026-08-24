@@ -76,12 +76,12 @@ WBC_GOLDEN = {
 
 # --- CSL: multi-segment FCFF / Ke (M3), (USD, AUD) per share -------------------
 CSL_GOLDEN = {
-    "orderly_convergence": (156.6054, 237.2885),
-    "muddle_through": (134.5216, 203.8271),        # independently audited (v4 workbook)
-    "ai_productivity_lag": (131.1245, 198.6799),
-    "fragmentation": (111.0277, 168.2291),
-    "disorderly_climate_crystallisation": (115.3559, 174.7872),
-    "stagflation_persists": (105.5339, 159.9050),
+    "orderly_convergence": (150.0986, 227.4294),
+    "muddle_through": (129.213, 195.7835),        # independently audited (generated workbook, all six)
+    "ai_productivity_lag": (126.197, 191.2137),
+    "fragmentation": (106.8851, 161.9522),
+    "disorderly_climate_crystallisation": (110.9456, 168.1047),
+    "stagflation_persists": (101.3368, 153.5455),
 }
 
 
@@ -127,7 +127,7 @@ TERMINAL_BREACH = {
     ("dnl", "muddle_through"): 0.7273,
     ("wbc", "muddle_through"): 0.7631,
     ("wbc", "stagflation_persists"): 0.8445,       # worst in the project
-    ("csl", "muddle_through"): 0.7516,
+    ("csl", "muddle_through"): 0.7538,
 }
 
 

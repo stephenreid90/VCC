@@ -1,12 +1,12 @@
 # REPO_MAP — what exists, and where
 
-_Generated 2026-08-23 by `scripts/repo_inventory.py`. **Regenerate at the start of
+_Generated 2026-08-24 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `fdef28c Working-capital standard: implement the mechanism, ratify CSL and DNL intensities` on `main`
-- Unpushed commits: **1**
-- Tracked files: 285
-- Untracked files: 3
+- HEAD: `c856194 DNL reinvestment: wire working capital through the engine and normalise the terminal` on `main`
+- Unpushed commits: **2**
+- Tracked files: 288
+- Untracked files: 2
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -123,7 +123,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `csl_discount_rate_fork.md` (11.0KB)
     - `dnl_working_capital_derivation.md` (11.2KB)
     - `equity_bridge_and_valuation_mechanics.md` (69.6KB)
-    - `working_capital_treatment.md` (21.7KB)
+    - `working_capital_treatment.md` (23.3KB)
   - **reference/**
     - **discount_rate_iers/**
       - `Oil-Search-and-Santos Scheme-Booklet.pdf` (20.0MB)
@@ -152,7 +152,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **vcc_valuations/**
     - `__init__.py` (650B)
     - `derivation.py` (4.4KB)
-    - `translator.py` (45.4KB)
+    - `translator.py` (46.5KB)
     - **assumptions/**
       - `__init__.py` (775B)
       - `wacc.py` (6.0KB)
@@ -195,7 +195,8 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `test_working_capital.py` (2.8KB)
   - **dcf/**
     - `__init__.py` (0B)
-    - `test_csl_segment.py` (2.6KB)
+    - `test_csl_segment.py` (2.9KB)
+    - `test_csl_workbook_tie.py` (3.7KB)
     - `test_dnl_all_scenarios.py` (3.6KB)
     - `test_dnl_mt_from_data.py` (9.9KB)
     - `test_dnl_mt_ratified.py` (5.7KB)
@@ -207,7 +208,8 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - **golden/**
       - `__init__.py` (0B)
       - `_recalc.py` (4.2KB)
-      - `_recalc_dnl_workbook.py` (4.7KB)
+      - `_recalc_generated_workbooks.py` (6.3KB)
+      - `csl_workbook_all_scenarios.json` (6.6KB)
       - `dnl_mt_inputs.py` (4.9KB)
       - `dnl_mt_v6.json` (2.6KB)
       - `dnl_workbook_all_scenarios.json` (10.3KB)
@@ -218,15 +220,15 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
 ## UI generator
 
-  - `csl_scenario_interface.html` (190.3KB)
+  - `csl_scenario_interface.html` (191.2KB)
   - `dnl_scenario_interface.html` (237.7KB)
   - `wbc_scenario_interface.html` (190.9KB)
   - **_generator/**
     - `README.md` (893B)
     - `beta_data.py` (10.0KB)
     - `build_cfgs.py` (91.3KB)
-    - `cfgs_gen.json` (209.4KB)
-    - `engine_workbook.py` (87.3KB)
+    - `cfgs_gen.json` (210.3KB)
+    - `engine_workbook.py` (88.1KB)
     - `gen_ui.py` (120.0KB)
 
 ## Analyses (workbooks)
@@ -305,7 +307,6 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 Not in git. Either commit them or clear them — an untracked file is invisible
 to anyone who clones the repo, and is the most common way work gets lost.
 
-- `tests/dcf/golden/_recalc_dnl_workbook.py`
-- `tests/dcf/golden/dnl_workbook_all_scenarios.json`
-- `tests/dcf/test_dnl_workbook_tie.py`
+- `tests/dcf/golden/csl_workbook_all_scenarios.json`
+- `tests/dcf/test_csl_workbook_tie.py`
 

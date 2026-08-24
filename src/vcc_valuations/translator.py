@@ -943,13 +943,36 @@ def build_segment_inputs_from_data(inputs: dict, scenario_id: str):
         corporate_fy25=corp["unallocated_fy25"], corporate_growth=corp["unallocated_growth"],
         net_interest_fy25=corp["net_interest_fy25"], net_interest_decline=corp["net_interest_decline"],
         capex_pct_revenue=drv["capex_pct_revenue"], da_pct_revenue=drv["da_pct_revenue"],
-        wc_change_pct_revenue_change=drv["wc_change_pct_revenue_change"],
+        # Derived, never read from the driver block (D-16, D-30). The segment
+        # engine already applies it the way working_capital_treatment.md §1
+        # specifies — on the change in group revenue for the explicit years and
+        # at g x intensity in the terminal — so only the number moves here.
+        wc_change_pct_revenue_change=_segment_working_capital_intensity(inputs, company),
         terminal_capex_pct_revenue=drv["terminal_capex_pct_revenue"],
         terminal_ebit_margin=scen["terminal_ebit_margin"], terminal_growth=scen["terminal_growth"],
         tax_rate=scen["tax_rate"], cost_of_equity=ke,
         net_debt=anch["net_debt"], restructuring_cash_to_come=anch["restructuring_cash_to_come"],
         shares_outstanding_m=anch["shares_outstanding_m"], fx_aud_per_usd=sf["fx_aud_per_usd"],
     )
+
+
+def _segment_working_capital_intensity(inputs: dict, company) -> float:
+    """The derived intensity for a segment-FCFF company, or a hard failure.
+
+    Split out so the reason a bank cannot reach here is stated rather than
+    implied: ``working_capital_intensity_from_data`` returns ``None`` only for
+    the bank archetype, which is valued by the bank engine and never by this
+    assembler. Returning zero on that path would reintroduce exactly the
+    indistinguishable-from-absent failure the exemption rule exists to prevent
+    (working_capital_treatment.md section 3).
+    """
+    derived = working_capital_intensity_from_data(inputs)
+    if derived is None:
+        raise ValueError(
+            f"{company.id}: bank-exempt from working capital, but "
+            "build_segment_inputs_from_data is the segment FCFF assembler."
+        )
+    return derived.result
 
 
 def _seg_key(segment_name: str) -> str:

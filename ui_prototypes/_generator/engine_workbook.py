@@ -63,6 +63,69 @@ thin = Side(style="thin", color="D0D0D0")
 BORDER = Border(bottom=thin)
 
 
+def _working_capital_block(ws, r, ref, wci, history, sheet="Assumptions"):
+    """Write the working-capital derivation onto an Assumptions sheet.
+
+    Shared by the DNL and CSL workbooks so the two cannot drift apart. The four
+    balance-sheet lines and revenue are the ONLY inputs; the year intensity, the
+    clean-year average, the rounding and the applied figure are Excel formulas,
+    so the derivation Stephen ratified can be re-run and flexed by hand rather
+    than taken on trust. Sets ``ref["wc_int"]`` to the applied cell.
+
+    ``r`` is the caller's one-element row cursor, advanced in place.
+    """
+    by_year = {row["fiscal_year"]: row for row in history}
+    ws.cell(r[0], 1, "Working capital — derived intensity (never an input)").font = SUB
+    r[0] += 1
+    for cc, label in enumerate(
+        ["Clean year", "Total current assets", "Less: cash & equivalents",
+         "Total current liabilities", "Less: interest-bearing (incl. current leases)",
+         "Revenue", "NCWC / revenue"], start=1
+    ):
+        c = ws.cell(r[0], cc, label)
+        c.font = BOLD
+        c.alignment = Alignment(horizontal="right", wrap_text=True)
+    r[0] += 1
+
+    levels = []
+    for fy in wci["clean_years"]:
+        row = by_year[fy]
+        ws.cell(r[0], 1, fy)
+        for cc, key in enumerate(
+            ["total_current_assets", "cash_and_short_term_investments",
+             "total_current_liabilities", "interest_bearing_current_debt", "revenue"],
+            start=2,
+        ):
+            c = ws.cell(r[0], cc, row[key])
+            c.fill = YELLOW; c.font = BLUEFONT; c.number_format = NUM1
+        ca, cash, cl, ibd, rev = (f"${_col(cc)}${r[0]}" for cc in range(2, 7))
+        ws.cell(r[0], 7, f"=(({ca}-{cash})-({cl}-{ibd}))/{rev}").number_format = PCT2
+        levels.append(f"$G${r[0]}")
+        r[0] += 1
+
+    def formula_row(label, formula, bold=False):
+        c0 = ws.cell(r[0], 1, label)
+        c = ws.cell(r[0], 2, formula)
+        c.number_format = PCT2
+        if bold:
+            c0.font = BOLD; c.font = BOLD
+        cell = f"$B${r[0]}"
+        r[0] += 1
+        return cell
+
+    avg = formula_row("Average of clean years", "=AVERAGE(" + ",".join(levels) + ")")
+    step = 1.0 / 20.0  # ssot-allow: the D-29 rounding bucket, not a register value
+    applied_src = formula_row("Rounded (protocol: nearest 5pp)", f"=ROUND({avg}/{step},0)*{step}")
+    if "rounding_override" in wci:
+        ws.cell(r[0], 1, "Override — raw figure held (single observation)")
+        c = ws.cell(r[0], 2, wci["rounding_override"])
+        c.fill = YELLOW; c.font = BLUEFONT; c.number_format = PCT2
+        applied_src = f"$B${r[0]}"
+        r[0] += 1
+    cell = formula_row("Applied working-capital intensity", f"={applied_src}", bold=True)
+    ref["wc_int"] = f"'{sheet}'!{cell}"
+
+
 def _load_central():
     return load_inputs(_ROOT, CENTRAL, "industrial_explosives", "dnl")
 
@@ -222,53 +285,10 @@ class Book:
         blank()
 
         # --- Working capital (working_capital_treatment.md) ---
-        # The four balance-sheet lines and revenue are the ONLY inputs; the
-        # year intensity, the clean-year average, the rounding and the applied
-        # figure are all Excel formulas, so the derivation Stephen ratified can
-        # be re-run and flexed by hand rather than taken on trust.
-        wci = nb["working_capital_intensity"]
-        hist = {row["fiscal_year"]: row for row in fin["working_capital_history"]}
-        ws.cell(r[0], 1, "Working capital — derived intensity (never an input)"); ws.cell(r[0], 1).font = SUB; r[0] += 1
-        wc_hdr = r[0]
-        for cc, lbl in enumerate(
-            ["Clean year", "Total current assets", "Less: cash & equivalents",
-             "Total current liabilities", "Less: interest-bearing (incl. current leases)",
-             "Revenue", "NCWC / revenue"], start=1
-        ):
-            c = ws.cell(wc_hdr, cc, lbl); c.font = BOLD
-            c.alignment = Alignment(horizontal="right", wrap_text=True)
-        r[0] += 1
-        level_cells = []
-        for fy in wci["clean_years"]:
-            row = hist[fy]
-            ws.cell(r[0], 1, fy)
-            for cc, key in enumerate(
-                ["total_current_assets", "cash_and_short_term_investments",
-                 "total_current_liabilities", "interest_bearing_current_debt", "revenue"],
-                start=2,
-            ):
-                c = ws.cell(r[0], cc, row[key]); c.fill = YELLOW; c.font = BLUEFONT; c.number_format = NUM1
-            ca, cash, cl, ibd, rev = (f"${_col(cc)}${r[0]}" for cc in range(2, 7))
-            c = ws.cell(r[0], 7, f"=(({ca}-{cash})-({cl}-{ibd}))/{rev}"); c.number_format = PCT2
-            level_cells.append(f"$G${r[0]}")
-            r[0] += 1
-        line("Average of clean years", None, None, PCT2)
-        ws.cell(r[0] - 1, 2, "=AVERAGE(" + ",".join(level_cells) + ")").number_format = PCT2
-        self.ref["wc_avg"] = f"'Assumptions'!$B${r[0] - 1}"
-        avg = f"$B${r[0] - 1}"
-        line("Rounded (protocol: nearest 5pp)", None, None, PCT2)
-        step = 1.0 / 20.0  # ssot-allow: the D-29 rounding bucket, not a register value
-        ws.cell(r[0] - 1, 2, f"=ROUND({avg}/{step},0)*{step}").number_format = PCT2
-        rounded = f"$B${r[0] - 1}"
-        applied_src = rounded
-        if "rounding_override" in wci:
-            line("Override — raw figure held (single observation)",
-                 wci["rounding_override"], "wc_override", PCT2)
-            applied_src = self.ref["wc_override"].split("!")[1]
-        line("Applied working-capital intensity", None, None, PCT2, style=BOLD)
-        c = ws.cell(r[0] - 1, 2, f"={applied_src}")
-        c.number_format = PCT2; c.font = BOLD
-        self.ref["wc_int"] = f"'Assumptions'!$B${r[0] - 1}"
+        _working_capital_block(
+            ws, r, self.ref, nb["working_capital_intensity"],
+            fin["working_capital_history"],
+        )
         tr = nb["terminal_reinvestment"]
         self.terminal_mode = tr["mode"]
         rule = tr["capex_rule"]
@@ -1324,7 +1344,13 @@ def build_csl_workbook_bytes(cfg=None):
     line("Capex / revenue", drv["capex_pct_revenue"], "capex", PCT2)
     line("D&A / revenue", drv["da_pct_revenue"], "da", PCT2)
     line("Terminal capex / revenue", drv["terminal_capex_pct_revenue"], "tcapex", PCT2)
-    line("Working-capital change / revenue change", drv["wc_change_pct_revenue_change"], "wc", PCT2)
+    # Derived, not typed (D-16/D-30): the same block the DNL workbook uses, so
+    # both spreadsheets show the reader the same derivation.
+    _working_capital_block(
+        ws, r, R, nb["working_capital_intensity"],
+        inp["financials"]["working_capital_history"],
+    )
+    R["wc"] = R.pop("wc_int")
     line("Corporate / unallocated FY25", corp["unallocated_fy25"], "corp0", NUM0)
     line("Corporate growth p.a.", corp["unallocated_growth"], "corpg", PCT2)
     line("Net debt at anchor", anch["net_debt"], "nd", NUM0)
@@ -1424,15 +1450,21 @@ def build_csl_workbook_bytes(cfg=None):
     for p in range(7):
         row(f"ebit{p}", f"  Group EBIT {YRS[p]}", NUM0,
             lambda s, c, j, p=p: f"={c}{m[f'gor{p}']}+{c}{m[f'corp{p}']}")
-    # FCFF FY26..FY31 (p=1..6)
+    # FCFF FY26..FY31 (p=1..6). The working-capital charge is broken out on its
+    # own row rather than buried inside the FCFF formula: at a 35% intensity it
+    # is the second-largest claim on group cash flow and a reader should be able
+    # to see it without opening a cell.
     band("Free cash flow to firm (FY26..FY31)")
+    for p in range(1, 7):
+        row(f"dwc{p}", f"  Change in working capital {YRS[p]}", NUM1,
+            lambda s, c, j, p=p:
+            f"=-({c}{m[f'grev{p}']}-{c}{m[f'grev{p-1}']})*{R['wc']}")
     for p in range(1, 7):
         def f_fcff(s, c, j, p=p):
             nopat = f"{c}{m[f'ebit{p}']}*(1-{R[f'tax:{s}']})"
             da = f"{c}{m[f'grev{p}']}*{R['da']}"
             capex = f"{c}{m[f'grev{p}']}*{R['capex']}"
-            wc = f"({c}{m[f'grev{p}']}-{c}{m[f'grev{p-1}']})*{R['wc']}"
-            return f"={nopat}+{da}-{capex}-{wc}"
+            return f"={nopat}+{da}-{capex}+{c}{m[f'dwc{p}']}"
         row(f"fcff{p}", f"  FCFF {YRS[p]}", NUM1, f_fcff)
     # discount + PV (FY27..FY31 explicit)
     for p in range(2, 7):

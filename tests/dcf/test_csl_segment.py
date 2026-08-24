@@ -27,13 +27,18 @@ def _run(scenario):
 
 
 def test_muddle_through_ties_workbook():
+    """Restated 23 Aug 2026 (D-30): the v4 workbook was struck at the hand-typed
+    10% working-capital intensity and no longer arbitrates. The live tie is
+    ``test_csl_workbook_tie.py``, against the generated workbook recalculated in
+    LibreOffice across all six scenarios; these figures are that workbook's.
+    """
     r = _run("muddle_through")
-    assert r.value_per_share_usd == pytest.approx(134.5216, abs=1e-3)
-    assert r.value_per_share_aud == pytest.approx(203.83, abs=0.02)
-    assert r.enterprise_value == pytest.approx(74029.39, abs=1.0)
-    assert r.pv_explicit == pytest.approx(18389.82, abs=1.0)
-    assert r.terminal_value == pytest.approx(84631.12, abs=2.0)
-    assert r.equity_value == pytest.approx(64422.39, abs=1.0)
+    assert r.value_per_share_usd == pytest.approx(129.2130, abs=1e-3)
+    assert r.value_per_share_aud == pytest.approx(195.78, abs=0.02)
+    assert r.enterprise_value == pytest.approx(71487.10, abs=1.0)
+    assert r.pv_explicit == pytest.approx(17586.26, abs=1.0)
+    assert r.terminal_value == pytest.approx(81986.40, abs=2.0)
+    assert r.equity_value == pytest.approx(61880.10, abs=1.0)
     # cost of equity Rf + beta*ERP = 4.5% + 0.85*5.0%
     assert r.value_per_share_aud == pytest.approx(r.value_per_share_usd * 1.5152, abs=1e-6)
 

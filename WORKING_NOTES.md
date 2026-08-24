@@ -28,8 +28,9 @@ prints git state.
 **Start by running `session_start.cmd`** (or `python scripts/session_start.py`).
 See "Survey before you conclude" in `CLAUDE.md`.
 
-**State:** suite **209**, ratchet **9**, bases **2.831 / 30.03 / 203.83** — the DNL base
-moved this session and that is the headline. Two commits unpushed.
+**State:** suite **240**, ratchet **9**, bases **2.831 / 30.03 / 195.78** — both FCFF
+companies moved this session and that is the headline. Three commits unpushed; the
+cloud container can no longer push (see 13 below), so they travel as a bundle.
 
 ### What shipped
 
@@ -76,51 +77,73 @@ moved this session and that is the headline. Two commits unpushed.
    `test_warning_is_silent_below_the_threshold` had to be rewritten against the pure
    predicate because no live case remains under it.
 
+### CSL, done the same session
+
+7. **CSL is wired through too** (D-34). `build_segment_inputs_from_data` now derives the
+   intensity instead of reading the hand-typed 10%, which was **deleted rather than
+   corrected** — under D-16 a stored derived value is the defect, not the number.
+   CSL needed no engine change: its segment engine already applied working capital
+   the way §1 specifies, so only the input moved. Same oracle treatment as DNL —
+   `test_csl_workbook_tie.py` pins the generated CSL workbook across all six scenarios,
+   and the working-capital charge now has its own row in that workbook rather than
+   sitting inside the FCFF formula.
+
+| Scenario | Was (AUD) | Now (AUD) | Change |
+|---|---|---|---|
+| Orderly Convergence | 237.29 | 227.43 | −4.2% |
+| Muddle Through | 203.83 | **195.78** | −3.9% |
+| AI Productivity Lag | 198.68 | 191.21 | −3.8% |
+| Fragmentation | 168.23 | 161.95 | −3.7% |
+| Disorderly Climate | 174.79 | 168.10 | −3.8% |
+| Stagflation Persists | 159.90 | 153.55 | −4.0% |
+
+8. **The working-capital standard is now complete** for all three companies —
+   all five enforcement steps in `working_capital_treatment.md` §5 are in force.
+   What remains of it is presentation, not mechanism.
+
 ### Open, needing Stephen
 
-7. **Ratify or push back on the six re-pinned levels** (D-33), Disorderly Climate in
-   particular. MT is now 21.6% below the market reference of 3.61, not 14.9%.
-8. **CSL is the other half of the same job** — `build_segment_inputs_from_data` still
-   reads `wc_change_pct_revenue_change: 0.10` where the derived figure is 35% (D-30).
-   Estimated a day; moves the CSL workbook and the CSL goldens. The CSL segment engine
-   already normalises its terminal, so only the intensity is in question.
-9. **UI disclosure** of the working-capital methodology (intensity, clean years,
+9. **Ratify or push back on the twelve re-pinned levels** (D-33 for DNL, D-34 for CSL).
+   DNL Muddle Through is now 21.6% below the 3.61 market reference rather than 14.9%;
+   Disorderly Climate is the one number worth arguing with (see 5 above).
+10. **UI disclosure** of the working-capital methodology (intensity, clean years,
    rounding/override) — flagged by Stephen, scope still open.
-10. CSL WACC parameters (D-06, still PROVISIONAL — the EV/EBITDA multiple has no
-    independent support).
-11. Q5 (WBC CET1 warn-only vs forced payout cut), Q6 (metric card 4), Q7 (tab parity)
-    — all in the tracker, none blocking.
+11. **CSL WACC (D-06, still PROVISIONAL)** — the EV/EBITDA multiple has no independent
+    support. Note this will move the CSL goldens a *second* time and needs another
+    workbook re-tie; that was the accepted cost of not pinning numbers to an
+    unsupported input.
+12. Q5 (WBC CET1 warn-only vs forced payout cut), Q6 (metric card 4), Q7 (tab parity)
+    — all in the tracker, none blocking. Batch 3 (5 schema/validator items), Batch 5
+    (18 UI items) and Batch 6 (13 correctness items) remain planned.
 
 ### Housekeeping from this session
 
-12. **Pushing does not work from the cloud container any more.** The git proxy refuses
+13. **Pushing does not work from the cloud container any more.** The git proxy refuses
     `stephenreid90/VCC` ("not in this session's authorized repository set"); clone and
     fetch still work, push returns 403. Stephen pushes from his own cmd window.
-13. **Two stale `.git` lock files** (`index.lock`, `HEAD.lock`, both zero-byte, left by
+14. **Two stale `.git` lock files** (`index.lock`, `HEAD.lock`, both zero-byte, left by
     the 21 Aug session) were moved aside on the mount so `git pull`/`push` can run.
     `sandbox_cleanup.cmd` clears the `.dead*` files.
-14. `_to_delete/` in the repo root holds one scratch bundle; the mount still refuses
+15. `_to_delete/` in the repo root holds one scratch bundle; the mount still refuses
     `rm`, so it needs deleting from a normal cmd window.
-15. The DNL UI footnote still cites `dnl_scenarios_comparison_v4` as the source of the
+16. The DNL UI footnote still cites `dnl_scenarios_comparison_v4` as the source of the
     per-scenario figures. Those now come from the engine; the reference is stale.
 
 ### Worth retrieving
 
-16. **DNL 1H26 Appendix 4D half-year financial report** — would give total current
+17. **DNL 1H26 Appendix 4D half-year financial report** — would give total current
     assets/liabilities at 31 March 2026 (the model's own anchor date) and turn DNL's
     single working-capital observation into two, letting D-29's rounding protocol run
     unmodified and retiring the `rounding_override`.
-17. **`data/companies/csl.md` does not exist** (DNL and WBC both have narratives).
+18. **`data/companies/csl.md` does not exist** (DNL and WBC both have narratives).
 
 ---
 
 ## Active threads
 
-1. **Working-capital standard — DNL done, CSL outstanding.** Definition, protocol and
-   both intensities ratified; mechanism, DNL engine wiring, workbook oracle and goldens
-   all shipped (23 Aug). What remains is `build_segment_inputs_from_data` for CSL: the
-   hand-typed 10% against the derived 35% (D-30), worth about −4.2% on CSL. Estimated a
-   day, including the CSL workbook and its goldens.
+1. **Working-capital standard — COMPLETE.** Definition, protocol, both intensities,
+   the mechanism, both engines, both workbook oracles and all twelve goldens shipped
+   23 Aug. WBC exempt by rule. The only open piece is the UI disclosure.
 2. **CSL WACC — decided in principle (D-05), parameters proposed (D-06, Q9).**
    Implementation retires the audited MT oracle and moves all 18 goldens.
 3. **Review batches 3, 5 and 6** — mechanical, no decisions needed, ~1.5 days total.
