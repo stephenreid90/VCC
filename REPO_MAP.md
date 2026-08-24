@@ -3,10 +3,10 @@
 _Generated 2026-08-24 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `80ab325 Restate both theses on engine numbers; DNL gains the per-scenario narrative` on `main`
-- Unpushed commits: **4**
-- Tracked files: 290
-- Untracked files: 4
+- HEAD: `9abd544 Batch 6: close all thirteen correctness, methodology and test-gap items` on `main`
+- Unpushed commits: **5**
+- Tracked files: 294
+- Untracked files: 1
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -19,7 +19,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
 | Path | Present | What it is |
 |---|---|---|
-| `data/companies/dnl.yaml` | yes (36.3KB) | company position + layer-2 method (judgement) |
+| `data/companies/dnl.yaml` | yes (37.4KB) | company position + layer-2 method (judgement) |
 | `data/companies/dnl.md` | yes (13.5KB) | company narrative |
 | `data/companies/dnl_documents.yaml` | yes (8.5KB) | document register |
 | `data/financials/dnl.yaml` | yes (11.1KB) | curated layer-1 financials (a SUMMARY — check for raw sources too) |
@@ -31,7 +31,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
 | Path | Present | What it is |
 |---|---|---|
-| `data/companies/wbc.yaml` | yes (35.6KB) | company position + layer-2 method (judgement) |
+| `data/companies/wbc.yaml` | yes (35.9KB) | company position + layer-2 method (judgement) |
 | `data/companies/wbc.md` | yes (7.6KB) | company narrative |
 | `data/companies/wbc_documents.yaml` | yes (19.9KB) | document register |
 | `data/financials/wbc.yaml` | yes (1.9KB) | curated layer-1 financials (a SUMMARY — check for raw sources too) |
@@ -43,7 +43,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
 | Path | Present | What it is |
 |---|---|---|
-| `data/companies/csl.yaml` | yes (32.3KB) | company position + layer-2 method (judgement) |
+| `data/companies/csl.yaml` | yes (33.4KB) | company position + layer-2 method (judgement) |
 | `data/companies/csl.md` | **NO** | company narrative |
 | `data/companies/csl_documents.yaml` | yes (8.3KB) | document register |
 | `data/financials/csl.yaml` | yes (7.6KB) | curated layer-1 financials (a SUMMARY — check for raw sources too) |
@@ -54,13 +54,13 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 ## Data directory
 
   - **companies/**
-    - `csl.yaml` (32.3KB)
+    - `csl.yaml` (33.4KB)
     - `csl_documents.yaml` (8.3KB)
     - `dnl.md` (13.5KB)
-    - `dnl.yaml` (36.3KB)
+    - `dnl.yaml` (37.4KB)
     - `dnl_documents.yaml` (8.5KB)
     - `wbc.md` (7.6KB)
-    - `wbc.yaml` (35.6KB)
+    - `wbc.yaml` (35.9KB)
     - `wbc_documents.yaml` (19.9KB)
   - **financials/**
     - `anz_eodhd_fundamentals_2026-06-15.csv` (167.3KB)
@@ -152,7 +152,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **vcc_valuations/**
     - `__init__.py` (650B)
     - `derivation.py` (4.4KB)
-    - `translator.py` (47.3KB)
+    - `translator.py` (48.7KB)
     - **assumptions/**
       - `__init__.py` (775B)
       - `wacc.py` (6.0KB)
@@ -173,7 +173,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `company.py` (11.7KB)
       - `driver.py` (4.0KB)
       - `frameworks.py` (4.4KB)
-      - `industry.py` (7.4KB)
+      - `industry.py` (9.1KB)
       - `linkage.py` (6.9KB)
       - `scenario.py` (4.8KB)
 
@@ -181,16 +181,17 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
   - `__init__.py` (0B)
   - `conftest.py` (1.3KB)
+  - `ssot_intra_file_baseline.json` (593B)
   - `ssot_lint_baseline.json` (6.3KB)
   - `test_adjustments.py` (1.6KB)
-  - `test_archetypes_validate.py` (1.6KB)
+  - `test_archetypes_validate.py` (3.5KB)
   - `test_comps.py` (653B)
   - `test_csl_loads.py` (2.0KB)
   - `test_dcf.py` (1.4KB)
   - `test_derivation.py` (1.3KB)
   - `test_engine_workbook.py` (4.6KB)
   - `test_implied_emrp.py` (2.1KB)
-  - `test_ssot_lint.py` (17.3KB)
+  - `test_ssot_lint.py` (24.1KB)
   - `test_three_statement.py` (694B)
   - `test_wbc_loads.py` (2.1KB)
   - `test_workbook_recalc_live.py` (3.3KB)
@@ -310,8 +311,5 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 Not in git. Either commit them or clear them — an untracked file is invisible
 to anyone who clones the repo, and is the most common way work gets lost.
 
-- `pytest.ini`
-- `tests/dcf/test_engine_input_validation.py`
-- `tests/test_engine_workbook.py`
-- `tests/test_workbook_recalc_live.py`
+- `tests/ssot_intra_file_baseline.json`
 

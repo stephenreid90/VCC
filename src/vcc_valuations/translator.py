@@ -175,12 +175,27 @@ def load_inputs(
         # §7.4-v2 IndustryArchetypeFile (bank/biopharma carry archetype_class, the v2 five-
         # forces shape and archetype-specific blocks; industrial keeps the original shape).
         archetype = IndustryArchetypeFile.model_validate(_load(archetype_path)).industry_archetype
+        company_raw = _load(company_path)
     else:
-        # Segment-level-valuation companies (e.g. CSL) have no single consolidated archetype
-        # file — archetypes are resolved per segment from the company file, and the segment-
-        # FCFF engine reads normalised_baseline, so nothing needs a typed archetype here.
+        # Segment-level-valuation companies (e.g. CSL) have no single consolidated
+        # archetype file — archetypes are resolved per segment from the company file,
+        # and the segment-FCFF engine reads normalised_baseline, so nothing needs a
+        # typed archetype here.
+        #
+        # But the fallback must be EARNED, not inferred from a missing file. Before
+        # 23 Aug 2026 any unreadable archetype id silently produced archetype=None,
+        # so a typo degraded to the segment path instead of failing (batch 3, item 20).
+        # The company now has to say it values this way.
+        company_raw = _load(company_path)
+        if not (company_raw.get("company_position") or {}).get("segment_level_valuation"):
+            available = sorted(p.stem for p in archetype_path.parent.glob("*.yaml"))
+            raise FileNotFoundError(
+                f"{company_id}: archetype {archetype_id!r} not found at {archetype_path}, "
+                f"and company_position.segment_level_valuation is not set. Either the "
+                f"archetype id is wrong (available: {', '.join(available)}) or the company "
+                "is segment-valued and should declare it."
+            )
         archetype = None
-    company_raw = _load(company_path)
     company = CompanyPositionFile.model_validate(company_raw).company_position
     matrix = ImpactMatrix.model_validate(_load(matrix_path)) if matrix_path.exists() else None
     financials = _load(financials_path)
@@ -840,7 +855,10 @@ def build_bank_inputs_from_data(inputs: dict, scenario_id: str):
     coe = resolve_normalised_baseline(inputs).get("cost_of_equity_build") or {}
     rf = coe.get("risk_free_rate")
     erp = coe.get("equity_risk_premium")
-    beta = coe.get("beta", coe.get("beta_selected"))
+    # `beta` only. The `beta_selected` fallback was removed on 23 Aug 2026 with
+    # the duplicate key it read: a fallback that silently accepts a second name
+    # for the same judgement is what let the two copies drift apart unnoticed.
+    beta = coe.get("beta")
     if rf is None or erp is None or beta is None:
         raise ValueError(f"{company.id}: incomplete cost_of_equity_build (need rf, ERP, beta).")
     ke = rf + beta * erp
@@ -923,7 +941,10 @@ def build_segment_inputs_from_data(inputs: dict, scenario_id: str):
 
     coe = resolve_normalised_baseline(inputs).get("cost_of_equity_build") or {}
     rf = coe.get("risk_free_rate"); erp = coe.get("equity_risk_premium")
-    beta = coe.get("beta", coe.get("beta_selected"))
+    # `beta` only. The `beta_selected` fallback was removed on 23 Aug 2026 with
+    # the duplicate key it read: a fallback that silently accepts a second name
+    # for the same judgement is what let the two copies drift apart unnoticed.
+    beta = coe.get("beta")
     if rf is None or erp is None or beta is None:
         raise ValueError(f"{company.id}: incomplete cost_of_equity_build.")
     ke = rf + beta * erp

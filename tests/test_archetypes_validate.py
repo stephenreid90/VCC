@@ -10,6 +10,7 @@ no more raw / tolerant passthrough.
 from pathlib import Path
 
 import pytest
+from pydantic import ValidationError
 import yaml
 
 from vcc_valuations.schemas.industry import IndustryArchetypeFile
@@ -37,3 +38,48 @@ def test_both_five_forces_generations_accepted():
     assert bank.five_forces.threat_of_new_entrants is not None
     assert bank.archetype_class == "bank"
     assert bank.bank_archetype is not None
+
+
+# ------------------------------------------------- five-forces completeness
+# Batch 3, item 19. The validator that stops a five-forces block from carrying
+# three forces, or one force under two names with different ratings.
+def _forces_payload(**overrides):
+    force = {"rating": "moderate", "rationale": "x"}
+    base = {
+        "buyer_power": force, "supplier_power": force, "rivalry": force,
+        "new_entrants": force, "substitutes": force,
+    }
+    base.update(overrides)
+    return {k: v for k, v in base.items() if v is not None}
+
+
+def test_five_forces_rejects_a_missing_force():
+    from vcc_valuations.schemas.industry import FiveForces
+
+    with pytest.raises(ValidationError, match="missing the new entrants force"):
+        FiveForces.model_validate(_forces_payload(new_entrants=None))
+    with pytest.raises(ValidationError, match="missing the substitutes force"):
+        FiveForces.model_validate(_forces_payload(substitutes=None))
+
+
+def test_five_forces_rejects_both_naming_generations():
+    from vcc_valuations.schemas.industry import FiveForces
+
+    same = {"rating": "moderate", "rationale": "x"}
+    with pytest.raises(ValidationError, match="two names for one force"):
+        FiveForces.model_validate(_forces_payload(threat_of_new_entrants=same))
+
+    conflicting = {"rating": "high", "rationale": "x"}
+    with pytest.raises(ValidationError, match="CONTRADICTORY"):
+        FiveForces.model_validate(_forces_payload(threat_of_substitutes=conflicting))
+
+
+def test_five_forces_accepts_either_generation_alone():
+    from vcc_valuations.schemas.industry import FiveForces
+
+    force = {"rating": "moderate", "rationale": "x"}
+    FiveForces.model_validate(_forces_payload())
+    FiveForces.model_validate(_forces_payload(
+        new_entrants=None, substitutes=None,
+        threat_of_new_entrants=force, threat_of_substitutes=force,
+    ))

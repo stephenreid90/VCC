@@ -1,4 +1,10 @@
 company_position:
+  # Declares that CSL has no single consolidated industry archetype: it is valued
+  # bottom-up by segment (Behring / Seqirus / Vifor), each with its own archetype,
+  # through build_segment_inputs_from_data. Required from 23 Aug 2026 — without it
+  # load_inputs raises rather than silently falling back, so a mistyped archetype
+  # id can no longer degrade into the segment path (batch 3, item 20).
+  segment_level_valuation: true
   id: csl
   name: CSL Limited
   ticker: ASX:CSL
@@ -511,29 +517,13 @@ company_position:
 # TODO (protocol rule 8): add decided_on date + status to each entry.
 normalised_baseline:
   # Corporate / unallocated (negative; grows ~0.5%/yr in the explicit period)
-  corporate_unallocated_fy25: -2559.0
   corporate_unallocated_rationale: >
     FY25 R&D ~1,359 + G&A ~1,000 + other central ~200. Held as a single
     corporate line growing 0.5%/yr across the explicit horizon.
 
   # Reinvestment ratios
-  capex_pct_revenue: 0.045
-  capex_pct_revenue_rationale: >
-    FY26 guidance ~USD 800m on ~USD 15.6bn revenue (~5%); steady-state ~4.5%.
-    Explicit-period capex; intentionally below D&A because Vifor/Behring
-    intangible amortisation legitimately exceeds capex until it runs off.
 
-  da_pct_revenue: 0.06
-  da_pct_revenue_rationale: >
-    Includes amortisation of acquired intangibles (Vifor 2022 acquisition).
-    Exceeds explicit-period capex in the near-to-medium term by design.
 
-  terminal_capex_pct_revenue: 0.06
-  terminal_capex_pct_revenue_rationale: >
-    v4 steady-state reinvestment consistency: terminal capex set EQUAL to D&A.
-    A business growing 3% in perpetuity cannot run capex below depreciation;
-    the intangible-amortisation excess runs off by the terminal. Correcting
-    this trimmed every scenario ~5% (CSL MT USD 141.78 -> 134.52).
 
   working_capital_change_rationale: >
     The hand-typed 10% that used to live here (and in
@@ -564,30 +554,11 @@ normalised_baseline:
       working_capital_treatment.md §6.1 (that estimate used 35% already).
 
   # Tax
-  tax_rate: 0.19
-  tax_rate_rationale: >
-    FY26 guidance 18-20%; 19% mid-point. USD-denominated effective rate. Rises
-    to ~20% under Fragmentation as cross-border structuring efficiencies erode.
 
   # Equity-bridge deduction (forward modelling estimate)
-  restructuring_cash_to_come: 507.0
-  restructuring_cash_to_come_rationale: >
-    FY26-27 restructuring cash, PV at the cost of equity; deducted in the equity
-    bridge per the §4.4 cost-of-closure consistency rule.
 
   # Terminal
-  terminal_ebit_margin: 0.30
-  terminal_ebit_margin_rationale: >
-    BINDING terminal group EBIT margin (v3 fix). Above FY25's ~27.5%, reflecting
-    scale + peer-gap closure held into perpetuity — the rivalry/scale assumption
-    that underwrites the terminal. Scenario-conditional: 31.5% Orderly ->
-    26.5% Stagflation.
 
-  terminal_growth: 0.03
-  terminal_growth_rationale: >
-    US nominal-GDP-adjacent for a global essential-therapies franchise.
-    Scenario-conditional (3.25% Orderly -> 2.75% Fragmentation/Disorderly;
-    held 3.0% nominal in Stagflation).
 
   # Cost-of-equity method and selection (layer 2). Rejoined with the layer-1
   # `coe_observed_inputs` into `cost_of_equity_build` by the translator.
@@ -596,7 +567,11 @@ normalised_baseline:
     equity_risk_premium_rationale: >
       Damodaran-style mature-market ERP (USD base).
 
-    beta_selected: 0.85
+    # beta_selected removed 23 Aug 2026 (batch 3, item 12b): it held a
+    # second copy of `beta` above, and the translator only ever read it as
+    # a fallback that never fired. Two homes for one judgement is how
+    # `beta` gets updated and the copy does not — the exact gap check 3
+    # documented as invisible to it. The selection reasoning stays below.
     beta_selection_rationale: |
       Selected via peer-triangulation per §3.5.3. Defensive-healthcare peer
       cluster:
@@ -656,6 +631,40 @@ normalised_baseline:
         younger franchise with patent-cliff / substitution exposure over time.
       margin_uplift_cum_fy31: 0.01
   segment_fcff:
+    # --- Rationale for the drivers, anchors and per-scenario terminals below.
+    # These paragraphs used to sit beside a SECOND copy of each figure at
+    # normalised_baseline top level. The figures were identical and only
+    # segment_fcff was ever read, so the mirror was deleted on 23 Aug 2026
+    # (D-16: a judgement stored twice is a judgement that can drift). The
+    # reasoning moved here, beside the copy that is live.
+    rationale:
+      capex_pct_revenue_rationale: >
+        FY26 guidance ~USD 800m on ~USD 15.6bn revenue (~5%); steady-state ~4.5%.
+        Explicit-period capex; intentionally below D&A because Vifor/Behring
+        intangible amortisation legitimately exceeds capex until it runs off.
+      da_pct_revenue_rationale: >
+        Includes amortisation of acquired intangibles (Vifor 2022 acquisition).
+        Exceeds explicit-period capex in the near-to-medium term by design.
+      terminal_capex_pct_revenue_rationale: >
+        v4 steady-state reinvestment consistency: terminal capex set EQUAL to D&A.
+        A business growing 3% in perpetuity cannot run capex below depreciation;
+        the intangible-amortisation excess runs off by the terminal. Correcting
+        this trimmed every scenario ~5% (CSL MT USD 141.78 -> 134.52).
+      tax_rate_rationale: >
+        FY26 guidance 18-20%; 19% mid-point. USD-denominated effective rate. Rises
+        to ~20% under Fragmentation as cross-border structuring efficiencies erode.
+      restructuring_cash_to_come_rationale: >
+        FY26-27 restructuring cash, PV at the cost of equity; deducted in the equity
+        bridge per the §4.4 cost-of-closure consistency rule.
+      terminal_ebit_margin_rationale: >
+        BINDING terminal group EBIT margin (v3 fix). Above FY25's ~27.5%, reflecting
+        scale + peer-gap closure held into perpetuity — the rivalry/scale assumption
+        that underwrites the terminal. Scenario-conditional: 31.5% Orderly ->
+        26.5% Stagflation.
+      terminal_growth_rationale: >
+        US nominal-GDP-adjacent for a global essential-therapies franchise.
+        Scenario-conditional (3.25% Orderly -> 2.75% Fragmentation/Disorderly;
+        held 3.0% nominal in Stagflation).
     # Segment-FCFF (M3) valuation build (methodology §4 mechanics, per-segment).
     # Sourced from analyses/csl/valuations/csl_muddle_through_valuation_v4.xlsx and
     # csl_scenarios_comparison_v2.xlsx. Segment FY25 revenue / margin are the layer-1

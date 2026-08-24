@@ -326,6 +326,16 @@ normalised_baseline:
     terminal. Short enough that structural shifts (e.g. §9.7 demographics) sit
     beyond it; long enough to carry the margin-transformation and gas-roll-off
     glides to steady state.
+  # The valuation date, stated rather than implied. It was only ever recoverable
+  # by adding period_a_days to the financials' anchor date and reading a comment,
+  # which is not a source of truth (batch 3, item 13). Now checked against both
+  # the anchor walk and the stub fraction by tests/test_ssot_lint.py check 12.
+  valuation_date: 2026-05-25
+  valuation_date_rationale: >
+    31 March 2026 (the §5.3 balance-sheet anchor for net debt and share count)
+    plus the 55-day Period-A walk. The stub then runs from here to the 30
+    September fiscal year-end — 128 days, 0.351 years.
+
   stub_years: 0.351
   stub_years_rationale: >
     Fractional stub from the valuation date to the first fiscal year-end
@@ -498,7 +508,9 @@ normalised_baseline:
 
 
   # D&A (% of revenue)
-  da_pct_revenue: 0.073
+  # da_pct_revenue lives at engine_overlays.baseline.da_pct_revenue, which is
+  # what the engine reads. The copy that used to sit here was removed on
+  # 23 Aug 2026 (batch 3, item 12b); the rationale stays.
   da_pct_revenue_rationale: >
     Matches assumed capex/revenue ratio of 7%, consistent with a
     steady-state mature industrial where the asset base isn't growing
@@ -525,7 +537,11 @@ normalised_baseline:
         Modest country-risk premium over US base (~50bps) baked in.
 
 
-      beta_selected: 1.10
+      # beta_selected removed 23 Aug 2026 (batch 3, item 12b): it held a
+      # second copy of `beta` above, and the translator only ever read it as
+      # a fallback that never fired. Two homes for one judgement is how
+      # `beta` gets updated and the copy does not — the exact gap check 3
+      # documented as invisible to it. The selection reasoning stays below.
       beta_selected_decided_on: 2026-07-25
       beta_selected_status: decided_owner_ratified
       beta_selection_decision: |

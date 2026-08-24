@@ -28,7 +28,7 @@ prints git state.
 **Start by running `session_start.cmd`** (or `python scripts/session_start.py`).
 See "Survey before you conclude" in `CLAUDE.md`.
 
-**State:** suite **259** (+2 opt-in `-m libreoffice`), ratchet **9**, bases **2.831 /
+**State:** suite **265** (+2 opt-in `-m libreoffice`), ratchet **12**, bases **2.831 /
 30.03 / 195.78** — both FCFF companies moved this session and that is the headline.
 Five commits unpushed; the
 cloud container can no longer push (see 13 below), so they travel as a bundle.
@@ -149,6 +149,26 @@ cloud container can no longer push (see 13 below), so they travel as a bundle.
     derivations carry populated inputs instead of empty dicts; and a `-m libreoffice`
     opt-in test rebuilds both workbooks and recalculates them, so a committed oracle
     fixture cannot quietly go stale.
+
+### Batch 3 — four of five closed
+
+17. **The ratchet grew from 9 checks to 12.** Check 10 catches a judgement stored at two
+    paths inside one data file — the hole that let CSL mirror its whole `normalised_baseline`
+    scalar block over `segment_fcff` for months. It fired immediately on
+    `beta` / `beta_selected` in all three companies, which is precisely the gap check 3's
+    own docstring described as invisible to it. Check 11 makes the archetype fallback
+    declared rather than inferred, so a mistyped archetype id raises instead of silently
+    degrading into the segment path. Check 12 states the valuation date and ties it to both
+    the anchor walk and the stub fraction.
+18. **Silent skips made visible.** The anchor-date check used to `continue` past any company
+    without anchor dates — so two of three were exempt and nothing said so. They are now on
+    a named `NO_ANCHOR_DATES_YET` list with a reason each.
+19. **FiveForces has a validator** — a block with three forces no longer validates, and
+    supplying both naming generations fails (loudly when the ratings contradict).
+20. **Still open from batch 3:** the typed `BankArchetype` block (item 19's other half), and
+    17 baselined intra-file duplicates. Several of those are real — WBC's 1H26 income
+    anchors are mirrored between `company_position` and `normalised_baseline` — and several
+    are coincidence. Worth a tranche, not urgent.
 
 ### Open, needing Stephen
 

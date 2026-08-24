@@ -209,6 +209,125 @@ def test_register_values_not_duplicated_in_code():
 # authoritative for each quantity.
 
 
+# ---------------------------------------------------------------- check 12
+def test_valuation_date_ties_the_anchor_walk_and_the_stub():
+    """§7.2/§7.5: one date, reachable three ways, and they must agree.
+
+    Batch 3, item 13. The valuation date was implied by ``period_a_days`` and
+    recoverable only from a comment. Stating it lets the walk (anchor + Period A)
+    and the stub fraction (valuation date -> fiscal year-end) be checked against
+    each other, which is the discipline §7.5 asks for and nothing enforced.
+    """
+    from datetime import date, timedelta
+
+    for cid in _company_ids():
+        comp = _load(ROOT / f"data/companies/{cid}.yaml")
+        nb = comp.get("normalised_baseline") or {}
+        vd = nb.get("valuation_date")
+        if vd is None:
+            continue
+        fin = _load(ROOT / f"data/financials/{cid}.yaml")
+        anchor = (fin.get("derived_metrics") or {}).get("net_debt_at")
+        days = (nb.get("equity_bridge_run_rates") or {}).get("period_a_days")
+        assert anchor and days is not None, f"{cid}: valuation_date needs an anchor and period_a_days"
+        assert anchor + timedelta(days=days) == vd, (
+            f"{cid}: anchor {anchor} + {days} days = {anchor + timedelta(days=days)}, "
+            f"but valuation_date says {vd}"
+        )
+
+        # The stub must run from the valuation date to the fiscal year-end.
+        fy_end = date(vd.year, 9, 30) if vd <= date(vd.year, 9, 30) else date(vd.year + 1, 9, 30)
+        implied = (fy_end - vd).days / 365.0
+        assert abs(implied - nb["stub_years"]) < 0.005, (
+            f"{cid}: stub_years {nb['stub_years']} implies a different valuation date — "
+            f"{vd} to {fy_end} is {implied:.3f} years"
+        )
+
+
+# ---------------------------------------------------------------- check 11
+def test_archetype_fallback_must_be_declared_not_inferred():
+    """A mistyped archetype id must raise, not degrade to the segment path.
+
+    Batch 3, item 20. ``load_inputs`` used to return ``archetype=None`` whenever
+    the file was absent, which is indistinguishable from a typo — and a typo that
+    silently changes the valuation path is the worst kind.
+    """
+    from vcc_valuations.translator import load_inputs
+
+    with pytest.raises(FileNotFoundError, match="segment_level_valuation is not set"):
+        load_inputs(ROOT, "muddle_through", "industrial_explosivez", "dnl")
+
+    # CSL declares it, so the segment path still loads with no archetype.
+    csl = load_inputs(ROOT, "muddle_through", "biopharmaceuticals", "csl")
+    assert csl["archetype"] is None
+
+
+# ---------------------------------------------------------------- check 10
+# Check 3 scans CODE for copies of register values. It is blind to a register
+# value duplicated inside its own data file — which is how CSL carried the whole
+# normalised_baseline scalar block as a second copy of segment_fcff for months
+# (batch 3, item 12). Same defect, opposite direction: one judgement, two homes,
+# and nothing to stop them drifting apart.
+INTRA_BASELINE = ROOT / "tests" / "ssot_intra_file_baseline.json"
+
+# Paths where the same value legitimately appears more than once.
+_INTRA_EXEMPT = (
+    ".by_scenario.",          # six scenarios sharing a figure is not duplication
+    "_rationale",             # prose
+    ".rationale.",
+    "beta_peer_dataset",      # peers genuinely share ratios
+    ".peers.",
+)
+
+
+def _intra_file_duplicates() -> dict[str, list[str]]:
+    """{"file:value": [paths]} for a scannable scalar living at 2+ paths in one file."""
+    hits: dict[str, list[str]] = {}
+    for cid in _company_ids():
+        for rel in (f"data/companies/{cid}.yaml", f"data/financials/{cid}.yaml"):
+            path = ROOT / rel
+            if not path.exists():
+                continue
+            seen: dict[str, list[str]] = {}
+            for where, value in _walk(_load(path)):
+                if not _is_scannable(value):
+                    continue
+                if any(x in where for x in _INTRA_EXEMPT) or "[" in where:
+                    continue
+                seen.setdefault(_fmt(float(value)), []).append(where)
+            for value, paths in seen.items():
+                if len(paths) > 1:
+                    hits[f"{rel}:{value}"] = sorted(paths)
+    return hits
+
+
+def test_layer_2_judgements_are_not_stored_twice_in_one_file():
+    """One judgement, one home. A second copy is a drift waiting to happen.
+
+    Ratcheted like check 3: a NEW duplicate fails, and a baselined duplicate that
+    disappears also fails, so the baseline can only be regenerated deliberately
+    and only ever tightens.
+    """
+    if not INTRA_BASELINE.exists():
+        pytest.skip("no baseline recorded yet — run scripts/ssot_lint_baseline.py")
+    baseline = set(json.loads(INTRA_BASELINE.read_text(encoding="utf-8")))
+    found = _intra_file_duplicates()
+    new = sorted(set(found) - baseline)
+    assert not new, (
+        "A layer-2 judgement now appears at more than one path in its own file:\n  "
+        + "\n  ".join(f"{k}  at  {', '.join(found[k])}" for k in new)
+        + "\nKeep one copy — the one the engine reads — and move the rationale "
+          "prose beside it."
+    )
+    stale = sorted(baseline - set(found))
+    assert not stale, (
+        "Baseline entries no longer match. EITHER a duplicate was removed (good "
+        "— regenerate so the ratchet tightens) OR a value drifted and the copies "
+        "no longer agree, which is the defect this check exists to catch. Read "
+        "them before regenerating:\n  " + "\n  ".join(stale)
+    )
+
+
 # --------------------------------------------------------- consumer join
 def test_resolve_normalised_baseline_reconstructs_the_wacc_build():
     """The split must be invisible to consumers.
@@ -258,10 +377,15 @@ def test_csl_split_reconstructs_cost_of_equity_build():
     comp = _load(ROOT / "data" / "companies" / "csl.yaml")
     norm = resolve_normalised_baseline({"financials": fin, "company_raw": comp})
 
-    # Layer-2 scalars.
-    assert norm["tax_rate"] == 0.19             # ssot-allow: pinning the join
-    assert norm["terminal_growth"] == 0.03      # ssot-allow
-    assert norm["terminal_ebit_margin"] == 0.30  # ssot-allow
+    # Layer-2 scalars. These used to be asserted at normalised_baseline top
+    # level, where they sat as a second copy of what segment_fcff already held.
+    # The mirror was deleted on 23 Aug 2026 (batch 3, item 12), so the assertion
+    # moved to the copy the engine actually reads — which is the point: a test
+    # that pins a duplicate keeps the duplicate alive.
+    mt = norm["segment_fcff"]["by_scenario"]["muddle_through"]
+    assert mt["tax_rate"] == 0.19               # ssot-allow: pinning the join
+    assert mt["terminal_growth"] == 0.03        # ssot-allow
+    assert mt["terminal_ebit_margin"] == 0.30   # ssot-allow
 
     # Rejoined cost_of_equity_build spans both layers.
     coe = norm["cost_of_equity_build"]
@@ -278,6 +402,17 @@ def test_csl_split_reconstructs_cost_of_equity_build():
     assert "normalised_baseline" not in fin
 
 
+# Companies whose financials carry no §5.3 anchor dates yet. Listed rather than
+# skipped silently: before 23 Aug 2026 the check simply moved on, so two of three
+# companies were exempt from the discipline and nothing said so (batch 3, item 13).
+NO_ANCHOR_DATES_YET: dict[str, str] = {
+    "csl": "Segment-valued off FY25 actuals; anchors sit in segment_fcff.anchors "
+           "without dates. Add when the CSL bridge is rebuilt for the WACC move (D-06).",
+    "wbc": "Bank bridge is struck off the 1H26 income and balance-sheet anchors; "
+           "the §5.3 date discipline has not been applied to the bank archetype yet.",
+}
+
+
 def test_share_and_netdebt_anchor_dates_paired():
     """Methodology §5.4: shares_outstanding_at must equal net_debt_at.
 
@@ -292,6 +427,11 @@ def test_share_and_netdebt_anchor_dates_paired():
         fin = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
         ss = fin.get("share_statistics", {}) or {}
         if "shares_outstanding_at" not in ss:
+            assert path.stem in NO_ANCHOR_DATES_YET, (
+                f"{path.name}: no §5.3 share anchor date and not on the known-gap "
+                "list. Add shares_outstanding_at / net_debt_at, or add the company "
+                "to NO_ANCHOR_DATES_YET with a reason so the gap stays visible."
+            )
             continue
         checked += 1
         dm = fin.get("derived_metrics", {}) or {}

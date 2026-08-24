@@ -9,7 +9,11 @@ normalised_baseline:
     equity_risk_premium: 0.0500
     equity_risk_premium_rationale: >
       Damodaran-style mature-Australia premium (same as §3.5.2).
-    beta_selected: 0.75
+    # beta_selected removed 23 Aug 2026 (batch 3, item 12b): it held a
+    # second copy of `beta` above, and the translator only ever read it as
+    # a fallback that never fired. Two homes for one judgement is how
+    # `beta` gets updated and the copy does not — the exact gap check 3
+    # documented as invisible to it. The selection reasoning stays below.
     beta_selection_rationale: |
       Selected via peer-triangulation per §15.2(c). Measured β carries
       material statistical noise; mechanical use of the subject

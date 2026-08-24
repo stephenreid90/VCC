@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from vcc_valuations.schemas.common import (
     ArchetypeRating,
@@ -55,6 +55,41 @@ class FiveForces(BaseModel):
     threat_of_substitutes: Optional[Force] = None
     rivalry: Force
     rivalry_subforces: Optional[List[Dict[str, Any]]] = None
+
+    @model_validator(mode="after")
+    def _each_force_present_once(self) -> "FiveForces":
+        """Every force present exactly once, in one naming generation.
+
+        Added 23 Aug 2026 (batch 3, item 19). Before this a block carrying
+        neither ``new_entrants`` nor ``threat_of_new_entrants`` validated
+        cleanly — five forces with three of them, and nothing said so. Worse,
+        both generations could be supplied at once with contradictory ratings,
+        and which one won depended on the reader.
+        """
+        for old_name, new_name in (
+            ("new_entrants", "threat_of_new_entrants"),
+            ("substitutes", "threat_of_substitutes"),
+        ):
+            old_v = getattr(self, old_name)
+            new_v = getattr(self, new_name)
+            if old_v is None and new_v is None:
+                raise ValueError(
+                    f"five_forces is missing the {old_name.replace('_', ' ')} force: "
+                    f"supply either {old_name!r} (original naming) or {new_name!r} "
+                    "(§7.4-v2 naming)."
+                )
+            if old_v is not None and new_v is not None:
+                if old_v.rating != new_v.rating:
+                    raise ValueError(
+                        f"five_forces carries both {old_name!r} and {new_name!r} with "
+                        f"CONTRADICTORY ratings ({old_v.rating} vs {new_v.rating}). "
+                        "Keep one naming generation."
+                    )
+                raise ValueError(
+                    f"five_forces carries both {old_name!r} and {new_name!r}. They agree, "
+                    "but two names for one force is how they stop agreeing — keep one."
+                )
+        return self
 
 
 class CostStructure(BaseModel):

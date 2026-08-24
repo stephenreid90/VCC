@@ -152,9 +152,9 @@
     "source": "fable-2026-08-13",
     "area": "Data",
     "issue": "<b>csl.yaml stores the same layer-2 judgment twice</b> — broader than Fable's four items. Effectively the whole normalised_baseline scalar block mirrors segment_fcff, and only segment_fcff is read. Also duplicated beyond Fable's list: da_pct_revenue, working_capital_change, tax_rate, restructuring_cash_to_come, terminal_ebit_margin.",
-    "treatment": "Delete the non-engine copies, keep the rationale prose beside the surviving copy.",
+    "treatment": "Done 23 Aug 2026 — the seven mirrored scalars deleted from normalised_baseline top level, rationale prose moved beside the surviving segment_fcff copy. Regenerating the UI config confirmed nothing read them.",
     "questions": [],
-    "status": "PLANNED",
+    "status": "DONE",
     "batch": "Batch 3"
   },
   {
@@ -162,9 +162,9 @@
     "source": "fable-2026-08-13",
     "area": "Data",
     "issue": "<b>The ratchet cannot see intra-YAML duplication</b> — check 3 scans code only. Second hole found: a value invented in <i>code</i> with no register source is also invisible (how the CSL broker literal survived).",
-    "treatment": "Extend the lint with a same-file / cross-file duplicate-scalar check, plus a check for display values in code with no register source.",
+    "treatment": "Done 23 Aug 2026 — ratchet check 10 (test_layer_2_judgements_are_not_stored_twice_in_one_file) scans each data file for a scalar living at two paths, ratcheted against its own baseline. It immediately caught beta/beta_selected in all three companies — the gap check 3 documented as invisible to it — plus DNL's da_pct_revenue mirror; all removed, 20 known duplicates -> 17. The remaining 17 are recorded, several legitimate coincidences and several real (WBC's 1H26 income anchors mirrored between company_position and normalised_baseline) — next tranche.",
     "questions": [],
-    "status": "PLANNED",
+    "status": "DONE",
     "batch": "Batch 3"
   },
   {
@@ -172,11 +172,11 @@
     "source": "fable-2026-08-13",
     "area": "Data",
     "issue": "<b>§7.5 anchor-date discipline is enforced nowhere.</b> This is the validator that would have caught item 1 automatically.",
-    "treatment": "Warn when net debt, share count and discounting date are not struck at one date. Build alongside the item 1 repair.",
+    "treatment": "Done 23 Aug 2026 — valuation_date is now a stated field, and ratchet check 12 ties it to the anchor walk (anchor + period_a_days) and to the stub fraction. The old check's silent skip for companies without anchor dates is now an explicit NO_ANCHOR_DATES_YET list with a reason each, so WBC and CSL are visibly exempt rather than invisibly so.",
     "questions": [
       "Q1"
     ],
-    "status": "PLANNED",
+    "status": "DONE",
     "batch": "Batch 3"
   },
   {
@@ -234,9 +234,9 @@
     "source": "fable-2026-08-13",
     "area": "Schema",
     "issue": "<b>FiveForces has no model_validator</b> — a block with neither entrants nor substitutes validates, and both naming generations can be supplied with contradictory ratings. bank_archetype and rivalry_subforces are untyped escape hatches.",
-    "treatment": "One model_validator (one-of-each-force, reject dual-generation conflicts) plus a typed BankArchetype block.",
+    "treatment": "Partly done 23 Aug 2026 — FiveForces model_validator added: rejects a missing force under either naming generation, and rejects both generations being supplied (loudly when the ratings contradict). The typed BankArchetype block is NOT done and remains open.",
     "questions": [],
-    "status": "PLANNED",
+    "status": "PARTLY DONE",
     "batch": "Batch 3"
   },
   {
@@ -244,9 +244,9 @@
     "source": "fable-2026-08-13",
     "area": "Schema",
     "issue": "<b>archetype=None falls back silently on file absence</b>, so a typo'd archetype id degrades instead of raising.",
-    "treatment": "Make the fallback conditional on an explicit segment_level_valuation marker.",
+    "treatment": "Done 23 Aug 2026 — the fallback now requires company_position.segment_level_valuation; a missing archetype file otherwise raises FileNotFoundError listing the available ids. CSL declares it. Tested by ratchet check 11.",
     "questions": [],
-    "status": "PLANNED",
+    "status": "DONE",
     "batch": "Batch 3"
   },
   {
