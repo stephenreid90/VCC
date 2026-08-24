@@ -761,9 +761,20 @@ def build_engine_inputs_from_data(inputs: dict, scenario_id: str):
     functional_ccy = (company_raw.get("company_position") or {}).get(
         "functional_currency", reporting_ccy
     )
-    # Single reporting currency for DNL (AUD functional == AUD reporting); FX is
-    # applied only at the per-share line and is 1.0 when the two agree.
-    fx_rate = 1.0 if functional_ccy == reporting_ccy else 1.0
+    # FX is applied only at the per-share line, so it is 1.0 whenever functional
+    # and reporting currency agree — which is every company this assembler has
+    # seen. The mismatch case used to return 1.0 as well, which looked like a
+    # decision and was in fact a placeholder: a genuine FX company would have
+    # been valued at par without anything failing. Fail loudly instead; the
+    # segment assembler's fx_aud_per_usd is the worked precedent to follow.
+    if functional_ccy != reporting_ccy:
+        raise NotImplementedError(
+            f"{company.id}: functional currency {functional_ccy!r} differs from "
+            f"reporting currency {reporting_ccy!r}. The industrial assembler has no "
+            "FX translation — see build_segment_inputs_from_data's fx_aud_per_usd "
+            "for the pattern, and methodology section 5 for where the rate belongs."
+        )
+    fx_rate = 1.0
 
     bridge = EquityBridge.from_anchor(
         net_debt_anchor=net_debt_anchor,
@@ -941,7 +952,6 @@ def build_segment_inputs_from_data(inputs: dict, scenario_id: str):
         company_id=company.id, scenario_id=scenario_id, horizon_years=horizon,
         segments=segs,
         corporate_fy25=corp["unallocated_fy25"], corporate_growth=corp["unallocated_growth"],
-        net_interest_fy25=corp["net_interest_fy25"], net_interest_decline=corp["net_interest_decline"],
         capex_pct_revenue=drv["capex_pct_revenue"], da_pct_revenue=drv["da_pct_revenue"],
         # Derived, never read from the driver block (D-16, D-30). The segment
         # engine already applies it the way working_capital_treatment.md §1
@@ -1052,10 +1062,12 @@ def translate_to_assumption_set(
             base_value = 0.0  # delta itself is the growth rate
             unit_hint = "pct_yoy"
         elif rule_kind == "margin":
-            if driver_id == "gross_margin":
-                base_value = 1 - income.get("gross_profit", 0) / base_revenue \
-                    if "gross_profit" in income else 0.0
-                # Fallback: keep at scenario delta only
+            # The gross_margin branch that used to sit here computed a base from
+            # reported gross profit and was then unconditionally overwritten by
+            # the line below, so it never reached the assumption set. Removed
+            # rather than repaired: margin drivers carry the scenario delta only
+            # in this Phase 3.5 smoke path, and a base that is computed but
+            # discarded reads as a decision nobody made.
             base_value = 0.0
             unit_hint = "pp"
         else:  # rate

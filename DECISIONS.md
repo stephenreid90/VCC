@@ -24,7 +24,7 @@ flagged for revisit when named evidence arrives) · **SUPERSEDED**.
 | ID | Date | Decision | Status | Reasoning |
 |---|---|---|---|---|
 | D-01 | v0.6 spec | **One discount rate per valuation.** No mixing WACC across the build; scenarios differ in cash flows, not in the rate. | FIRM | `architecture.md` §3.5 |
-| D-02 | 17 Jun 2026 | **Beta by peer triangulation**, not mechanical use of measured β — 3–5 comparable peers, outliers named, franchise-mix reasoning. | FIRM | methodology §3.5.3 |
+| D-02 | 17 Jun 2026 | **Beta by peer triangulation**, not mechanical use of measured β — 3–5 comparable peers, outliers named, franchise-mix reasoning. | FIRM in method; the DNL/WBC/CSL peer *datasets* are still mock (`beta_data.py` `mock: True`), so the selected betas rest on judgement and named peers rather than on observed peer betas. Separate the two when citing. | methodology §3.5.3 |
 | D-03 | (spec) | **Cost of debt = risk-free rate + spread on comparably rated paper**, using an actual rating where one exists and a notional rating with stated reasoning where it does not. | FIRM | `architecture.md:788-802`; worked precedent `data/companies/dnl.yaml:549` |
 | D-04 | (spec) | **Capital structure is a target ratio** (net debt/EBITDA or D/E), not a spot market weight. | FIRM | `architecture.md:791` |
 | D-05 | 20 Aug 2026 | **CSL moves to FCFF discounted at a WACC**, built on a *target* capital structure rather than spot D/V. Resolves the FCFF-at-Ke inconsistency. | FIRM | `design/methodology/csl_discount_rate_fork.md` |

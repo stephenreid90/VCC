@@ -28,8 +28,9 @@ prints git state.
 **Start by running `session_start.cmd`** (or `python scripts/session_start.py`).
 See "Survey before you conclude" in `CLAUDE.md`.
 
-**State:** suite **240**, ratchet **9**, bases **2.831 / 30.03 / 195.78** — both FCFF
-companies moved this session and that is the headline. Four commits unpushed; the
+**State:** suite **259** (+2 opt-in `-m libreoffice`), ratchet **9**, bases **2.831 /
+30.03 / 195.78** — both FCFF companies moved this session and that is the headline.
+Five commits unpushed; the
 cloud container can no longer push (see 13 below), so they travel as a bundle.
 
 ### What shipped
@@ -122,6 +123,33 @@ cloud container can no longer push (see 13 below), so they travel as a bundle.
     almost purely a pass-through story. Corrected before it shipped, and worth remembering
     as the reason to compute rather than estimate these decompositions.
 
+### Batch 6 closed — all 13 items
+
+12. **Dead code removed.** `VCCXLSX` / `VCCBOOK` / `DNLRICH` (435 lines) were unreachable:
+    every company ships a pre-built formula workbook as `CFG.xlsxB64`, so `vccDownload()`
+    returned before it got there. Generated pages are 13–17% smaller. The superseded
+    literals in `build_cfgs.py` (DNL 3.48, WBC 30.15, shares 1,884, net debt 1,512) went the
+    same way, after a **sentinel test** proved them dead — planting impossible values in
+    those keys changed `cfgs_gen.json` not at all.
+13. **Two silent failures made loud.** The FX branch in `build_engine_inputs_from_data`
+    returned 1.0 on both sides of a ternary, so the first genuine FX company would have been
+    valued at par with nothing complaining; it now raises. And the UI's "Illustrative mock
+    data" banner printed unconditionally — right by coincidence, since all three beta
+    datasets are mock, and it would have kept firing once Ben's feed returned. Gated on
+    `BW.mock`.
+14. **A methodology error, not a code one.** §7.2 said the stub pro-rates the *next full
+    fiscal year*; the engine has always pro-rated the base year, and the engine is what ties
+    the audited workbook. At DNL's growth rate the text would have overstated stub revenue
+    by about AUD 74m. Text corrected, correction dated.
+15. **The ratchet tightened twice** — 142 known duplicates → 140, as deleted code took its
+    baselined literals with it.
+16. **Test gaps closed.** `engine_workbook.py` now has structural coverage (yellow inputs
+    are inputs, no pasted numbers on the valuation sheet, the working-capital block present
+    for DNL/CSL and absent for the bank); `__post_init__` validation is tested; the per-year
+    derivations carry populated inputs instead of empty dicts; and a `-m libreoffice`
+    opt-in test rebuilds both workbooks and recalculates them, so a committed oracle
+    fixture cannot quietly go stale.
+
 ### Open, needing Stephen
 
 12. **Ratify or push back on the twelve re-pinned levels** (D-33 for DNL, D-34 for CSL).
@@ -134,8 +162,8 @@ cloud container can no longer push (see 13 below), so they travel as a bundle.
     workbook re-tie; that was the accepted cost of not pinning numbers to an
     unsupported input.
 15. Q5 (WBC CET1 warn-only vs forced payout cut), Q6 (metric card 4), Q7 (tab parity)
-    — all in the tracker, none blocking. Batch 3 (5 schema/validator items), Batch 5
-    (18 UI items) and Batch 6 (13 correctness items) remain planned.
+    — all in the tracker, none blocking. Batch 3 (5 schema/validator items) and Batch 5
+    (18 UI items) remain planned; **Batch 6 is closed**.
 
 ### Housekeeping from this session
 
@@ -167,7 +195,7 @@ cloud container can no longer push (see 13 below), so they travel as a bundle.
    23 Aug. WBC exempt by rule. The only open piece is the UI disclosure.
 2. **CSL WACC — decided in principle (D-05), parameters proposed (D-06, Q9).**
    Implementation retires the audited MT oracle and moves all 18 goldens.
-3. **Review batches 3, 5 and 6** — mechanical, no decisions needed, ~1.5 days total.
+3. **Review batches 3 and 5** — mechanical, no decisions needed. Batch 6 closed 23 Aug.
    See `OPEN_ITEMS.html`.
 
 ## Parked, with the reason

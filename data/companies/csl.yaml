@@ -667,8 +667,11 @@ normalised_baseline:
     corporate:
       unallocated_fy25: -2559    # R&D + G&A + central (USD m)
       unallocated_growth: 0.005
-      net_interest_fy25: -409.5
-      net_interest_decline: 0.05
+      # net_interest_fy25 / net_interest_decline were removed on 23 Aug 2026.
+      # They were threaded into SegmentInputs and never read by the engine, which
+      # is correct: CSL is valued on unlevered cash flow, so financing cost belongs
+      # in the discount rate and not in the cash flow. Carrying them looked like an
+      # intention to net interest off FCFF, which would double-count it.
     drivers:
       capex_pct_revenue: 0.045
       da_pct_revenue: 0.06

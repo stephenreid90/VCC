@@ -43,8 +43,6 @@ class SegmentInputs:
     segments: List[SegmentSpec]
     corporate_fy25: float
     corporate_growth: float
-    net_interest_fy25: float
-    net_interest_decline: float
     capex_pct_revenue: float
     da_pct_revenue: float
     wc_change_pct_revenue_change: float
@@ -183,11 +181,16 @@ class SegmentEngine:
         for y in range(1, len(r.year_labels)):        # FY26..FY31
             lab = r.year_labels[y]
             b.step(f"{lab}_rev", f"{lab} group revenue", r.group_revenue[y],
-                   "sum of segment revenue (revenue x growth path)", {}, units="USD m")
+                   "sum of segment revenue (revenue x growth path)",
+                   {name: rev[y] for name, rev in r.segment_revenue.items()}, units="USD m")
             b.step(f"{lab}_ebit", f"{lab} group EBIT", r.group_ebit[y],
-                   "segment operating result - corporate/unallocated", {}, units="USD m")
+                   "segment operating result - corporate/unallocated",
+                   {"segment_operating_result": r.group_segment_or[y],
+                    "corporate": r.corporate[y]}, units="USD m")
             b.step(f"{lab}_fcff", f"{lab} FCFF", r.fcff[y - 1],
-                   "EBIT x (1-tax) + D&A - capex - dWC", {}, units="USD m")
+                   "NOPAT + D&A + capex + dWC (capex and dWC are carried negative)",
+                   {"nopat": r.nopat[y - 1], "da": r.da[y - 1],
+                    "capex": r.capex[y - 1], "delta_wc": r.wc_change[y - 1]}, units="USD m")
         return b.build(result_key=f"{r.year_labels[-1]}_fcff")
 
     def derivation(self, inp: SegmentInputs, r: SegmentResult):

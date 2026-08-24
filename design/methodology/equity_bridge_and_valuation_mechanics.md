@@ -655,9 +655,23 @@ PV(stub) = stub_FCF_pro_rated × 1 / (1 + WACC)^(stub_years / 2)
         # mid-stub discounting
 ```
 
-Stub-period FCF is pro-rated from the next full fiscal year's forecast (e.g., 128/365 × Year-1 FCF).
+Stub-period revenue is pro-rated from the **base year**, not from the first forecast year:
+`revenue(stub) = base_year_revenue × stub_years`, with the base margin, the stub tax rate and
+the stub capex rate applied to it. Margin and capex carry their own stub inputs precisely
+because the stub sits before the forecast glides begin.
 
-This makes the stub-period cash flow visible to the reader as its own line, separate from the explicit-period forecast.
+*(Corrected 23 August 2026. This section previously said the stub was pro-rated from the
+**next full fiscal year** — 128/365 × Year-1 FCF. The engine has always pro-rated the base
+year, and it is the engine that ties the audited workbook, so the text was wrong rather than
+the code. The difference is one year of growth on a third of a year of cash flow, so it was
+small enough to go unnoticed and large enough to matter: at DNL's 6.2 per cent growth it
+would have overstated stub revenue by about AUD 74m. Working capital is the exception that
+proves the rule — it scales with the annualised run-rate rather than the part-year flow, and
+so is struck against `base_year_revenue × (1 + g)^stub_years`; see
+`working_capital_treatment.md` §7.3.)*
+
+This makes the stub-period cash flow visible to the reader as its own line, separate from the
+explicit-period forecast.
 
 ### 7.3 Period C onward — Explicit forecast with mid-period discounting
 

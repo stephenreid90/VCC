@@ -557,12 +557,28 @@ class FcfEngine:
         from vcc_valuations.derivation import DerivationBuilder
 
         b = DerivationBuilder(f"per_year_build[{result.scenario_id}]")
+        ccy = f"{result.functional_currency} m"
         for i, lab in enumerate(result.period_labels):
+            # The stub is a part-year of the BASE year (methodology §7.2), so it
+            # shows its fraction; the explicit years show what they grew from.
+            rev_inputs = (
+                {"stub_years": result.mid_times[0] * 2.0,
+                 "base_year_revenue": result.revenue[0] / (result.mid_times[0] * 2.0)}
+                if i == 0 else
+                {"prior_revenue": result.revenue[i - 1]}
+            )
             b.step(f"{lab}_rev", f"{lab} revenue", result.revenue[i],
-                   "base-year revenue grown at the chain rate (stub is a part-year)", {}, units="AUD m")
+                   "base-year revenue grown at the chain rate (stub is a part-year)",
+                   rev_inputs, units=ccy)
             b.step(f"{lab}_ebit", f"{lab} EBIT", result.ebit[i],
                    "revenue x EBIT margin (base + transformation - gas roll-off)",
-                   {"margin": result.ebit_margin[i]}, units="AUD m")
+                   {"revenue": result.revenue[i], "margin": result.ebit_margin[i]}, units=ccy)
+            b.step(f"{lab}_nopat", f"{lab} NOPAT", result.nopat[i],
+                   "EBIT + tax (tax is carried negative)",
+                   {"ebit": result.ebit[i], "applied_tax_rate": result.applied_tax_rate[i],
+                    "tax": result.tax[i]}, units=ccy)
             b.step(f"{lab}_fcff", f"{lab} FCFF", result.fcff[i],
-                   "NOPAT + D&A - capex - dWC", {}, units="AUD m")
+                   "NOPAT + D&A + capex + dWC (capex and dWC are carried negative)",
+                   {"nopat": result.nopat[i], "da": result.da[i],
+                    "capex": result.capex[i], "delta_wc": result.delta_wc[i]}, units=ccy)
         return b.build(result_key=f"{result.period_labels[-1]}_fcff")

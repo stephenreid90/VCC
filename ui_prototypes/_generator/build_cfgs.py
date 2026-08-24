@@ -89,15 +89,24 @@ CSL_DID = {
  "wacc":"A single <b>cost of equity 8.75%</b> is applied to FCFF rather than a blended WACC — a simplification worth flagging; it slightly understates the discount rate versus a formal WACC.",
 }
 
+# ---------------------------------------------------------------------------
+# The dicts below are DISPLAY SCAFFOLDING, not a source of numbers. Every
+# valuation figure in them is overwritten by the SSOT block further down, which
+# runs the production engine at generation time. Numeric literals that used to
+# sit here (DNL 3.48, WBC 30.15, shares 1,884, net debt 1,512) were removed on
+# 23 Aug 2026 after a sentinel test confirmed nothing reads them: planting
+# impossible values changed cfgs_gen.json not at all. Do not reintroduce a
+# valuation number here - put it in the data files and let the engine carry it.
+# ---------------------------------------------------------------------------
 dnl = {
  "company":"Dyno Nobel Limited (ASX:DNL)","companyShort":"DNL","ccy":"AUD","ccynote":"AUD · WACC-based DCF",
  "dp":2,"market":3.61,"broker":3.61,"scale":4.6,"liveIdx":2,"activeIdx":2,
- "richbook":True,"shares":1884,"netDebt":1512,"netDebtExLeases":1300,"leaseLiab":212,
+ "richbook":True,
  "_leaseContract":{"_mock":True,"accountingStandard":"AASB 16 / IFRS 16","totalDebtIncludesLeases":False,"leaseLiability":212,"annualLeaseCost":45,"incrementalBorrowingRate":0.055,"leaseMaturityUndisc":{"y1":48,"y2":44,"y3":40,"y4":34,"y5":28,"beyond5":60},"contractNote":"Shape the real EODHD feed must reproduce (for Ben): (1) whether reported total debt includes AASB 16 lease liabilities; (2) the annual rent / lease-cost line (RoU depreciation + lease interest); (3) the undiscounted lease-maturity table, to re-capitalise peers on a uniform house rule; (4) the accounting standard (AASB 16 / IFRS 16 vs US GAAP ASC 842). MOCK values until the feed returns."},
  "mklab":"vs market (3.61)","brlab":"vs broker target (3.61)","metric4":{"label":"Asymmetry (down/up)","value":"4.05×"},
  "pvsub":"","topnote":"Working prototype — all six scenarios calibrated (v4). Slider responses are an illustrative approximation, not the production DCF engine. Reid Advisory, August 2026.",
  "footnote":"Prototype for discussion. Calibrated central case: DNL Muddle Through AUD 3.48 (market AUD 3.61). Per-scenario figures from dnl_scenarios_comparison_v4.",
- "cp":{"base":3.48,"re0":0.0868,"g0":0.025,"m0":13.5,"tax0":0.275,"wTerm":0.85,"xKey":"gas","x0":100,"xk":-0.0008},
+ "cp":{"re0":0.0868,"g0":0.025,"m0":13.5,"tax0":0.275,"wTerm":0.85,"xKey":"gas","x0":100,"xk":-0.0008},
  "sliders":[
    {"k":"re","label":"Discount rate (WACC)","min":7,"max":11,"step":0.25,"def":8.68,"suf":"%","dec":2},
    {"k":"g","label":"Terminal growth","min":1.5,"max":3.5,"step":0.25,"def":2.5,"suf":"%","dec":2},
@@ -107,7 +116,7 @@ dnl = {
  "scenarios":[
    {"n":"Orderly Convergence","v":4.05,"kind":"up"},
    {"n":"Average broker","v":3.61,"kind":"broker"},
-   {"n":"Muddle Through","v":3.48,"kind":"live"},
+   {"n":"Muddle Through","kind":"live"},
    {"n":"AI Productivity Lag","v":3.37,"kind":"down"},
    {"n":"Fragmentation","v":2.52,"kind":"down"},
    {"n":"Disorderly Climate","v":1.33,"kind":"down"},
@@ -172,7 +181,7 @@ wbc = {
  "mklab":"vs market (35.32)","brlab":"vs broker target (33.45)","metric4":{"label":"Asymmetry (down/up)","value":"1.90×"},
  "pvsub":"","topnote":"Working prototype — all six scenarios calibrated (v3). Slider responses are an illustrative approximation, not the production engine. Bank fork (methodology §15). Reid Advisory, August 2026.",
  "footnote":"Prototype for discussion. Calibrated central case: WBC Muddle Through AUD 30.15 (market AUD 35.32). Per-scenario figures from wbc_scenarios_comparison_v2.",
- "cp":{"base":30.15,"re0":0.0805,"g0":0.025,"m0":11.5,"tax0":0.30,"wTerm":0.95,"xKey":"credit","x0":18,"xk":-0.004},
+ "cp":{"re0":0.0805,"g0":0.025,"m0":11.5,"tax0":0.30,"wTerm":0.95,"xKey":"credit","x0":18,"xk":-0.004},
  "sliders":[
    {"k":"re","label":"Discount rate (cost of equity)","min":7,"max":10,"step":0.25,"def":8.05,"suf":"%","dec":2},
    {"k":"g","label":"Terminal growth","min":1.5,"max":3.5,"step":0.25,"def":2.5,"suf":"%","dec":2},
@@ -182,7 +191,7 @@ wbc = {
  "scenarios":[
    {"n":"Orderly Convergence","v":35.46,"kind":"up"},
    {"n":"Average broker","v":33.45,"kind":"broker"},
-   {"n":"Muddle Through","v":30.15,"kind":"live"},
+   {"n":"Muddle Through","kind":"live"},
    {"n":"AI Productivity Lag","v":29.75,"kind":"down"},
    {"n":"Fragmentation","v":27.29,"kind":"down"},
    {"n":"Disorderly Climate","v":23.11,"kind":"down"},
@@ -748,4 +757,4 @@ csl.setdefault("dcfDetail", {})["workings"] = {"title": "Per-year segment build 
              _crow("FCFF (FY26\u2013FY31)", _cr2.fcff)]}
 # ===== end CSL SSOT block =====
 json.dump({"dnl":dnl,"wbc":wbc,"csl":csl}, open(_CFGP,'w'), ensure_ascii=False)
-print("cfgs.json written")
+print("cfgs_gen.json written")

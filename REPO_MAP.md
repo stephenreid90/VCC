@@ -3,10 +3,10 @@
 _Generated 2026-08-24 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `be1d9f6 CSL working capital: derive the intensity, delete the stored 10%` on `main`
-- Unpushed commits: **3**
+- HEAD: `80ab325 Restate both theses on engine numbers; DNL gains the per-scenario narrative` on `main`
+- Unpushed commits: **4**
 - Tracked files: 290
-- Untracked files: 0
+- Untracked files: 4
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -43,7 +43,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
 | Path | Present | What it is |
 |---|---|---|
-| `data/companies/csl.yaml` | yes (32.0KB) | company position + layer-2 method (judgement) |
+| `data/companies/csl.yaml` | yes (32.3KB) | company position + layer-2 method (judgement) |
 | `data/companies/csl.md` | **NO** | company narrative |
 | `data/companies/csl_documents.yaml` | yes (8.3KB) | document register |
 | `data/financials/csl.yaml` | yes (7.6KB) | curated layer-1 financials (a SUMMARY — check for raw sources too) |
@@ -54,7 +54,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 ## Data directory
 
   - **companies/**
-    - `csl.yaml` (32.0KB)
+    - `csl.yaml` (32.3KB)
     - `csl_documents.yaml` (8.3KB)
     - `dnl.md` (13.5KB)
     - `dnl.yaml` (36.3KB)
@@ -108,7 +108,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `build_plan.html` (14.9KB)
   - `engine_implementation_plan.md` (16.5KB)
   - `open_items.css` (3.5KB)
-  - `open_items.json` (22.1KB)
+  - `open_items.json` (23.8KB)
   - `open_questions.json` (1.2KB)
   - `scenarios_workshop.md` (13.5KB)
   - `scenarios_workshop_prep.md` (19.5KB)
@@ -122,7 +122,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `csl_cost_of_debt_and_target_structure.md` (13.4KB)
     - `csl_discount_rate_fork.md` (11.0KB)
     - `dnl_working_capital_derivation.md` (11.2KB)
-    - `equity_bridge_and_valuation_mechanics.md` (69.6KB)
+    - `equity_bridge_and_valuation_mechanics.md` (70.6KB)
     - `working_capital_treatment.md` (23.3KB)
   - **reference/**
     - **discount_rate_iers/**
@@ -152,16 +152,16 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **vcc_valuations/**
     - `__init__.py` (650B)
     - `derivation.py` (4.4KB)
-    - `translator.py` (46.5KB)
+    - `translator.py` (47.3KB)
     - **assumptions/**
       - `__init__.py` (775B)
       - `wacc.py` (6.0KB)
     - **dcf/**
       - `__init__.py` (50B)
       - `bank_engine.py` (10.7KB)
-      - `fcf_engine.py` (24.1KB)
+      - `fcf_engine.py` (25.0KB)
       - `fcf_stub.py` (9.8KB)
-      - `segment_engine.py` (9.7KB)
+      - `segment_engine.py` (10.0KB)
     - **market/**
       - `__init__.py` (606B)
       - `fmp_client.py` (5.7KB)
@@ -181,17 +181,19 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
   - `__init__.py` (0B)
   - `conftest.py` (1.3KB)
-  - `ssot_lint_baseline.json` (6.4KB)
+  - `ssot_lint_baseline.json` (6.3KB)
   - `test_adjustments.py` (1.6KB)
   - `test_archetypes_validate.py` (1.6KB)
   - `test_comps.py` (653B)
   - `test_csl_loads.py` (2.0KB)
   - `test_dcf.py` (1.4KB)
   - `test_derivation.py` (1.3KB)
+  - `test_engine_workbook.py` (4.6KB)
   - `test_implied_emrp.py` (2.1KB)
   - `test_ssot_lint.py` (17.3KB)
   - `test_three_statement.py` (694B)
   - `test_wbc_loads.py` (2.1KB)
+  - `test_workbook_recalc_live.py` (3.3KB)
   - `test_working_capital.py` (2.8KB)
   - **dcf/**
     - `__init__.py` (0B)
@@ -202,7 +204,8 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `test_dnl_mt_ratified.py` (5.7KB)
     - `test_dnl_workbook_tie.py` (4.1KB)
     - `test_e2e_dnl_mt.py` (4.3KB)
-    - `test_per_year_derivations.py` (2.3KB)
+    - `test_engine_input_validation.py` (3.4KB)
+    - `test_per_year_derivations.py` (3.8KB)
     - `test_scenario_goldens.py` (7.7KB)
     - `test_wbc_bank.py` (2.5KB)
     - **golden/**
@@ -220,16 +223,16 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
 ## UI generator
 
-  - `csl_scenario_interface.html` (191.2KB)
-  - `dnl_scenario_interface.html` (237.7KB)
-  - `wbc_scenario_interface.html` (190.9KB)
+  - `csl_scenario_interface.html` (159.9KB)
+  - `dnl_scenario_interface.html` (206.4KB)
+  - `wbc_scenario_interface.html` (159.6KB)
   - **_generator/**
     - `README.md` (893B)
     - `beta_data.py` (10.0KB)
-    - `build_cfgs.py` (91.3KB)
+    - `build_cfgs.py` (91.9KB)
     - `cfgs_gen.json` (210.3KB)
     - `engine_workbook.py` (88.1KB)
-    - `gen_ui.py` (120.0KB)
+    - `gen_ui.py` (88.7KB)
 
 ## Analyses (workbooks)
 
@@ -301,4 +304,14 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `wbc_muddle_through_valuation_v4_formulas.xlsx` (12.5KB)
       - `wbc_scenarios_comparison_v1.xlsx` (11.6KB)
       - `wbc_scenarios_comparison_v2.xlsx` (11.6KB)
+
+## Untracked files
+
+Not in git. Either commit them or clear them — an untracked file is invisible
+to anyone who clones the repo, and is the most common way work gets lost.
+
+- `pytest.ini`
+- `tests/dcf/test_engine_input_validation.py`
+- `tests/test_engine_workbook.py`
+- `tests/test_workbook_recalc_live.py`
 
