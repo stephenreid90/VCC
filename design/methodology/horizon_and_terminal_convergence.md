@@ -1,7 +1,7 @@
 # Forecast horizon, growth fade and terminal convergence
 
-**Status, 25 Aug 2026: PROPOSED, nothing ratified.** Seven decisions are put forward
-here (D-35 to D-41). None is in force; no code has moved. The numbers throughout are
+**Status, 25 Aug 2026: PROPOSED, nothing ratified.** Eight decisions are put forward
+here (D-35 to D-42). None is in force; no code has moved. The numbers throughout are
 sizings from a scratch harness that reproduces `FcfEngine` to 1e-15 on all six live
 DNL scenarios, not engine output.
 
@@ -305,7 +305,80 @@ breach it. Under D-07 that lifts the §11.4.2 sensitivity obligation from cases 
 it today. This falls out of a horizon decision rather than being chosen, and is worth
 noticing as a change in the project's posture rather than a free improvement.
 
-## 11. What this does not decide
+## 11. Earning the cost of capital only in the long run
+
+The framework already carries this rule. `architecture.md` §11.4.2 consistency check 2:
+
+> **Terminal-state convergence (cross-check with §10.6 rule 2).** Enforced at translation
+> time. Terminal ROIC ≈ WACC (or terminal ROE ≈ cost of equity for banks) unless the
+> matrix entry carries a §10.6-compliant defended exception (moat source named, decay
+> horizon stated, named threat, sensitivity test).
+
+It is not enforced. `terminal_roic` appears in the codebase exactly once, as a
+driver-delta mapping in `translator.py:107`. No ROIC is computed anywhere in the engine
+or the tests, so the check cannot fire. It joins `time_profile`, `fade_period_length` and
+the year-10 macro anchors on the list of things that are specified, populated and read by
+nothing.
+
+**What the current terminals actually assume.** In a Gordon terminal, g = ROIC ×
+reinvestment rate, so the reinvestment the model carries implies a return. Reading it back
+out of the live five-year build:
+
+| Scenario | g | Reinvestment rate | Implied terminal ROIC | × WACC |
+|---|---|---|---|---|
+| Orderly Convergence | 2.75% | 3.5% | 79.6% | 9.0× |
+| Muddle Through | 2.50% | 3.2% | 76.9% | 8.7× |
+| AI Productivity Lag | 2.25% | 2.8% | 79.6% | 9.0× |
+| Fragmentation | 2.25% | 3.7% | 61.1% | 6.9× |
+| Disorderly Climate | 1.75% | 2.9% | 61.1% | 6.9× |
+| Stagflation Persists | 2.25% | 6.0% | 37.4% | 4.2× |
+
+WACC is 8.877%. Every DNL scenario assumes the company earns between four and nine times
+its cost of capital, on incremental capital, in perpetuity. Stagflation Persists — the
+world in which DNL's margin collapses to 7.1% — still assumes a terminal return of 37%.
+
+Two of the six carry a `terminal_roic` entry in the impact matrix at all
+(`industrial_explosives.yaml:174` and `:623`). The other four have no defended exception
+on record and are running at six to nine times WACC regardless.
+
+**What convergence would cost.** Imposing ROIC = WACC collapses the Gordon terminal to
+NOPAT ÷ WACC — growth at the cost of capital creates no value, which is the cleanest
+statement of the principle:
+
+| Scenario | Live | ROIC = WACC | Change |
+|---|---|---|---|
+| Orderly Convergence | 3.2740 | 2.3925 | −26.9% |
+| Muddle Through | 2.8307 | 2.1344 | −24.6% |
+| AI Productivity Lag | 2.7705 | 2.1634 | −21.9% |
+| Fragmentation | 1.9926 | 1.5275 | −23.3% |
+| Disorderly Climate | 1.7015 | 1.3467 | −20.9% |
+| Stagflation Persists | 0.8061 | 0.5617 | −30.3% |
+
+This is by some distance the largest single assumption in the DNL build — larger than the
+working-capital standard, the terminal rebuild and the horizon change combined.
+
+**It is also the same rule as §6, arrived at from the other side.** ROIC = WACC for Muddle
+Through requires net capex 2.64pp above D&A in the terminal. Growing total invested
+capital — net PP&E 2,365.6m plus intangibles 847.7m plus goodwill 1,778.5m — at g requires
+2.66pp. They agree to two basis points. So the reinvestment question and the return
+question are one question, and what sets the answer is which invested-capital base the
+company is held to: PP&E alone (+1.26pp), PP&E and intangibles (+1.7pp), or everything
+including acquired goodwill (+2.66pp). Including goodwill is the demanding reading — it
+holds the company to earning its cost of capital on what it actually paid.
+
+**The proposal is the diagnostic, not the verdict.** Computing terminal ROIC and surfacing
+it against WACC is cheap and uncontroversial: the rule already exists and the inputs are
+all present. What to do when it fires is the judgement, and §11.4.2 already frames it —
+a §10.6-compliant defended exception, or convergence. A framework that can state a
+company's terminal return and does not is choosing not to look.
+
+**D-42 (PROPOSED).** Compute terminal ROIC (terminal ROE for banks) at translation time
+and surface it against WACC on every valuation. Where it exceeds WACC, require a
+§10.6-compliant defended exception naming the moat source, the decay horizon, the threat
+and a sensitivity test — as §11.4.2 check 2 already specifies. Non-blocking in the first
+instance, on the D-07 precedent: it warns and obliges, it does not silently adjust.
+
+## 12. What this does not decide
 
 1. **Whether the growth-consistent terminal capex is adopted.** §6 sizes it and parks it
    as a declared approximation. D-38 gives it a home — the converged capex rate — so it
@@ -318,12 +391,16 @@ noticing as a change in the project's posture rather than a free improvement.
    be archetype-agnostic, but neither company's driver paths have been examined for where
    they straight-line. The bank engine and the segment engine both need the same
    treatment before this can be called a project-wide standard.
-5. **The workbook and golden consequences.** All eighteen goldens move, both audited
+5. **Whether terminal ROIC is forced to converge** (§11). D-42 proposes computing and
+   surfacing it, which is the cheap and uncontroversial half. Whether an unsupported
+   6–9x WACC terminal return is corrected, defended or left standing is the single
+   largest open assumption in the build.
+6. **The workbook and golden consequences.** All eighteen goldens move, both audited
    workbooks need rebuilding and re-tying, and the `-m libreoffice` recalculation ties
    must be re-pinned. That is the accepted cost of the change, not an argument against
    it — but it is a day's work, not an afternoon's.
 
-## 12. Proposed decisions
+## 13. Proposed decisions
 
 | ID | Decision | Status |
 |---|---|---|
@@ -334,3 +411,4 @@ noticing as a change in the project's posture rather than a free improvement.
 | D-39 | Terminal capex is taken from the final explicit year, replacing `capex_rule: equals_da`. Terminal mode stays `normalised` (D-32). | PROPOSED |
 | D-40 | DNL gas roll-off totals −2.0pp, re-phased to concentrate in FY2028–FY2030 and complete FY2032. | PROPOSED — PROVISIONAL on the cost breakdown |
 | D-41 | DNL Disorderly Climate capex: +3.0pp through Y5, decaying across Y6–Y8 to a persistent +1.0pp. | PROPOSED |
+| D-42 | Terminal ROIC (ROE for banks) is computed at translation time and surfaced against WACC; an excess requires a §10.6-compliant defended exception. Non-blocking, per the D-07 precedent. | PROPOSED |
