@@ -357,14 +357,67 @@ statement of the principle:
 This is by some distance the largest single assumption in the DNL build — larger than the
 working-capital standard, the terminal rebuild and the horizon change combined.
 
-**It is also the same rule as §6, arrived at from the other side.** ROIC = WACC for Muddle
-Through requires net capex 2.64pp above D&A in the terminal. Growing total invested
-capital — net PP&E 2,365.6m plus intangibles 847.7m plus goodwill 1,778.5m — at g requires
-2.66pp. They agree to two basis points. So the reinvestment question and the return
-question are one question, and what sets the answer is which invested-capital base the
-company is held to: PP&E alone (+1.26pp), PP&E and intangibles (+1.7pp), or everything
-including acquired goodwill (+2.66pp). Including goodwill is the demanding reading — it
-holds the company to earning its cost of capital on what it actually paid.
+**It is also the same rule as §6, arrived at from the other side.** The identity is that
+to grow at g, invested capital must itself grow at g — so reinvestment = g × IC, and IC
+must include every pool that reinvestment feeds. Working capital is one of them: ΔWC is
+part of reinvestment, so non-cash working capital is part of invested capital. It is not
+an optional addition to the fixed-asset base; leaving it out would break the identity.
+
+Working the requirement back for Muddle Through:
+
+| | AUD m |
+|---|---|
+| Terminal revenue | 4,697.9 |
+| Terminal NOPAT (10.58% of revenue) | 497.3 |
+| Required reinvestment rate (g ÷ WACC = 2.50% ÷ 8.877%) | 28.2% |
+| Required reinvestment | 140.0 |
+| **Implied invested capital** (reinvestment ÷ g) | **5,601.7** |
+
+And building the actual base up from the balance sheet:
+
+| | AUD m |
+|---|---|
+| Net PP&E | 2,365.6 |
+| Intangibles | 847.7 |
+| Goodwill | 1,778.5 |
+| Non-cash working capital (13.76% × terminal revenue) | 646.4 |
+| **Total invested capital** | **5,638.2** |
+
+The two are 0.6% apart. So requiring terminal ROIC = WACC is arithmetically the same
+statement as requiring DNL to reinvest enough to grow its *whole* capital base — plant,
+acquired intangibles, goodwill and working capital — at g. The reinvestment question of
+§6 and the return question here are one question.
+
+**Which base is the live judgement, and it is not academic.** DNL's current return on
+normalised base-year NOPAT of AUD 371.5m, against a WACC of 8.877%:
+
+| Invested-capital base | IC (AUD m) | ROIC | vs WACC |
+|---|---|---|---|
+| Net PP&E only | 2,365.6 | 15.71% | above |
+| PP&E + working capital | 2,833.4 | 13.11% | above |
+| PP&E + intangibles + working capital | 3,681.1 | 10.09% | above |
+| + goodwill — total invested capital | 5,459.6 | **6.81%** | **below** |
+
+On everything shareholders' capital actually paid for, DNL earns 6.81% today against a
+cost of capital of 8.877%. It is not currently earning its cost of capital. The terminal
+as built assumes 76.9% — roughly eleven times what the business returns on committed
+capital now.
+
+This inverts how convergence should be read. Imposing ROIC = WACC in the terminal is not
+a punitive assumption on the goodwill-inclusive base; it is an *improvement* on today,
+and the company has to get better to deliver it.
+
+Two honest qualifications. The base-year NOPAT uses the normalised 14.1% margin and the
+22.5% effective rate, not reported figures. And AUD 1,778.5m of goodwill is largely
+inherited from IPL-era acquisitions — there is a real argument that a demerged business
+should not be charged in perpetuity for capital its predecessor deployed. Excluding
+goodwill but keeping intangibles and working capital gives 10.09%, modestly above WACC,
+which is a plausible reading of a genuine but narrow moat and sits comfortably with the
+matrix's defended exception of scale plus the long-term gas contracts.
+
+So the defensible range for DNL's sustainable return is something like 7% to 13% against
+a WACC of 8.877% — not the 61% to 80% the six terminals currently carry. The choice of
+base is worth an argument. The current position is not.
 
 **The proposal is the diagnostic, not the verdict.** Computing terminal ROIC and surfacing
 it against WACC is cheap and uncontroversial: the rule already exists and the inputs are
