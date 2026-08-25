@@ -1,7 +1,8 @@
 # Forecast horizon, growth fade and terminal convergence
 
-**Status, 25 Aug 2026: PROPOSED, nothing ratified.** Nine decisions are put forward
-here (D-35 to D-43). None is in force; no code has moved. The numbers throughout are
+**Status, 25 Aug 2026: seven rulings made, six decisions still open.** D-40, D-41 and
+D-44 to D-47 were ruled on by Stephen on 25 August and are recorded in `DECISIONS.md`.
+D-35 to D-39, D-42 and D-43 remain PROPOSED. No code has moved. The numbers throughout are
 sizings from a scratch harness that reproduces `FcfEngine` to 1e-15 on all six live
 DNL scenarios, not engine output.
 
@@ -516,7 +517,93 @@ admissible only for a tier-1 statutory barrier, must name the threat that would 
 must be sensitivity-tested against a finite horizon — because §12's table shows the
 assumption is worth 15% to 20% of terminal value, not a rounding.
 
-## 13. What this does not decide
+## 13. Rulings, 25 August 2026
+
+**Invested capital excludes goodwill (D-44).** The base is net PP&E + intangibles +
+non-cash working capital: for DNL, 2,365.6 + 847.7 + 467.8 = 3,681.1m, giving a current
+ROIC of **10.09%** against a WACC of 8.877% — a spread of +1.22pp. A real but narrow
+moat, which reads correctly for a top-two global player facing high rivalry and high
+buyer power. The reasoning for excluding goodwill is that a demerged business should not
+be charged in perpetuity for capital its predecessor deployed. How the base is
+constructed is to be disclosed in the UI rather than left in a methodology file.
+
+**Of g, ROIC and reinvestment, pin the first two (D-45).** Only two of the three are
+free; the third is arithmetic. The framework's defect was pinning g and reinvestment and
+letting the return fall out unexamined. From here, g comes from the macro and scenario
+work, ROIC from the Porter and moat work, and the reinvestment requirement is derived.
+Each number sits where the expertise is, and the derived quantity is the one nobody has
+intuition about anyway.
+
+Terminal growth also acquires a declared *basis*, which it has never had — the three
+companies currently run 3.5% (WBC), 3.0% (CSL) and 2.5% (DNL) against a Muddle Through
+macro of 2.5% inflation and 2.0% DM real growth, on three different unstated anchors, and
+`architecture.md` §9.9 asks for a demographic-trajectory convention that was never
+drafted. The candidate bases are inflation, long-run industry growth, and nominal GDP.
+The second is reachable with machinery that already exists: `revenue_growth_chain`
+derives industry nominal growth (B30) per scenario — 5.57% to 7.58% across the six — but
+is fed near-term macro, so it needs the long-run anchors D-37 proposes.
+
+In the UI the alternatives are shown as **disclosure, not a knob**: one declared basis is
+the framework's answer, with the others displayed alongside for comparison. Four free
+choices would let a user select the flattering one, and D-23 forbids the UI becoming a
+second model of record.
+
+**Regulatory settings are indefinite unless currently under debate (D-46).** This
+replaces a judgement with an observable. Whether four pillars or the APRA capital
+framework is under active review is a fact with a source and a date, not a view — so it
+becomes a declared field that a scenario can flip, rather than an analyst's opinion about
+how long a licence lasts. WBC's moat horizon is therefore perpetual, with the named
+threat recorded and the finite-horizon sensitivity from §12 attached.
+
+**The terminal excess return is dated, not capped and not exempt (D-47).** §12's decay
+table is what settles it: a ten-to-fifteen year moat captures only 17% to 25% of a
+perpetual one, so for DNL and CSL a dated fade lands close to where a hard cap would. The
+approaches differ materially only for the licensed archetype. A single dated rule
+therefore costs almost nothing in the competitive archetypes and buys real honesty in the
+regulated one, where the assumption is worth 15% to 20% of terminal value and should be
+visible rather than buried in an exemption.
+
+**The DNL gas roll-off holds at −1.5pp (D-40 amended).** Magnitude unchanged; only the
+phasing moves, to concentrate in the FY2028–FY2030 window the archetype states.
+
+**The Disorderly Climate capex arc is confirmed (D-41).** +3.0pp through Y5, decaying
+across Y6–Y8 to a persistent +1.0pp.
+
+**CSL's WACC stays PROVISIONAL (D-06).** Reconsidered and retained: calling it FIRM would
+remove the commitment to revisit without supplying the missing support for the 14×
+through-cycle EV/EBITDA multiple.
+
+**Market prices are refreshed, and everything re-tested, after the UI work lands
+(D-19).** This sequences the golden re-pin and the workbook re-tie to the end, so all
+eighteen levels move once rather than repeatedly.
+
+### What the rulings are worth
+
+Ten years with the fade, the roll-off at −1.5pp re-phased, and terminal reinvestment
+growing the ruled capital base at g:
+
+| Scenario | Live (5y) | Ruled | Change | Terminal share | Terminal capex |
+|---|---|---|---|---|---|
+| Orderly Convergence | 3.2740 | 3.2366 | −1.1% | 53.2% | 8.71% |
+| Muddle Through | 2.8307 | 2.7471 | −3.0% | 50.9% | 8.71% |
+| AI Productivity Lag | 2.7705 | 2.7035 | −2.4% | 49.7% | 8.63% |
+| Fragmentation | 1.9926 | 1.9122 | −4.0% | 49.2% | 8.57% |
+| Disorderly Climate | 1.7015 | 1.4378 | −15.5% | 53.6% | 9.23% |
+| Stagflation Persists | 0.8061 | 0.6316 | −21.6% | 44.0% | 8.64% |
+
+Four levels move by less than four per cent. The two that move are the two the current
+build was handling indefensibly. Muddle Through lands at 2.7471, 23.9% below the 3.61
+market reference against 21.6% today.
+
+### One inconsistency the rulings create
+
+D-44 sets terminal capex at roughly 8.6–9.2% of revenue, while the explicit-period capex
+path converges to 7.0%. A company reinvesting 7.0% cannot be growing the ruled capital
+base at the explicit period's 6.155%, let alone at g. So the explicit path and the
+terminal are now struck on different reinvestment logic, and D-38 needs revisiting in
+that light. Recorded rather than resolved: it is the first thing to settle next session.
+
+## 14. What this does not decide
 
 1. **Whether the growth-consistent terminal capex is adopted.** §6 sizes it and parks it
    as a declared approximation. D-38 gives it a home — the converged capex rate — so it
@@ -538,7 +625,7 @@ assumption is worth 15% to 20% of terminal value, not a rounding.
    must be re-pinned. That is the accepted cost of the change, not an argument against
    it — but it is a day's work, not an afternoon's.
 
-## 14. Proposed decisions
+## 15. Decisions
 
 | ID | Decision | Status |
 |---|---|---|
@@ -547,7 +634,11 @@ assumption is worth 15% to 20% of terminal value, not a rounding.
 | D-37 | Each archetype declares its required macro drivers; every scenario carries year-anchored paths to year 10 for each; ratchet check 13 enforces it. | PROPOSED |
 | D-38 | The baseline capex path converges to a declared steady-state rate, which may not sit permanently below D&A. DNL: 7.3%. | PROPOSED |
 | D-39 | Terminal capex is taken from the final explicit year, replacing `capex_rule: equals_da`. Terminal mode stays `normalised` (D-32). | PROPOSED |
-| D-40 | DNL gas roll-off totals −2.0pp, re-phased to concentrate in FY2028–FY2030 and complete FY2032. | PROPOSED — PROVISIONAL on the cost breakdown |
-| D-41 | DNL Disorderly Climate capex: +3.0pp through Y5, decaying across Y6–Y8 to a persistent +1.0pp. | PROPOSED |
+| D-40 | DNL gas roll-off **holds at −1.5pp**; only the phasing moves, concentrating in FY2028–FY2030 and completing FY2032. | RULED 25 Aug |
+| D-41 | DNL Disorderly Climate capex: +3.0pp through Y5, decaying across Y6–Y8 to a persistent +1.0pp. | RULED 25 Aug |
 | D-42 | Terminal ROIC (ROE for banks) is computed at translation time and surfaced against WACC; an excess requires a §10.6-compliant defended exception. Non-blocking, per the D-07 precedent. | PROPOSED |
 | D-43 | The decay horizon for a terminal excess return is derived from the Five Forces ratings plus a declared tiered `moat_source`, not judged. A contractual or statutory expiry sets the horizon directly. Perpetual is admissible only for a statutory barrier, with a named threat and a finite-horizon sensitivity. | PROPOSED |
+| D-44 | Invested capital = net PP&E + intangibles + non-cash working capital. Goodwill excluded. The construction is disclosed in the UI. | RULED 25 Aug |
+| D-45 | Of terminal growth, return and reinvestment, g and ROIC are pinned and reinvestment is derived. Terminal growth carries a declared basis; alternative bases appear in the UI as disclosure, never as a user-selectable input. | RULED 25 Aug |
+| D-46 | A regulatory setting is assumed indefinite unless it is currently under public debate — recorded as an observable field with a source, not as a judgement. | RULED 25 Aug |
+| D-47 | A terminal excess return is dated, not capped at the cost of capital and not exempted by archetype. | RULED 25 Aug |

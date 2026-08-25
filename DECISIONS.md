@@ -77,3 +77,23 @@ flagged for revisit when named evidence arrives) · **SUPERSEDED**.
 | D-26 | 21 Aug 2026 | **Survey before you conclude.** Never assert that data, a document, a protocol or a prior decision does not exist without scanning the directory that would hold it. Run `scripts/repo_inventory.py` at session start. | FIRM | `CLAUDE.md` |
 | D-27 | 21 Aug 2026 | **A curated `*.yaml` in `data/` is a summary, not a source.** Raw multi-year statements live in `data/financials/*.csv` and `data/financials/historical/<company>/`. | FIRM | same |
 | D-28 | (standing) | **Australian English; number any list of 2+ points** so it can be answered by number. | FIRM | `CLAUDE.md` |
+
+## Methodology — the terminal state and returns
+
+Full reasoning and the numbers behind these: `design/methodology/horizon_and_terminal_convergence.md`.
+
+| ID | Date | Decision | Status | Reasoning |
+|---|---|---|---|---|
+| D-40 | 25 Aug 2026 | **DNL's gas roll-off holds at −1.5pp**; only the phasing moves, to concentrate in the FY2028–FY2030 re-pricing window the archetype states and complete FY2032. | FIRM on magnitude; phasing to be implemented | `us_gas_contract_maturity_profile` in `dnl.yaml`; paper §8 |
+| D-41 | 25 Aug 2026 | **DNL Disorderly Climate capex is an arc**: +3.0pp through Y5, decaying across Y6–Y8 to a persistent +1.0pp. Splits the matrix's reallocating growth capex from its licence-to-operate maintenance capex. | FIRM | paper §9; `industrial_explosives.yaml` matrix entries |
+| D-44 | 25 Aug 2026 | **Invested capital = net PP&E + intangibles + non-cash working capital.** Goodwill excluded — a demerged business is not charged in perpetuity for capital its predecessor deployed. DNL: 3,681.1m, ROIC 10.09% against a WACC of 8.877%. The construction is disclosed in the UI. | FIRM | paper §13 |
+| D-45 | 25 Aug 2026 | **Of terminal growth, terminal return and reinvestment, only two are free.** g and ROIC are pinned — g from the macro/scenario work, ROIC from the Porter/moat work — and the reinvestment requirement is derived. Terminal growth carries a declared basis (inflation, long-run industry growth, or nominal GDP); alternatives appear in the UI as disclosure, never as a user-selectable input (D-23). | FIRM | paper §13; `revenue_growth_chain` B30 already derives industry nominal growth per scenario |
+| D-46 | 25 Aug 2026 | **A regulatory setting is assumed indefinite unless currently under public debate.** Recorded as an observable field with a source and a date, not as a judgement about how long a licence lasts. WBC's moat horizon is therefore perpetual, with the named threat and the finite-horizon sensitivity attached. | FIRM | paper §12, §13 |
+| D-47 | 25 Aug 2026 | **A terminal excess return is dated — not capped at the cost of capital, and not exempted by archetype.** A 10–15 year moat captures only 17–25% of a perpetual one, so a dated fade lands close to a hard cap for competitive archetypes and differs materially only for the licensed one, where the assumption should be visible. | FIRM | paper §12 decay table |
+| D-06 | 25 Aug 2026 | **CSL's WACC parameters stay PROVISIONAL.** Reconsidered this session and retained: marking it FIRM would drop the commitment to revisit without supplying support for the 14× through-cycle EV/EBITDA multiple. Now load-bearing twice — as the discount rate and as the benchmark the terminal return is judged against. | PROVISIONAL — revisit when peer financials land | supersedes nothing; status re-affirmed |
+| D-19 | 25 Aug 2026 | **Market prices are refreshed and everything re-tested after the UI work lands**, so all eighteen goldens move once rather than repeatedly. CSL's 105.53 reference against a 200-day average of 161.95 is a known distortion in the meantime. | PROVISIONAL — sequencing set | paper §13 |
+
+**Still PROPOSED, not ratified** (all in `design/methodology/horizon_and_terminal_convergence.md`):
+D-35 horizon rule, D-36 growth fade, D-37 archetype ten-year macro paths, D-38 capex
+convergence, D-39 terminal capex from the final explicit year, D-42 terminal-return
+diagnostic, D-43 decay horizon derived from Porter plus moat source.

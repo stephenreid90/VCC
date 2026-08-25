@@ -23,7 +23,80 @@ prints git state.
 
 ---
 
-## 🔴 HANDOVER — session of 23 August 2026 (read this first)
+## 🔴 HANDOVER — session of 25 August 2026 (read this first)
+
+**Start with `land_vcc.cmd`** — the standing landing command, see "Landing a session" in
+`CLAUDE.md`. Then `session_start.cmd`, then this block, then
+`design/methodology/horizon_and_terminal_convergence.md`, which is where this session's
+work actually lives.
+
+**State:** suite **270** (+2 opt-in `-m libreoffice`), ratchet **12**, bases unchanged
+**2.831 / 30.03 / 195.78**. No engine change this session. Nothing in `data/` moved.
+
+### What happened
+
+1. **Housekeeping fixed first.** The 23 August bundle had not landed — a stale
+   `.git/refs/heads/incoming.lock` defeated `git branch -D` behind a `2>nul`. Locks are
+   now swept recursively by `sandbox_cleanup.cmd`, and the per-session landing scripts are
+   replaced by one permanent gitignored `land_vcc.cmd`. **New standing rule 3 in
+   `CLAUDE.md`: Stephen does not use CMD or git directly** — one complete pasteable
+   command in a copy-button widget, and the session verifies the result itself over the
+   device bridge.
+2. **A methodology paper, not a code change.** `horizon_and_terminal_convergence.md`,
+   fifteen sections, thirteen decisions of which seven were ruled on. Every number in it
+   comes from a scratch harness that reproduces `FcfEngine` to 1e-15 on all six live DNL
+   scenarios.
+3. **The finding that started it:** DNL's explicit period ends with the gas roll-off still
+   ramping, so every scenario capitalises a margin that was falling 0.50pp a year. The
+   five-year horizon was never a decision — `architecture.md` §2.5 committed to a
+   per-scenario horizon and it was never built.
+4. **The finding that mattered most:** the terminal return nobody had computed. Every DNL
+   scenario implied a terminal ROIC of 37–80%, four to nine times WACC; CSL 61–73%. WBC,
+   which declares its terminal ROE explicitly, runs a sane 1.12–1.37× Ke. `architecture.md`
+   §11.4.2 already requires ROIC ≈ WACC and says it is "enforced at translation time" — it
+   is not; `terminal_roic` appears once, as a driver-delta mapping.
+5. **Five things are now known to be specified, populated and read by nothing:**
+   `time_profile`, `fade_period_length`, the year-10 macro anchors, `terminal_roic`, and
+   the §9.9 terminal-growth convention.
+
+### Rulings Stephen made (in `DECISIONS.md`)
+
+6. **D-44** invested capital = PP&E + intangibles + NCWC, goodwill excluded; disclosed in
+   the UI. DNL ROIC 10.09% vs WACC 8.877%.
+7. **D-45** pin g and ROIC, derive reinvestment. Terminal growth gets a declared basis;
+   alternatives shown in the UI as disclosure, never as a knob (D-23).
+8. **D-46** a regulatory setting is indefinite unless currently under debate — an
+   observable with a source, not a judgement.
+9. **D-47** terminal excess returns are dated, not capped and not exempt.
+10. **D-40** gas roll-off holds at −1.5pp, phasing only. **D-41** Disorderly capex arc
+    confirmed. **D-06** stays PROVISIONAL. **D-19** prices refresh after the UI work.
+
+### Open, needing Stephen
+
+11. **The inconsistency the rulings create.** D-44 puts terminal capex at 8.6–9.2% of
+    revenue while the explicit path converges to 7.0%. The two are now struck on different
+    reinvestment logic. **First thing to settle next session.**
+12. **Seven decisions still PROPOSED:** D-35 horizon, D-36 fade, D-37 archetype ten-year
+    macro, D-38 capex convergence, D-39 terminal capex source, D-42 the diagnostic, D-43
+    decay horizon from Porter.
+13. **The UI disclosure piece has grown** and is now the pivot: terminal return, terminal
+    growth basis, invested-capital construction and the working-capital methodology all
+    disclosed in one place. D-19 sequences the price refresh and the golden re-pin behind
+    it.
+14. **Do not ratify the twelve goldens from 23 August.** They will move again. Under the
+    ruled assumptions DNL lands at 3.2366 / 2.7471 / 2.7035 / 1.9122 / 1.4378 / 0.6316 —
+    four moving less than 4%, Disorderly −15.5%, Stagflation −21.6%.
+
+### Recommended order
+
+15. Build D-42, the diagnostic, first — compute and display terminal ROIC and ROE against
+    the cost of capital, change no behaviour. Then settle item 11. Then the horizon and
+    fade. Then the UI disclosure. Then re-pin all eighteen goldens once, with the workbook
+    re-tie.
+
+---
+
+## HANDOVER — session of 23 August 2026 (superseded, kept for context)
 
 **Start by running `session_start.cmd`** (or `python scripts/session_start.py`).
 See "Survey before you conclude" in `CLAUDE.md`.
