@@ -121,6 +121,26 @@ and audit the draft against it before handing it back.
    The standing landing command is `land_vcc.cmd` (see "Landing a session" below) and it
    never changes. Prefer it to a bespoke one-off script.
 
+4. **Any number that reaches a document must come from committed code.** A harness that
+   produced a published figure is a deliverable, not scaffolding: commit it in the same
+   change as the document that cites it, and commit the assumption set that drove it
+   alongside. A scratch script in a disposable container is not evidence — the container
+   is reclaimed, the numbers survive in the document, and nobody can then say what
+   produced them.
+
+   This is not a style preference. On 25 August 2026 a methodology paper cited "a scratch
+   harness that reproduces `FcfEngine` to 1e-15" without saying where it was, because it
+   was nowhere. The next sitting could not reproduce it, rebuilt the harness, and landed a
+   table about 2% away with no way to reconcile the difference. Reconciling it afterwards
+   cost most of a third sitting.
+
+   Concretely, for the horizon and terminal work: every published table is one entry in
+   `design/methodology/horizon_variant_sets.yaml` carrying its complete assumption block
+   and the levels it produced; `scripts/size_horizon_variants.py` regenerates it and
+   `tests/dcf/test_horizon_variant_sets.py` asserts it. A table in a document cites a set
+   name. Exactly one set is `current`; the others name what superseded them. Extend that
+   pattern rather than opening a new scratch file.
+
 ## Test companies
 
 1. **DNL** — industrial explosives, single-segment post-demerger (formerly IPL; renamed

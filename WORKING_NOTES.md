@@ -23,7 +23,62 @@ prints git state.
 
 ---
 
-## 🔴 HANDOVER — session of 25 August 2026, second sitting (read this first)
+## 🔴 HANDOVER — session of 26 August 2026 (read this first)
+
+**Start with `land_vcc.cmd`.** Then `session_start.cmd`, then this block.
+
+**State:** suite **297** (+2 opt-in `-m libreoffice`), ratchet **12**, bases unchanged
+**2.831 / 30.03 / 195.78**. No engine change, no production change, nothing in `data/`
+moved. One new script, one new declaration file, one new test module.
+
+### The reconciliation is done, and the residual was not what anyone thought
+
+1. **The whole difference between the two 25 August tables is the explicit capex path.**
+   §13's ruled table holds the live path, which converges to 7.0%; the second sitting
+   applies D-38 and converges to 7.3% by Y5. Nothing else moves between them. It is not
+   the terminal-boundary conventions — those are real, they are pinned as tests, and they
+   are not what separated the tables.
+2. **All three published tables now regenerate from committed code**, to 0.01% on §10 and
+   to 0.22% on §13. `design/methodology/horizon_variant_sets.yaml` carries each table's
+   complete assumption block and the levels it produced; `scripts/size_horizon_variants.py`
+   generates them; `tests/dcf/test_horizon_variant_sets.py` asserts them. Exactly one set
+   is `current` and the others name what superseded them.
+3. **Disorderly Climate is reconciled and it is a methodology question, not a residual.**
+   §13's 1.4378 came from growing the capital base *excluding* the carbon arc and adding
+   the persistent +1.0pp on top — terminal capex 9.22%. The second sitting grew the base
+   *including* the arc, no premium — 8.56%. Reproduced to 0.03% and 0.00% respectively.
+   §9's own reasoning, that a licence-to-operate cost is permanent by construction,
+   argues for the first reading. **Unruled; put with item 11.**
+4. **The reconstruction the last handover could not close is closed.** The published
+   §13 Disorderly figures of 1.4378 and 1.6375 are the same construction with and without
+   the +1.0pp premium; the harness gives 1.4383 and 1.6380.
+
+### Open, needing Stephen
+
+5. **Item 11 is still the blocker, and it is now fully sized** — see §13b of the paper.
+   On the central case: ruled build 2.6956, hold intensity flat 1.7676, volume plus asset
+   inflation 1.8387. The two positions that make capital follow the business land within
+   4% of each other; the ruled build is a third of the company above both. The evidence
+   question underneath it is **answered** — B25 volume 3.28% against B29 pricing 2.85% on
+   Muddle Through, so growth is over half volume and replacement assets inflate too.
+6. **The handover's 1.9551 for the volume-plus-inflation position does not reproduce.**
+   That run held the chain rate flat for all ten years; struck that way the harness gives
+   1.6175, not 1.9551. Struck as a fading path it gives 1.8387. Both are now declared
+   positions with pinned levels. Neither changes the conclusion.
+7. **Disorderly's terminal carbon treatment** (3 above) needs a ruling alongside item 11.
+
+### Housekeeping
+
+8. **New standing rule 4 in `CLAUDE.md`: any number that reaches a document must come
+   from committed code**, and the harness that produced it ships in the same change as
+   the document citing it. This is the rule whose absence cost two sittings.
+9. **Everything queued behind item 11 is unchanged**: D-42 the diagnostic, the horizon and
+   fade, the UI disclosure piece, then re-pin all eighteen goldens once with the workbook
+   re-tie. Do not ratify the twelve goldens from 23 August.
+
+---
+
+## HANDOVER — session of 25 August 2026, second sitting (superseded, kept for context)
 
 **Start with `land_vcc.cmd`.** Then `session_start.cmd`, then this block.
 

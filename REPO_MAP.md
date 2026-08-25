@@ -1,12 +1,12 @@
 # REPO_MAP — what exists, and where
 
-_Generated 2026-08-24 by `scripts/repo_inventory.py`. **Regenerate at the start of
+_Generated 2026-08-25 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `485a0ba Batch 3 item 19 complete: type the schema escape hatches; session handover` on `main`
+- HEAD: `d0f3adf Session handover: item 11 sized, and it is a third of the company` on `main`
 - Unpushed commits: **0**
-- Tracked files: 296
-- Untracked files: 0
+- Tracked files: 302
+- Untracked files: 3
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -123,6 +123,8 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `csl_discount_rate_fork.md` (11.0KB)
     - `dnl_working_capital_derivation.md` (11.2KB)
     - `equity_bridge_and_valuation_mechanics.md` (70.6KB)
+    - `horizon_and_terminal_convergence.md` (42.3KB)
+    - `horizon_variant_sets.yaml` (5.3KB)
     - `working_capital_treatment.md` (23.3KB)
   - **reference/**
     - **discount_rate_iers/**
@@ -206,7 +208,9 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `test_dnl_workbook_tie.py` (4.1KB)
     - `test_e2e_dnl_mt.py` (4.3KB)
     - `test_engine_input_validation.py` (3.4KB)
+    - `test_horizon_variant_sets.py` (3.7KB)
     - `test_per_year_derivations.py` (3.8KB)
+    - `test_replica_ties_engine.py` (6.1KB)
     - `test_scenario_goldens.py` (7.7KB)
     - `test_wbc_bank.py` (2.5KB)
     - **golden/**
@@ -217,6 +221,9 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `dnl_mt_inputs.py` (4.9KB)
       - `dnl_mt_v6.json` (2.6KB)
       - `dnl_workbook_all_scenarios.json` (10.3KB)
+    - **harness/**
+      - `__init__.py` (0B)
+      - `replica.py` (21.3KB)
   - **schemas/**
     - `__init__.py` (0B)
     - `test_models.py` (4.9KB)
@@ -224,14 +231,10 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
 ## UI generator
 
-  - `csl_scenario_interface.html` (159.9KB)
-  - `dnl_scenario_interface.html` (206.4KB)
-  - `wbc_scenario_interface.html` (159.6KB)
   - **_generator/**
     - `README.md` (893B)
     - `beta_data.py` (10.0KB)
     - `build_cfgs.py` (91.9KB)
-    - `cfgs_gen.json` (210.3KB)
     - `engine_workbook.py` (88.1KB)
     - `gen_ui.py` (88.7KB)
 
@@ -305,4 +308,13 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `wbc_muddle_through_valuation_v4_formulas.xlsx` (12.5KB)
       - `wbc_scenarios_comparison_v1.xlsx` (11.6KB)
       - `wbc_scenarios_comparison_v2.xlsx` (11.6KB)
+
+## Untracked files
+
+Not in git. Either commit them or clear them — an untracked file is invisible
+to anyone who clones the repo, and is the most common way work gets lost.
+
+- `design/methodology/horizon_variant_sets.yaml`
+- `scripts/size_horizon_variants.py`
+- `tests/dcf/test_horizon_variant_sets.py`
 

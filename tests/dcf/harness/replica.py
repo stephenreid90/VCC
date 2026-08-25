@@ -442,6 +442,44 @@ def terminal_capex_growing_capital_base(plan: Plan) -> Plan:
     )
 
 
+def grow_capital_at(plan: Plan, capital_growth_path: List[float]) -> Plan:
+    """Set the explicit capex path so fixed capital compounds at a declared path.
+
+    The general form of :func:`hold_capital_intensity`, which is this variant run
+    at the revenue-growth path. It exists because "how fast does the asset base
+    have to grow" and "how fast does revenue grow" are the same question only
+    when all growth is volume at constant asset prices. Where a share of revenue
+    growth is price, the capital call is smaller than revenue growth implies --
+    and where replacement assets inflate, it is larger than volume alone implies.
+    Passing the path explicitly makes that judgement visible in the caller rather
+    than buried in a rule.
+    """
+    H = plan.horizon_years
+    if len(capital_growth_path) != H:
+        raise ValueError(
+            f"capital_growth_path must have length horizon_years={H}, "
+            f"got {len(capital_growth_path)}"
+        )
+    if plan.invested_capital_opening is None:
+        raise ValueError("growing the capital base needs a declared opening invested capital.")
+
+    fixed = (
+        plan.invested_capital_opening
+        - plan.working_capital_intensity * plan.base_year_revenue
+    )
+    # The stub keeps its declared rate; the roll-forward starts from what it leaves.
+    stub_revenue = plan.base_year_revenue * plan.stub_years
+    fixed += stub_revenue * (plan.capex_pct_stub - plan.da_pct_revenue)
+
+    path = []
+    for k in range(1, H + 1):
+        rev = _run_rate(plan, k)
+        target = fixed * (1.0 + capital_growth_path[k - 1])
+        path.append((target - fixed + rev * plan.da_pct_revenue) / rev)
+        fixed = target
+    return replace(plan, capex_pct=path, label=f"{plan.label}+capgrowth")
+
+
 def hold_capital_intensity(plan: Plan) -> Plan:
     """Set the explicit capex path so fixed capital keeps pace with revenue.
 

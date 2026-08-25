@@ -1,0 +1,160 @@
+# Assumption sets behind every published horizon/terminal table.
+#
+# Each entry is the complete declared assumption block for one table: the horizon,
+# the fade, the explicit capex path, the gas roll-off, the Disorderly capex arc and
+# the terminal capex rule. `scripts/size_horizon_variants.py` reads this file and
+# reproduces the table; `tests/dcf/test_horizon_variant_sets.py` pins the result, so
+# a table in a document can no longer drift away from the assumptions that produced
+# it. See "the committed-code rule" in CLAUDE.md.
+#
+# `status` is the only field a reader should need in order to know which table is
+# current. Exactly one set carries `current`.
+
+company_id: dnl
+archetype_id: industrial_explosives
+
+scenarios:
+  - orderly_convergence
+  - muddle_through
+  - ai_productivity_lag
+  - fragmentation
+  - disorderly_climate_crystallisation
+  - stagflation_persists
+
+# D-44. Net PP&E + intangibles + non-cash working capital, goodwill excluded.
+invested_capital_opening: 3681.1
+
+# D-40. Cumulative fractions of the roll-off total, Y1..Y6, flat thereafter.
+gas_rolloff_phasing: [0.05, 0.30, 0.60, 0.85, 0.95, 1.00]
+
+# D-41. Peak shift held to `hold_to_year`, decaying to `persistent_pp` by `decay_to_year`.
+disorderly_capex_arc:
+  peak_pp: 0.030
+  hold_to_year: 5
+  decay_to_year: 8
+  persistent_pp: 0.010
+
+sets:
+
+  paper_s10:
+    status: superseded
+    published_in: design/methodology/horizon_and_terminal_convergence.md §10
+    superseded_by: second_sitting
+    horizon_years: 10
+    fade_period_length: 5
+    explicit_capex:
+      mode: converge
+      steady_state_pct: 0.073
+      converge_by_year: 5
+    gas_rolloff_total_pp: -0.020
+    terminal_capex:
+      rule: final_explicit_year
+    expected:
+      orderly_convergence: 3.3978
+      muddle_through: 2.8825
+      ai_productivity_lag: 2.8087
+      fragmentation: 2.0105
+      disorderly_climate_crystallisation: 1.4606
+      stagflation_persists: 0.7373
+
+  paper_s13_ruled:
+    status: superseded
+    published_in: design/methodology/horizon_and_terminal_convergence.md §13
+    superseded_by: second_sitting
+    horizon_years: 10
+    fade_period_length: 5
+    explicit_capex:
+      mode: live
+    gas_rolloff_total_pp: -0.015
+    terminal_capex:
+      rule: grow_capital_base
+      # The carbon capex is a licence-to-operate cost, so it is carried into the
+      # terminal on top of a base grown ex-arc rather than treated as capital that
+      # earns a return.
+      carbon_premium_on_baseline_base: true
+    expected:
+      orderly_convergence: 3.2343
+      muddle_through: 2.7451
+      ai_productivity_lag: 2.7021
+      fragmentation: 1.9112
+      disorderly_climate_crystallisation: 1.4383
+      stagflation_persists: 0.6302
+
+  second_sitting:
+    status: current
+    published_in: WORKING_NOTES.md, handover of 25 August 2026 (second sitting)
+    horizon_years: 10
+    fade_period_length: 5
+    explicit_capex:
+      mode: converge
+      steady_state_pct: 0.073
+      converge_by_year: 5
+    gas_rolloff_total_pp: -0.015
+    terminal_capex:
+      rule: grow_capital_base
+      carbon_premium_on_baseline_base: false
+    expected:
+      orderly_convergence: 3.1793
+      muddle_through: 2.6956
+      ai_productivity_lag: 2.6558
+      fragmentation: 1.8629
+      disorderly_climate_crystallisation: 1.5294
+      stagflation_persists: 0.5841
+
+# Item 11. The three positions on what the explicit period does to capital
+# intensity, each run on the `current` set and differing from it only in the
+# explicit capex path.
+item_11_positions:
+
+  ruled_build:
+    capital_growth: derived
+    note: the capex path converges to D&A, so fixed capital is flat in nominal terms
+    expected:
+      orderly_convergence: 3.1793
+      muddle_through: 2.6956
+      ai_productivity_lag: 2.6558
+      fragmentation: 1.8629
+      disorderly_climate_crystallisation: 1.5294
+      stagflation_persists: 0.5841
+
+  hold_intensity_flat:
+    capital_growth: revenue
+    expected:
+      orderly_convergence: 1.9804
+      muddle_through: 1.7676
+      ai_productivity_lag: 1.8630
+      fragmentation: 0.9497
+      disorderly_climate_crystallisation: 0.9485
+      stagflation_persists: -0.1998
+
+  volume_plus_asset_inflation:
+    capital_growth: volume_and_inflation
+    inflation_source: terminal_growth
+    note: >
+      Capital tracks the volume half of each year's revenue growth, inflated at
+      asset inflation. The 25 August handover quoted this position at a constant
+      chain rate held for all ten years (Muddle Through 1.9551); that run was not
+      committed and does not reproduce. Both readings are listed in the paper.
+    expected:
+      orderly_convergence: 1.8671
+      muddle_through: 1.8387
+      ai_productivity_lag: 1.9801
+      fragmentation: 1.3305
+      disorderly_climate_crystallisation: 1.5335
+      stagflation_persists: 0.3308
+
+  volume_plus_asset_inflation_held_flat:
+    capital_growth: volume_and_inflation_flat
+    inflation_source: terminal_growth
+    note: >
+      The same basis with the chain's volume rate held for all ten years rather than
+      fading with revenue. This is the reading the 25 August handover used. It sits
+      below the fading one because a constant capital call outruns a fading revenue
+      line in the back half of the horizon.
+    expected:
+      orderly_convergence: 1.5342
+      muddle_through: 1.6175
+      ai_productivity_lag: 1.7957
+      fragmentation: 1.1264
+      disorderly_climate_crystallisation: 1.2764
+      stagflation_persists: 0.1849
