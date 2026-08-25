@@ -23,7 +23,58 @@ prints git state.
 
 ---
 
-## 🔴 HANDOVER — session of 25 August 2026 (read this first)
+## 🔴 HANDOVER — session of 25 August 2026, second sitting (read this first)
+
+**Start with `land_vcc.cmd`.** Then `session_start.cmd`, then this block.
+
+**State:** suite **288** (+2 opt-in `-m libreoffice`), ratchet **12**, bases unchanged
+**2.831 / 30.03 / 195.78**. No engine change, no production change, nothing in `data/`
+moved. One new test package.
+
+### What happened
+
+1. **The replica is committed and the tie is a test.** `tests/dcf/harness/replica.py`
+   plus `tests/dcf/test_replica_ties_engine.py` — eighteen tests, six scenarios,
+   floating-point equality against `FcfEngine`. Last session's harness was scratch and
+   was thrown away, so nothing it reported could be re-checked; that is now fixed. The
+   variants are one-change transforms of the tying plan: `extend`, `fade_growth`,
+   `converge_capex`, `reshape_margin`, `capex_arc`, `hold_capital_intensity`, and four
+   ways of striking terminal capex.
+2. **Two terminal-boundary conventions pinned as tests.** The terminal's working-capital
+   drag is struck one year ahead of the explicit period's — a factor of (1+g). And
+   explicit flows discount mid-year while the terminal is an end-of-year Gordon value, so
+   converting a terminal year into a steady-state explicit year *raises* EV by ~0.26%.
+   D-35's "surplus years cost nothing" is true to a quarter of a per cent, not exactly.
+3. **Item 11 was sized and it is not small.** Under the ruled build, invested capital
+   falls from **108.3% of revenue today to 67.5–85.8% at Y10** (Muddle Through 72.6%),
+   because capex converging to 7.3% *is* D&A — DNL adds no net fixed capital across ten
+   years while revenue compounds about 50%. That thinning, not a moat, is what produces
+   the terminal ROIC of 14.6%.
+4. **The coherent alternative costs a third of the company.** Holding capital intensity
+   flat gives Muddle Through **1.7675 against 2.6956 (−34.4%)**, Fragmentation −49.0%,
+   Disorderly Climate −68.0%, and Stagflation Persists goes **negative**. Terminal ROIC
+   then lands at 9.8% against a WACC of 8.877% — which is what `architecture.md` §11.4.2
+   actually asks for.
+5. **Reconstruction caveat.** The rebuilt harness lands within ~2% of last session's
+   ruled table (Muddle Through 2.6956 against the paper's 2.7471). The residual could not
+   be reconciled because the original harness no longer exists. Everything in 3 and 4 is
+   from the committed harness.
+
+### Open, needing Stephen
+
+6. **Item 11 is unruled.** Three positions were put and none was taken: declare a Y10
+   target intensity and derive the capex path; hold intensity flat; or accept the fall
+   and disclose it as a stated judgement. **Nothing should be built on the ruled numbers
+   until this is settled** — it moves DNL by more than every other open item combined.
+7. **The evidence question underneath it was also left open:** how much of DNL's 6.155%
+   nominal revenue growth is volume (needs capacity) versus price (does not). That is
+   what decides 6, and it has not been surveyed.
+8. **Everything else from the first sitting stands** — see the block below. D-42, the
+   horizon and fade, and the UI disclosure piece are all still queued behind item 11.
+
+---
+
+## HANDOVER — session of 25 August 2026, first sitting (superseded, kept for context)
 
 **Start with `land_vcc.cmd`** — the standing landing command, see "Landing a session" in
 `CLAUDE.md`. Then `session_start.cmd`, then this block, then
