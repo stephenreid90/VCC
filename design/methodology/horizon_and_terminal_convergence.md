@@ -1,7 +1,7 @@
 # Forecast horizon, growth fade and terminal convergence
 
-**Status, 25 Aug 2026: PROPOSED, nothing ratified.** Eight decisions are put forward
-here (D-35 to D-42). None is in force; no code has moved. The numbers throughout are
+**Status, 25 Aug 2026: PROPOSED, nothing ratified.** Nine decisions are put forward
+here (D-35 to D-43). None is in force; no code has moved. The numbers throughout are
 sizings from a scratch harness that reproduces `FcfEngine` to 1e-15 on all six live
 DNL scenarios, not engine output.
 
@@ -431,7 +431,92 @@ and surface it against WACC on every valuation. Where it exceeds WACC, require a
 and a sensitivity test — as §11.4.2 check 2 already specifies. Non-blocking in the first
 instance, on the D-07 precedent: it warns and obliges, it does not silently adjust.
 
-## 12. What this does not decide
+## 12. Where the decay horizon comes from, and why it is not second-order
+
+If a terminal excess return must be *dated* rather than assumed away (§11), the obvious
+objection is that the date is a judgement — and this project is built on removing
+judgements, not adding them. It need not be. The industry analysis already carries the
+raw material.
+
+**The Five Forces ratings are already there and already ordinal.** All three archetypes
+carry the same scale:
+
+| Force | Industrial explosives | Plasma-derived therapies | Australian major banks |
+|---|---|---|---|
+| Threat of new entrants | low | very_low | low |
+| Rivalry | high | moderate | moderate |
+| Substitutes | low | low_to_moderate | low_to_moderate |
+| Buyer power | high | moderate | low_to_moderate |
+| Supplier power | moderate | low | moderate |
+
+Three of these govern how fast an excess return erodes: entrant threat sets the height of
+the barrier, rivalry sets how fast incumbents compete the excess away, and substitutes set
+erosion from outside the industry. Buyer and supplier power set the *level* of the return,
+not its durability.
+
+**But the ratings alone cannot do the job, and it is worth being clear why.** Industrial
+explosives and the Australian major banks both score `new_entrants: low`. On the ratings
+alone, a gas-contract cost position and a banking licence are the same barrier. They are
+not: one falls to a well-funded entrant, the other requires a political decision.
+
+So the horizon needs a second input, and §10.6 already asks for it — the moat *source*.
+Made into a taxonomy with durability tiers, ordered by what has to happen for the barrier
+to fall:
+
+1. **Statutory or licensed barrier** — removed only by a political decision (four pillars,
+   an APRA licence).
+2. **Network or scale advantage in a small market** — eroded by a structural shift in
+   market size or technology.
+3. **Cost position from an irreplicable asset** — eroded when the asset is matched or
+   expires.
+4. **Brand** — eroded by sustained competitive investment.
+5. **Patent or contract** — expires on a stated date.
+
+The fifth tier is the useful one, because it removes the judgement entirely: where the moat
+source has a contractual or statutory expiry, **that date is the horizon**. DNL's cost
+advantage is its long-term US gas contracts, and §8 of this paper establishes that they
+roll off through **2032**. The decay horizon is not a view; it is in the contracts.
+
+**And the horizon is not a rounding error.** The instinct — mine included — is that beyond
+thirty or forty years the discounting makes the distinction academic. It does not, because
+book equity is compounding at g while the discount rate is Ke, so the effective discount on
+residual income is only Ke − g. For WBC that is 8.05% − 3.5% = 4.55%, and a 4.55% net
+discount has a very long tail. Valuing WBC's ROE premium (10.50% against a Ke of 8.05%) as
+a linear decay to Ke over N years:
+
+| Decay horizon | Value ÷ book | Share of the perpetual moat captured |
+|---|---|---|
+| 5 years | 1.043 | 8.1% |
+| 10 years | 1.091 | 17.0% |
+| 15 years | 1.133 | 24.7% |
+| 20 years | 1.170 | 31.5% |
+| 30 years | 1.229 | 42.6% |
+| 40 years | 1.276 | 51.3% |
+| 50 years | 1.312 | 58.0% |
+| 100 years | 1.412 | 76.6% |
+| forever | 1.538 | 100.0% |
+
+A forty-year moat captures barely half the value of a perpetual one. The difference is 17%
+of WBC's terminal and, at a 76.3% terminal share, about 13% of the whole valuation. So
+"effectively forever" is not arithmetically true at these rates — assuming a perpetual bank
+moat is a live, material assumption that has to be declared and tested, not a convenience.
+
+This cuts the other way too, and helpfully. A competitive business with a ten-to-fifteen
+year decay horizon captures only 17% to 25% of a perpetual moat, which sits far closer to a
+hard cap at the cost of capital than to perpetuity. For DNL and CSL the argument between
+"cap at WACC" and "fade over the Porter-implied horizon" is a modest one. It is only for
+the licensed archetype that the choice is expensive — which is precisely where the
+judgement should be visible.
+
+**D-43 (PROPOSED).** The terminal excess-return decay horizon is derived, not judged: from
+the archetype's Five Forces ratings for entrants, rivalry and substitutes, combined with a
+declared `moat_source` drawn from the tiered taxonomy above. Where the source carries a
+contractual or statutory expiry, that date is the horizon. A perpetual horizon is
+admissible only for a tier-1 statutory barrier, must name the threat that would end it, and
+must be sensitivity-tested against a finite horizon — because §12's table shows the
+assumption is worth 15% to 20% of terminal value, not a rounding.
+
+## 13. What this does not decide
 
 1. **Whether the growth-consistent terminal capex is adopted.** §6 sizes it and parks it
    as a declared approximation. D-38 gives it a home — the converged capex rate — so it
@@ -453,7 +538,7 @@ instance, on the D-07 precedent: it warns and obliges, it does not silently adju
    must be re-pinned. That is the accepted cost of the change, not an argument against
    it — but it is a day's work, not an afternoon's.
 
-## 13. Proposed decisions
+## 14. Proposed decisions
 
 | ID | Decision | Status |
 |---|---|---|
@@ -465,3 +550,4 @@ instance, on the D-07 precedent: it warns and obliges, it does not silently adju
 | D-40 | DNL gas roll-off totals −2.0pp, re-phased to concentrate in FY2028–FY2030 and complete FY2032. | PROPOSED — PROVISIONAL on the cost breakdown |
 | D-41 | DNL Disorderly Climate capex: +3.0pp through Y5, decaying across Y6–Y8 to a persistent +1.0pp. | PROPOSED |
 | D-42 | Terminal ROIC (ROE for banks) is computed at translation time and surfaced against WACC; an excess requires a §10.6-compliant defended exception. Non-blocking, per the D-07 precedent. | PROPOSED |
+| D-43 | The decay horizon for a terminal excess return is derived from the Five Forces ratings plus a declared tiered `moat_source`, not judged. A contractual or statutory expiry sets the horizon directly. Perpetual is admissible only for a statutory barrier, with a named threat and a finite-horizon sensitivity. | PROPOSED |
