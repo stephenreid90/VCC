@@ -1,0 +1,135 @@
+# Denali / Incitec Pivot capital expenditure — the series behind the 6-7% anchor.
+#
+# Extracted 7 September 2026 from the annual reports and the half-year result in
+# data/financials/historical/dnl/. This file exists because
+# data/companies/dnl.yaml carries `capex_pct_revenue: 0.07` with the rationale
+# "Pre-demerger historical pattern (6-7%)" and no evidence_refs, and because no
+# year-by-year series existed anywhere in the repository to test that claim
+# against. Nothing here is read by the engine; it is evidence, offered so a
+# ruling on item 11 and on D-38 can be made against numbers rather than against
+# a remembered pattern.
+#
+# Definitions matter more than usual here, so each series names its own.
+
+sources:
+  ipl_fy22: Incitec Pivot Limited Annual Report 2022
+  ipl_fy23: Incitec Pivot Limited Annual Report 2023
+  dnl_fy25: Dyno Nobel Limited Annual Report 2025
+  dnl_1h26: Dyno Nobel Limited half-year results announcement, six months to 31 March 2026
+
+# ---------------------------------------------------------------------------
+# 1. Group, on the narrow definition the five-year statistics table uses.
+#    "Net capital expenditure on plant and equipment (cash flow)". Excludes
+#    intangibles and is struck net of proceeds.
+# ---------------------------------------------------------------------------
+group_net_capex_ppe:
+  source: ipl_fy23  # Five Year Financial Statistics
+  units: AUD m
+  by_year:
+    FY2019: 337.3
+    FY2020: 271.0
+    FY2021: 349.3
+    FY2022: 428.3
+    FY2023: 418.8
+
+# ---------------------------------------------------------------------------
+# 2. Group, on the definition the FY25 12.8% figure actually uses.
+#    "Payments for property, plant and equipment and intangibles", consolidated
+#    statement of cash flows. Includes discontinued operations.
+# ---------------------------------------------------------------------------
+group_payments_ppe_and_intangibles:
+  sources: [ipl_fy22, ipl_fy23, dnl_fy25]
+  units: AUD m
+  by_year:
+    FY2021: 355.0
+    FY2022: 434.0
+    FY2023: 495.1
+    FY2024: 378.7
+    FY2025: 474.2
+
+group_revenue:
+  sources: [ipl_fy23, dnl_fy25]  # Five Year Financial Statistics, both reports
+  units: AUD m
+  by_year:
+    FY2019: 3918.2
+    FY2020: 3942.2
+    FY2021: 4348.5
+    FY2022: 6315.3
+    FY2023: 6008.1
+    FY2024: 5364.9
+    FY2025: 5345.2
+
+group_depreciation_and_amortisation:
+  sources: [ipl_fy23, dnl_fy25]
+  units: AUD m
+  note: excluding individually material items
+  by_year:
+    FY2019: 301.6
+    FY2020: 356.0
+    FY2021: 368.5
+    FY2022: 372.5
+    FY2023: 335.6
+    FY2024: 345.0
+    FY2025: 298.3
+
+# ---------------------------------------------------------------------------
+# 3. The explosives business alone. This is the entity being valued, and it is
+#    the only basis on which the anchor question can actually be settled.
+#    Segments DNAP + DNA + DNEL + Corporate, excluding Fertilisers (Phosphate
+#    Hill) and excluding the discontinued IPF Distribution and WALA operations.
+# ---------------------------------------------------------------------------
+dyno_nobel_segments:
+  source: dnl_fy25  # segment note; capital expenditure table in the OFR
+  units: AUD m
+  FY2024:
+    revenue: 3194.1
+    depreciation_and_amortisation: 258.9
+    capex: 241.7           # continuing operations 312.6 less Fertilisers 70.9
+    capex_pct_revenue: 0.0757
+    da_pct_revenue: 0.0811
+  FY2025:
+    revenue: 3212.3
+    depreciation_and_amortisation: 269.1
+    capex: 346.4           # continuing operations 421.9 less Fertilisers 75.5
+    capex_pct_revenue: 0.1078
+    da_pct_revenue: 0.0838
+  two_year:
+    capex_pct_revenue: 0.0918
+    da_pct_revenue: 0.0824
+    capex_over_da: 1.114
+
+# FY2025 capex by category, continuing operations, AUD m (FY2025 / FY2024).
+# Turnaround is the swing item and is cyclical: FY2025 covered scheduled
+# turnarounds at Moranbah, Cheyenne, LOMO and Mount Isa.
+capex_by_category_continuing:
+  source: dnl_fy25
+  FY2025: {sustenance: 179.9, turnaround: 143.0, sustainability: 6.8,
+           digital_and_technology: 39.1, customer_growth: 28.8,
+           growth_initiatives: 24.3, total: 421.9}
+  FY2024: {sustenance: 190.6, turnaround: 31.3, sustainability: 23.8,
+           digital_and_technology: 28.8, customer_growth: 18.0,
+           growth_initiatives: 20.1, total: 312.6}
+
+# ---------------------------------------------------------------------------
+# 4. What the company itself expects to spend. The only forward evidence there
+#    is, and it was revised down between the two statements.
+# ---------------------------------------------------------------------------
+company_guidance_fy2026:
+  - source: dnl_fy25
+    basis: total capital expenditure for Dyno Nobel
+    range_aud_m: [280, 330]
+  - source: dnl_1h26
+    basis: total capital expenditure for continuing operations
+    range_aud_m: [250, 300]
+    note: >
+      1H26 continuing-operations capex was 95.1 against revenue of 1,609.8, a
+      light half -- turnaround spend was 1.8 against 56.8 in 1H25. Revenue rose
+      11.4% on the prior corresponding period while capex fell 42%.
+
+half_year_1h26:
+  source: dnl_1h26
+  units: AUD m
+  revenue_continuing: 1609.8
+  revenue_discontinued: 288.0
+  capex_continuing: 95.1
+  capex_discontinued: 33.2

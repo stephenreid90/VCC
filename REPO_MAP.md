@@ -3,10 +3,10 @@
 _Generated 2026-09-07 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `5cb2329 Item 11 as a workbook the owner can check by hand` on `main`
-- Unpushed commits: **2**
-- Tracked files: 307
-- Untracked files: 1
+- HEAD: `f7fb833 Item 11 argued in full, and the capex anchor examined` on `main`
+- Unpushed commits: **3**
+- Tracked files: 308
+- Untracked files: 2
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -240,6 +240,8 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
 ## Analyses (workbooks)
 
+  - `dnl_capex_anchor_evidence.md` (8.3KB)
+  - `dnl_capex_history.yaml` (5.1KB)
   - `dnl_item11_capital_intensity.xlsx` (35.5KB)
   - `dnl_item11_four_positions.md` (26.4KB)
   - **csl/**
@@ -316,5 +318,6 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 Not in git. Either commit them or clear them — an untracked file is invisible
 to anyone who clones the repo, and is the most common way work gets lost.
 
-- `analyses/dnl_item11_four_positions.md`
+- `analyses/dnl_capex_anchor_evidence.md`
+- `analyses/dnl_capex_history.yaml`
 
