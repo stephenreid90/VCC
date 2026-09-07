@@ -1,12 +1,12 @@
 # REPO_MAP — what exists, and where
 
-_Generated 2026-08-25 by `scripts/repo_inventory.py`. **Regenerate at the start of
+_Generated 2026-09-07 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `d0f3adf Session handover: item 11 sized, and it is a third of the company` on `main`
-- Unpushed commits: **0**
-- Tracked files: 302
-- Untracked files: 3
+- HEAD: `5cb2329 Item 11 as a workbook the owner can check by hand` on `main`
+- Unpushed commits: **2**
+- Tracked files: 307
+- Untracked files: 1
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -240,6 +240,8 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
 ## Analyses (workbooks)
 
+  - `dnl_item11_capital_intensity.xlsx` (35.5KB)
+  - `dnl_item11_four_positions.md` (26.4KB)
   - **csl/**
     - `csl_discussion_v1_2026-06-25.docx` (17.8KB)
     - `csl_discussion_v1_2026-06-25.pdf` (125.4KB)
@@ -314,7 +316,5 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 Not in git. Either commit them or clear them — an untracked file is invisible
 to anyone who clones the repo, and is the most common way work gets lost.
 
-- `design/methodology/horizon_variant_sets.yaml`
-- `scripts/size_horizon_variants.py`
-- `tests/dcf/test_horizon_variant_sets.py`
+- `analyses/dnl_item11_four_positions.md`
 

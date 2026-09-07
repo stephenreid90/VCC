@@ -192,6 +192,99 @@ def run_item_11(cfg: dict, set_name: str = "current") -> Dict[str, Dict[str, flo
     return out
 
 
+def plan_for_position(cfg: dict, spec: dict, scenario_id: str, position: dict):
+    """The plan for one scenario under one item 11 position."""
+    plan = build_plan(cfg, spec, scenario_id)
+    kind = position["capital_growth"]
+    if kind == "derived":
+        return plan
+    if kind == "revenue":
+        regrown = replica.hold_capital_intensity(plan)
+    else:
+        regrown = replica.grow_capital_at(
+            plan, capital_growth_path(cfg, spec, scenario_id, position, plan)
+        )
+    return _apply_terminal(cfg, spec, regrown, regrown, _is_arc_scenario(cfg, scenario_id))
+
+
+def dupont(cfg: dict, position_name: str, scenario_id: str,
+           set_name: str = "current") -> Dict[str, float]:
+    """The return decomposition behind one position, for one scenario.
+
+    ROIC is NOPAT margin times capital turnover. Reporting both factors at the
+    valuation date and in the terminal says which of the two a position is
+    relying on -- and every position here relies on the same one, which is the
+    finding item 11 turns on.
+
+    The physical reading is reported alongside: what the fixed asset base does in
+    real terms against what volume does. A capital plan that is arithmetically
+    coherent can still assert an implausible amount of asset productivity, and
+    that assertion is invisible in the money figures.
+    """
+    name = _current_set_name(cfg) if set_name == "current" else set_name
+    spec = cfg["sets"][name]
+    position = cfg["item_11_positions"][position_name]
+    inp = engine_inputs(cfg, scenario_id)
+    plan = plan_for_position(cfg, spec, scenario_id, position)
+    res = replica.run(plan)
+    d = res.diagnostics
+
+    wc, da, g = plan.working_capital_intensity, plan.da_pct_revenue, plan.terminal_growth
+    ic_open = plan.invested_capital_opening
+    rev_open, rev_final = plan.base_year_revenue, res.revenue[-1]
+    ic_final = d["invested_capital_final_explicit"]
+    fixed_open = ic_open - wc * rev_open
+    fixed_final = ic_final - wc * rev_final
+    horizon = plan.horizon_years
+
+    margin_open = plan.base_ebit_margin * (1.0 - plan.stub_tax_rate)
+    turnover_open = rev_open / ic_open
+    margin_terminal = d["terminal_nopat_margin"]
+    turnover_terminal = d["terminal_revenue"] / ic_final
+
+    volume = _chain_rate(cfg, scenario_id, "B25")
+    volume_cumulative = (1.0 + volume) ** horizon - 1.0
+    fixed_real = fixed_final / (1.0 + g) ** horizon
+    ebitda_margin = res.ebit_margin[-1] + da
+
+    return {
+        "value_per_share": res.value_per_share,
+        "capex_pct_y1": plan.capex_pct[0],
+        "capex_pct_final": plan.capex_pct[-1],
+        "capex_over_ebitda_final": plan.capex_pct[-1] / ebitda_margin,
+        "terminal_capex_pct": plan.terminal_capex_pct_revenue,
+        "terminal_capex_over_ebitda": plan.terminal_capex_pct_revenue / ebitda_margin,
+        "revenue_growth_cumulative": rev_final / rev_open - 1.0,
+        "invested_capital_open": ic_open,
+        "invested_capital_final": ic_final,
+        "invested_capital_growth": ic_final / ic_open - 1.0,
+        "ic_over_revenue_open": ic_open / rev_open,
+        "ic_over_revenue_final": ic_final / rev_final,
+        "fixed_capital_open": fixed_open,
+        "fixed_capital_final": fixed_final,
+        "fixed_capital_growth_nominal": fixed_final / fixed_open - 1.0,
+        "fixed_capital_growth_real": fixed_real / fixed_open - 1.0,
+        "volume_growth_annual": volume,
+        "volume_growth_cumulative": volume_cumulative,
+        "asset_productivity_implied": (1.0 + volume_cumulative) / (fixed_real / fixed_open) - 1.0,
+        "nopat_margin_open": margin_open,
+        "turnover_open": turnover_open,
+        "roic_open": margin_open * turnover_open,
+        "nopat_margin_terminal": margin_terminal,
+        "turnover_terminal": turnover_terminal,
+        "roic_terminal": d["terminal_roic_on_capital"],
+        "roic_over_wacc": d["terminal_roic_on_capital"] / plan.wacc,
+        "roic_if_only_margin_moved": margin_terminal * turnover_open,
+        "roic_if_only_turnover_moved": margin_open * turnover_terminal,
+        "terminal_reinvestment_rate": d["terminal_reinvestment_rate"],
+        "roic_on_new_capital": d["terminal_roic_implied"],
+        "terminal_share_of_ev": res.terminal_share_of_ev,
+        "wacc": plan.wacc,
+        "terminal_growth": g,
+        "da_pct_revenue": da,
+    }
+
+
 def _current_set_name(cfg: dict) -> str:
     current = [n for n, s in cfg["sets"].items() if s.get("status") == "current"]
     if len(current) != 1:
