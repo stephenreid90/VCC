@@ -3,10 +3,10 @@
 _Generated 2026-09-14 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `ffc084d D-48 and D-49 implemented end to end, and the rates stop being stored` on `main`
-- Unpushed commits: **11**
+- HEAD: `fb4a14e The bridge note says which file wins, and CLAUDE.md makes that a convention` on `main`
+- Unpushed commits: **0**
 - Tracked files: 312
-- Untracked files: 0
+- Untracked files: 1
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -193,6 +193,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `test_dcf.py` (1.4KB)
   - `test_derivation.py` (1.3KB)
   - `test_engine_workbook.py` (4.6KB)
+  - `test_generator_scripts_parse.py` (1.5KB)
   - `test_implied_emrp.py` (2.1KB)
   - `test_ssot_lint.py` (27.7KB)
   - `test_three_statement.py` (694B)
@@ -232,9 +233,6 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
 ## UI generator
 
-  - `csl_scenario_interface.html` (159.9KB)
-  - `dnl_scenario_interface.html` (211.1KB)
-  - `wbc_scenario_interface.html` (159.6KB)
   - **_generator/**
     - `README.md` (893B)
     - `beta_data.py` (10.0KB)
@@ -317,4 +315,11 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `wbc_muddle_through_valuation_v4_formulas.xlsx` (12.5KB)
       - `wbc_scenarios_comparison_v1.xlsx` (11.6KB)
       - `wbc_scenarios_comparison_v2.xlsx` (11.6KB)
+
+## Untracked files
+
+Not in git. Either commit them or clear them — an untracked file is invisible
+to anyone who clones the repo, and is the most common way work gets lost.
+
+- `tests/test_generator_scripts_parse.py`
 

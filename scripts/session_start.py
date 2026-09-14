@@ -26,10 +26,10 @@ ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_BASES = {"DNL": "1.989", "WBC": "30.03", "CSL": "195.78"}  # DNL re-pinned 14 Sep 2026 (D-48/D-49/D-50)
 
 
-def run(cmd: list[str], timeout: int = 900) -> tuple[int, str]:
+def run(cmd: list[str], timeout: int = 900, cwd: Path | None = None) -> tuple[int, str]:
     try:
         p = subprocess.run(
-            cmd, cwd=ROOT, capture_output=True, text=True, timeout=timeout
+            cmd, cwd=cwd or ROOT, capture_output=True, text=True, timeout=timeout
         )
         return p.returncode, (p.stdout + p.stderr).strip()
     except Exception as exc:  # pragma: no cover
@@ -76,7 +76,17 @@ def main() -> int:
             problems.append("SSOT ratchet failing")
 
     section("3. Base ties")
-    cfg = ROOT / "ui_prototypes" / "_generator" / "cfgs_gen.json"
+    # cfgs_gen.json is gitignored and nothing else regenerates it, so reading it
+    # without rebuilding compares the ratified levels against whatever was last
+    # built on this machine. On 14 Sep 2026 that reported two stale failures and
+    # hid a syntax error in build_cfgs.py that meant no rebuild had happened at
+    # all. Strike the tie on current code or do not strike it.
+    gen = ROOT / "ui_prototypes" / "_generator"
+    rc, msg = run([sys.executable, "build_cfgs.py"], timeout=600, cwd=gen)
+    print(f"   {'ok ' if rc == 0 else 'FAIL'} rebuild    {msg.splitlines()[-1] if msg else ''}")
+    if rc:
+        problems.append("build_cfgs.py failed — base ties below are stale or absent")
+    cfg = gen / "cfgs_gen.json"
     if cfg.exists():
         import json
 
@@ -88,8 +98,8 @@ def main() -> int:
             if not ok:
                 problems.append(f"{k} base tie moved: {got} != {want}")
     else:
-        print("   -   cfgs_gen.json absent (gitignored). Rebuild:")
-        print("       cd ui_prototypes/_generator && python build_cfgs.py && python gen_ui.py")
+        print("   -   cfgs_gen.json still absent after the rebuild above.")
+        problems.append("cfgs_gen.json absent — base ties not checked")
 
     section("4. Git state")
     # refresh the remote ref first, or "unpushed" reports a stale count
