@@ -3,8 +3,8 @@
 _Generated 2026-09-14 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `72d8033 The capex anchor gets a series, and the series disagrees with it` on `main`
-- Unpushed commits: **4**
+- HEAD: `6595e62 The observed-intensity rule, sized before it is ruled` on `main`
+- Unpushed commits: **5**
 - Tracked files: 310
 - Untracked files: 0
 
