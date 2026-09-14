@@ -1,0 +1,190 @@
+# Denali trade working capital — the observed series
+#
+# Raw observations only. Nothing here is derived and nothing here is an
+# assumption: every figure is read directly off the source named below, in the
+# units and on the definition the company itself publishes. The intensity that
+# the valuation consumes is computed from this file by committed code and is
+# never stored (D-16, D-48).
+#
+# WHY THIS FILE EXISTS
+#
+# D-31 held Denali's working-capital intensity at a single FY2025 observation,
+# saying plainly that one year was too thin to round confidently and that it
+# should be revisited when a genuine two-year average could be struck.
+# `design/methodology/dnl_working_capital_derivation.md` §5 makes the same
+# complaint under the heading "the evidence is thinner than I would like": FY25
+# was the only reported balance sheet in the register and FY2021-FY2024 in the
+# UI generator are labelled mock placeholders, so there was no trend to test.
+#
+# The obvious repair — strike the intensity over the FY2024-FY2025 window that
+# D-48 uses for the capex and depreciation pair — is NOT AVAILABLE, and the
+# reason matters. A statement of financial position is not restated for
+# discontinued operations the way an income statement is. The FY2024 comparative
+# in the FY25 annual report is therefore the pre-demerger group: cash 1,068.9
+# against FY25's 647.2, inventories 785.3 against 519.1, current tax liabilities
+# 238.3 against 8.7. Pairing that balance sheet with continuing-operations
+# revenue would be exactly the entity mismatch D-50 was written to stop. D-48's
+# window works for capex and depreciation only because those come from the
+# segment note, which IS restated; working capital has no segment equivalent.
+#
+# What is available instead is the series below, published by the company in its
+# own half-year results announcement, on a consistent definition, across nine
+# periods. Two of those periods are cleanly post-demerger.
+
+source:
+  document: data/financials/historical/dnl/dnl_1h26_results_announcement_2026.pdf
+  table: "DYNO NOBEL LIMITED — FINANCIAL POSITION"
+  units: AUD m
+  extracted: 2026-09-14
+  extraction_method: "pdftotext -layout; figures transcribed unaltered"
+
+# The company's published definition, which is NARROWER than the one D-29/D-31
+# ratified. Recorded explicitly so the two are never conflated.
+definition:
+  name: trade_working_capital
+  formula: inventories + trade_debtors - trade_creditors
+  note: >
+    This is management's measure as published. It is not the ratified measure,
+    which is total current assets less cash, less total current liabilities plus
+    current interest-bearing debt, and which reproduces D-31's rate exactly on
+    FY2025. On the same FY2025 balance sheet the two measures do not agree:
+    the statutory construction in dnl_working_capital_derivation.md §2 gives
+    625.9, this series gives 608.8. The difference is definitional, not an
+    error — the published measure uses management's trade debtor and trade
+    creditor lines rather than the statutory trade-and-other captions. Whichever
+    measure is used must be used on both the numerator and every period of the
+    series, and must be the measure the UI discloses.
+
+# demerger_status: which entity each observation belongs to. The Incitec Pivot
+# fertilisers demerger completed March 2025, so only the final two observations
+# are the entity being valued. The earlier periods are recorded for context and
+# are NOT eligible for the strike window.
+observations:
+  - period: 2026-03-31
+    label: "March 2026 HY"
+    demerger_status: post
+    cash_and_equivalents: 175.4
+    inventories: 491.4
+    trade_debtors: 526.4
+    trade_creditors: 441.0
+    trade_working_capital_published: 576.8
+
+  - period: 2025-09-30
+    label: "September 2025 FY"
+    demerger_status: post
+    cash_and_equivalents: 647.2
+    inventories: 519.1
+    trade_debtors: 488.0
+    trade_creditors: 398.3
+    trade_working_capital_published: 608.8
+
+  - period: 2025-03-31
+    label: "March 2025 HY"
+    demerger_status: transition
+    cash_and_equivalents: 557.2
+    inventories: 553.3
+    trade_debtors: 382.5
+    trade_creditors: 454.5
+    trade_working_capital_published: 481.3
+    note: >
+      The demerger completed during this half and the balance sheet still
+      carries 329.5 of net assets classified as held for sale. Excluded from the
+      strike window as neither one entity nor the other.
+
+  - period: 2024-09-30
+    label: "September 2024 FY"
+    demerger_status: pre
+    cash_and_equivalents: 1068.9
+    inventories: 785.3
+    trade_debtors: 615.3
+    trade_creditors: 558.5
+    trade_working_capital_published: 842.1
+
+  - period: 2024-03-31
+    label: "March 2024 HY"
+    demerger_status: pre
+    cash_and_equivalents: 1401.3
+    inventories: 1055.1
+    trade_debtors: 638.0
+    trade_creditors: 902.6
+    trade_working_capital_published: 790.5
+
+  - period: 2023-09-30
+    label: "September 2023 FY"
+    demerger_status: pre
+    cash_and_equivalents: 399.4
+    inventories: 817.4
+    trade_debtors: 538.4
+    trade_creditors: 782.1
+    trade_working_capital_published: 573.7
+
+  - period: 2023-03-31
+    label: "March 2023 HY"
+    demerger_status: pre
+    cash_and_equivalents: 344.4
+    inventories: 1059.2
+    trade_debtors: 582.4
+    trade_creditors: 799.4
+    trade_working_capital_published: 842.2
+
+  - period: 2022-09-30
+    label: "September 2022 FY"
+    demerger_status: pre
+    cash_and_equivalents: 763.5
+    inventories: 993.6
+    trade_debtors: 696.1
+    trade_creditors: 1073.8
+    trade_working_capital_published: 615.9
+
+  - period: 2022-03-31
+    label: "March 2022 HY"
+    demerger_status: pre
+    cash_and_equivalents: 215.3
+    inventories: 978.4
+    trade_debtors: 602.1
+    trade_creditors: 802.9
+    trade_working_capital_published: 777.6
+
+# Revenue, for the denominator. Recorded separately from the balance-sheet
+# series because it comes from a different table and carries its own entity
+# question.
+revenue_observations:
+  - period: FY2025
+    label: "Year to 30 September 2025"
+    basis: continuing_operations
+    revenue: 3710.1
+    source: data/financials/dnl.yaml working_capital_history
+
+  - period: 1H2026
+    label: "Half to 31 March 2026"
+    basis: explosives
+    revenue: 1609.8
+    source: "1H26 results announcement, revenue split — explosives"
+
+  - period: 1H2025
+    label: "Half to 31 March 2025"
+    basis: explosives
+    revenue: 1473.0
+    source: "1H26 results announcement, prior-comparative revenue split — explosives"
+
+# OPEN — the denominator for the March 2026 observation is not settled and is
+# deliberately not resolved here.
+#
+# A balance sheet struck at 31 March must be paired with a revenue figure
+# covering the twelve months to that date, not a half-year. The obvious
+# construction is FY2025 + 1H2026 - 1H2025. But the three revenue figures above
+# do not sit comfortably together: that construction implies a second half of
+# FY2025 far larger than the first, which is either a real seasonal and
+# post-demerger volume skew or a sign that the FY2025 figure and the half-year
+# splits are drawn on different bases. Until that is resolved from the accounts
+# rather than by arithmetic, the March 2026 intensity should not be published.
+#
+# The September 2025 observation has no such problem: balance sheet and revenue
+# are the same entity, the same basis and the same date.
+strike_window:
+  status: NOT_YET_SET
+  eligible_periods: [2025-09-30, 2026-03-31]
+  blocked_on: >
+    Confirming the FY2025 revenue basis against the half-year splits, so that a
+    trailing-twelve-month denominator to 31 March 2026 can be constructed from
+    figures that belong together. Recorded rather than assumed (D-50).

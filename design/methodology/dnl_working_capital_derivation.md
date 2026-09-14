@@ -1,5 +1,20 @@
 # DNL working capital — derivation and the case for changing it
 
+> **Status note, 14 September 2026.** The working-capital half of this paper stands and
+> its recommendation has been accepted. The other half has NOT: section 8 recommends
+> setting terminal capex equal to D&A at the same time, and D-49 retired that rule the
+> day before this note was written — terminal capex is now depreciation plus g times the
+> fixed capital base. Read section 6's costings with that in mind; they bundle two changes
+> and only one of them is live.
+>
+> Section 5's complaint that the evidence is thinner than it should be has since been
+> answered in part. The company publishes a nine-period trade-working-capital series in
+> its half-year results announcement, two periods of which are cleanly post-demerger;
+> it is transcribed with its provenance in `analyses/dnl_trade_working_capital_history.yaml`.
+> That series is on a NARROWER definition than the one derived here and the two do not
+> agree on the same balance sheet, which is recorded in that file rather than reconciled
+> away.
+
 **Status: CLOSED and implemented, 23 August 2026.** Superseded in two places by
 what was actually ratified, and kept because the reasoning is still the record of how
 we got there.
