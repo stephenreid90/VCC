@@ -141,6 +141,21 @@ and audit the draft against it before handing it back.
    name. Exactly one set is `current`; the others name what superseded them. Extend that
    pattern rather than opening a new scratch file.
 
+## Bridge notes and the live layer
+
+A bridge note in `notes/bridge/` is a **travelling snapshot**, written so the first exchange
+of a new chat is not spent reconstructing context. It is not the system of record and it does
+not update itself: it freezes on the day it is written.
+
+`WORKING_NOTES.md` is the live layer and is maintained. **Where a bridge note and
+`WORKING_NOTES.md` disagree, `WORKING_NOTES.md` wins.**
+
+Every bridge note therefore says so at the top, and its reading order names
+`WORKING_NOTES.md` explicitly as the authoritative statement of where things are rather than
+listing it among other files. A bridge note that reads as self-sufficient invites the next
+session to skip the file that is actually current, which is how a superseded number gets
+quoted back as live.
+
 ## Test companies
 
 1. **DNL** — industrial explosives, single-segment post-demerger (formerly IPL; renamed

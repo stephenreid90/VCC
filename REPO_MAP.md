@@ -3,8 +3,8 @@
 _Generated 2026-09-14 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `9ac5c80 Bridge note: renumber and bring the still-open list up to date` on `main`
-- Unpushed commits: **10**
+- HEAD: `ffc084d D-48 and D-49 implemented end to end, and the rates stop being stored` on `main`
+- Unpushed commits: **11**
 - Tracked files: 312
 - Untracked files: 0
 
