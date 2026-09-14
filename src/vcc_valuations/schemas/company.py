@@ -10,9 +10,9 @@ overlay rather than time-keying segment weights.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Literal, Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from vcc_valuations.schemas.common import (
     CorporateActionKind,
@@ -24,6 +24,9 @@ from vcc_valuations.schemas.common import (
 
 
 # ---- Per-segment positioning sub-blocks ----
+
+
+MoatSourceRole = Literal["rent", "barrier", "both"]
 
 
 class Moat(BaseModel):
@@ -38,8 +41,38 @@ class Moat(BaseModel):
             "regulatory | resource | patent | distribution | data."
         ),
     )
+    source_roles: Optional[Dict[str, MoatSourceRole]] = Field(
+        None,
+        description=(
+            "D-43a. What each source actually does: 'rent' confers a cash "
+            "advantage with an end date, 'barrier' is what stops a rival taking "
+            "the business, 'both' is both. A contractual or statutory expiry "
+            "dates a rent and is carried in the explicit period; the terminal "
+            "decay horizon comes from the longest-lived barrier. Keys must "
+            "match 'sources' exactly where declared."
+        ),
+    )
     durability: Durability
     evidence: str
+
+    @field_validator("source_roles")
+    @classmethod
+    def _roles_match_sources(cls, v, info):
+        if v is None:
+            return v
+        sources = set(info.data.get("sources") or [])
+        declared = set(v)
+        if declared - sources:
+            raise ValueError(
+                f"source_roles names sources that are not declared: "
+                f"{sorted(declared - sources)}"
+            )
+        if sources - declared:
+            raise ValueError(
+                f"source_roles is partial — D-43a needs a role for every source; "
+                f"missing {sorted(sources - declared)}"
+            )
+        return v
 
 
 class CostPositionBlock(BaseModel):

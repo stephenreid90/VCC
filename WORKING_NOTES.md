@@ -66,13 +66,17 @@ two stale open items closed, one defect on main fixed, and two gate weaknesses c
    read rather than asserted. Occasioned by AI Lag rising above Muddle Through under D-49
    with no stated channel behind either the margin overlay or the growth setting.
 9. **D-57** — Denali's working-capital intensity stays as ratified under D-31. See below.
-10. **D-43a** — drafted as §12a of the horizon paper and still PROPOSED, awaiting a ruling.
-    A contract dates the RENT, not the barrier. Resolves the standing contradiction between
-    a ten-to-fifteen year moat horizon and gas contracts expiring six years out, without
-    moving a number: the resource leg is rent-bearing and already dated in the margin path,
-    the scale and switching-cost legs are barrier-bearing and carry no expiry.
+10. **D-43 and D-43a** — RULED, and implemented the same day. A contract dates the RENT,
+    not the barrier. The original clause that a contractual expiry sets the horizon directly
+    does not stand. `Moat.source_roles` is in the schema with a validator that roles cover
+    every source; Denali declares scale, switching-cost and regulatory as barriers and the
+    resource leg — the gas contracts — as a rent, already dated in the margin path under
+    D-40. The standing contradiction between a ten-to-fifteen year horizon and an FY2032
+    expiry is closed in the data, not just on paper, and no number moved. WBC's four moat
+    blocks and CSL's three are baselined in `tests/moat_role_baseline.json`: the list may
+    only shrink, and a new block cannot be added without roles.
 11. **D-38 and D-39 retired** rather than ratified, superseded by D-48 and D-49. The
-    PROPOSED list is now D-35, D-36, D-37, D-42, D-43 and D-43a.
+    PROPOSED list is now D-35, D-36, D-37 and D-42.
 
 ### Two open items closed, both stale, and a lesson about the register
 

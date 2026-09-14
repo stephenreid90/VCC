@@ -1,0 +1,12 @@
+{
+  "_why": "D-43a baseline. Every moat block listed here declares sources but not roles. The judgement of what each source actually does - a rent with an end date, or a barrier that stops a rival - has not been made for these yet. The list may only shrink: a block that acquires roles must be removed from it, and a new block may not be added without one. Generated 14 Sep 2026 when D-43a was ratified and Denali was declared.",
+  "undeclared": [
+    "csl:company_position.segments[0].moat",
+    "csl:company_position.segments[1].moat",
+    "csl:company_position.segments[2].moat",
+    "wbc:company_position.segments[0].moat",
+    "wbc:company_position.segments[1].moat",
+    "wbc:company_position.segments[2].moat",
+    "wbc:company_position.segments[3].moat"
+  ]
+}

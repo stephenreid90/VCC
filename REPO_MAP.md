@@ -3,10 +3,10 @@
 _Generated 2026-09-14 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `e88102a The working-capital rate stays, and two stale items close` on `main`
-- Unpushed commits: **0**
+- HEAD: `b6d2259 The rebuild I added died on Windows, and the guard now catches the class` on `main`
+- Unpushed commits: **1**
 - Tracked files: 317
-- Untracked files: 0
+- Untracked files: 2
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -19,7 +19,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
 | Path | Present | What it is |
 |---|---|---|
-| `data/companies/dnl.yaml` | yes (41.1KB) | company position + layer-2 method (judgement) |
+| `data/companies/dnl.yaml` | yes (42.0KB) | company position + layer-2 method (judgement) |
 | `data/companies/dnl.md` | yes (13.5KB) | company narrative |
 | `data/companies/dnl_documents.yaml` | yes (8.5KB) | document register |
 | `data/financials/dnl.yaml` | yes (12.3KB) | curated layer-1 financials (a SUMMARY — check for raw sources too) |
@@ -57,7 +57,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `csl.yaml` (33.4KB)
     - `csl_documents.yaml` (8.3KB)
     - `dnl.md` (13.5KB)
-    - `dnl.yaml` (41.1KB)
+    - `dnl.yaml` (42.0KB)
     - `dnl_documents.yaml` (8.5KB)
     - `wbc.md` (7.6KB)
     - `wbc.yaml` (35.9KB)
@@ -123,7 +123,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `csl_discount_rate_fork.md` (11.0KB)
     - `dnl_working_capital_derivation.md` (12.1KB)
     - `equity_bridge_and_valuation_mechanics.md` (70.6KB)
-    - `horizon_and_terminal_convergence.md` (46.2KB)
+    - `horizon_and_terminal_convergence.md` (46.4KB)
     - `horizon_variant_sets.yaml` (9.5KB)
     - `working_capital_treatment.md` (23.3KB)
   - **reference/**
@@ -173,7 +173,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `__init__.py` (3.1KB)
       - `assumption.py` (4.0KB)
       - `common.py` (4.9KB)
-      - `company.py` (11.7KB)
+      - `company.py` (13.0KB)
       - `driver.py` (4.0KB)
       - `frameworks.py` (4.4KB)
       - `industry.py` (14.6KB)
@@ -184,6 +184,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
   - `__init__.py` (0B)
   - `conftest.py` (1.3KB)
+  - `moat_role_baseline.json` (768B)
   - `ssot_basis_baseline.json` (494B)
   - `ssot_intra_file_baseline.json` (593B)
   - `ssot_lint_baseline.json` (6.2KB)
@@ -195,8 +196,9 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `test_derivation.py` (1.3KB)
   - `test_dnl_trade_working_capital_series.py` (3.0KB)
   - `test_engine_workbook.py` (4.6KB)
-  - `test_generator_scripts_parse.py` (1.5KB)
+  - `test_generator_scripts_parse.py` (3.2KB)
   - `test_implied_emrp.py` (2.1KB)
+  - `test_moat_source_roles.py` (4.1KB)
   - `test_ssot_lint.py` (27.7KB)
   - `test_three_statement.py` (694B)
   - `test_trade_working_capital_intensity.py` (3.2KB)
@@ -319,4 +321,12 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `wbc_muddle_through_valuation_v4_formulas.xlsx` (12.5KB)
       - `wbc_scenarios_comparison_v1.xlsx` (11.6KB)
       - `wbc_scenarios_comparison_v2.xlsx` (11.6KB)
+
+## Untracked files
+
+Not in git. Either commit them or clear them — an untracked file is invisible
+to anyone who clones the repo, and is the most common way work gets lost.
+
+- `tests/moat_role_baseline.json`
+- `tests/test_moat_source_roles.py`
 

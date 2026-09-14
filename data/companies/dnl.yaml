@@ -178,6 +178,20 @@ company_position:
           - switching_cost
           - regulatory
           - resource
+        # D-43a: what each source actually does. The resource leg IS the gas
+        # contracts, and a contract confers a rent with an end date rather than
+        # a barrier: it is worth roughly two hundred basis points of US margin
+        # and it rolls off through the re-pricing window per D-40, which is
+        # where a dated thing belongs. The other three do not expire on a date.
+        # A rival wanting the position at expiry needs plant, licences, on-site
+        # capacity and enough volume to absorb the share, all arriving at the
+        # right moment, and that assembly lag is what the decay horizon
+        # measures. So the horizon comes from these three, not from FY2032.
+        source_roles:
+          scale: barrier
+          switching_cost: barrier
+          regulatory: barrier
+          resource: rent
         durability: moderate
         evidence: >
           Scale: top 2 globally; cost advantage in US from gas-contract

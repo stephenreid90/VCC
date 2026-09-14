@@ -554,7 +554,7 @@ Treating the expiry as the decay horizon therefore double-counts. The margin pat
 removes the advantage; shortening the excess-return horizon to the same date removes it
 again, and attributes to the contract a protective role the contract was never carrying.
 
-**D-43a (PROPOSED, amends D-43).** A moat source is declared as rent-bearing,
+**D-43a (RULED 14 September 2026, amends D-43).** A moat source is declared as rent-bearing,
 barrier-bearing, or both.
 
 1. A contractual or statutory expiry dates the **rent**. It is implemented in the explicit
@@ -779,8 +779,8 @@ decision turns on.
 | D-40 | DNL gas roll-off **holds at −1.5pp**; only the phasing moves, concentrating in FY2028–FY2030 and completing FY2032. | RULED 25 Aug |
 | D-41 | DNL Disorderly Climate capex: +3.0pp through Y5, decaying across Y6–Y8 to a persistent +1.0pp. | RULED 25 Aug |
 | D-42 | Terminal ROIC (ROE for banks) is computed at translation time and surfaced against WACC; an excess requires a §10.6-compliant defended exception. Non-blocking, per the D-07 precedent. | PROPOSED |
-| D-43 | The decay horizon for a terminal excess return is derived from the Five Forces ratings plus a declared tiered `moat_source`, not judged. A contractual or statutory expiry sets the horizon directly. Perpetual is admissible only for a statutory barrier, with a named threat and a finite-horizon sensitivity. | PROPOSED — **amended by D-43a, §12a** |
-| D-43a | Amends D-43. A moat source is declared rent-bearing, barrier-bearing or both. A contractual or statutory expiry dates the RENT and is implemented in the explicit period; the decay horizon is set by the longest-lived barrier-bearing source. Where the contract is itself the barrier, the two collapse and D-43's original reading applies. | PROPOSED |
+| D-43 | The decay horizon for a terminal excess return is derived from the Five Forces ratings plus a declared tiered `moat_source`, not judged. Perpetual is admissible only for a statutory barrier, with a named threat and a finite-horizon sensitivity. | **RULED 14 Sep 2026 as amended by D-43a.** The original clause that a contractual expiry sets the horizon directly does NOT stand — see §12a |
+| D-43a | Amends D-43. A moat source is declared rent-bearing, barrier-bearing or both. A contractual or statutory expiry dates the RENT and is implemented in the explicit period; the decay horizon is set by the longest-lived barrier-bearing source. Where the contract is itself the barrier, the two collapse and D-43's original reading applies. | **RULED 14 Sep 2026** — declared in the schema and for Denali the same day |
 | D-44 | Invested capital = net PP&E + intangibles + non-cash working capital. Goodwill excluded. The construction is disclosed in the UI. | RULED 25 Aug |
 | D-45 | Of terminal growth, return and reinvestment, g and ROIC are pinned and reinvestment is derived. Terminal growth carries a declared basis; alternative bases appear in the UI as disclosure, never as a user-selectable input. | RULED 25 Aug |
 | D-46 | A regulatory setting is assumed indefinite unless it is currently under public debate — recorded as an observable field with a source, not as a judgement. | RULED 25 Aug |
