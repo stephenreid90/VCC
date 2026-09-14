@@ -98,11 +98,11 @@
     "source": "fable-2026-08-13",
     "area": "Methodology",
     "issue": "<b>DNL terminal capitalises capex 7.0% against D&amp;A 7.3%</b> — the asset base runs down in perpetuity while revenue grows 2.5%. Worth <b>−AUD 0.079/share (−2.6%)</b>. Fable's number checks out.",
-    "treatment": "Bundle with the larger working-capital gap (M1) as one DNL reinvestment decision. Changes the audited workbook, not just the engine.",
+    "treatment": "<b>Closed 14 September 2026 by D-49.</b> Terminal capex is no longer depreciation alone: it is depreciation plus g times the fixed capital base, so the asset base compounds with revenue instead of running down. On the Denali build terminal capex now runs materially above D&amp;A by scenario, where it previously ran below. The open item predates the rule and was left open only because the register was not updated when D-49 landed. The working-capital half of the bundle (M1) stays open and is being taken separately.",
     "questions": [
       "Q4"
     ],
-    "status": "NEEDS",
+    "status": "DONE",
     "batch": "Batch 4"
   },
   {

@@ -523,6 +523,62 @@ admissible only for a tier-1 statutory barrier, must name the threat that would 
 must be sensitivity-tested against a finite horizon — because §12's table shows the
 assumption is worth 15% to 20% of terminal value, not a rounding.
 
+## 12a. Amendment to D-43 — a contract dates the rent, not the barrier
+
+D-43 as drafted says a contractual or statutory expiry "sets the horizon". Applied to
+Denali that produces a contradiction the impact matrix has been carrying for weeks: the
+moat is declared as scale plus switching cost plus resource, with a decay horizon of ten
+to fifteen years, while the gas contracts underwriting the resource leg expire by FY2032,
+six years from the valuation date. One artefact says fifteen years and another says six.
+
+The contradiction is not in the evidence. It is in the rule, which conflates two things a
+moat analysis has to keep apart.
+
+**The rent is the cash advantage.** Denali's long-term US gas contracts put its American
+operations in the bottom quartile of the cost curve, worth roughly two hundred basis
+points of margin. That advantage has an end date, because the contracts do. It is already
+modelled: the roll-off runs through the FY2028&ndash;FY2030 re-pricing window and completes
+FY2032 (D-40), and it sits in the explicit margin path where a dated thing belongs.
+
+**The barrier is what stops a rival taking the business.** That is a different question
+from what the incumbent currently earns, and for Denali it does not expire on a date. The
+on-site mobile manufacturing units sit inside customer mine sites; the offtake contracts
+run five to ten years and cover the substantial majority of revenue; the licensing,
+dangerous-goods and environmental regime that makes entry slow is unaffected by when a gas
+contract rolls. A competitor wanting the position at expiry does not merely need cheaper
+gas. It needs plant, licences, on-site capacity and enough volume to absorb the share, all
+arriving at the right moment. That assembly lag is a barrier in its own right, and it is
+what the decay horizon is supposed to measure.
+
+Treating the expiry as the decay horizon therefore double-counts. The margin path already
+removes the advantage; shortening the excess-return horizon to the same date removes it
+again, and attributes to the contract a protective role the contract was never carrying.
+
+**D-43a (PROPOSED, amends D-43).** A moat source is declared as rent-bearing,
+barrier-bearing, or both.
+
+1. A contractual or statutory expiry dates the **rent**. It is implemented in the explicit
+   period, as a margin or growth path, and it does not by itself move the terminal
+   excess-return horizon.
+2. The **decay horizon** is set by the longest-lived *barrier-bearing* source in the
+   declared set, subject to the archetype's Five Forces ratings for entrants, rivalry and
+   substitutes.
+3. Where the contract *is* the barrier &mdash; no independent scale, switching-cost or
+   statutory source stands behind it &mdash; the two collapse and the original D-43 reading
+   applies: the expiry sets the horizon directly. This is the case the first draft had in
+   mind and it survives unchanged.
+4. A perpetual horizon remains admissible only for a tier-1 statutory barrier, with a named
+   threat and a finite-horizon sensitivity (D-46).
+5. The company file declares, per source, which of the two roles it plays, so that the
+   horizon and the margin path can be read against each other rather than assumed
+   consistent.
+
+For Denali this resolves the contradiction without moving a number: the resource leg is
+rent-bearing and dated to FY2032 in the margin path, the scale and switching-cost legs are
+barrier-bearing and carry no expiry, and the ten-to-fifteen year decay horizon stands on
+those. The sensitivity in &sect;12 &mdash; that halving the horizon costs a further 15&ndash;20% of
+terminal value &mdash; is unchanged and still applies.
+
 ## 13. Rulings, 25 August 2026
 
 **Invested capital excludes goodwill (D-44).** The base is net PP&E + intangibles +
@@ -723,7 +779,8 @@ decision turns on.
 | D-40 | DNL gas roll-off **holds at −1.5pp**; only the phasing moves, concentrating in FY2028–FY2030 and completing FY2032. | RULED 25 Aug |
 | D-41 | DNL Disorderly Climate capex: +3.0pp through Y5, decaying across Y6–Y8 to a persistent +1.0pp. | RULED 25 Aug |
 | D-42 | Terminal ROIC (ROE for banks) is computed at translation time and surfaced against WACC; an excess requires a §10.6-compliant defended exception. Non-blocking, per the D-07 precedent. | PROPOSED |
-| D-43 | The decay horizon for a terminal excess return is derived from the Five Forces ratings plus a declared tiered `moat_source`, not judged. A contractual or statutory expiry sets the horizon directly. Perpetual is admissible only for a statutory barrier, with a named threat and a finite-horizon sensitivity. | PROPOSED |
+| D-43 | The decay horizon for a terminal excess return is derived from the Five Forces ratings plus a declared tiered `moat_source`, not judged. A contractual or statutory expiry sets the horizon directly. Perpetual is admissible only for a statutory barrier, with a named threat and a finite-horizon sensitivity. | PROPOSED — **amended by D-43a, §12a** |
+| D-43a | Amends D-43. A moat source is declared rent-bearing, barrier-bearing or both. A contractual or statutory expiry dates the RENT and is implemented in the explicit period; the decay horizon is set by the longest-lived barrier-bearing source. Where the contract is itself the barrier, the two collapse and D-43's original reading applies. | PROPOSED |
 | D-44 | Invested capital = net PP&E + intangibles + non-cash working capital. Goodwill excluded. The construction is disclosed in the UI. | RULED 25 Aug |
 | D-45 | Of terminal growth, return and reinvestment, g and ROIC are pinned and reinvestment is derived. Terminal growth carries a declared basis; alternative bases appear in the UI as disclosure, never as a user-selectable input. | RULED 25 Aug |
 | D-46 | A regulatory setting is assumed indefinite unless it is currently under public debate — recorded as an observable field with a source, not as a judgement. | RULED 25 Aug |
