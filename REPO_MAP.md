@@ -3,10 +3,10 @@
 _Generated 2026-09-14 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `b6d2259 The rebuild I added died on Windows, and the guard now catches the class` on `main`
-- Unpushed commits: **1**
-- Tracked files: 317
-- Untracked files: 2
+- HEAD: `1ed4c74 D-43a ruled, and the moat says what each source actually does` on `main`
+- Unpushed commits: **2**
+- Tracked files: 319
+- Untracked files: 1
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -327,6 +327,5 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 Not in git. Either commit them or clear them — an untracked file is invisible
 to anyone who clones the repo, and is the most common way work gets lost.
 
-- `tests/moat_role_baseline.json`
-- `tests/test_moat_source_roles.py`
+- `notes/bridge/bridge_note_2026-09-14b.md`
 

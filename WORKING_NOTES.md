@@ -108,6 +108,11 @@ two stale open items closed, one defect on main fixed, and two gate weaknesses c
     denominator question resolved from the accounts: the 1H26 income statement labels its
     columns Group = Explosives + Discontinued, and the apparent second-half skew is the
     northern winter, which is an argument FOR averaging the two balance sheets.
+16b. **D-58** — an indefinite moat horizon is admissible for any barrier provided the
+    finite-horizon sensitivity is declared beside it. RULED but NOT ENFORCEABLE: the
+    decay horizon is prose inside `terminal_roic.rationale` in the impact matrix, not a
+    structured field, so there is nothing for a validator to read. Structuring it is the
+    implementation step for D-58 and for the unratified half of D-43.
 17. **It is derived and deliberately NOT consumed** (D-57). Once M1 turned out to be stale,
     what remained was a definitional change to a measure that already works, on two
     observations. The file is evidence held for the FY26 result. The ratified FY2025
