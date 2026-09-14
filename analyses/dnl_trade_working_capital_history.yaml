@@ -178,7 +178,11 @@ revenue_observations:
     label: "Half to 31 March 2026"
     basis: explosives
     revenue: 1609.8
-    source: "1H26 results announcement, revenue split — explosives"
+    source: >
+      1H26 results announcement, Income Statement Table 2. The table splits the
+      half three ways and the columns are labelled: Group 1,897.8 = Explosives
+      1,609.8 + Discontinued Operations 288.0. "Explosives" is the continuing
+      entity, so this is the same basis as the FY2025 figure above.
 
   - period: 1H2025
     label: "Half to 31 March 2025"
@@ -186,24 +190,47 @@ revenue_observations:
     revenue: 1473.0
     source: "1H26 results announcement, prior-comparative revenue split — explosives"
 
-# OPEN — the denominator for the March 2026 observation is not settled and is
-# deliberately not resolved here.
+# RESOLVED 14 September 2026. The denominator question is answered from the
+# accounts, not by arithmetic.
 #
-# A balance sheet struck at 31 March must be paired with a revenue figure
-# covering the twelve months to that date, not a half-year. The obvious
-# construction is FY2025 + 1H2026 - 1H2025. But the three revenue figures above
-# do not sit comfortably together: that construction implies a second half of
-# FY2025 far larger than the first, which is either a real seasonal and
-# post-demerger volume skew or a sign that the FY2025 figure and the half-year
-# splits are drawn on different bases. Until that is resolved from the accounts
-# rather than by arithmetic, the March 2026 intensity should not be published.
+# The 1H26 announcement's Income Statement (Table 2) labels its columns
+# explicitly: Group = Explosives + Discontinued Operations, 1,897.8 = 1,609.8 +
+# 288.0 for the half to 31 March 2026, and 2,250.7 = 1,473.0 + 777.7 for the
+# comparative half. "Explosives" is the continuing entity and is the same basis
+# as the FY2025 continuing-operations figure. So a trailing-twelve-month
+# denominator to 31 March 2026 can be built from figures that belong together:
+# FY2025 + 1H2026 - 1H2025.
 #
-# The September 2025 observation has no such problem: balance sheet and revenue
-# are the same entity, the same basis and the same date.
+# The apparent skew that blocked this yesterday is real and explicable rather
+# than a basis mismatch. The implied second half of FY2025 is much larger than
+# the first, because Denali's first half runs October to March and its largest
+# region is North America, where the northern winter suppresses mining activity.
+# The half-year balance sheets sit at opposite points of that cycle, which is an
+# argument FOR averaging the two rather than against it: a rate struck on
+# 30 September alone is struck at one end of a seasonal swing.
+
 strike_window:
-  status: NOT_YET_SET
-  eligible_periods: [2025-09-30, 2026-03-31]
-  blocked_on: >
-    Confirming the FY2025 revenue basis against the half-year splits, so that a
-    trailing-twelve-month denominator to 31 March 2026 can be constructed from
-    figures that belong together. Recorded rather than assumed (D-50).
+  status: SET
+  set_on: 2026-09-14
+  entity: "Dyno Nobel — continuing operations (explosives)"
+  window: "30 September 2025 and 31 March 2026"
+  level: "published trade working capital; continuing-operations revenue"
+  method: mean_of_period_intensities
+  periods:
+    - period: 2025-09-30
+      numerator: trade_working_capital_published
+      denominator_period: FY2025
+      denominator_note: "balance-sheet date is the fiscal year end; revenue is that year"
+    - period: 2026-03-31
+      numerator: trade_working_capital_published
+      denominator_period: TTM_2026-03-31
+      denominator_note: "FY2025 + 1H2026 - 1H2025, all continuing operations"
+  supersedes: >
+    D-31's single FY2025 observation on the statutory definition. D-31 said one
+    year was too thin to round confidently and asked to be revisited when a
+    genuine two-period average could be struck; this is that revisit.
+  caveat: >
+    Two observations six months apart is better than one and is still not a
+    long series. The seven pre-demerger periods above cannot extend it — they
+    belong to a different entity — so the window will not lengthen until a
+    second post-demerger full year lands at the FY26 result.

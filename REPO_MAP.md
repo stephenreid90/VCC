@@ -3,10 +3,10 @@
 _Generated 2026-09-14 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `d43ff63 Three rulings recorded, D-43 amended, and two proposals retired` on `main`
-- Unpushed commits: **2**
-- Tracked files: 313
-- Untracked files: 0
+- HEAD: `ff0e981 The ratified denominator checks out, and the asymmetry is named` on `main`
+- Unpushed commits: **5**
+- Tracked files: 315
+- Untracked files: 2
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -121,7 +121,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **methodology/**
     - `csl_cost_of_debt_and_target_structure.md` (13.4KB)
     - `csl_discount_rate_fork.md` (11.0KB)
-    - `dnl_working_capital_derivation.md` (11.2KB)
+    - `dnl_working_capital_derivation.md` (12.1KB)
     - `equity_bridge_and_valuation_mechanics.md` (70.6KB)
     - `horizon_and_terminal_convergence.md` (46.2KB)
     - `horizon_variant_sets.yaml` (9.5KB)
@@ -157,6 +157,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `translator.py` (55.5KB)
     - **assumptions/**
       - `__init__.py` (775B)
+      - `trade_working_capital.py` (5.6KB)
       - `wacc.py` (6.0KB)
     - **dcf/**
       - `__init__.py` (50B)
@@ -192,11 +193,13 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `test_csl_loads.py` (2.0KB)
   - `test_dcf.py` (1.4KB)
   - `test_derivation.py` (1.3KB)
+  - `test_dnl_trade_working_capital_series.py` (3.0KB)
   - `test_engine_workbook.py` (4.6KB)
   - `test_generator_scripts_parse.py` (1.5KB)
   - `test_implied_emrp.py` (2.1KB)
   - `test_ssot_lint.py` (27.7KB)
   - `test_three_statement.py` (694B)
+  - `test_trade_working_capital_intensity.py` (3.2KB)
   - `test_wbc_loads.py` (2.1KB)
   - `test_workbook_recalc_live.py` (3.3KB)
   - `test_working_capital.py` (2.8KB)
@@ -247,6 +250,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `dnl_capex_history.yaml` (4.9KB)
   - `dnl_item11_capital_intensity.xlsx` (35.5KB)
   - `dnl_item11_four_positions.md` (26.4KB)
+  - `dnl_trade_working_capital_history.yaml` (10.0KB)
   - **csl/**
     - `csl_discussion_v1_2026-06-25.docx` (17.8KB)
     - `csl_discussion_v1_2026-06-25.pdf` (125.4KB)
@@ -315,4 +319,12 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `wbc_muddle_through_valuation_v4_formulas.xlsx` (12.5KB)
       - `wbc_scenarios_comparison_v1.xlsx` (11.6KB)
       - `wbc_scenarios_comparison_v2.xlsx` (11.6KB)
+
+## Untracked files
+
+Not in git. Either commit them or clear them — an untracked file is invisible
+to anyone who clones the repo, and is the most common way work gets lost.
+
+- `src/vcc_valuations/assumptions/trade_working_capital.py`
+- `tests/test_trade_working_capital_intensity.py`
 

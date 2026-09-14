@@ -51,15 +51,28 @@ def test_every_period_declares_which_entity_it_belongs_to(series: dict) -> None:
         assert o["demerger_status"] in VALID_STATUS, o["label"]
 
 
-def test_the_strike_window_is_declared_even_while_unset(series: dict) -> None:
-    """D-50: a rate declares its basis. An unset window says so rather than defaulting."""
+def test_the_strike_window_declares_itself_either_way(series: dict) -> None:
+    """D-50: a rate declares its basis. An unset window says what it waits on.
+
+    A set window names entity, window, level and method, and every period it
+    selects must belong to the entity being valued — the seven pre-demerger
+    periods in the series are a different company and can never be drawn in.
+    """
     w = series["strike_window"]
     assert w["status"] in {"NOT_YET_SET", "SET"}
+
     if w["status"] == "NOT_YET_SET":
         assert w["blocked_on"].strip(), "an unset window must say what it is waiting on"
-    for p in w["eligible_periods"]:
-        match = [o for o in series["observations"] if str(o["period"]) == str(p)]
-        assert match, f"eligible period {p} is not in the series"
+        selected = [str(p) for p in w.get("eligible_periods", [])]
+    else:
+        for field in ("entity", "window", "level", "method"):
+            assert str(w[field]).strip(), f"a set window must declare {field}"
+        selected = [str(spec["period"]) for spec in w["periods"]]
+        assert selected, "a set window must select at least one period"
+
+    for p in selected:
+        match = [o for o in series["observations"] if str(o["period"]) == p]
+        assert match, f"period {p} is not in the series"
         assert match[0]["demerger_status"] == "post", (
-            f"eligible period {p} is not post-demerger — the entity would not match"
+            f"period {p} is not post-demerger — the entity would not match"
         )
