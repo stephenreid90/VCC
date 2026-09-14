@@ -153,7 +153,26 @@ revenue_observations:
     label: "Year to 30 September 2025"
     basis: continuing_operations
     revenue: 3710.1
-    source: data/financials/dnl.yaml working_capital_history
+    source: >
+      FY25 annual report, consolidated income statement — "Revenue 3,710.1",
+      confirmed against the segment note's "External sales from continuing
+      operations 3,710.1". CHECKED 14 Sep 2026 and it holds: the group figure
+      including the demerged fertilisers business is 5,345.2, of which 1,635.1
+      is discontinued. The ratified denominator behind D-31 is therefore on the
+      continuing-operations basis and matches the entity its balance sheet
+      belongs to. Previously carried in data/financials/dnl.yaml
+      working_capital_history with no stated basis.
+
+  - period: FY2024
+    label: "Year to 30 September 2024"
+    basis: continuing_operations
+    revenue: 3537.9
+    source: >
+      Same income statement, prior-year comparative. Recorded to make the point
+      explicit: an income statement IS restated for discontinued operations, so
+      a continuing-operations FY2024 revenue exists. A balance sheet is not, so
+      there is no FY2024 continuing-operations working capital to pair with it.
+      That asymmetry is the whole reason the D-48 window cannot be reused here.
 
   - period: 1H2026
     label: "Half to 31 March 2026"
