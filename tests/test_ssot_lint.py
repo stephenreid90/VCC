@@ -531,3 +531,84 @@ def test_working_capital_intensity_declared_for_every_non_exempt_company():
         else:
             assert result is not None, f"{company_id}: non-exempt company must produce an intensity"
             assert 0.0 <= result.result <= 1.0, f"{company_id}: intensity {result.result} out of range"
+
+
+# ---------------------------------------------------------------- check 13
+# Every rate in a company file is a ratio, and a ratio only means something if
+# its numerator and denominator come from the same entity, the same window and
+# the same level of the accounts. Four separate defects found between 25 August
+# and 14 September 2026 were all this one error: a capex rate taken from the
+# pre-demerger group and compared against a depreciation rate set to match it; a
+# 12.8% headline dividing group capex by continuing-operations revenue; a
+# depreciation rate anchored to an assumption rather than observed; and a base
+# EBIT margin whose cross-check is a pre-corporate segment range. D-48 fixed one
+# instance. This check is the class.
+BASIS_BASELINE = ROOT / "tests" / "ssot_basis_baseline.json"
+
+_RATIO_SUFFIXES = (
+    "_pct_revenue", "_pct_of_revenue", "_margin", "_intensity",
+    "_share", "_ratio",
+)
+_BASIS_KEYS = ("entity", "window", "level", "source")
+
+# Paths where a ratio is a scenario delta, a peer observation or a market datum
+# rather than a company rate struck off the accounts.
+_BASIS_EXEMPT = (
+    ".by_scenario.", ".peers.", "beta_peer_dataset", "_rationale",
+    ".rationale.", "market_data.", "impact_", ".drivers.",
+)
+
+
+def _ratio_fields_without_basis() -> list[str]:
+    out: list[str] = []
+
+    def walk(node, where: str, siblings: dict) -> None:
+        if isinstance(node, dict):
+            for k, v in node.items():
+                walk(v, f"{where}.{k}" if where else k, node)
+        elif isinstance(node, (int, float)) and not isinstance(node, bool):
+            leaf = where.rsplit(".", 1)[-1]
+            if not leaf.endswith(_RATIO_SUFFIXES):
+                return
+            if any(x in where for x in _BASIS_EXEMPT):
+                return
+            if not 0.0 < float(node) < 1.5:
+                return
+            basis = siblings.get(f"{leaf}_basis")
+            if isinstance(basis, dict) and all(k in basis for k in _BASIS_KEYS):
+                return
+            out.append(where)
+
+    for cid in _company_ids():
+        for rel in (f"data/companies/{cid}.yaml", f"data/financials/{cid}.yaml"):
+            path = ROOT / rel
+            if not path.exists():
+                continue
+            before = len(out)
+            walk(_load(path), "", {})
+            out[before:] = [f"{rel}::{w}" for w in out[before:]]
+    return sorted(out)
+
+
+def test_every_rate_declares_the_basis_it_was_struck_on():
+    """A ratio without a declared entity, window, level and source is not evidence.
+
+    Ratcheted like checks 3 and 10: a NEW undeclared rate fails, and a baselined
+    one that acquires a basis also fails, so the baseline can only tighten.
+    """
+    if not BASIS_BASELINE.exists():
+        pytest.skip("no baseline recorded yet — run scripts/ssot_lint_baseline.py")
+    baseline = set(json.loads(BASIS_BASELINE.read_text(encoding="utf-8")))
+    found = set(_ratio_fields_without_basis())
+    new = sorted(found - baseline)
+    assert not new, (
+        "A rate was added without declaring the basis it was struck on "
+        "(D-48):\n  " + "\n  ".join(new)
+        + "\nAdd a sibling '<field>_basis' with entity, window, level and source."
+    )
+    stale = sorted(baseline - found)
+    assert not stale, (
+        "Baseline entries no longer match — a rate has acquired a basis "
+        "declaration (good, regenerate so the ratchet tightens) or was "
+        "removed:\n  " + "\n  ".join(stale)
+    )

@@ -3,10 +3,10 @@
 _Generated 2026-09-14 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `6595e62 The observed-intensity rule, sized before it is ruled` on `main`
-- Unpushed commits: **5**
+- HEAD: `ac51c4a D-48 and D-49 ruled: the intensity pair is observed, the terminal base grows` on `main`
+- Unpushed commits: **6**
 - Tracked files: 310
-- Untracked files: 0
+- Untracked files: 1
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -183,6 +183,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
   - `__init__.py` (0B)
   - `conftest.py` (1.3KB)
+  - `ssot_basis_baseline.json` (806B)
   - `ssot_intra_file_baseline.json` (593B)
   - `ssot_lint_baseline.json` (6.3KB)
   - `test_adjustments.py` (1.6KB)
@@ -193,7 +194,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `test_derivation.py` (1.3KB)
   - `test_engine_workbook.py` (4.6KB)
   - `test_implied_emrp.py` (2.1KB)
-  - `test_ssot_lint.py` (24.1KB)
+  - `test_ssot_lint.py` (27.4KB)
   - `test_three_statement.py` (694B)
   - `test_wbc_loads.py` (2.1KB)
   - `test_workbook_recalc_live.py` (3.3KB)
@@ -312,4 +313,11 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `wbc_muddle_through_valuation_v4_formulas.xlsx` (12.5KB)
       - `wbc_scenarios_comparison_v1.xlsx` (11.6KB)
       - `wbc_scenarios_comparison_v2.xlsx` (11.6KB)
+
+## Untracked files
+
+Not in git. Either commit them or clear them — an untracked file is invisible
+to anyone who clones the repo, and is the most common way work gets lost.
+
+- `tests/ssot_basis_baseline.json`
 
