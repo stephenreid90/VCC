@@ -3,8 +3,8 @@
 _Generated 2026-09-14 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `d1cc204 The denominator resolves, and the rate is derived rather than stored` on `main`
-- Unpushed commits: **6**
+- HEAD: `e88102a The working-capital rate stays, and two stale items close` on `main`
+- Unpushed commits: **0**
 - Tracked files: 317
 - Untracked files: 0
 
@@ -239,7 +239,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **_generator/**
     - `README.md` (893B)
     - `beta_data.py` (10.0KB)
-    - `build_cfgs.py` (93.7KB)
+    - `build_cfgs.py` (93.8KB)
     - `cfgs_gen.json` (213.1KB)
     - `engine_workbook.py` (91.5KB)
     - `gen_ui.py` (88.7KB)

@@ -763,5 +763,5 @@ csl.setdefault("dcfDetail", {})["workings"] = {"title": "Per-year segment build 
              _crow("Group EBIT", _cr2.group_ebit[1:]),
              _crow("FCFF (FY26\u2013FY31)", _cr2.fcff)]}
 # ===== end CSL SSOT block =====
-json.dump({"dnl":dnl,"wbc":wbc,"csl":csl}, open(_CFGP,'w'), ensure_ascii=False)
+json.dump({"dnl":dnl,"wbc":wbc,"csl":csl}, open(_CFGP,'w',encoding='utf-8'), ensure_ascii=False)  # encoding is not optional: ensure_ascii False plus a platform default codec dies on Windows
 print("cfgs_gen.json written")

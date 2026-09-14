@@ -28,8 +28,12 @@ EXPECTED_BASES = {"DNL": "1.989", "WBC": "30.03", "CSL": "195.78"}  # DNL re-pin
 
 def run(cmd: list[str], timeout: int = 900, cwd: Path | None = None) -> tuple[int, str]:
     try:
+        # encoding/errors are explicit: text=True decodes with the platform
+        # default codec, which mangles em dashes and arrows on Windows and made
+        # the 14 Sep log unreadable in places.
         p = subprocess.run(
-            cmd, cwd=cwd or ROOT, capture_output=True, text=True, timeout=timeout
+            cmd, cwd=cwd or ROOT, capture_output=True, text=True, timeout=timeout,
+            encoding="utf-8", errors="replace",
         )
         return p.returncode, (p.stdout + p.stderr).strip()
     except Exception as exc:  # pragma: no cover
@@ -87,7 +91,12 @@ def main() -> int:
     if rc:
         problems.append("build_cfgs.py failed — base ties below are stale or absent")
     cfg = gen / "cfgs_gen.json"
-    if cfg.exists():
+    if rc:
+        # A config the rebuild could not write is worse than no config: reading
+        # it compares the ratified levels against a half-written or stale file.
+        print("   -   skipping the ties: the rebuild above failed, so any config on")
+        print("       disk is stale or partial. Fix the rebuild first.")
+    elif cfg.exists():
         import json
 
         d = json.loads(cfg.read_text(encoding="utf-8"))
