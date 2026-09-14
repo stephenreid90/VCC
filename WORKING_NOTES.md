@@ -23,7 +23,116 @@ prints git state.
 
 ---
 
-## 🔴 HANDOVER — session of 14 September 2026 (read this first)
+## 🔴 HANDOVER — session of 14 September 2026, second sitting (read this first)
+
+**Start with `land_vcc.cmd`.** Then `session_start.cmd`, then this block.
+
+**State:** suite **338**, ratchet **13 checks**, base ties green and UNMOVED —
+DNL 1.989, WBC 30.03, CSL 195.78. No level moved this sitting. Seven rulings were made,
+two stale open items closed, one defect on main fixed, and two gate weaknesses closed.
+
+### The defect that mattered most
+
+1. **`build_cfgs.py` had not parsed since the previous sitting.** A `# ssot-allow: display`
+   marker was inserted mid-line, commenting out the rest of the line including a closing
+   bracket. Every other use of that marker in the repo sits at the end of its line; the
+   lint is line-based, so that is where it belongs.
+2. **Nothing caught it, and that is the real finding.** The suite imports the engine, not
+   the generators, so a generator can be broken on main with the whole suite green. The
+   base-tie check reads `cfgs_gen.json`, which is gitignored and which nothing regenerated,
+   so it compared the ratified levels against a config built weeks earlier and reported two
+   failures that had nothing to do with the engine.
+3. **Both holes are now closed.** `session_start.py` runs `build_cfgs.py` before reading the
+   config, so the tie is struck on current code or not struck at all. A new test parses
+   every script under `scripts/` and `ui_prototypes/`.
+
+### Rulings
+
+4. **D-52** — item 11 is ruled as position 3: capital intensity follows the business.
+   **The engine still runs position 1.** Implementation and re-pinned goldens are the
+   next numeric change, and the largest one outstanding.
+5. **D-53** — D-49 is a house rule, not a Denali ruling. CSL still declares terminal capex
+   equal to D&A and is wrong in the same way Denali was. Not yet implemented.
+6. **D-54** — the Disorderly Climate carbon arc is capital that earns a return, inside the
+   growing base, assumed to earn exactly the cost of capital and therefore value-neutral by
+   construction. No revenue uplift is booked for it. Not yet implemented.
+7. **D-55** — capital-structure weights are spot market values for every company. Narrows
+   D-04 and closes a divergence nobody had noticed: the register said target ratio and
+   Denali has always used spot. Stephen's reasoning is that the gearing decision is less
+   load-bearing than it looks, because a higher debt weight raises the levered beta and the
+   two effects substantially offset. CSL comes off the target-and-multiple construction;
+   its distorted reference price stays under D-19. Not yet implemented — this moves CSL.
+8. **D-56** — a scenario declares its company-level channels and the resulting ordering is
+   read rather than asserted. Occasioned by AI Lag rising above Muddle Through under D-49
+   with no stated channel behind either the margin overlay or the growth setting.
+9. **D-57** — Denali's working-capital intensity stays as ratified under D-31. See below.
+10. **D-43a** — drafted as §12a of the horizon paper and still PROPOSED, awaiting a ruling.
+    A contract dates the RENT, not the barrier. Resolves the standing contradiction between
+    a ten-to-fifteen year moat horizon and gas contracts expiring six years out, without
+    moving a number: the resource leg is rent-bearing and already dated in the margin path,
+    the scale and switching-cost legs are barrier-bearing and carry no expiry.
+11. **D-38 and D-39 retired** rather than ratified, superseded by D-48 and D-49. The
+    PROPOSED list is now D-35, D-36, D-37, D-42, D-43 and D-43a.
+
+### Two open items closed, both stale, and a lesson about the register
+
+12. **Item 7** described terminal capex running below D&A — precisely what D-49 replaced the
+    day before. It stayed open only because the register was not updated when D-49 landed.
+13. **M1** described zero working capital in every explicit year. The engine has invested
+    working capital across the stub and all five years since the working-capital standard
+    landed: on Muddle Through, about 163m cumulative. The zero belongs to
+    `tests/dcf/golden/dnl_mt_inputs.py`, a legacy hand-typed oracle reproducing the audited
+    v6 workbook. **That fixture was misread as the live configuration in session before the
+    assembler was checked** — the same error the item itself records, repeated by the
+    session closing it. If a Denali number looks wrong, check
+    `build_engine_inputs_from_data`, not the golden fixtures.
+14. Two stale NEEDS items in one list says the register drifts when a ruling lands. Close
+    items in the same change as the decision that closes them.
+
+### The working-capital work, and why it did not land
+
+15. The instruction was to strike the intensity over the D-48 window. **That is not
+    available.** A statement of financial position is not restated for discontinued
+    operations, so the FY2024 comparative is the pre-demerger group — pairing it with
+    continuing-operations revenue is the entity mismatch D-50 exists to stop. D-48's window
+    works for capex and depreciation only because those come from the segment note, which
+    IS restated. Working capital has no segment equivalent.
+16. What exists instead is a nine-period trade-working-capital series the company publishes
+    itself, two periods cleanly post-demerger, now transcribed with provenance in
+    `analyses/dnl_trade_working_capital_history.yaml`, with a derivation in
+    `src/vcc_valuations/assumptions/trade_working_capital.py` and pinned tests. The
+    denominator question resolved from the accounts: the 1H26 income statement labels its
+    columns Group = Explosives + Discontinued, and the apparent second-half skew is the
+    northern winter, which is an argument FOR averaging the two balance sheets.
+17. **It is derived and deliberately NOT consumed** (D-57). Once M1 turned out to be stale,
+    what remained was a definitional change to a measure that already works, on two
+    observations. The file is evidence held for the FY26 result. The ratified FY2025
+    denominator was checked while doing this and is sound — continuing operations, confirmed
+    against the segment note; it simply had no basis recorded, which is what made it look
+    doubtful.
+
+### Next, in the order the interactions demand
+
+18. Each of these moves a base tie, so they land one at a time with goldens re-pinned once
+    per step: item 11 position 3 into the engine (D-52, all six DNL levels); the carbon arc
+    inside the base (D-54, Disorderly only); D-49 extended to CSL (D-53, all six CSL);
+    spot weights for CSL (D-55, all six CSL — take with D-53 since both move the same
+    levels); the WBC dividend rule as the lesser of the current payout and the
+    capital-constrained one, which Stephen asked for and which needs "% of capital" defining
+    as the payout holding CET1 flat given asset growth and RWA density.
+19. **CSL is missing both period mechanisms.** Period A, the net-debt walk from anchor date
+    to valuation date, is what fixes the six-month date mismatch (open item 1) and Stephen
+    has asked for it. Period B, the fractional stub year, `segment_engine.py` does not have
+    at all — that is a bigger job and separate.
+20. Then the UI: terminal-share disclosure (Stephen's scope — disclose it, do not rebuild
+    the §11.4.2 rule), then the panel-to-translator wiring, then the capital-intensity
+    override behind it.
+21. Then D-42 the diagnostic, which D-56 now depends on, and D-35/D-36 which still live
+    only in the replica.
+
+---
+
+## HANDOVER — session of 14 September 2026, first sitting (superseded by the block above)
 
 **Start with `land_vcc.cmd`.** Then `session_start.cmd`, then this block.
 

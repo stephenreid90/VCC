@@ -3,10 +3,10 @@
 _Generated 2026-09-14 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `ff0e981 The ratified denominator checks out, and the asymmetry is named` on `main`
-- Unpushed commits: **5**
-- Tracked files: 315
-- Untracked files: 2
+- HEAD: `d1cc204 The denominator resolves, and the rate is derived rather than stored` on `main`
+- Unpushed commits: **6**
+- Tracked files: 317
+- Untracked files: 0
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -108,7 +108,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `build_plan.html` (14.9KB)
   - `engine_implementation_plan.md` (16.5KB)
   - `open_items.css` (3.5KB)
-  - `open_items.json` (26.6KB)
+  - `open_items.json` (27.4KB)
   - `open_questions.json` (1.2KB)
   - `scenarios_workshop.md` (13.5KB)
   - `scenarios_workshop_prep.md` (19.5KB)
@@ -250,7 +250,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `dnl_capex_history.yaml` (4.9KB)
   - `dnl_item11_capital_intensity.xlsx` (35.5KB)
   - `dnl_item11_four_positions.md` (26.4KB)
-  - `dnl_trade_working_capital_history.yaml` (10.0KB)
+  - `dnl_trade_working_capital_history.yaml` (10.7KB)
   - **csl/**
     - `csl_discussion_v1_2026-06-25.docx` (17.8KB)
     - `csl_discussion_v1_2026-06-25.pdf` (125.4KB)
@@ -319,12 +319,4 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `wbc_muddle_through_valuation_v4_formulas.xlsx` (12.5KB)
       - `wbc_scenarios_comparison_v1.xlsx` (11.6KB)
       - `wbc_scenarios_comparison_v2.xlsx` (11.6KB)
-
-## Untracked files
-
-Not in git. Either commit them or clear them — an untracked file is invisible
-to anyone who clones the repo, and is the most common way work gets lost.
-
-- `src/vcc_valuations/assumptions/trade_working_capital.py`
-- `tests/test_trade_working_capital_intensity.py`
 

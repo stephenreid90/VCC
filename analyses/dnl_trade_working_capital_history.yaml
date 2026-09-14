@@ -209,6 +209,17 @@ revenue_observations:
 # argument FOR averaging the two rather than against it: a rate struck on
 # 30 September alone is struck at one end of a seasonal swing.
 
+# NOT CONSUMED. The window below is set and the rate derives cleanly from it,
+# but nothing in the valuation reads it. D-57 retained D-31's ratified intensity
+# on 14 September 2026: the case for changing it rested on a review item that
+# turned out to describe a legacy test fixture rather than the live assembler,
+# and what was left was a definitional change to a measure that already works,
+# on two observations rather than a series. This file is therefore EVIDENCE,
+# held for the FY26 result, when a second post-demerger full year makes the
+# window a genuine two-year one on one definition. It is committed rather than
+# discarded so that the revisit starts from extracted, sourced, tested figures
+# instead of repeating the extraction.
+
 strike_window:
   status: SET
   set_on: 2026-09-14

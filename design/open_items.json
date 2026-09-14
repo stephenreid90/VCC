@@ -438,11 +438,11 @@
     "source": "triage-2026-08-13",
     "area": "Missed",
     "issue": "<b>DNL assumes zero working capital</b> in every explicit year <i>and</i> the terminal, while growing revenue 6.15% p.a. as an industrial manufacturer with receivables and inventory. Worth <b>−AUD 0.14 to −0.27/share (−4% to −9%)</b> — two to three times Fable's terminal-capex wedge. With item 7, DNL's reinvestment treatment is worth −7% to −11%, moving the discount to market from −15% to about −22%.",
-    "treatment": "Decide whether the working-capital assumption is open for revision. Changes the audited workbook, not just the engine.",
+    "treatment": "<b>Closed 14 September 2026 — the item was already stale when it was written up.</b> The engine has invested working capital across the stub and every explicit year since the working-capital standard landed: the live assembler derives the intensity from the balance-sheet history and applies it to the change in the annualised revenue run-rate. The zero this item describes belongs to <code>tests/dcf/golden/dnl_mt_inputs.py</code>, a legacy hand-typed stand-in retained on purpose as an engine-mechanics oracle reproducing the audited v6 workbook. Reading that fixture as the live configuration is the mistake this item records, and it was repeated in session on 14 September before the assembler was checked. The terminal carries its own drag at g times the intensity. Whether to move the intensity to the company's published trade-working-capital measure was considered separately and declined — see D-57.",
     "questions": [
       "Q4"
     ],
-    "status": "NEEDS",
+    "status": "DONE",
     "batch": "Batch 4"
   },
   {
