@@ -3,10 +3,10 @@
 _Generated 2026-09-14 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `fb4a14e The bridge note says which file wins, and CLAUDE.md makes that a convention` on `main`
-- Unpushed commits: **0**
-- Tracked files: 312
-- Untracked files: 1
+- HEAD: `d43ff63 Three rulings recorded, D-43 amended, and two proposals retired` on `main`
+- Unpushed commits: **2**
+- Tracked files: 313
+- Untracked files: 0
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -108,7 +108,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `build_plan.html` (14.9KB)
   - `engine_implementation_plan.md` (16.5KB)
   - `open_items.css` (3.5KB)
-  - `open_items.json` (26.3KB)
+  - `open_items.json` (26.6KB)
   - `open_questions.json` (1.2KB)
   - `scenarios_workshop.md` (13.5KB)
   - `scenarios_workshop_prep.md` (19.5KB)
@@ -123,7 +123,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `csl_discount_rate_fork.md` (11.0KB)
     - `dnl_working_capital_derivation.md` (11.2KB)
     - `equity_bridge_and_valuation_mechanics.md` (70.6KB)
-    - `horizon_and_terminal_convergence.md` (42.3KB)
+    - `horizon_and_terminal_convergence.md` (46.2KB)
     - `horizon_variant_sets.yaml` (9.5KB)
     - `working_capital_treatment.md` (23.3KB)
   - **reference/**
@@ -315,11 +315,4 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `wbc_muddle_through_valuation_v4_formulas.xlsx` (12.5KB)
       - `wbc_scenarios_comparison_v1.xlsx` (11.6KB)
       - `wbc_scenarios_comparison_v2.xlsx` (11.6KB)
-
-## Untracked files
-
-Not in git. Either commit them or clear them — an untracked file is invisible
-to anyone who clones the repo, and is the most common way work gets lost.
-
-- `tests/test_generator_scripts_parse.py`
 
