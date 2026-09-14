@@ -1,8 +1,4 @@
 [
-  "data/companies/dnl.yaml::normalised_baseline.capex_pct_revenue",
-  "data/companies/dnl.yaml::normalised_baseline.ebit_margin",
-  "data/companies/dnl.yaml::normalised_baseline.engine_overlays.baseline.base_ebit_margin",
-  "data/companies/dnl.yaml::normalised_baseline.engine_overlays.baseline.da_pct_revenue",
   "data/companies/wbc.yaml::company_position.balance_sheet.apra_leverage_ratio",
   "data/companies/wbc.yaml::company_position.balance_sheet.cet1_ratio",
   "data/companies/wbc.yaml::company_position.balance_sheet.tier_1_ratio",

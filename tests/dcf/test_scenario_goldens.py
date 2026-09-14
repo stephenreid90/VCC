@@ -56,12 +56,15 @@ SCENARIOS = [
 
 # --- DNL: industrial FCFF / WACC, AUD per share --------------------------------
 DNL_GOLDEN = {
-    "orderly_convergence": 3.2740,
-    "muddle_through": 2.8307,                      # independently audited (generated workbook, all six)
-    "ai_productivity_lag": 2.7705,
-    "fragmentation": 1.9926,
-    "disorderly_climate_crystallisation": 1.7015,
-    "stagflation_persists": 0.8061,
+    "orderly_convergence": 2.7980,
+    "muddle_through": 2.3900,                      # independently audited (generated workbook, all six)
+    # Re-pinned 14 Sep 2026: the operating base was restated to the explosives
+    # segments over FY24-FY25 (D-48, D-50). Previous levels 3.2740 / 2.8307 /
+    # 2.7705 / 1.9926 / 1.7015 / 0.8061.
+    "ai_productivity_lag": 2.3506,
+    "fragmentation": 1.5599,
+    "disorderly_climate_crystallisation": 1.2671,
+    "stagflation_persists": 0.3872,
 }
 
 # --- WBC: bank DDM / Ke (§15), AUD per share -----------------------------------
@@ -124,7 +127,7 @@ def test_csl_scenario_level(scenario):
 # so the two valuations that most need the sensitivity pass can finally say so.
 TERMINAL_BREACH = {
     # (company, scenario) -> terminal share of EV / of the equity claim
-    ("dnl", "muddle_through"): 0.7273,
+    ("dnl", "muddle_through"): 0.7445,
     ("wbc", "muddle_through"): 0.7631,
     ("wbc", "stagflation_persists"): 0.8445,       # worst in the project
     ("csl", "muddle_through"): 0.7538,

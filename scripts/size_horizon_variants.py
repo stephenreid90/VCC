@@ -26,6 +26,9 @@ from tests.dcf.harness import replica
 ROOT = Path(__file__).resolve().parents[1]
 SETS_PATH = ROOT / "design" / "methodology" / "horizon_variant_sets.yaml"
 
+# The scenario whose driver deltas are all zero, so its inputs are the baseline.
+_DELTA_NEUTRAL_SCENARIO = "muddle_through"
+
 
 def load_sets(path: Path = SETS_PATH) -> dict:
     return yaml.safe_load(path.read_text(encoding="utf-8"))
@@ -57,6 +60,30 @@ def build_plan(cfg: dict, spec: dict, scenario_id: str) -> replica.Plan:
     plan = replica.plan_from_engine_inputs(
         inp, invested_capital_opening=cfg["invested_capital_opening"]
     )
+    # A published table is only reproducible if the operating rates it was struck
+    # on travel with it. When the data files are restated -- as they were on
+    # 14 September 2026 -- a set that carries no `operating_base` silently starts
+    # regenerating a different table under the same name, which is the failure
+    # this whole file exists to prevent.
+    base = spec.get("operating_base")
+    if base:
+        # The frozen path is the BASELINE one. A scenario's capex delta is a
+        # parallel shift the translator has already applied, so it has to be
+        # lifted off the live inputs and re-applied, or Disorderly Climate loses
+        # its arc.
+        neutral = engine_inputs(cfg, _DELTA_NEUTRAL_SCENARIO).capex_pct
+        frozen = list(base["capex_pct"])
+        plan = replace(
+            plan,
+            base_ebit_margin=base["base_ebit_margin"],
+            da_pct_revenue=base["da_pct_revenue"],
+            capex_pct_stub=base["capex_pct_stub"],
+            capex_pct=[frozen[k] + (inp.capex_pct[k] - neutral[k])
+                       for k in range(len(frozen))],
+            terminal_capex_pct_revenue=base.get(
+                "terminal_capex_pct_revenue", base["da_pct_revenue"]
+            ),
+        )
     horizon = spec["horizon_years"]
     plan = replica.extend(plan, horizon)
     plan = replica.fade_growth(plan, spec["fade_period_length"])

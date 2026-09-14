@@ -347,7 +347,11 @@ def test_resolve_normalised_baseline_reconstructs_the_wacc_build():
     norm = resolve_normalised_baseline(inputs)
 
     # Layer-2 scalars.
-    assert norm["ebit_margin"] == 0.135        # ssot-allow: pinning the join
+    # `ebit_margin` was deleted on 14 September 2026 — it was a second judgement
+    # for a quantity the engine reads from engine_overlays (D-16), and the
+    # survivor is restated under D-48. The join is pinned on the scalars that
+    # remain layer-2 judgements in their own right.
+    assert "ebit_margin" not in norm
     assert norm["net_debt"] == 1300.0          # ssot-allow
     assert norm["tax_rate"] == 0.30            # ssot-allow
     assert norm["terminal_growth"] == 0.025    # ssot-allow

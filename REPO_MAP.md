@@ -3,10 +3,10 @@
 _Generated 2026-09-14 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `0cd7bb0 D-50: every rate declares the basis it was struck on` on `main`
-- Unpushed commits: **7**
-- Tracked files: 311
-- Untracked files: 1
+- HEAD: `015216d D-51, the restatement pinned, and the handover` on `main`
+- Unpushed commits: **8**
+- Tracked files: 312
+- Untracked files: 0
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -19,7 +19,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
 | Path | Present | What it is |
 |---|---|---|
-| `data/companies/dnl.yaml` | yes (37.4KB) | company position + layer-2 method (judgement) |
+| `data/companies/dnl.yaml` | yes (39.6KB) | company position + layer-2 method (judgement) |
 | `data/companies/dnl.md` | yes (13.5KB) | company narrative |
 | `data/companies/dnl_documents.yaml` | yes (8.5KB) | document register |
 | `data/financials/dnl.yaml` | yes (11.1KB) | curated layer-1 financials (a SUMMARY — check for raw sources too) |
@@ -57,7 +57,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `csl.yaml` (33.4KB)
     - `csl_documents.yaml` (8.3KB)
     - `dnl.md` (13.5KB)
-    - `dnl.yaml` (37.4KB)
+    - `dnl.yaml` (39.6KB)
     - `dnl_documents.yaml` (8.5KB)
     - `wbc.md` (7.6KB)
     - `wbc.yaml` (35.9KB)
@@ -124,7 +124,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `dnl_working_capital_derivation.md` (11.2KB)
     - `equity_bridge_and_valuation_mechanics.md` (70.6KB)
     - `horizon_and_terminal_convergence.md` (42.3KB)
-    - `horizon_variant_sets.yaml` (7.7KB)
+    - `horizon_variant_sets.yaml` (9.5KB)
     - `working_capital_treatment.md` (23.3KB)
   - **reference/**
     - **discount_rate_iers/**
@@ -183,9 +183,9 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
   - `__init__.py` (0B)
   - `conftest.py` (1.3KB)
-  - `ssot_basis_baseline.json` (806B)
-  - `ssot_intra_file_baseline.json` (593B)
-  - `ssot_lint_baseline.json` (6.3KB)
+  - `ssot_basis_baseline.json` (494B)
+  - `ssot_intra_file_baseline.json` (629B)
+  - `ssot_lint_baseline.json` (6.2KB)
   - `test_adjustments.py` (1.6KB)
   - `test_archetypes_validate.py` (6.6KB)
   - `test_comps.py` (653B)
@@ -194,7 +194,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `test_derivation.py` (1.3KB)
   - `test_engine_workbook.py` (4.6KB)
   - `test_implied_emrp.py` (2.1KB)
-  - `test_ssot_lint.py` (27.4KB)
+  - `test_ssot_lint.py` (27.7KB)
   - `test_three_statement.py` (694B)
   - `test_wbc_loads.py` (2.1KB)
   - `test_workbook_recalc_live.py` (3.3KB)
@@ -203,8 +203,8 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `__init__.py` (0B)
     - `test_csl_segment.py` (2.9KB)
     - `test_csl_workbook_tie.py` (3.7KB)
-    - `test_dnl_all_scenarios.py` (3.6KB)
-    - `test_dnl_mt_from_data.py` (9.9KB)
+    - `test_dnl_all_scenarios.py` (4.0KB)
+    - `test_dnl_mt_from_data.py` (10.2KB)
     - `test_dnl_mt_ratified.py` (5.7KB)
     - `test_dnl_workbook_tie.py` (4.1KB)
     - `test_e2e_dnl_mt.py` (4.3KB)
@@ -212,16 +212,16 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `test_horizon_variant_sets.py` (5.0KB)
     - `test_per_year_derivations.py` (3.8KB)
     - `test_replica_ties_engine.py` (6.1KB)
-    - `test_scenario_goldens.py` (7.7KB)
+    - `test_scenario_goldens.py` (7.9KB)
     - `test_wbc_bank.py` (2.5KB)
     - **golden/**
       - `__init__.py` (0B)
       - `_recalc.py` (4.2KB)
       - `_recalc_generated_workbooks.py` (6.3KB)
       - `csl_workbook_all_scenarios.json` (6.6KB)
-      - `dnl_mt_inputs.py` (4.9KB)
+      - `dnl_mt_inputs.py` (5.5KB)
       - `dnl_mt_v6.json` (2.6KB)
-      - `dnl_workbook_all_scenarios.json` (10.3KB)
+      - `dnl_workbook_all_scenarios.json` (10.4KB)
     - **harness/**
       - `__init__.py` (0B)
       - `replica.py` (21.3KB)
@@ -313,11 +313,4 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `wbc_muddle_through_valuation_v4_formulas.xlsx` (12.5KB)
       - `wbc_scenarios_comparison_v1.xlsx` (11.6KB)
       - `wbc_scenarios_comparison_v2.xlsx` (11.6KB)
-
-## Untracked files
-
-Not in git. Either commit them or clear them — an untracked file is invisible
-to anyone who clones the repo, and is the most common way work gets lost.
-
-- `notes/bridge/bridge_note_2026-09-14.md`
 

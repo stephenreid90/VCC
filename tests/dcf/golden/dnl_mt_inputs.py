@@ -8,6 +8,16 @@ against the workbook oracle now. Every scalar carries its Assumptions-sheet cell
 reference. The revenue-growth chain is reproduced explicitly (industry baseline
 x geographic mix + Five-Forces company offset) rather than pasted as a scalar,
 so the derivation is auditable.
+
+
+FROZEN at the v6 audit. These are the inputs the audited workbook
+``dnl_muddle_through_valuation_v6_2026-06-25.xlsx`` was built on, and
+``test_e2e_dnl_mt.py`` ties the engine to that workbook through them. They are
+deliberately NOT restated when the data files move -- the 14 September 2026
+operating-base restatement (D-48, D-50) changed the live rates and left these
+alone on purpose. Restating them would silently retire the only hand-audited
+oracle in the project. The live data path is covered instead by the generated
+workbook oracle, which regenerates across all six scenarios.
 """
 
 from __future__ import annotations

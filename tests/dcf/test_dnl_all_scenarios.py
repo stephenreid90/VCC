@@ -38,13 +38,18 @@ SCENARIOS = [
 
 # dnl_scenarios_comparison_v4 Inputs sheet: (revenue growth row 26, Y5 EBIT margin
 # row 27, applied terminal growth DCF-Outputs row 13).
+# Y5 margins re-pinned 14 September 2026: the base EBIT margin was restated from
+# 14.10% to 12.72% under D-48 and D-50, so every scenario's Y5 margin falls by the
+# same 1.38pp. Revenue growth and terminal growth are untouched, which is the
+# check that the restatement moved the margin and nothing else. Previous margins
+# were 0.146 / 0.151 / 0.151 / 0.116 / 0.116 / 0.071.
 WORKBOOK = {
-    "muddle_through":                     (0.0615, 0.146, 0.0250),
-    "orderly_convergence":                (0.0744, 0.151, 0.0275),
-    "ai_productivity_lag":                (0.0555, 0.151, 0.0225),
-    "fragmentation":                      (0.0630, 0.116, 0.0225),
-    "disorderly_climate_crystallisation": (0.0756, 0.116, 0.0175),
-    "stagflation_persists":               (0.0549, 0.071, 0.0225),
+    "muddle_through":                     (0.0615, 0.1322, 0.0250),
+    "orderly_convergence":                (0.0744, 0.1372, 0.0275),
+    "ai_productivity_lag":                (0.0555, 0.1372, 0.0225),
+    "fragmentation":                      (0.0630, 0.1022, 0.0225),
+    "disorderly_climate_crystallisation": (0.0756, 0.1022, 0.0175),
+    "stagflation_persists":               (0.0549, 0.0572, 0.0225),
 }
 
 
@@ -66,7 +71,7 @@ def test_scenario_drivers_tie_the_comparison_workbook(scenario):
 
 def test_muddle_through_is_the_ratified_headline():
     _, _, r = _run("muddle_through")
-    assert round(r.value_per_share, 3) == 2.831
+    assert round(r.value_per_share, 3) == 2.390
 
 
 def test_scenario_asymmetry_is_downside_skewed():

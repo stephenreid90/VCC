@@ -299,14 +299,19 @@ company_position:
 # design/single_source_of_truth.md §3. Hand-authored; never machine-written.
 # TODO (protocol rule 8): add decided_on date + status to each entry.
 normalised_baseline:
-  # Operating-margin override
-  ebit_margin: 0.135
-  ebit_margin_rationale: >
-    Mid-point of pre-demerger Dyno Nobel segment range of 13-15%.
-    Replaces TTM Mar-2026 reported operating margin of 11.23%, which
-    is depressed by post-demerger transition costs (residual demerger
-    items + post-rename consolidation adjustments, per income-
-    statement TTM notes above).
+  # The operating-margin override that used to sit here (0.135, "mid-point of
+  # pre-demerger Dyno Nobel segment range of 13-15%") was DELETED on 14 September
+  # 2026. It was a second judgement for a quantity the engine already read from
+  # engine_overlays.baseline.base_ebit_margin, which is the defect D-16 forbids,
+  # and its stated cross-check was a pre-corporate segment range applied to a
+  # revenue base that carries corporate costs. The surviving rate is restated and
+  # carries its basis.
+  #
+  # The upward normalisation it was reaching for is NOT abandoned: FY2024 and
+  # FY2025 are a business emerging from a demerger, and 1H26 explosives EBITDA
+  # margin runs about 22.3% against the 20.96% two-year average, with corporate
+  # costs down $6m. That belongs here as a separate declared transition-cost line,
+  # sized and sourced, never folded back into the base rate.
 
 
   # --- Valuation base and timing (workbook Assumptions B6, B9, B78; migrated
@@ -491,11 +496,20 @@ normalised_baseline:
 
   # Capex (% of revenue) — already normalised in current smoke test;
   # capturing here for transparency.
-  capex_pct_revenue: 0.07
+  capex_pct_revenue: 0.0918
+  capex_pct_revenue_basis:
+    entity: Dyno Nobel segments (DNAP + DNA + DNEL + corporate), excluding Fertilisers
+    window: FY2024-FY2025
+    level: capital expenditure per the business-unit table, continuing operations less Fertilisers
+    source: Dyno Nobel Limited Annual Report 2025, capital expenditure table
   capex_pct_revenue_rationale: >
-    Pre-demerger historical pattern (6-7%). FY25 reported 12.8% is
-    inflated by partial-year reporting and capital restructuring;
-    rejected as the steady-state anchor.
+    Restated 14 September 2026. The rate this replaces (7%, "pre-demerger
+    historical pattern (6-7%)") was struck on Incitec Pivot including
+    fertilisers, cited a range the accounts do not support, and was compared
+    against a 12.8% FY25 figure that divided group capital expenditure by
+    continuing-operations revenue. Series, definitions and sources in
+    analyses/dnl_capex_history.yaml; the argument in
+    analyses/dnl_capex_anchor_evidence.md.
 
 
   # Tax rate
@@ -693,12 +707,32 @@ normalised_baseline:
   # translator.tax_bridge_from_data (see the tax_bridge block below).
   engine_overlays:
     baseline:
-      base_ebit_margin: 0.141              # workbook B10
+      # Restated 14 September 2026 under D-48 and D-50: the operating rates are a
+      # set drawn from one entity, one window and one level, so the relationships
+      # between them are observed rather than assembled. The rates they replace
+      # were 14.1% / 8.0%-7.0% / 7.3%, whose only recorded provenance was a
+      # workbook cell (D-51).
+      base_ebit_margin: 0.1272
+      base_ebit_margin_basis:
+        entity: Dyno Nobel segments (DNAP + DNA + DNEL + corporate), excluding Fertilisers
+        window: FY2024-FY2025
+        level: EBIT after corporate costs, excluding individually material items
+        source: Dyno Nobel Limited Annual Report 2025, reportable segments note
       margin_transformation: [0.006, 0.018, 0.02, 0.02, 0.02]   # B45..B49 (cum pp)
       margin_gas_rolloff: [0.0, 0.0, -0.005, -0.01, -0.015]     # B52..B56 (cum pp, <=0)
-      capex_pct_stub: 0.08                 # B12 (transition)
-      capex_pct: [0.08, 0.08, 0.07, 0.07, 0.07]                 # B12 (Y1,Y2), B11 (Y3..Y5)
-      da_pct_revenue: 0.073                # B13
+      capex_pct_stub: 0.0918
+      capex_pct: [0.0918, 0.0918, 0.0918, 0.0918, 0.0918]
+      capex_pct_basis:
+        entity: Dyno Nobel segments (DNAP + DNA + DNEL + corporate), excluding Fertilisers
+        window: FY2024-FY2025
+        level: capital expenditure per the business-unit table, continuing operations less Fertilisers
+        source: Dyno Nobel Limited Annual Report 2025, capital expenditure table
+      da_pct_revenue: 0.0824
+      da_pct_revenue_basis:
+        entity: Dyno Nobel segments (DNAP + DNA + DNEL + corporate), excluding Fertilisers
+        window: FY2024-FY2025
+        level: depreciation and amortisation, excluding individually material items
+        source: Dyno Nobel Limited Annual Report 2025, reportable segments note
     by_scenario:
       # margin_delta_pp / capex_delta_pp are parallel shifts vs the baseline path;
       # terminal_growth is absolute (B77 base 0.025 + the comparison's delta).

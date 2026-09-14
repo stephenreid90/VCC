@@ -38,6 +38,14 @@ sets:
 
   paper_s10:
     status: superseded
+    operating_base:
+      note: >
+        The rates in force when this table was published, frozen here so it stays
+        reproducible after the 14 September 2026 restatement (D-48, D-50).
+      base_ebit_margin: 0.141
+      da_pct_revenue: 0.073
+      capex_pct_stub: 0.08
+      capex_pct: [0.08, 0.08, 0.07, 0.07, 0.07]
     published_in: design/methodology/horizon_and_terminal_convergence.md §10
     superseded_by: second_sitting
     horizon_years: 10
@@ -59,6 +67,14 @@ sets:
 
   paper_s13_ruled:
     status: superseded
+    operating_base:
+      note: >
+        The rates in force when this table was published, frozen here so it stays
+        reproducible after the 14 September 2026 restatement (D-48, D-50).
+      base_ebit_margin: 0.141
+      da_pct_revenue: 0.073
+      capex_pct_stub: 0.08
+      capex_pct: [0.08, 0.08, 0.07, 0.07, 0.07]
     published_in: design/methodology/horizon_and_terminal_convergence.md §13
     superseded_by: second_sitting
     horizon_years: 10
@@ -81,7 +97,16 @@ sets:
       stagflation_persists: 0.6302
 
   second_sitting:
-    status: current
+    status: superseded
+    superseded_by: post_restatement
+    operating_base:
+      note: >
+        The rates in force when this table was published, frozen here so it stays
+        reproducible after the 14 September 2026 restatement (D-48, D-50).
+      base_ebit_margin: 0.141
+      da_pct_revenue: 0.073
+      capex_pct_stub: 0.08
+      capex_pct: [0.08, 0.08, 0.07, 0.07, 0.07]
     published_in: WORKING_NOTES.md, handover of 25 August 2026 (second sitting)
     horizon_years: 10
     fade_period_length: 5
@@ -100,6 +125,30 @@ sets:
       fragmentation: 1.8629
       disorderly_climate_crystallisation: 1.5294
       stagflation_persists: 0.5841
+
+  post_restatement:
+    status: current
+    published_in: WORKING_NOTES.md, handover of 14 September 2026
+    note: >
+      The first set struck on the restated operating base (D-48, D-50). It carries
+      no `operating_base` block, so it reads the live data files -- which is what
+      makes it current. The explicit capex path is the observed intensity, flat,
+      rather than a convergence to D&A: D-48 supersedes D-38 for this company.
+    horizon_years: 10
+    fade_period_length: 5
+    explicit_capex:
+      mode: live
+    gas_rolloff_total_pp: -0.015
+    terminal_capex:
+      rule: grow_capital_base
+      carbon_premium_on_baseline_base: false
+    expected:
+      orderly_convergence: 2.5681
+      muddle_through: 2.1414
+      ai_productivity_lag: 2.1339
+      fragmentation: 1.3198
+      disorderly_climate_crystallisation: 0.9791
+      stagflation_persists: 0.0638
 
 # The observed-intensity rule, proposed 14 September 2026. Capex intensity and
 # depreciation intensity are BOTH struck as the average over one window for one
@@ -122,19 +171,19 @@ capex_intensity_rule:
       capex_pct_revenue: 0.0918
       da_pct_revenue: 0.0824
       terminal: grow_capital_base
-      expected: 2.2736
+      expected: 2.2645
     explosives_two_year_equals_da:
       source: analyses/dnl_capex_history.yaml, dyno_nobel_segments.two_year
       capex_pct_revenue: 0.0918
       da_pct_revenue: 0.0824
       terminal: equals_da
-      expected: 2.6170
+      expected: 2.6092
     group_five_year_grow:
       source: analyses/dnl_capex_history.yaml, group payments basis FY21-FY25
       capex_pct_revenue: 0.0780
       da_pct_revenue: 0.0628
       terminal: grow_capital_base
-      expected: 2.6850
+      expected: 2.6758
     dnl_operating_base_restatement:
       source: >
         Dyno Nobel Limited Annual Report 2025, segment note and capital
@@ -148,14 +197,14 @@ capex_intensity_rule:
       capex_pct_revenue: 0.0918
       da_pct_revenue: 0.0824
       terminal: grow_capital_base
-      expected: 2.1505
+      expected: 2.1414
 
     group_five_year_equals_da:
       source: analyses/dnl_capex_history.yaml, group payments basis FY21-FY25
       capex_pct_revenue: 0.0780
       da_pct_revenue: 0.0628
       terminal: equals_da
-      expected: 3.0560
+      expected: 3.0482
 
 # Item 11. The three positions on what the explicit period does to capital
 # intensity, each run on the `current` set and differing from it only in the
@@ -166,22 +215,22 @@ item_11_positions:
     capital_growth: derived
     note: the capex path converges to D&A, so fixed capital is flat in nominal terms
     expected:
-      orderly_convergence: 3.1793
-      muddle_through: 2.6956
-      ai_productivity_lag: 2.6558
-      fragmentation: 1.8629
-      disorderly_climate_crystallisation: 1.5294
-      stagflation_persists: 0.5841
+      orderly_convergence: 2.5681
+      muddle_through: 2.1414
+      ai_productivity_lag: 2.1339
+      fragmentation: 1.3198
+      disorderly_climate_crystallisation: 0.9791
+      stagflation_persists: 0.0638
 
   hold_intensity_flat:
     capital_growth: revenue
     expected:
-      orderly_convergence: 1.9804
-      muddle_through: 1.7676
-      ai_productivity_lag: 1.8630
-      fragmentation: 0.9497
-      disorderly_climate_crystallisation: 0.9485
-      stagflation_persists: -0.1998
+      orderly_convergence: 1.5542
+      muddle_through: 1.3814
+      ai_productivity_lag: 1.4992
+      fragmentation: 0.5706
+      disorderly_climate_crystallisation: 0.5625
+      stagflation_persists: -0.5624
 
   volume_plus_asset_inflation:
     capital_growth: volume_and_inflation
@@ -192,12 +241,12 @@ item_11_positions:
       chain rate held for all ten years (Muddle Through 1.9551); that run was not
       committed and does not reproduce. Both readings are listed in the paper.
     expected:
-      orderly_convergence: 1.8671
-      muddle_through: 1.8387
-      ai_productivity_lag: 1.9801
-      fragmentation: 1.3305
-      disorderly_climate_crystallisation: 1.5335
-      stagflation_persists: 0.3308
+      orderly_convergence: 1.4379
+      muddle_through: 1.4500
+      ai_productivity_lag: 1.6140
+      fragmentation: 0.9491
+      disorderly_climate_crystallisation: 1.1453
+      stagflation_persists: -0.0338
 
   volume_plus_asset_inflation_held_flat:
     capital_growth: volume_and_inflation_flat
@@ -208,9 +257,9 @@ item_11_positions:
       below the fading one because a constant capital call outruns a fading revenue
       line in the back half of the horizon.
     expected:
-      orderly_convergence: 1.5342
-      muddle_through: 1.6175
-      ai_productivity_lag: 1.7957
-      fragmentation: 1.1264
-      disorderly_climate_crystallisation: 1.2764
-      stagflation_persists: 0.1849
+      orderly_convergence: 1.1047
+      muddle_through: 1.2286
+      ai_productivity_lag: 1.4294
+      fragmentation: 0.7449
+      disorderly_climate_crystallisation: 0.8880
+      stagflation_persists: -0.1798
