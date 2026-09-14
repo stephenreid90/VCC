@@ -93,8 +93,14 @@ def test_terminal_is_normalised_not_capitalised(results) -> None:
     Without this the explicit period's ~6% growth carries its working-capital
     build into a ~2.5% perpetuity, and the terminal capex stays wherever the
     scenario left it in year five.
+
+    Terminal capex must also sit ABOVE depreciation (D-49). Equality would hold
+    the book asset base flat in nominal dollars forever while revenue compounds
+    at g, so the implied depreciation rate would rise without limit; the wedge is
+    g times the fixed base, which is strictly positive for a positive g.
     """
     for scenario, r in results.items():
         assert r.terminal_reinvestment == "normalised", scenario
-        assert r.terminal_capex_pct_revenue == pytest.approx(r.da[0] / r.revenue[0])
+        da_pct = r.da[0] / r.revenue[0]
+        assert r.terminal_capex_pct_revenue > da_pct, scenario
         assert r.terminal_fcff != pytest.approx(r.fcff[-1] * (1.0 + r.terminal_growth))

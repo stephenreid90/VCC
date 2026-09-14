@@ -153,7 +153,14 @@ dnl = {
    ["Equity risk premium","5.00%","judgment","Damodaran-style mature-Australia ERP"],
    ["Beta (selected)","1.10","judgment","Peer cluster Orica/ICL/Yara; measured 0.36 unreliable"],
    ["WACC","~8.9%","derived","83.5% equity × Re 9.80% + 16.5% debt × 6.0%(1−t)"],
-   ["Normalised EBIT margin","13.5%","judgment","Through-cycle; corporate already in segment guidance"],
+   ["Normalised EBIT margin","13.07%","derived","Dyno Nobel segments (DNAP+DNA+DNEL+corporate, ex Fertilisers), FY24\u2013FY25, EBIT after corporate costs and ex individually material items \u2014 FY25 annual report segment note. 12.72% observed plus a declared transition-cost normalisation of 0.35pp (D-48, D-50)."],
+   # Display text. The UI prototype is not yet wired to the engine, so this row
+   # restates a declared value rather than consuming it. It goes when the D-48 UI
+   # piece lands and the panel reads the translator output directly.
+   ["Transition-cost normalisation","+0.35 pp","judgment",  # ssot-allow: display"FY24 and FY25 are a business emerging from a demerger. Sized only on the corporate-cost reduction the company has actually reported \u2014 \u201cCorporate costs reduced by $6m\u201d, 1H26 result, annualised on the base revenue. Declared separately so it can be argued about without touching the observed rate."],
+   ["Capital intensity (capex \u00f7 revenue)","9.18%","derived","Same entity, window and level as the margin \u2014 FY25 annual report capital expenditure by business unit, continuing operations less Fertilisers. The explicit path is flat at this rate; there is no convergence to D&amp;A (D-48 supersedes D-38)."],
+   ["Depreciation intensity (D&amp;A \u00f7 revenue)","8.24%","derived","Same entity, window and level again. The GAP between this and capital intensity \u2014 0.94pp \u2014 is the only part of the pair that moves a valuation, and taking both from one window makes it an observation rather than an assumption (D-50)."],
+   ["Terminal capex","D&amp;A + g \u00d7 fixed capital","derived","Per scenario, ~9.7\u201310.2% of revenue. Capex equal to D&amp;A would hold the asset base flat in nominal dollars forever while revenue compounds at g, so the implied depreciation rate would rise without limit (D-49). Opening invested capital is net PP&amp;E + intangibles + non-cash working capital, goodwill excluded (D-44)."],
    ["Gas roll-off drag","−50/−100/−150 bps","judgment","Cumulative Y3/Y4/Y5 as US gas contracts roll off (§3.2.1)"],
    ["Terminal growth g","2.5%","judgment","Demographic trajectory pulls toward 2.0% long-run"],
    ["Blended tax rate","27.5%","derived","Jurisdiction-weighted statutory; effective glides to this"],

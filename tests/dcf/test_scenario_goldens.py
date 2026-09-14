@@ -56,15 +56,17 @@ SCENARIOS = [
 
 # --- DNL: industrial FCFF / WACC, AUD per share --------------------------------
 DNL_GOLDEN = {
-    "orderly_convergence": 2.7980,
-    "muddle_through": 2.3900,                      # independently audited (generated workbook, all six)
-    # Re-pinned 14 Sep 2026: the operating base was restated to the explosives
-    # segments over FY24-FY25 (D-48, D-50). Previous levels 3.2740 / 2.8307 /
+    "orderly_convergence": 2.3316,
+    "muddle_through": 1.9895,                      # independently audited (generated workbook, all six)
+    # Re-pinned 14 Sep 2026, twice. First the operating base was restated to the
+    # explosives segments over FY24-FY25 (D-48, D-50); then the terminal moved to
+    # a capital base growing at g (D-49) and the declared transition-cost
+    # normalisation was added. Levels before the day's work: 3.2740 / 2.8307 /
     # 2.7705 / 1.9926 / 1.7015 / 0.8061.
-    "ai_productivity_lag": 2.3506,
-    "fragmentation": 1.5599,
-    "disorderly_climate_crystallisation": 1.2671,
-    "stagflation_persists": 0.3872,
+    "ai_productivity_lag": 2.0127,
+    "fragmentation": 1.2241,
+    "disorderly_climate_crystallisation": 0.9924,
+    "stagflation_persists": 0.0491,
 }
 
 # --- WBC: bank DDM / Ke (§15), AUD per share -----------------------------------
@@ -127,7 +129,7 @@ def test_csl_scenario_level(scenario):
 # so the two valuations that most need the sensitivity pass can finally say so.
 TERMINAL_BREACH = {
     # (company, scenario) -> terminal share of EV / of the equity claim
-    ("dnl", "muddle_through"): 0.7445,
+    ("dnl", "muddle_through"): 0.7001,
     ("wbc", "muddle_through"): 0.7631,
     ("wbc", "stagflation_persists"): 0.8445,       # worst in the project
     ("csl", "muddle_through"): 0.7538,
@@ -171,20 +173,32 @@ def test_warning_is_silent_below_the_threshold():
     assert warning is not None and "sensitivity pass" in warning
 
 
-def test_every_live_valuation_now_breaches_the_terminal_threshold():
-    """The consequence of the above, pinned so it cannot drift unnoticed.
+def test_terminal_shares_are_measured_case_by_case():
+    """Pinned so a movement across the 70% line is read, not absorbed.
 
-    All eighteen company x scenario valuations sit above 70%, so all eighteen
-    carry the §11.4.2 sensitivity obligation. If a future change drops one back
-    under, that is a headline movement and should be read, not absorbed.
+    Until 14 September 2026 all eighteen company x scenario valuations sat above
+    the threshold and this test asserted exactly that. The Denali restatement
+    (D-48, D-50) and the terminal capital base growing at g (D-49) put AI
+    Productivity Lag at 69.3% and Stagflation Persists at 61.9%, so the blanket
+    claim is no longer true and the §11.4.2 sensitivity obligation now applies
+    case by case rather than universally. Measuring each share is the honest
+    form of the same guard.
     """
+    dnl_shares = {
+        "orderly_convergence": 0.7168,
+        "muddle_through": 0.7001,
+        "ai_productivity_lag": 0.6933,
+        "fragmentation": 0.6873,
+        "disorderly_climate_crystallisation": 0.7950,
+        "stagflation_persists": 0.6189,
+    }
     for scenario in SCENARIOS:
-        for label, share in (
-            ("dnl", _dnl(scenario).terminal_share_of_ev),
-            ("wbc", _wbc(scenario).terminal_share_of_claim),
-            ("csl", _csl(scenario).terminal_share_of_ev),
-        ):
-            assert share > TERMINAL_SHARE_THRESHOLD, f"{label}/{scenario} {share:.4f}"
+        assert _dnl(scenario).terminal_share_of_ev == pytest.approx(
+            dnl_shares[scenario], abs=5e-4), scenario
+        # WBC and CSL are untouched by the Denali restatement and still breach.
+        assert _wbc(scenario).terminal_share_of_claim > TERMINAL_SHARE_THRESHOLD, scenario
+        assert _csl(scenario).terminal_share_of_ev > TERMINAL_SHARE_THRESHOLD, scenario
+
 
 
 def test_every_scenario_reports_a_terminal_share_on_every_engine():

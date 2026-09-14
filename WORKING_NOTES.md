@@ -27,80 +27,82 @@ prints git state.
 
 **Start with `land_vcc.cmd`.** Then `session_start.cmd`, then this block.
 
-**State:** suite **302** (+2 opt-in `-m libreoffice`, both passing), ratchet **13 checks**.
-**The DNL bases have moved: 2.831 → 2.390.** CSL 195.78 and WBC 30.03 are unchanged.
+**State:** suite **302** (+2 opt-in `-m libreoffice`, both passing), ratchet **13 checks**,
+base ties green. **DNL has moved: 2.831 → 1.989.** CSL 195.78 and WBC 30.03 unchanged.
 
-### What changed, and why
+### What landed
 
-1. **The Denali operating base was restated.** All four operating rates now come from one
-   entity, one window and one level — explosives segments (DNAP + DNA + DNEL + corporate),
-   FY2024–FY2025, excluding individually material items, from the FY25 annual report segment
-   note and capital expenditure table. Each carries a D-50 basis block.
+1. **The operating base is restated and DERIVED, not stored.** `data/financials/dnl.yaml`
+   carries the raw FY2024–FY2025 segment observations — revenue, EBITDA, D&A, capex for the
+   explosives segments, ex individually material items. The translator derives capital
+   intensity 9.18%, depreciation intensity 8.24%, EBITDA margin 20.96% and EBIT margin 12.72%
+   from them. Nothing is stored beside its own inputs (D-16); the company file declares a
+   window, not a number.
+2. **The transition-cost normalisation is a separate declared line**, +0.35pp, sized only on
+   the corporate-cost reduction the company has actually reported ("Corporate costs reduced by
+   $6m", 1H26, annualised). It is deliberately NOT the full gap between the two-year average
+   and the 1H26 run-rate — that gap also contains joint-venture and other income whose
+   persistence is not established. Revisit at the FY26 result.
+3. **D-49 is in the engine.** `capex_rule: grows_capital_base_at_g`. Opening invested capital
+   is derived per D-44 from net PP&E, intangibles and the ratified working-capital intensity,
+   rolled forward on the same flows the valuation uses; terminal capex is D&A plus g times the
+   fixed base — 9.7% to 10.2% of revenue by scenario, against D&A of 8.24%.
+4. **The workbook carries the roll-forward as formulas.** The generated workbook has an
+   invested-capital section and strikes terminal capex per scenario from it, so LibreOffice
+   recalculates D-49 independently of the Python. It ties across all six scenarios.
+5. **The UI discloses the lot.** The assumptions panel now carries capital intensity,
+   depreciation intensity, the margin and its normalisation, and the terminal capex rule, each
+   with entity, window, level and source.
 
-   | | Was | Now |
-   |---|---|---|
-   | `base_ebit_margin` | 14.10% | **12.72%** |
-   | `da_pct_revenue` | 7.30% | **8.24%** |
-   | `capex_pct` / stub | 8.0%→7.0% | **9.18%** flat |
-   | implied EBITDA margin | 21.40% | 20.96% |
+### Levels
 
-2. **Six DNL goldens moved.** 3.2740 → 2.7980, **2.8307 → 2.3900**, 2.7705 → 2.3506,
-   1.9926 → 1.5599, 1.7015 → 1.2671, 0.8061 → 0.3872. CSL and WBC untouched, so twelve of
-   the eighteen did not move.
-3. **The generated-workbook oracle was regenerated and ties across all six scenarios**, and
-   the two `-m libreoffice` tests pass. The independent check survived the restatement.
-4. **The v6 audited oracle was NOT restated, deliberately.** `tests/dcf/golden/dnl_mt_inputs.py`
-   is frozen at the v6 audit and now says so in its docstring. It is the only hand-audited
-   oracle in the project; restating it with the data would retire it silently. The two
-   field-by-field comparisons against it that the restatement broke are now excepted with the
-   reason written down, alongside the pre-existing WACC exception.
-5. **The duplicate margin is gone.** `normalised_baseline.ebit_margin: 0.135` was deleted —
-   a second judgement for a quantity the engine read from `engine_overlays` (D-16).
+| Scenario | Was (25 Aug) | Now |
+|---|---|---|
+| Orderly Convergence | 3.2740 | 2.3316 |
+| **Muddle Through** | **2.8307** | **1.9895** |
+| AI Productivity Lag | 2.7705 | 2.0127 |
+| Fragmentation | 1.9926 | 1.2241 |
+| Disorderly Climate | 1.7015 | 0.9924 |
+| Stagflation Persists | 0.8061 | 0.0491 |
 
-### What the restatement did to the picture
+### Three things that need Stephen
 
-6. Terminal ROIC on Muddle Through falls from 14.94% to about 12.4%, or 1.40× WACC against
-   1.68×. Terminal share rises to 74.5% from 72.7%, so the §11.4.2 sensitivity obligation
-   still bites.
-7. **Item 11 is narrowed, not closed.** Capital intensity still falls from 108.3% to 79.3%
-   of revenue over ten years. The four positions, with full evidence, are in
-   `analyses/dnl_item11_four_positions.md`; the live workbook is
-   `analyses/dnl_item11_capital_intensity.xlsx`.
-8. **Published tables are now permanently reproducible.** Each set in
-   `design/methodology/horizon_variant_sets.yaml` carries an `operating_base` block freezing
-   the rates it was struck on, so a later restatement cannot silently regenerate a different
-   table under the same name. `post_restatement` is the new `current` set; `second_sitting`
-   is superseded.
+6. **AI Productivity Lag now sits ABOVE Muddle Through** — 2.0127 against 1.9895. This is a
+   consequence of D-49, not a data error: AI Lag carries +0.5pp of margin and a lower terminal
+   growth rate, and once terminal capex is D&A plus g times the fixed base, a lower g also
+   means a lower perpetual reinvestment call. The offset is now big enough to outweigh the
+   slower growth. The ordering assertion in `test_dnl_all_scenarios.py` has been updated to
+   match, with the reasoning written down. **Whether the scenario narrative still supports AI
+   Lag above the central case is a judgement, not an arithmetic question.**
+7. **Not every valuation breaches the 70% terminal threshold any more.** AI Lag is at 69.3%
+   and Stagflation at 61.9%. The blanket test is replaced by one that pins each share, so a
+   movement across the line is read rather than absorbed. The §11.4.2 obligation now applies
+   case by case.
+8. **The user override on capital intensity is not built.** The disclosure is. The override
+   needs the UI panel wired to the translator first — the sliders drive a reduced-form JS
+   approximation, and putting an engine input behind one of them would make the UI a second
+   model of record, which D-23 forbids. That is the next UI job, not a five-minute one.
 
 ### Next
 
-9. **The transition-cost normalisation line.** FY24 and FY25 are a business emerging from a
-   demerger, so 12.72% may carry corporate cost that will not persist. The evidence points
-   that way: 1H26 explosives EBITDA margin runs about 22.3% against the 20.96% two-year
-   average, and the 1H26 commentary records corporate costs down $6m. Size it, source it, and
-   add it as a **separate declared line** — never folded into the base rate.
-10. **Implement the D-48 UI piece**: move `analyses/dnl_capex_history.yaml` into
-    `data/financials/`, have the translator derive the averages rather than read a stored
-    number (D-16), and wire the disclosure entry and the user override.
-11. **D-49 is ruled but not implemented in the engine.** The terminal still runs
-    `capex_rule: equals_da`, which now means 8.24%. Growing the capital base at g needs the
-    invested-capital roll-forward wired into the engine, not just the replica.
-12. **The Porter work and the margin build still disagree about the gas contracts.** The
+9. Wire the UI panel to the translator, then add the capital-intensity override behind it.
+10. **The Porter work and the margin build still disagree about the gas contracts.** The
     impact matrix declares the moat as "scale + switching_cost + resource (long-term
     contracts)" with a 10–15 year decay horizon; those contracts expire by FY2032, six years
     from the valuation date, and D-43 says a contractual expiry sets the horizon directly.
-13. Then, unchanged: D-42 the diagnostic, the horizon rule and fade, and the remaining UI
-    disclosure work.
+11. **Item 11 is narrowed again but still open** — see `analyses/dnl_item11_four_positions.md`
+    and `analyses/dnl_item11_capital_intensity.xlsx`.
+12. Then D-42 the diagnostic, and the horizon rule and fade (D-35, D-36), which are still
+    PROPOSED and still only live in the replica.
 
-### What was ruled on 14 September
+### Ruled 14 September
 
-14. **D-48** capex and depreciation intensity are a pair from one window and one entity.
-    **D-49** the terminal capital base grows at g. **D-50** every rate declares the basis it
-    was struck on, enforced by ratchet check 13. **D-51** the workbook is a presentation
-    layer, never a source.
-15. Why D-50 exists, in one line: four defects found across three sittings were one error —
-    a ratio assembled from parts that did not share an entity, a window or a level of the
-    accounts.
+13. **D-48** the intensity pair from one window and one entity — implemented.
+    **D-49** the terminal capital base grows at g — implemented.
+    **D-50** every rate declares its basis, ratchet check 13 — six rates still baselined.
+    **D-51** the workbook is a presentation layer, never a source.
+14. Why D-50 exists: four defects across three sittings were one error — a ratio assembled
+    from parts that did not share an entity, a window or a level of the accounts.
 
 ---
 

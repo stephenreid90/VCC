@@ -62,7 +62,7 @@ def test_dnl_mt_ratified_per_share():
     inp = dataclasses.replace(dnl_muddle_through_inputs(), wacc=build_wacc_from_inputs(_load()))
     r = FcfEngine().run(inp)
     assert abs(r.wacc - 0.088772) < 1e-4
-    assert round(r.value_per_share, 3) == 3.073     # frozen v6-era golden inputs; live is 2.390
+    assert round(r.value_per_share, 3) == 3.073     # frozen v6-era golden inputs; live is 1.990
     assert round(r.enterprise_value, 1) == 7009.2
     # sanity: still a terminal-heavy DCF, below market
     assert r.value_per_share < r.market_reference_price
@@ -94,13 +94,19 @@ def test_equity_bridge_validator_requires_on_balance_sheet_flag():
 
 
 def test_engine_overlays_data_driven_reproduce_headline():
-    """Per-year overlays (margin/gas/tax/capex glides) now come from data; fed
-    into the engine with the data-driven WACC they reproduce the ratified 3.073."""
+    """Per-year overlays (margin/gas/tax/capex glides) come from data, fed into the
+    engine with the data-driven WACC.
+
+    This composition deliberately keeps the FROZEN golden's terminal capex rate,
+    so the number it produces isolates the effect of the overlays and the WACC and
+    excludes D-49's terminal. The full data path — overlays, WACC and terminal
+    together — is ``test_dnl_mt_from_data`` and lands at 1.990.
+    """
     import yaml
     from vcc_valuations.translator import engine_overlays_from_data, tax_bridge_from_data
 
     raw = yaml.safe_load((ROOT / "data" / "companies" / "dnl.yaml").read_text(encoding="utf-8"))
-    ov = engine_overlays_from_data(raw, "muddle_through")
+    ov = engine_overlays_from_data(raw, "muddle_through", _load()["financials"])
     # Applied tax now comes from the derived Tax Bridge, not stored overlays.
     tax = tax_bridge_from_data(_load())
     glide = [tax[f"B{11 + i}"].value for i in range(1, 6)]
@@ -118,4 +124,4 @@ def test_engine_overlays_data_driven_reproduce_headline():
         terminal_growth=ov["terminal_growth"],
     )
     r = FcfEngine().run(inp)
-    assert round(r.value_per_share, 3) == 2.305     # data overlays + data WACC, ratified β 1.10
+    assert round(r.value_per_share, 3) == 2.397     # data overlays + data WACC, frozen terminal

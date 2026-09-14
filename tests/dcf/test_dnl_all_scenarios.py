@@ -44,12 +44,12 @@ SCENARIOS = [
 # check that the restatement moved the margin and nothing else. Previous margins
 # were 0.146 / 0.151 / 0.151 / 0.116 / 0.116 / 0.071.
 WORKBOOK = {
-    "muddle_through":                     (0.0615, 0.1322, 0.0250),
-    "orderly_convergence":                (0.0744, 0.1372, 0.0275),
-    "ai_productivity_lag":                (0.0555, 0.1372, 0.0225),
-    "fragmentation":                      (0.0630, 0.1022, 0.0225),
-    "disorderly_climate_crystallisation": (0.0756, 0.1022, 0.0175),
-    "stagflation_persists":               (0.0549, 0.0572, 0.0225),
+    "muddle_through":                     (0.0615, 0.1357, 0.0250),
+    "orderly_convergence":                (0.0744, 0.1407, 0.0275),
+    "ai_productivity_lag":                (0.0555, 0.1407, 0.0225),
+    "fragmentation":                      (0.0630, 0.1057, 0.0225),
+    "disorderly_climate_crystallisation": (0.0756, 0.1057, 0.0175),
+    "stagflation_persists":               (0.0549, 0.0607, 0.0225),
 }
 
 
@@ -71,17 +71,26 @@ def test_scenario_drivers_tie_the_comparison_workbook(scenario):
 
 def test_muddle_through_is_the_ratified_headline():
     _, _, r = _run("muddle_through")
-    assert round(r.value_per_share, 3) == 2.390
+    assert round(r.value_per_share, 3) == 1.989
 
 
 def test_scenario_asymmetry_is_downside_skewed():
     """Per-share ordering is upside -> downside, and the downside bites harder than
-    the upside lifts (the framework's central claim about DNL)."""
+    the upside lifts (the framework's central claim about DNL).
+
+    AI Productivity Lag and Muddle Through swapped places on 14 September 2026 and
+    the swap is a consequence of D-49, not a data error. AI Lag carries +0.5pp of
+    margin and a lower terminal growth rate; once terminal capex is depreciation
+    plus g times the fixed base, a lower g also means a lower perpetual
+    reinvestment call, and that offset is now large enough to outweigh the slower
+    growth. Whether the scenario narrative still supports AI Lag sitting above the
+    central case is a question for the owner, flagged in WORKING_NOTES.
+    """
     vps = {s: _run(s)[2].value_per_share for s in SCENARIOS}
     assert (
         vps["orderly_convergence"]
-        > vps["muddle_through"]
         > vps["ai_productivity_lag"]
+        > vps["muddle_through"]
         > vps["fragmentation"]
         > vps["disorderly_climate_crystallisation"]
         > vps["stagflation_persists"]

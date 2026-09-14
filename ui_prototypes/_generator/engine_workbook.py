@@ -148,7 +148,23 @@ class Book:
         craw = inp["company_raw"]; nb = craw["normalised_baseline"]; fin = inp["financials"]
         rgc = nb["revenue_growth_chain"]; shared = rgc["shared"]
         istr = shared["industry_structure"]; coff = shared["company_offset"]
-        ov = nb["engine_overlays"]; base = ov["baseline"]
+        ov = nb["engine_overlays"]
+        # Resolved, not raw: where the company declares an operating-rate window
+        # (D-48) the four rates are derived from the segment history and are not
+        # present on the raw baseline at all.
+        from vcc_valuations.translator import engine_overlays_from_data
+        base = dict(ov["baseline"])
+        # Only the scalar rates are taken from the resolver. Its per-year vectors
+        # already carry the scenario's parallel shift, and this sheet applies that
+        # shift itself on the DCF build -- taking them here would double it.
+        _resolved = engine_overlays_from_data(craw, SCEN[0][0], fin) or {}
+        for _k in ("base_ebit_margin", "da_pct_revenue", "capex_pct_stub"):
+            if _k in _resolved:
+                base[_k] = _resolved[_k]
+        if "operating_rates" in base and "capex_pct" in _resolved:
+            base["capex_pct"] = [_resolved["capex_pct_stub"]] * len(
+                base["margin_transformation"]
+            )
         tb = nb["tax_bridge"]; rr = nb["equity_bridge_run_rates"]
         w = build_wacc_from_inputs(inp)
         geo = _geographic_regions(craw)
@@ -292,10 +308,32 @@ class Book:
         tr = nb["terminal_reinvestment"]
         self.terminal_mode = tr["mode"]
         rule = tr["capex_rule"]
-        src = "da_pct" if rule == "equals_da" else f"capex:{len(base['capex_pct']) - 1}"
-        line(f"Terminal capex % of revenue (rule: {rule})", None, None, PCT2)
-        ws.cell(r[0] - 1, 2, "=" + self.ref[src].split("!")[1]).number_format = PCT2
-        self.ref["t_capex"] = f"'Assumptions'!$B${r[0] - 1}"
+        self.terminal_capex_rule = rule
+        if rule == "grows_capital_base_at_g":
+            # D-44 / D-49. Opening invested capital is built from the balance
+            # sheet here so the workbook can roll it forward on the DCF sheet and
+            # strike the terminal from it. Goodwill is excluded.
+            ws.cell(r[0], 1, "Invested capital at the valuation date (D-44; goodwill excluded)")
+            ws.cell(r[0], 1).font = SUB
+            r[0] += 1
+            bs = fin["balance_sheet"]
+            line("Net property, plant and equipment", bs["property_plant_and_equipment_net"], "ic_ppe", NUM0)
+            line("Intangible assets (ex goodwill)", bs["intangible_assets"], "ic_intang", NUM0)
+            line("Non-cash working capital")
+            ws.cell(r[0] - 1, 2, f"={self.ref['wc_int'].split('!')[1]}*{self.ref['base_rev'].split('!')[1]}").number_format = NUM0
+            self.ref["ic_ncwc"] = f"'Assumptions'!$B${r[0] - 1}"
+            line("Invested capital, opening")
+            ws.cell(r[0] - 1, 2, "=" + "+".join(
+                self.ref[k].split("!")[1] for k in ("ic_ppe", "ic_intang", "ic_ncwc"))).number_format = NUM0
+            self.ref["ic0"] = f"'Assumptions'!$B${r[0] - 1}"
+            line("Terminal capex % of revenue (rule: grows_capital_base_at_g)")
+            ws.cell(r[0] - 1, 2, "per scenario — see the DCF build sheet")
+            self.ref["t_capex"] = None
+        else:
+            src = "da_pct" if rule == "equals_da" else f"capex:{len(base['capex_pct']) - 1}"
+            line(f"Terminal capex % of revenue (rule: {rule})", None, None, PCT2)
+            ws.cell(r[0] - 1, 2, "=" + self.ref[src].split("!")[1]).number_format = PCT2
+            self.ref["t_capex"] = f"'Assumptions'!$B${r[0] - 1}"
         blank()
 
         # --- Equity bridge run-rates ---
@@ -526,6 +564,22 @@ class Book:
         for p in range(6):
             prow(f"pv{p}", f"  {PERIODS[p]} PV of FCFF", MONEY,
                  lambda s, c, j, p=p: f"={c}{rmap[f'fcff{p}']}*{c}{rmap[f'df{p}']}")
+        # Invested capital roll-forward, and the terminal rate it produces.
+        if getattr(self, "terminal_capex_rule", None) == "grows_capital_base_at_g":
+            section("Invested capital rolled forward (D-44) and the terminal rate it implies (D-49)")
+            for p in range(6):
+                def f_ic(s_, c, j, p=p):
+                    prev = R["ic0"] if p == 0 else f"{c}{rmap[f'ic{p-1}']}"
+                    return (f"={prev}-{c}{rmap[f'cx{p}']}-{c}{rmap[f'da{p}']}"
+                            f"-{c}{rmap[f'dwc{p}']}")
+                prow(f"ic{p}", f"  {PERIODS[p]} invested capital, closing", MONEY, f_ic)
+            prow("ic_fixed", "  Fixed capital at the end of Y5", MONEY,
+                 lambda s_, c, j: f"={c}{rmap['ic5']}-{R['wc_int']}*{c}{rmap['rev5']}")
+            prow("t_capex_s", "  Terminal capex % of revenue", PCT2,
+                 lambda s_, c, j: (
+                     f"={R['da_pct']}+{R[f'macro:terminal_growth:{s_}']}"
+                     f"*{c}{rmap['ic_fixed']}/{c}{rmap['rev5']}"))
+
         # terminal + EV
         section("Terminal value & enterprise value")
         prow("pv_expl", "PV of explicit FCFF", MONEY,
@@ -539,7 +593,8 @@ class Book:
                  lambda s, c, j: (
                      f"={c}{rmap['rev5']}*(1+{R[f'macro:terminal_growth:{s}']})"
                      f"*({c}{rmap['m5']}*(1-{c}{rmap['tax5']})+{R['da_pct']}"
-                     f"-{R['t_capex']}-{R[f'macro:terminal_growth:{s}']}*{R['wc_int']})"
+                     f"-{(c + str(rmap['t_capex_s'])) if R.get('t_capex') is None else R['t_capex']}"
+                     f"-{R[f'macro:terminal_growth:{s}']}*{R['wc_int']})"
                  ))
         else:
             prow("tfcff", "Terminal FCFF = Y5 FCFF x (1+g)", MONEY,

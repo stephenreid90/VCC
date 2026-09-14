@@ -143,12 +143,12 @@ sets:
       rule: grow_capital_base
       carbon_premium_on_baseline_base: false
     expected:
-      orderly_convergence: 2.5681
-      muddle_through: 2.1414
-      ai_productivity_lag: 2.1339
-      fragmentation: 1.3198
-      disorderly_climate_crystallisation: 0.9791
-      stagflation_persists: 0.0638
+      orderly_convergence: 2.6752
+      muddle_through: 2.2384
+      ai_productivity_lag: 2.2254
+      fragmentation: 1.4150
+      disorderly_climate_crystallisation: 1.0761
+      stagflation_persists: 0.1549
 
 # The observed-intensity rule, proposed 14 September 2026. Capex intensity and
 # depreciation intensity are BOTH struck as the average over one window for one
@@ -215,22 +215,22 @@ item_11_positions:
     capital_growth: derived
     note: the capex path converges to D&A, so fixed capital is flat in nominal terms
     expected:
-      orderly_convergence: 2.5681
-      muddle_through: 2.1414
-      ai_productivity_lag: 2.1339
-      fragmentation: 1.3198
-      disorderly_climate_crystallisation: 0.9791
-      stagflation_persists: 0.0638
+      orderly_convergence: 2.6752
+      muddle_through: 2.2384
+      ai_productivity_lag: 2.2254
+      fragmentation: 1.4150
+      disorderly_climate_crystallisation: 1.0761
+      stagflation_persists: 0.1549
 
   hold_intensity_flat:
     capital_growth: revenue
     expected:
-      orderly_convergence: 1.5542
-      muddle_through: 1.3814
-      ai_productivity_lag: 1.4992
-      fragmentation: 0.5706
-      disorderly_climate_crystallisation: 0.5625
-      stagflation_persists: -0.5624
+      orderly_convergence: 1.6609
+      muddle_through: 1.4780
+      ai_productivity_lag: 1.5902
+      fragmentation: 0.6655
+      disorderly_climate_crystallisation: 0.6591
+      stagflation_persists: -0.4716
 
   volume_plus_asset_inflation:
     capital_growth: volume_and_inflation
@@ -241,12 +241,12 @@ item_11_positions:
       chain rate held for all ten years (Muddle Through 1.9551); that run was not
       committed and does not reproduce. Both readings are listed in the paper.
     expected:
-      orderly_convergence: 1.4379
-      muddle_through: 1.4500
-      ai_productivity_lag: 1.6140
-      fragmentation: 0.9491
-      disorderly_climate_crystallisation: 1.1453
-      stagflation_persists: -0.0338
+      orderly_convergence: 1.5446
+      muddle_through: 1.5466
+      ai_productivity_lag: 1.7050
+      fragmentation: 1.0440
+      disorderly_climate_crystallisation: 1.2420
+      stagflation_persists: 0.0569
 
   volume_plus_asset_inflation_held_flat:
     capital_growth: volume_and_inflation_flat
@@ -257,9 +257,9 @@ item_11_positions:
       below the fading one because a constant capital call outruns a fading revenue
       line in the back half of the horizon.
     expected:
-      orderly_convergence: 1.1047
-      muddle_through: 1.2286
-      ai_productivity_lag: 1.4294
-      fragmentation: 0.7449
-      disorderly_climate_crystallisation: 0.8880
-      stagflation_persists: -0.1798
+      orderly_convergence: 1.2114
+      muddle_through: 1.3252
+      ai_productivity_lag: 1.5204
+      fragmentation: 0.8398
+      disorderly_climate_crystallisation: 0.9846
+      stagflation_persists: -0.0891

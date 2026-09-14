@@ -53,8 +53,8 @@ def test_engine_inputs_assembled_from_data_reproduce_ratified_per_share():
     inp = build_engine_inputs_from_data(_load(), "muddle_through")
     r = FcfEngine().run(inp)
     assert abs(r.wacc - 0.088772) < 1e-4
-    assert round(r.enterprise_value, 1) == 5800.2
-    assert round(r.value_per_share, 3) == 2.390
+    assert round(r.enterprise_value, 1) == 5091.3
+    assert round(r.value_per_share, 3) == 1.989
     assert r.value_per_share < r.market_reference_price
 
 
@@ -152,7 +152,9 @@ def test_tax_bridge_derivation_derives_blended_statutory_and_glide():
 def test_tax_glide_is_no_longer_stored_in_overlays():
     """SSOT: the tax glide is gone from the stored engine_overlays — it is derived."""
     from vcc_valuations.translator import engine_overlays_from_data
-    ov = engine_overlays_from_data(_load()["company_raw"], "muddle_through")
+    ov = engine_overlays_from_data(
+        _load()["company_raw"], "muddle_through", _load()["financials"]
+    )
     assert "tax_rate_glide" not in ov
     assert "stub_tax_rate" not in ov
 
@@ -181,7 +183,7 @@ def test_equity_bridge_derivation_traces_walk_and_per_share():
         ["B6", "B7", "B8", "B10", "B11", "B27", "B28", "B29", "B30", "B31", "B33", "B37"]
     assert abs(d["B11"].value - 1224.0329) < 1e-3   # net debt at valuation (golden)
     assert abs(d["B29"].value - (-151.65)) < 1e-2   # adjustments net (§4.2)
-    assert round(d.result, 3) == 2.390              # B33 value per share
+    assert round(d.result, 3) == 1.989              # B33 value per share
     # B33 must equal the engine's own value_per_share, not a re-derivation drift.
     inp = build_engine_inputs_from_data(_load(), "muddle_through")
     from vcc_valuations.dcf.fcf_engine import FcfEngine

@@ -3,8 +3,8 @@
 _Generated 2026-09-14 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `015216d D-51, the restatement pinned, and the handover` on `main`
-- Unpushed commits: **8**
+- HEAD: `9ac5c80 Bridge note: renumber and bring the still-open list up to date` on `main`
+- Unpushed commits: **10**
 - Tracked files: 312
 - Untracked files: 0
 
@@ -19,10 +19,10 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
 | Path | Present | What it is |
 |---|---|---|
-| `data/companies/dnl.yaml` | yes (39.6KB) | company position + layer-2 method (judgement) |
+| `data/companies/dnl.yaml` | yes (41.1KB) | company position + layer-2 method (judgement) |
 | `data/companies/dnl.md` | yes (13.5KB) | company narrative |
 | `data/companies/dnl_documents.yaml` | yes (8.5KB) | document register |
-| `data/financials/dnl.yaml` | yes (11.1KB) | curated layer-1 financials (a SUMMARY — check for raw sources too) |
+| `data/financials/dnl.yaml` | yes (12.3KB) | curated layer-1 financials (a SUMMARY — check for raw sources too) |
 | `data/financials/dnl_*.csv` | **NO** | RAW feed export — multi-year statements live here, not in the yaml |
 | `data/financials/historical/dnl/` | **7 document(s)** | primary source PDFs (annual reports, statutory accounts, presentations) |
 | `analyses/dnl/` | yes | 14 workbook(s); subdirs: scenarios, valuations |
@@ -57,7 +57,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `csl.yaml` (33.4KB)
     - `csl_documents.yaml` (8.3KB)
     - `dnl.md` (13.5KB)
-    - `dnl.yaml` (39.6KB)
+    - `dnl.yaml` (41.1KB)
     - `dnl_documents.yaml` (8.5KB)
     - `wbc.md` (7.6KB)
     - `wbc.yaml` (35.9KB)
@@ -67,7 +67,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `cba_eodhd_fundamentals_2026-06-15.csv` (145.3KB)
     - `csl.yaml` (7.6KB)
     - `csl_eodhd_fundamentals_2026-06-15.csv` (157.7KB)
-    - `dnl.yaml` (11.1KB)
+    - `dnl.yaml` (12.3KB)
     - `mqg_eodhd_fundamentals_2026-06-15.csv` (152.0KB)
     - `nab_eodhd_fundamentals_2026-06-15.csv` (179.0KB)
     - `wbc.yaml` (1.9KB)
@@ -154,7 +154,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **vcc_valuations/**
     - `__init__.py` (650B)
     - `derivation.py` (4.4KB)
-    - `translator.py` (48.7KB)
+    - `translator.py` (55.5KB)
     - **assumptions/**
       - `__init__.py` (775B)
       - `wacc.py` (6.0KB)
@@ -184,7 +184,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `__init__.py` (0B)
   - `conftest.py` (1.3KB)
   - `ssot_basis_baseline.json` (494B)
-  - `ssot_intra_file_baseline.json` (629B)
+  - `ssot_intra_file_baseline.json` (593B)
   - `ssot_lint_baseline.json` (6.2KB)
   - `test_adjustments.py` (1.6KB)
   - `test_archetypes_validate.py` (6.6KB)
@@ -203,16 +203,16 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `__init__.py` (0B)
     - `test_csl_segment.py` (2.9KB)
     - `test_csl_workbook_tie.py` (3.7KB)
-    - `test_dnl_all_scenarios.py` (4.0KB)
+    - `test_dnl_all_scenarios.py` (4.5KB)
     - `test_dnl_mt_from_data.py` (10.2KB)
-    - `test_dnl_mt_ratified.py` (5.7KB)
-    - `test_dnl_workbook_tie.py` (4.1KB)
+    - `test_dnl_mt_ratified.py` (6.0KB)
+    - `test_dnl_workbook_tie.py` (4.4KB)
     - `test_e2e_dnl_mt.py` (4.3KB)
     - `test_engine_input_validation.py` (3.4KB)
     - `test_horizon_variant_sets.py` (5.0KB)
     - `test_per_year_derivations.py` (3.8KB)
     - `test_replica_ties_engine.py` (6.1KB)
-    - `test_scenario_goldens.py` (7.9KB)
+    - `test_scenario_goldens.py` (8.7KB)
     - `test_wbc_bank.py` (2.5KB)
     - **golden/**
       - `__init__.py` (0B)
@@ -221,7 +221,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `csl_workbook_all_scenarios.json` (6.6KB)
       - `dnl_mt_inputs.py` (5.5KB)
       - `dnl_mt_v6.json` (2.6KB)
-      - `dnl_workbook_all_scenarios.json` (10.4KB)
+      - `dnl_workbook_all_scenarios.json` (10.6KB)
     - **harness/**
       - `__init__.py` (0B)
       - `replica.py` (21.3KB)
@@ -232,17 +232,21 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
 ## UI generator
 
+  - `csl_scenario_interface.html` (159.9KB)
+  - `dnl_scenario_interface.html` (211.1KB)
+  - `wbc_scenario_interface.html` (159.6KB)
   - **_generator/**
     - `README.md` (893B)
     - `beta_data.py` (10.0KB)
-    - `build_cfgs.py` (91.9KB)
-    - `engine_workbook.py` (88.1KB)
+    - `build_cfgs.py` (93.7KB)
+    - `cfgs_gen.json` (213.1KB)
+    - `engine_workbook.py` (91.5KB)
     - `gen_ui.py` (88.7KB)
 
 ## Analyses (workbooks)
 
   - `dnl_capex_anchor_evidence.md` (8.3KB)
-  - `dnl_capex_history.yaml` (5.1KB)
+  - `dnl_capex_history.yaml` (4.9KB)
   - `dnl_item11_capital_intensity.xlsx` (35.5KB)
   - `dnl_item11_four_positions.md` (26.4KB)
   - **csl/**

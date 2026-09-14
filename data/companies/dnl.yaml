@@ -372,13 +372,22 @@ normalised_baseline:
   # --- Terminal reinvestment (D-13) ---
   terminal_reinvestment:
     mode: normalised
-    capex_rule: equals_da
+    capex_rule: grows_capital_base_at_g
     rationale: >
       Ratified 20 Aug 2026 (D-13) and sized 23 Aug 2026. The terminal is struck
       from its components rather than by capitalising the final explicit year's
       FCFF, for two reasons that are really one. Capex: a perpetuity growing at
       g cannot sustainably reinvest at the explicit period's rate, so terminal
-      capex is set equal to D&A — the steady-state condition. Working capital:
+      capex is struck from components rather than from the final explicit year.
+      AMENDED 14 September 2026 by D-49: the rule is no longer equals_da.
+      Capex equal to D&A holds the book asset base flat in nominal dollars
+      forever while revenue compounds at g, so the implied depreciation rate
+      rises without limit; equality is exact only where g = 0. The terminal
+      now strikes capex at D&A plus g times the fixed capital base the explicit
+      period leaves behind, which is the steady state a growing perpetuity
+      actually requires. Opening invested capital is DERIVED per D-44 from net
+      PP&E, intangibles and the ratified working-capital intensity — never
+      stored (D-16). Working capital:
       capitalising the last explicit year carried a build struck on ~6.2%
       revenue growth into a perpetuity growing at ~2.5%, roughly two and a half
       times the drag the terminal actually bears; the normalised terminal
@@ -707,32 +716,48 @@ normalised_baseline:
   # translator.tax_bridge_from_data (see the tax_bridge block below).
   engine_overlays:
     baseline:
-      # Restated 14 September 2026 under D-48 and D-50: the operating rates are a
-      # set drawn from one entity, one window and one level, so the relationships
-      # between them are observed rather than assembled. The rates they replace
-      # were 14.1% / 8.0%-7.0% / 7.3%, whose only recorded provenance was a
-      # workbook cell (D-51).
-      base_ebit_margin: 0.1272
-      base_ebit_margin_basis:
-        entity: Dyno Nobel segments (DNAP + DNA + DNEL + corporate), excluding Fertilisers
-        window: FY2024-FY2025
-        level: EBIT after corporate costs, excluding individually material items
-        source: Dyno Nobel Limited Annual Report 2025, reportable segments note
+      # D-48 and D-50, 14 September 2026. The capital intensity, depreciation
+      # intensity and operating margin are DERIVED from the raw segment history
+      # in data/financials/dnl.yaml, over one window, for one entity, at one
+      # level of the accounts. Nothing is stored here: a stored average is a
+      # derived value (D-16), and taking the rates from different places is the
+      # defect that produced the 6-7% capex anchor in the first place.
+      #
+      # The rates this replaces were margin 14.1%, capex 8.0% falling to 7.0%
+      # and depreciation 7.3%, whose only recorded provenance was a workbook
+      # cell (D-51).
+      operating_rates:
+        window: two_year
+        source: data/financials/dnl.yaml segment_history
+        derives: [base_ebit_margin, capex_pct_stub, capex_pct, da_pct_revenue]
+        note: >
+          The explicit capex path is flat at the observed intensity. There is no
+          convergence to D&A (D-38): the gap between capital intensity and
+          depreciation intensity is itself an observation, and converging one
+          onto the other would discard it.
+
+      # The one judgement left in the operating build, and it is declared rather
+      # than folded into the base rate.
+      base_ebit_margin_transition_normalisation_pp: 0.0035
+      base_ebit_margin_transition_normalisation_basis:
+        entity: Dyno Nobel segments (DNAP + DNA + DNEL + corporate)
+        window: 1H26 against the FY2024-FY2025 average
+        level: corporate costs within EBIT
+        source: >
+          Dyno Nobel Limited half-year result to 31 March 2026 — "Corporate costs
+          reduced by $6m". Annualised to $12m on a base revenue of $3,400m, which
+          is 0.35pp of margin.
+        rationale: >
+          FY2024 and FY2025 are the first two years of a business emerging from a
+          demerger, so the observed margin carries corporate cost that supported a
+          group which included fertilisers. Sized ONLY on the reduction the company
+          has actually reported, not on the full gap between the two-year average
+          and the 1H26 run-rate — that gap also contains joint-venture and other
+          income whose persistence is not established. Revisit when the FY2026
+          result lands and the Phosphate Hill sale has completed.
+
       margin_transformation: [0.006, 0.018, 0.02, 0.02, 0.02]   # B45..B49 (cum pp)
       margin_gas_rolloff: [0.0, 0.0, -0.005, -0.01, -0.015]     # B52..B56 (cum pp, <=0)
-      capex_pct_stub: 0.0918
-      capex_pct: [0.0918, 0.0918, 0.0918, 0.0918, 0.0918]
-      capex_pct_basis:
-        entity: Dyno Nobel segments (DNAP + DNA + DNEL + corporate), excluding Fertilisers
-        window: FY2024-FY2025
-        level: capital expenditure per the business-unit table, continuing operations less Fertilisers
-        source: Dyno Nobel Limited Annual Report 2025, capital expenditure table
-      da_pct_revenue: 0.0824
-      da_pct_revenue_basis:
-        entity: Dyno Nobel segments (DNAP + DNA + DNEL + corporate), excluding Fertilisers
-        window: FY2024-FY2025
-        level: depreciation and amortisation, excluding individually material items
-        source: Dyno Nobel Limited Annual Report 2025, reportable segments note
     by_scenario:
       # margin_delta_pp / capex_delta_pp are parallel shifts vs the baseline path;
       # terminal_growth is absolute (B77 base 0.025 + the comparison's delta).

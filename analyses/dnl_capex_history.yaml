@@ -73,30 +73,19 @@ group_depreciation_and_amortisation:
     FY2025: 298.3
 
 # ---------------------------------------------------------------------------
-# 3. The explosives business alone. This is the entity being valued, and it is
-#    the only basis on which the anchor question can actually be settled.
-#    Segments DNAP + DNA + DNEL + Corporate, excluding Fertilisers (Phosphate
-#    Hill) and excluding the discontinued IPF Distribution and WALA operations.
+# 3. The explosives business alone.
+#
+# MOVED 14 September 2026. The raw FY2024 and FY2025 segment observations for the
+# entity being valued now live in `data/financials/dnl.yaml` under
+# `segment_history`, because the engine derives its operating rates from them
+# (D-48) and a second copy here would be exactly the drift D-16 and ratchet check
+# 10 exist to prevent. The derived intensities are not recorded anywhere: they
+# fall out of `operating_rates_from_history`.
+#
+# For the record, what that window says: capital intensity 9.18% of revenue,
+# depreciation intensity 8.24%, EBITDA margin 20.96%, EBIT margin 12.72% — all
+# from one entity, one window, one level.
 # ---------------------------------------------------------------------------
-dyno_nobel_segments:
-  source: dnl_fy25  # segment note; capital expenditure table in the OFR
-  units: AUD m
-  FY2024:
-    revenue: 3194.1
-    depreciation_and_amortisation: 258.9
-    capex: 241.7           # continuing operations 312.6 less Fertilisers 70.9
-    capex_pct_revenue: 0.0757
-    da_pct_revenue: 0.0811
-  FY2025:
-    revenue: 3212.3
-    depreciation_and_amortisation: 269.1
-    capex: 346.4           # continuing operations 421.9 less Fertilisers 75.5
-    capex_pct_revenue: 0.1078
-    da_pct_revenue: 0.0838
-  two_year:
-    capex_pct_revenue: 0.0918
-    da_pct_revenue: 0.0824
-    capex_over_da: 1.114
 
 # FY2025 capex by category, continuing operations, AUD m (FY2025 / FY2024).
 # Turnaround is the swing item and is cyclical: FY2025 covered scheduled

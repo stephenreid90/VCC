@@ -23,7 +23,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_BASES = {"DNL": "2.831", "WBC": "30.03", "CSL": "195.78"}
+EXPECTED_BASES = {"DNL": "1.989", "WBC": "30.03", "CSL": "195.78"}  # DNL re-pinned 14 Sep 2026 (D-48/D-49/D-50)
 
 
 def run(cmd: list[str], timeout: int = 900) -> tuple[int, str]:

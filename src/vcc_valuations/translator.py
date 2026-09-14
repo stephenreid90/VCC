@@ -388,7 +388,50 @@ def equity_bridge_adjustments_net_from_data(company_raw: dict):
     return net
 
 
-def engine_overlays_from_data(company_raw: dict, scenario_id: str):
+
+def operating_rates_from_history(financials: dict, window: str):
+    """Capital, depreciation and margin intensities, derived from one window (D-48).
+
+    The four rates the operating build needs are ratios, and a ratio is only
+    evidence if its numerator and denominator share an entity, a window and a
+    level of the accounts (D-50). Deriving them together from one block of raw
+    observations is what makes that true by construction rather than by
+    convention -- in particular the *gap* between capital intensity and
+    depreciation intensity, which is the only part of the pair that moves a
+    valuation, is then observed rather than assumed.
+
+    Returns ``None`` when the company carries no segment history.
+    """
+    from vcc_valuations.derivation import DerivationBuilder
+
+    hist = (financials or {}).get("segment_history")
+    if not hist:
+        return None
+    years = hist["windows"][window]
+    rows = [hist["by_year"][y] for y in years]
+    revenue = sum(r["revenue"] for r in rows)
+    capex = sum(r["capex"] for r in rows)
+    da = sum(r["depreciation_and_amortisation"] for r in rows)
+    ebitda = sum(r["ebitda"] for r in rows)
+
+    b = DerivationBuilder(f"operating_rates[{window}]")
+    b.step("OR1", "Revenue over the window", revenue, "sum(revenue)",
+           {"years": len(years)}, units="AUD m")
+    b.step("OR2", "Capital intensity", capex / revenue, "capex / revenue",
+           {"capex": capex, "revenue": revenue}, units="%")
+    b.step("OR3", "Depreciation intensity", da / revenue,
+           "depreciation / revenue", {"depreciation": da, "revenue": revenue},
+           units="%")
+    b.step("OR4", "EBITDA margin", ebitda / revenue, "EBITDA / revenue",
+           {"ebitda": ebitda, "revenue": revenue}, units="%")
+    b.step("OR5", "EBIT margin", (ebitda - da) / revenue,
+           "(EBITDA - depreciation) / revenue",
+           {"ebitda": ebitda, "depreciation": da, "revenue": revenue}, units="%")
+    return b.build("OR5")
+
+
+def engine_overlays_from_data(company_raw: dict, scenario_id: str,
+                              financials: dict | None = None):
     """Per-year engine overlays for a scenario (methodology §11), RESOLVED.
 
     ``engine_overlays`` is stored as a ``baseline`` operating build (the Muddle
@@ -410,13 +453,41 @@ def engine_overlays_from_data(company_raw: dict, scenario_id: str):
         return None
     margin_delta = scen.get("margin_delta_pp", 0.0)
     capex_delta = scen.get("capex_delta_pp", 0.0)
+
+    # D-48: where the company declares an operating-rate window, the capital,
+    # depreciation and margin rates are DERIVED from the raw segment history for
+    # that window rather than stored beside it (D-16). The explicit capex path is
+    # then flat at the observed intensity -- there is no convergence to D&A,
+    # because the gap between the two rates is itself an observation.
+    rates_decl = base.get("operating_rates")
+    if rates_decl is not None:
+        rates = operating_rates_from_history(financials, rates_decl["window"])
+        if rates is None:
+            raise ValueError(
+                "engine_overlays declares an operating_rates window but the "
+                "financials carry no segment_history to derive it from."
+            )
+        horizon = len(base["margin_transformation"])
+        capex_rate = rates["OR2"].value
+        base_margin = rates["OR5"].value + base.get(
+            "base_ebit_margin_transition_normalisation_pp", 0.0
+        )
+        resolved_capex_stub = capex_rate
+        resolved_capex = [capex_rate] * horizon
+        resolved_da = rates["OR3"].value
+    else:
+        base_margin = base["base_ebit_margin"]
+        resolved_capex_stub = base["capex_pct_stub"]
+        resolved_capex = list(base["capex_pct"])
+        resolved_da = base["da_pct_revenue"]
+
     return {
-        "base_ebit_margin": base["base_ebit_margin"],
+        "base_ebit_margin": base_margin,
         "margin_transformation": [x + margin_delta for x in base["margin_transformation"]],
         "margin_gas_rolloff": list(base["margin_gas_rolloff"]),
-        "capex_pct_stub": base["capex_pct_stub"],
-        "capex_pct": [x + capex_delta for x in base["capex_pct"]],
-        "da_pct_revenue": base["da_pct_revenue"],
+        "capex_pct_stub": resolved_capex_stub,
+        "capex_pct": [x + capex_delta for x in resolved_capex],
+        "da_pct_revenue": resolved_da,
         "terminal_growth": scen["terminal_growth"],
     }
 
@@ -675,6 +746,80 @@ def working_capital_intensity_from_data(inputs: dict):
     return b.build(result_key="APPLIED")
 
 
+
+def invested_capital_opening_from_data(inputs: dict, wc_intensity: float,
+                                       base_revenue: float):
+    """Invested capital at the valuation date, derived rather than stored (D-44).
+
+    Net PP&E plus intangibles plus non-cash working capital, goodwill excluded.
+    The first two come from the balance sheet; the third is the ratified intensity
+    applied to the normalised base revenue, so the same intensity that drives the
+    explicit period's working-capital build also sets its opening stock. Nothing
+    here is written back to the register -- D-16.
+    """
+    from vcc_valuations.derivation import DerivationBuilder
+
+    bs = (inputs.get("financials") or {}).get("balance_sheet") or {}
+    ppe = bs.get("property_plant_and_equipment_net")
+    intangibles = bs.get("intangible_assets")
+    if ppe is None or intangibles is None:
+        return None
+    b = DerivationBuilder("invested_capital_opening")
+    fixed = b.step(
+        "IC1", "Fixed capital", ppe + intangibles,
+        "net_ppe + intangibles",
+        {"net_ppe": ppe, "intangibles": intangibles}, units="AUD m",
+    )
+    ncwc = b.step(
+        "IC2", "Non-cash working capital", wc_intensity * base_revenue,
+        "intensity * base_revenue",
+        {"intensity": wc_intensity, "base_revenue": base_revenue}, units="AUD m",
+    )
+    b.step(
+        "IC3", "Invested capital (goodwill excluded)", fixed + ncwc,
+        "fixed_capital + non_cash_working_capital",
+        {"fixed_capital": fixed, "non_cash_working_capital": ncwc}, units="AUD m",
+    )
+    return b.build("IC3")
+
+
+def _terminal_capex_growing_capital_base(inputs, company_raw, nb, overlays,
+                                         wc_intensity, base_revenue, stub,
+                                         horizon, revenue_growth,
+                                         delta_wc_stub, delta_wc) -> float:
+    """D-49: the rate that compounds the fixed capital base at g, forever.
+
+    ``capex = D&A`` holds the book asset base flat in nominal dollars while
+    revenue compounds, so the implied depreciation rate rises without limit. The
+    steady state a growing perpetuity actually requires is assets A, depreciation
+    dA and capex (d + g)A, all compounding at g -- capex exceeding depreciation
+    by g x A permanently. The base is the one the explicit period leaves behind,
+    so it has to be rolled forward on the same flows the valuation uses.
+    """
+    ic = invested_capital_opening_from_data(inputs, wc_intensity, base_revenue)
+    if ic is None:
+        raise ValueError(
+            f"{company_raw.get('id', 'company')}: capex_rule "
+            "'grows_capital_base_at_g' needs net PP&E and intangibles on the "
+            "balance sheet to derive opening invested capital (D-44)."
+        )
+    da_pct = overlays["da_pct_revenue"]
+    g = overlays["terminal_growth"]
+
+    revenue = [base_revenue * stub] + [
+        base_revenue * (1.0 + revenue_growth) ** k for k in range(1, horizon + 1)
+    ]
+    capex_pct = [overlays["capex_pct_stub"]] + list(overlays["capex_pct"])
+    dwc = [delta_wc_stub] + list(delta_wc)
+
+    capital = ic.result
+    for rev, cpx, w in zip(revenue, capex_pct, dwc):
+        capital += rev * cpx - rev * da_pct + w
+    revenue_final = revenue[-1]
+    fixed_final = capital - wc_intensity * revenue_final
+    return da_pct + g * fixed_final / revenue_final
+
+
 def build_engine_inputs_from_data(inputs: dict, scenario_id: str):
     """Assemble the whole ``FcfEngineInputs`` for one company x scenario from data.
 
@@ -703,7 +848,9 @@ def build_engine_inputs_from_data(inputs: dict, scenario_id: str):
             f"{company.id}: no data-driven WACC (build_engine_inputs_from_data "
             "handles WACC-discipline companies only; banks / CSL use Ke / M3)."
         )
-    overlays = engine_overlays_from_data(company_raw, scenario_id)
+    overlays = engine_overlays_from_data(
+        company_raw, scenario_id, inputs.get("financials")
+    )
     if overlays is None:
         raise ValueError(f"{company.id}: no engine_overlays for scenario {scenario_id!r}.")
     revenue_growth = revenue_growth_from_data(inputs, scenario_id)
@@ -755,6 +902,11 @@ def build_engine_inputs_from_data(inputs: dict, scenario_id: str):
             terminal_capex_pct = overlays["da_pct_revenue"]
         elif rule == "final_explicit_year":
             terminal_capex_pct = overlays["capex_pct"][-1]
+        elif rule == "grows_capital_base_at_g":
+            terminal_capex_pct = _terminal_capex_growing_capital_base(
+                inputs, company_raw, nb, overlays, wc_intensity, base_revenue,
+                stub, horizon, revenue_growth, delta_wc_stub, delta_wc,
+            )
         else:
             raise ValueError(f"{company.id}: unknown terminal capex_rule {rule!r}.")
         terminal_wc_intensity = wc_intensity

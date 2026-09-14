@@ -246,6 +246,26 @@ derived_metrics:
     restructuring and is expected to ease over the next 12 months
     as integration completes.
 
+# --- SEGMENT HISTORY (the explosives business alone) ---
+# Raw observations only. Every rate the engine uses is DERIVED from these (D-16):
+# capital intensity, depreciation intensity and the operating margins all fall out
+# of one entity, one window and one level, which is what D-48 and D-50 require.
+# Entity: Dyno Nobel segments (DNAP + DNA + DNEL + corporate), excluding
+# Fertilisers and excluding the discontinued IPF Distribution and WALA operations.
+# Level: excluding individually material items. Capex is continuing operations
+# less the Fertilisers business units.
+# Source: Dyno Nobel Limited Annual Report 2025 — reportable segments note and the
+# capital expenditure by business unit table.
+segment_history:
+  entity: Dyno Nobel segments (DNAP + DNA + DNEL + corporate), excluding Fertilisers
+  level: excluding individually material items
+  source: Dyno Nobel Limited Annual Report 2025, segment note and capital expenditure table
+  by_year:
+    FY2024: {revenue: 3194.1, ebitda: 660.2, depreciation_and_amortisation: 258.9, capex: 241.7}
+    FY2025: {revenue: 3212.3, ebitda: 682.4, depreciation_and_amortisation: 269.1, capex: 346.4}
+  windows:
+    two_year: [FY2024, FY2025]
+
 # --- MARKET DATA (at 21 May 2026) ---
 market_data:
   share_price_recent: 3.6061
