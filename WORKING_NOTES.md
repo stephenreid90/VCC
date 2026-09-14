@@ -23,11 +23,52 @@ prints git state.
 
 ---
 
-## 🔴 HANDOVER — session of 14 September 2026, second sitting (read this first)
+## 🔴 HANDOVER — session of 14 September 2026, third sitting (read this first)
 
 **Start with `land_vcc.cmd`.** Then `session_start.cmd`, then this block.
 
-**State:** suite **338**, ratchet **13 checks**, base ties green and UNMOVED —
+**State:** suite **364**, ratchet **13 checks**, base ties green and UNMOVED —
+DNL 1.989, WBC 30.03, CSL 195.78. No level moved. One defect closed, no numeric work.
+
+### The gate was red on Stephen's machine and green in the container
+
+1. **`session_start.cmd` reported 353 passed and 11 errors** while the same commit ran
+   364 passed in the cloud container. Same 364 collected both places, so the eleven were
+   Windows-only.
+2. **All eleven were one fixture.** `tests/test_engine_workbook.py` has exactly eleven
+   tests and every one requests the module-scoped `books` fixture, which builds all three
+   workbooks. The fixture died, so the whole module errored. 353 + 11 = 364.
+3. **The cause was the read half of the cp1252 class.** `engine_workbook.py` read
+   `cfgs_gen.json` back with a bare `open()` at three sites. That file is UTF-8 and carries
+   curly quotes, `→`, `Δ`, `β`, `≈`, `−` and en/em dashes; under cp1252 the read raises
+   `UnicodeDecodeError` at byte 14439, on a closing curly quote.
+4. **The guard added the sitting before could not catch it, and that is the finding.** It
+   checked `open(..., 'w')` only, and only a bare `open` — not read mode, not
+   `Path.read_text` / `write_text`. Writes were the direction that happened to bite first;
+   reads are the more common direction and were unguarded. Half a class is not a ratchet.
+5. **Both are now closed.** Five sites name `encoding="utf-8"` — three in
+   `engine_workbook.py`, one in `gen_ui.py` (which reads the same config, so the UI build
+   would have died on Stephen's machine too) and one in `scripts/estimate_emrp.py`. The
+   guard is now `test_text_file_access_names_its_encoding` and covers text-mode `open`,
+   `read_text` and `write_text` in both directions, exempting binary modes and treating a
+   mode it cannot resolve to a constant as text.
+6. **Verified by simulation, both directions.** Patching `io.open` to substitute cp1252
+   wherever no encoding is named reproduces the failure exactly on the pre-fix tree — all
+   three builders, identical error, byte 14439 — and all three build cleanly on the fixed
+   tree. The guard was probed with five regression shapes (`open(p)`, `open(p, 'r')`,
+   `read_text()`, `write_text(s)`, `io.open(p, mode=m)`), each failing it, and five
+   legitimate shapes (`'rb'`, `'wb'`, `read_bytes()`, and both explicit-encoding forms),
+   each passing.
+7. **The previous block said suite 338; it was 364.** The bridge note had it right and the
+   live layer did not, which is the wrong way round. If this number looks stale again,
+   `session_start.cmd` prints the true one.
+
+---
+
+## HANDOVER — session of 14 September 2026, second sitting (superseded by the block above)
+
+**State:** suite **338** (as recorded at the time; the true count was 364 — see above),
+ratchet **13 checks**, base ties green and UNMOVED —
 DNL 1.989, WBC 30.03, CSL 195.78. No level moved this sitting. Seven rulings were made,
 two stale open items closed, one defect on main fixed, and two gate weaknesses closed.
 

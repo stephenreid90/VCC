@@ -658,7 +658,7 @@ def financials_html(fin):
 OUTDIR=os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 import os as _os
 _CFGP=_os.path.join(_os.path.dirname(_os.path.abspath(__file__)),'cfgs_gen.json')
-CFGS=json.load(open(_CFGP if _os.path.exists(_CFGP) else '/tmp/cfgs.json'))
+CFGS=json.load(open(_CFGP if _os.path.exists(_CFGP) else '/tmp/cfgs.json', encoding='utf-8'))
 for key,cfg in CFGS.items():
     cfg['detail']={
         'forces': forces_table(cfg['_forces']['intro'], cfg['_forces']['rows'], cfg['_forces']['net']),

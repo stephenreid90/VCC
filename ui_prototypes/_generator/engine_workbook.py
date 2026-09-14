@@ -986,7 +986,7 @@ def build_dnl_workbook_bytes(cfg=None):
     import beta_data as _bd
     if cfg is None:
         _cfp = _ROOT / "ui_prototypes" / "_generator" / "cfgs_gen.json"
-        cfg = _json.load(open(_cfp))["dnl"] if _cfp.exists() else {}
+        cfg = _json.loads(_cfp.read_text(encoding="utf-8"))["dnl"] if _cfp.exists() else {}
     beta = _bd.DNL
     inp = _load_central()
     craw = inp["company_raw"]; nb = craw["normalised_baseline"]
@@ -1031,7 +1031,7 @@ def build_wbc_workbook_bytes(cfg=None):
     if cfg is None:
         import json as _json
         _cfp = _ROOT / "ui_prototypes" / "_generator" / "cfgs_gen.json"
-        cfg = _json.load(open(_cfp))["wbc"] if _cfp.exists() else {}
+        cfg = _json.loads(_cfp.read_text(encoding="utf-8"))["wbc"] if _cfp.exists() else {}
     inp = _li(_ROOT, "muddle_through", "australian_major_banks", "wbc")
     nb = inp["company_raw"]["normalised_baseline"]
     bb = nb["bank_build"]
@@ -1363,7 +1363,7 @@ def build_csl_workbook_bytes(cfg=None):
     if cfg is None:
         import json as _json
         _cfp = _ROOT / "ui_prototypes" / "_generator" / "cfgs_gen.json"
-        cfg = _json.load(open(_cfp))["csl"] if _cfp.exists() else {}
+        cfg = _json.loads(_cfp.read_text(encoding="utf-8"))["csl"] if _cfp.exists() else {}
     inp = _li(_ROOT, "muddle_through", "biopharmaceuticals", "csl")
     nb = inp["company_raw"]["normalised_baseline"]; sf = nb["segment_fcff"]
     coe = _rnb(inp)["cost_of_equity_build"]
