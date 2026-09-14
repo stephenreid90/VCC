@@ -135,6 +135,21 @@ capex_intensity_rule:
       da_pct_revenue: 0.0628
       terminal: grow_capital_base
       expected: 2.6850
+    dnl_operating_base_restatement:
+      source: >
+        Dyno Nobel Limited Annual Report 2025, segment note and capital
+        expenditure table. Explosives segments (DNAP + DNA + DNEL + corporate),
+        FY2024-FY2025, excluding individually material items. All four rates
+        from one entity, one window, one level -- D-48 and D-50 applied
+        together. This is the restatement data/companies/dnl.yaml is expected
+        to adopt; it is pinned here so the adoption can be verified rather than
+        re-derived.
+      ebitda_margin: 0.2096
+      capex_pct_revenue: 0.0918
+      da_pct_revenue: 0.0824
+      terminal: grow_capital_base
+      expected: 2.1505
+
     group_five_year_equals_da:
       source: analyses/dnl_capex_history.yaml, group payments basis FY21-FY25
       capex_pct_revenue: 0.0780

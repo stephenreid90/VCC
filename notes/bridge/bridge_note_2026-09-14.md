@@ -1,0 +1,36 @@
+VCC VALUATIONS — bridge note for a new chat, 14 September 2026. Supersedes the 26 August note.
+
+READ THIS FIRST, IN THIS ORDER.
+
+1. The session's commits are NOT PUSHED. `origin/main` was last at `d0f3adf`. Stephen must run `land_vcc.cmd` from a normal cmd window before any cloud clone is made — one command, it never changes, see "Landing a session" in CLAUDE.md. Cloning before that forks the repo.
+2. Then `session_start.cmd`. Then CLAUDE.md (standing rules 3 and 4), the HANDOVER block in WORKING_NOTES.md, DECISIONS.md (D-48 to D-51 are new), and `analyses/dnl_item11_four_positions.md`.
+3. Do NOT assert that data, a document or a prior decision does not exist until you have surveyed the directory that would hold it. Curated .yaml files in data/ are SUMMARIES; raw statements live in data/financials/*.csv, data/financials/historical/<company>/ (PDFs — extract with pdftotext -layout) and the extracted series in analyses/dnl_capex_history.yaml.
+
+STATE: suite 300 (+2 opt-in, `pytest -m libreoffice`), ratchet 13 checks, bases unchanged 2.831 / 30.03 / 195.78. NOTHING IN data/ HAS MOVED. No engine change, no production change.
+
+THE ONE JOB WAITING — adopt the Denali operating-base restatement.
+4. All four operating rates come from one entity, one window, one level: explosives segments (DNAP + DNA + DNEL + corporate), FY2024–FY2025, ex individually material items, from the FY25 annual report segment note and capex table. base_ebit_margin 14.10% → 12.72%; da_pct_revenue 7.30% → 8.24%; capex intensity 7.00%/7.30% → 9.18%; implied EBITDA margin 21.40% → 20.96%.
+5. Muddle Through goes 2.6956 → 2.1505, terminal ROIC 14.94% → 12.38% (1.68× → 1.40× WACC). This is PINNED as `dnl_operating_base_restatement` in `design/methodology/horizon_variant_sets.yaml` and asserted by `tests/dcf/test_horizon_variant_sets.py`. If the engine does not land on 2.1505 after the adoption, the adoption is wrong. Verify, do not re-derive.
+6. It moves six DNL goldens, the DNL workbook tie and the v6 audited oracle. Ten test modules touch DNL. CSL and WBC are untouched, so twelve of the eighteen goldens do not move. This is a first job for a fresh sitting, which is exactly why it was not started at the end of the last one.
+7. Delete the duplicate margin while you are there: `normalised_baseline.ebit_margin: 0.135` and `engine_overlays.baseline.base_ebit_margin: 0.141` are two judgements for one quantity. Keep the restated one, with a D-50 basis block.
+8. Then the transition-cost normalisation, as a SEPARATE declared line — never folded into the base rate. FY24 and FY25 are a business coming out of a demerger. Evidence that corporate cost falls: 1H26 explosives EBITDA margin runs about 22.3% against the FY24–FY25 average of 20.96%, and the 1H26 commentary records corporate costs down $6m. Size it, source it, declare it.
+
+RULINGS OF 14 SEPTEMBER — FIRM, DO NOT REOPEN.
+9. D-48 — capex intensity and depreciation intensity are a PAIR struck from one window and one entity, the longest available for the entity being valued, minimum two years, entity and window disclosed. The gap between them is then observed rather than assumed. The base EBIT margin is restated to hold the measured EBITDA margin. The average is derived from a committed series and never stored (D-16); the UI discloses it and permits a user override of the derived default (allowed under D-23 — an input, not a second engine).
+10. D-49 — the terminal capital base grows at g. Terminal capex = depreciation + g × fixed base. Retires `capex_rule: equals_da` for DNL, superseding that half of D-13 and superseding D-39. Worth AUD 0.34 on Muddle Through.
+11. D-50 — every rate declares the basis it was struck on: a sibling `<field>_basis` with entity, window, level, source. Ratchet check 13 enforces it on the checks 3 and 10 pattern. Ten rates baselined in `tests/ssot_basis_baseline.json`; four of them are the DNL fields the rule came from.
+12. D-51 — the workbook is a presentation layer, NEVER a source. A cell reference is not provenance. The data files are the single source of truth, sourced to the accounts; the workbook is regenerated from the data and never read back into it.
+
+WHY D-50 EXISTS, SO IT IS NOT WATERED DOWN.
+13. Four defects found across three sittings were one error wearing four hats: a capex rate from the pre-demerger group compared against a depreciation rate set to match it; a 12.8% headline dividing group capex by continuing-operations revenue; a depreciation rate anchored to an assumption rather than observed; a base EBIT margin whose stated cross-check is a pre-corporate segment range while the number is applied to a revenue base that carries corporate costs. Every one was a ratio assembled from parts that did not belong together.
+
+STILL OPEN.
+14. Item 11 is narrowed, not closed. Under the restatement capital intensity still falls from 108.3% to 79.3% and terminal ROIC is still 1.40× WACC. Four positions with full evidence in `analyses/dnl_item11_four_positions.md`; the live workbook is `analyses/dnl_item11_capital_intensity.xlsx`.
+15. The Porter work and the margin build disagree about the gas contracts. The impact matrix declares the moat as "scale + switching_cost + resource (long-term contracts)", decay horizon 10–15 years. Those same contracts expire by FY2032, six years from the valuation date, and D-43 says a contractual expiry sets the horizon directly. The excess return should decay at least as fast as the margin resting on it.
+16. Unchanged behind that: D-42 the diagnostic, the horizon rule and fade, the UI disclosure piece (now also carrying the D-48 entity/window/rates disclosure and the user override), then re-pin all eighteen goldens ONCE with the workbook re-tie.
+17. STILL PROPOSED: D-35 horizon, D-36 fade, D-37 archetype ten-year macro, D-38 capex convergence (now largely superseded by D-48 — re-read before citing), D-42 diagnostic, D-43 decay horizon. D-06 stays PROVISIONAL. D-19 prices refresh after the UI work.
+18. DO NOT RATIFY THE TWELVE GOLDENS from 23 August. They move again with the restatement.
+
+HOUSE RULES. Australian English. Number any list of 2+ points so Stephen can reply by number. Standing rule 3 — Stephen does not use CMD or git directly: give him ONE complete pasteable command, in a copy-button widget, EVERY time, say what "finished" looks like, then VERIFY THE RESULT YOURSELF over the device bridge rather than asking him to copy terminal output back. Standing rule 4 — any number that reaches a document must come from committed code, shipped in the same change as the document citing it. Ask via AskUserQuestion if a brief is unclear. Read `design/writing_style.md` before drafting prose meant for readers.
+
+EDIT MECHANICS. Work in the CLOUD CONTAINER clone, not on the mount — the mount cannot delete or replace a file, so git merge, git checkout -- and git branch -D all fail there. The cloud container cannot push. Finished work travels as `session.bundle` written to the repo root; Stephen runs `land_vcc.cmd`. Both are gitignored. Keep domain numbers out of .py prose — the SSOT ratchet is comment-blind, and format specs like `:.2%` read as the literal 0.2.

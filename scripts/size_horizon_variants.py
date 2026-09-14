@@ -308,7 +308,7 @@ def run_capex_intensity_rule(cfg: dict, set_name: str = "current") -> Dict[str, 
         plan = replace(
             plan,
             da_pct_revenue=da,
-            base_ebit_margin=ebitda - da,
+            base_ebit_margin=v.get("ebitda_margin", ebitda) - da,
             capex_pct=[v["capex_pct_revenue"]] * plan.horizon_years,
         )
         if v["terminal"] == "grow_capital_base":

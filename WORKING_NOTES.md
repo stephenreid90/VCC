@@ -23,7 +23,87 @@ prints git state.
 
 ---
 
-## 🔴 HANDOVER — session of 26 August 2026 (read this first)
+## 🔴 HANDOVER — session of 14 September 2026 (read this first)
+
+**Start with `land_vcc.cmd`.** Then `session_start.cmd`, then this block.
+
+**State:** suite **300** (+2 opt-in `-m libreoffice`), ratchet **13 checks**, bases unchanged
+**2.831 / 30.03 / 195.78**. **Nothing in `data/` has moved.** Four decisions ruled, one new
+ratchet check, one restatement sized and pinned but not adopted.
+
+### The one job waiting
+
+1. **Adopt the Denali operating-base restatement.** All four operating rates come from one
+   entity, one window, one level — explosives segments (DNAP + DNA + DNEL + corporate),
+   FY2024–FY2025, ex individually material items, from the FY25 annual report segment note
+   and capital expenditure table:
+
+   | | Today | Restated |
+   |---|---|---|
+   | `base_ebit_margin` | 14.10% | **12.72%** |
+   | `da_pct_revenue` | 7.30% | **8.24%** |
+   | capex intensity | 7.00% → 7.30% | **9.18%** |
+   | EBITDA margin (implied) | 21.40% | 20.96% |
+
+   Muddle Through goes **2.6956 → 2.1505**, terminal ROIC 14.94% → 12.38% (1.68× → 1.40×
+   WACC). Pinned as `dnl_operating_base_restatement` in
+   `design/methodology/horizon_variant_sets.yaml`, so the adoption is **verified, not
+   re-derived** — if the engine does not land on 2.1505 the adoption is wrong.
+
+2. **It moves six DNL goldens, the DNL workbook tie and the v6 audited oracle.** That is why
+   it was not done on 14 September: a ten-module re-pin plus a LibreOffice re-tie is a clean
+   first job for a fresh sitting, not the last twenty minutes of a full one. CSL and WBC are
+   untouched, so twelve of the eighteen goldens do not move.
+
+3. **Delete the duplicate margin.** `normalised_baseline.ebit_margin: 0.135` and
+   `engine_overlays.baseline.base_ebit_margin: 0.141` are two judgements for one quantity.
+   The survivor is the restated one, with a D-50 basis block.
+
+4. **Then the transition-cost normalisation line.** FY24 and FY25 are a business coming out of
+   a demerger, so 12.72% may carry corporate cost that will not persist — Stephen's point, and
+   the evidence supports it: 1H26 explosives EBITDA margin runs about 22.3% against the
+   FY24–FY25 average of 20.96%, and the 1H26 commentary records corporate costs down $6m. Size
+   it, source it, and add it as a **separate declared line** so the base and the normalisation
+   can be argued about separately. Do not fold it into the base rate.
+
+### What was ruled
+
+5. **D-48** capex and depreciation intensity are a pair from one window and one entity, longest
+   available for the entity being valued, minimum two years. The *gap* between them is then
+   observed, not assumed. DNL: explosives, FY24–FY25.
+6. **D-49** the terminal capital base grows at g — terminal capex is depreciation plus g times
+   the fixed base. Retires `capex_rule: equals_da` for DNL (superseding that half of D-13) and
+   supersedes D-39. Worth AUD 0.34 on Muddle Through.
+7. **D-50** every rate declares the basis it was struck on — a sibling `<field>_basis` with
+   `entity`, `window`, `level`, `source`. Ratchet check 13 enforces it on the checks 3 and 10
+   pattern; ten rates baselined in `tests/ssot_basis_baseline.json`.
+8. **D-51** the workbook is a presentation layer, never a source. `# workbook B10` was the
+   entire recorded provenance of the largest single sensitivity in the build.
+
+### Why D-50 exists, in one line
+
+9. Four defects found across three sittings were one error: a ratio assembled from parts that
+   did not share an entity, a window or a level of the accounts. The capex anchor, the 12.8%
+   headline, the depreciation rate and the base margin are all the same mistake. Ruling the
+   class rather than the instances is what D-50 does.
+
+### Still open, unchanged
+
+10. **Item 11 is narrowed but not closed.** Under the restatement capital intensity still falls
+    from 108.3% to 79.3% of revenue and terminal ROIC is still 1.40× WACC. The four positions
+    and their full evidence are in `analyses/dnl_item11_four_positions.md`.
+11. **The Porter work and the margin build disagree about the gas contracts.** The impact matrix
+    declares the moat as "scale + switching_cost + resource (long-term contracts)" with a 10–15
+    year decay horizon; the same contracts expire by FY2032, six years from the valuation date,
+    and D-43 says a contractual expiry sets the horizon directly. The excess return should decay
+    at least as fast as the margin that rests on it.
+12. **Then, unchanged:** D-42 the diagnostic, the horizon and fade, the UI disclosure piece
+    (which now also carries the D-48 entity/window/rates disclosure and the user override), and
+    finally re-pin all eighteen goldens once with the workbook re-tie.
+
+---
+
+## HANDOVER — session of 26 August 2026 (superseded, kept for context)
 
 **Start with `land_vcc.cmd`.** Then `session_start.cmd`, then this block.
 

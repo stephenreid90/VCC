@@ -3,9 +3,9 @@
 _Generated 2026-09-14 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `ac51c4a D-48 and D-49 ruled: the intensity pair is observed, the terminal base grows` on `main`
-- Unpushed commits: **6**
-- Tracked files: 310
+- HEAD: `0cd7bb0 D-50: every rate declares the basis it was struck on` on `main`
+- Unpushed commits: **7**
+- Tracked files: 311
 - Untracked files: 1
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
@@ -124,7 +124,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `dnl_working_capital_derivation.md` (11.2KB)
     - `equity_bridge_and_valuation_mechanics.md` (70.6KB)
     - `horizon_and_terminal_convergence.md` (42.3KB)
-    - `horizon_variant_sets.yaml` (7.0KB)
+    - `horizon_variant_sets.yaml` (7.7KB)
     - `working_capital_treatment.md` (23.3KB)
   - **reference/**
     - **discount_rate_iers/**
@@ -319,5 +319,5 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 Not in git. Either commit them or clear them — an untracked file is invisible
 to anyone who clones the repo, and is the most common way work gets lost.
 
-- `tests/ssot_basis_baseline.json`
+- `notes/bridge/bridge_note_2026-09-14.md`
 
