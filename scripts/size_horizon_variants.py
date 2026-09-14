@@ -285,6 +285,42 @@ def dupont(cfg: dict, position_name: str, scenario_id: str,
     }
 
 
+def run_capex_intensity_rule(cfg: dict, set_name: str = "current") -> Dict[str, float]:
+    """Size the observed-intensity rule: both rates from one window, one entity.
+
+    The rule's content is that the *gap* between capex and depreciation stops
+    being an assumption. Its risk is that the gap is then only as good as the
+    window and the entity the average is drawn from, which is why every variant
+    names its source.
+    """
+    block = cfg.get("capex_intensity_rule")
+    if not block:
+        return {}
+    name = _current_set_name(cfg) if set_name == "current" else set_name
+    spec = cfg["sets"][name]
+    scenario_id = block["scenario"]
+    ebitda = block["ebitda_margin_held"]
+
+    out: Dict[str, float] = {}
+    for variant_name, v in block["variants"].items():
+        plan = build_plan(cfg, spec, scenario_id)
+        da = v["da_pct_revenue"]
+        plan = replace(
+            plan,
+            da_pct_revenue=da,
+            base_ebit_margin=ebitda - da,
+            capex_pct=[v["capex_pct_revenue"]] * plan.horizon_years,
+        )
+        if v["terminal"] == "grow_capital_base":
+            plan = replica.terminal_capex_growing_capital_base(plan)
+        elif v["terminal"] == "equals_da":
+            plan = replace(plan, terminal_capex_pct_revenue=da)
+        else:
+            raise ValueError(f"unknown terminal treatment {v['terminal']!r}")
+        out[variant_name] = replica.run(plan).value_per_share
+    return out
+
+
 def _current_set_name(cfg: dict) -> str:
     current = [n for n, s in cfg["sets"].items() if s.get("status") == "current"]
     if len(current) != 1:

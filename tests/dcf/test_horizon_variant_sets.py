@@ -18,6 +18,7 @@ import pytest
 
 from scripts.size_horizon_variants import (
     load_sets,
+    run_capex_intensity_rule,
     run_item_11,
     run_set,
     _current_set_name,
@@ -92,3 +93,30 @@ def test_the_ruled_build_is_the_outlier_among_the_item_11_positions() -> None:
             continue
         alternatives = [rows[n][scenario_id] for n in POSITION_NAMES if n != "ruled_build"]
         assert rows["ruled_build"][scenario_id] > max(alternatives), scenario_id
+
+
+def test_capex_intensity_rule_variants_reproduce() -> None:
+    """The observed-intensity rule, pinned at each entity and window it was sized on."""
+    got = run_capex_intensity_rule(CFG)
+    for name, spec in CFG["capex_intensity_rule"]["variants"].items():
+        assert got[name] == pytest.approx(spec["expected"], abs=TOLERANCE), (
+            f"capex intensity rule/{name}: {got[name]:.6f} against {spec['expected']}"
+        )
+
+
+def test_the_terminal_treatment_is_worth_more_than_the_window_choice() -> None:
+    """Why the terminal half of the rule cannot be waved through.
+
+    Striking terminal capex at depreciation rather than at the rate that grows
+    the capital base hands the perpetuity the difference between the two, every
+    year, forever. On the explosives window that is worth more than moving the
+    whole explicit path from one entity's average to another's -- so it is the
+    part of the rule that needs the argument, not the part that looks like an
+    assumption change.
+    """
+    got = run_capex_intensity_rule(CFG)
+    terminal_effect = got["explosives_two_year_equals_da"] - got["explosives_two_year_grow"]
+    window_effect = got["group_five_year_grow"] - got["explosives_two_year_grow"]
+    assert terminal_effect > 0
+    assert window_effect > 0
+    assert terminal_effect > window_effect * 0.8

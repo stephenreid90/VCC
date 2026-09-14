@@ -101,6 +101,47 @@ sets:
       disorderly_climate_crystallisation: 1.5294
       stagflation_persists: 0.5841
 
+# The observed-intensity rule, proposed 14 September 2026. Capex intensity and
+# depreciation intensity are BOTH struck as the average over one window for one
+# entity, so the gap between them -- which is the only thing that moves the
+# answer -- is observed rather than assumed. `ebit_margin` is restated to hold
+# the model's EBITDA margin, because lifting depreciation without lowering EBIT
+# silently raises EBITDA above what the accounts show.
+#
+# Variants differ only in which entity and window supplies the average. The
+# terminal treatment is the open question: `grow_capital_base` is what D-45 and
+# paper section 6 imply; `equals_da` is the older rule D-13 declared, kept here
+# because the difference is worth seeing.
+capex_intensity_rule:
+  scenario: muddle_through
+  ebitda_margin_held: 0.2140
+
+  variants:
+    explosives_two_year_grow:
+      source: analyses/dnl_capex_history.yaml, dyno_nobel_segments.two_year
+      capex_pct_revenue: 0.0918
+      da_pct_revenue: 0.0824
+      terminal: grow_capital_base
+      expected: 2.2736
+    explosives_two_year_equals_da:
+      source: analyses/dnl_capex_history.yaml, dyno_nobel_segments.two_year
+      capex_pct_revenue: 0.0918
+      da_pct_revenue: 0.0824
+      terminal: equals_da
+      expected: 2.6170
+    group_five_year_grow:
+      source: analyses/dnl_capex_history.yaml, group payments basis FY21-FY25
+      capex_pct_revenue: 0.0780
+      da_pct_revenue: 0.0628
+      terminal: grow_capital_base
+      expected: 2.6850
+    group_five_year_equals_da:
+      source: analyses/dnl_capex_history.yaml, group payments basis FY21-FY25
+      capex_pct_revenue: 0.0780
+      da_pct_revenue: 0.0628
+      terminal: equals_da
+      expected: 3.0560
+
 # Item 11. The three positions on what the explicit period does to capital
 # intensity, each run on the `current` set and differing from it only in the
 # explicit capex path.

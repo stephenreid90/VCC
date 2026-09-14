@@ -1,12 +1,12 @@
 # REPO_MAP — what exists, and where
 
-_Generated 2026-09-07 by `scripts/repo_inventory.py`. **Regenerate at the start of
+_Generated 2026-09-14 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `f7fb833 Item 11 argued in full, and the capex anchor examined` on `main`
-- Unpushed commits: **3**
-- Tracked files: 308
-- Untracked files: 2
+- HEAD: `72d8033 The capex anchor gets a series, and the series disagrees with it` on `main`
+- Unpushed commits: **4**
+- Tracked files: 310
+- Untracked files: 0
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -124,7 +124,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `dnl_working_capital_derivation.md` (11.2KB)
     - `equity_bridge_and_valuation_mechanics.md` (70.6KB)
     - `horizon_and_terminal_convergence.md` (42.3KB)
-    - `horizon_variant_sets.yaml` (5.3KB)
+    - `horizon_variant_sets.yaml` (7.0KB)
     - `working_capital_treatment.md` (23.3KB)
   - **reference/**
     - **discount_rate_iers/**
@@ -208,7 +208,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `test_dnl_workbook_tie.py` (4.1KB)
     - `test_e2e_dnl_mt.py` (4.3KB)
     - `test_engine_input_validation.py` (3.4KB)
-    - `test_horizon_variant_sets.py` (3.7KB)
+    - `test_horizon_variant_sets.py` (5.0KB)
     - `test_per_year_derivations.py` (3.8KB)
     - `test_replica_ties_engine.py` (6.1KB)
     - `test_scenario_goldens.py` (7.7KB)
@@ -312,12 +312,4 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `wbc_muddle_through_valuation_v4_formulas.xlsx` (12.5KB)
       - `wbc_scenarios_comparison_v1.xlsx` (11.6KB)
       - `wbc_scenarios_comparison_v2.xlsx` (11.6KB)
-
-## Untracked files
-
-Not in git. Either commit them or clear them — an untracked file is invisible
-to anyone who clones the repo, and is the most common way work gets lost.
-
-- `analyses/dnl_capex_anchor_evidence.md`
-- `analyses/dnl_capex_history.yaml`
 
