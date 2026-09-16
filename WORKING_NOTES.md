@@ -23,9 +23,83 @@ prints git state.
 
 ---
 
-## 🔴 HANDOVER — session of 14 September 2026, third sitting (read this first)
+## 🔴 HANDOVER — session of 16 September 2026 (read this first)
 
-**Start with `land_vcc.cmd`.** Then `session_start.cmd`, then this block.
+**State:** suite **368**, ratchet **13 checks**, base ties green and UNMOVED —
+DNL 1.989, WBC 30.03, CSL 195.78. No level moved. One decision ruled and
+implemented, one open item closed, one opened.
+
+### The device shell came back
+
+1. **`device_bash` works again** after being down since the Windows update of 8 September.
+   Reads, writes and commits on the mount all work, and **`git push` authenticates from
+   there with the PAT** — so a landing no longer needs Stephen to run anything. Two
+   constraints from `CLAUDE.md` still hold and were re-tested, not assumed: the mount
+   **still cannot delete** (`rm` gives "Operation not permitted"), and the cloud container
+   still cannot push. Keep `land_vcc.cmd` as the fallback for when the shell drops again.
+2. **`land_vcc.cmd` gained a stash-and-retry step.** A fast-forward aborts if the incoming
+   commits add a file that already sits untracked on disk. That was about to happen with
+   the two August bridge notes, was caught by simulating the tree before handing the
+   command over, and is now handled: the script stashes untracked files and retries once,
+   keeping the stash so nothing is lost. There is one such stash on Stephen's machine
+   holding superseded copies of those two notes; it can be dropped.
+
+### D-59 — the CET1 floor was wrong in kind, not just in the CCyB
+
+3. **M12 asked the wrong question.** It asked whether the countercyclical buffer sits
+   inside or outside the archetype CET1 floor. It sits inside — APS 110 sets the CCyB by
+   extending the range of the capital conservation buffer. But the `components_in_total`
+   carve-out that answered it was hiding a basis error: `regulatory_minimum` held the
+   **total capital** minimum, Tier 1 plus Tier 2, in a field measured on CET1; and the
+   conservation buffer held the **standardised** figure for banks that are all IRB.
+4. **The floor is corrected to the real APRA stack** — CET1 PCR, IRB conservation buffer,
+   D-SIB surcharge and CCyB, all on one basis and all four inside the declared total. The
+   figure the file previously called a floor turned out to be an operating target, which
+   is exactly why it looked plausible: it is close to where the majors actually run.
+5. **So the floor and the target are now two fields, and the payout rule binds on the
+   target.** A bank defends its board-approved operating level, not its regulatory
+   minimum. The target carries its management buffer inside the level, retiring
+   `cet1_management_buffer_typical` — the old pairing of a floor plus an additive buffer
+   would have bound anything reading both far above where any major has run. The buffer is
+   now *observed* as the gap between the two, on the D-48 principle.
+6. **A validator rejects a target at or below its own floor**, which is the check that
+   would have caught this on the day it was written. Four tests pin the specific numbers
+   so the mixed basis cannot return, and one asserts that a genuinely carved-out buffer is
+   still expressible — the shape stays legal, it just has to be meant.
+7. **Nothing moved, and that is the point of doing it now.** Grep confirms nothing
+   consumed `cet1_floor` — it appeared only in its own schema and test — so the correction
+   was free. Item 8 is the first thing that would read it, so the error would have been
+   baked into the §15.5 constraint the moment that was built.
+8. **Watch for this: the SSOT ratchet is comment-blind and it caught the docstrings.**
+   Writing the corrected figures into the schema prose tripped check 3 on six literals.
+   The numbers belong in the archetype YAML, which is the register layer; the docstrings
+   now carry the reasoning in words. Do not reach for `# ssot-allow` to get around this —
+   and if you ever do, it goes at the END of the line (see the 14 September defect).
+
+### Opened: M13, and it blocks the same thread
+
+9. **WBC's own CET1 block is stale and internally inconsistent.** It carries an
+   operating range of 11.0–11.5% with a `target_minimum` equal to the *top* of that range
+   rather than its bottom, and a `management_target` above both. Westpac's own disclosure
+   has moved on — the board target is a post-dividend CET1 above 11.25%, stated as
+   replacing the former range, following APRA's phase-out of AT1 from 1 January 2027.
+10. **Left for Stephen deliberately.** It is the level the dividend rule will bind on, so
+    it wants a ruling rather than a session's reading of a PDF. The company `cet1` block
+    is also **untyped** — no schema class at all — which is how the inconsistency
+    survived; typing it is the natural companion change.
+
+### Next in this thread
+
+11. Item 8's warn-only CET1 check — retained earnings against AIEA growth times RWA
+    density — now has a correct floor and a declared target to bind on. Zero base-tie risk
+    by construction. M13 decides which company-level number it reads.
+12. Then the WBC dividend rule: the lesser of the current payout and the capital-
+    constrained one, with "% of capital" defined as the payout holding CET1 flat given
+    asset growth and RWA density. Still has no D-number.
+
+---
+
+## HANDOVER — session of 14 September 2026, third sitting (superseded by the block above)
 
 **State:** suite **364**, ratchet **13 checks**, base ties green and UNMOVED —
 DNL 1.989, WBC 30.03, CSL 195.78. No level moved. One defect closed, no numeric work.

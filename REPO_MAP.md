@@ -1,10 +1,10 @@
 # REPO_MAP — what exists, and where
 
-_Generated 2026-09-14 by `scripts/repo_inventory.py`. **Regenerate at the start of
+_Generated 2026-09-16 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `6b6d514 Two bridge notes that were only ever on one machine` on `main`
-- Unpushed commits: **2**
+- HEAD: `42a085f Regenerate the map now the untracked section is empty` on `main`
+- Unpushed commits: **0**
 - Tracked files: 322
 - Untracked files: 0
 
@@ -82,7 +82,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `vaccines.yaml` (4.3KB)
   - **industries/**
     - `australian_major_banks.md` (7.3KB)
-    - `australian_major_banks.yaml` (16.3KB)
+    - `australian_major_banks.yaml` (18.3KB)
     - `industrial_explosives.md` (14.5KB)
     - `industrial_explosives.yaml` (9.6KB)
     - `plasma_derived_therapies.yaml` (7.1KB)
@@ -108,7 +108,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `build_plan.html` (14.9KB)
   - `engine_implementation_plan.md` (16.5KB)
   - `open_items.css` (3.5KB)
-  - `open_items.json` (27.4KB)
+  - `open_items.json` (29.2KB)
   - `open_questions.json` (1.2KB)
   - `scenarios_workshop.md` (13.5KB)
   - `scenarios_workshop_prep.md` (19.5KB)
@@ -176,7 +176,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `company.py` (13.0KB)
       - `driver.py` (4.0KB)
       - `frameworks.py` (4.4KB)
-      - `industry.py` (14.6KB)
+      - `industry.py` (17.9KB)
       - `linkage.py` (6.9KB)
       - `scenario.py` (4.8KB)
 
@@ -189,7 +189,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `ssot_intra_file_baseline.json` (593B)
   - `ssot_lint_baseline.json` (6.2KB)
   - `test_adjustments.py` (1.6KB)
-  - `test_archetypes_validate.py` (6.6KB)
+  - `test_archetypes_validate.py` (10.2KB)
   - `test_comps.py` (653B)
   - `test_csl_loads.py` (2.0KB)
   - `test_dcf.py` (1.4KB)

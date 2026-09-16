@@ -265,35 +265,67 @@ industry_archetype:
       - ASIC
 
     cet1_floor:
-      regulatory_minimum: 0.08
-      capital_conservation_buffer: 0.025
+      # Corrected under D-59, 16 Sep 2026. Every component below is a CET1
+      # measure sourced to APRA. What was here before mixed bases: the
+      # regulatory minimum held 0.08, which is the TOTAL capital minimum
+      # (Tier 1 plus Tier 2), in a field measured on CET1; and the conservation
+      # buffer held the 0.025 standardised figure while the Big Four are all
+      # IRB. The four then summed to 0.125 against a stated 0.115, and the
+      # components_in_total declaration was used to carve the countercyclical
+      # buffer out to make the arithmetic close. That carve-out was wrong about
+      # APRA — APS 110 sets the CCyB by extending the range of the capital
+      # conservation buffer, so it sits INSIDE the requirement — and it hid the
+      # basis error underneath it. The 0.115 was an operating target, and is now
+      # declared as one in cet1_operating_target below.
+      regulatory_minimum: 0.045
+      capital_conservation_buffer: 0.0375
       countercyclical_buffer: 0.01
       d_sib_surcharge: 0.01
-      total_floor: 0.115
-      # Names which components the stated floor comprises. Added 23 Aug 2026 when
-      # the block was typed (batch 3, item 19) and the schema found that the four
-      # components sum to 12.5% against a stated floor of 11.5% — the
-      # countercyclical buffer is carried here but is NOT inside the stated
-      # figure. That is consistent with the rationale below (regionals at 10.5%
-      # = minimum + conservation buffer, plus 1.0% D-SIB surcharge = 11.5%), so
-      # the declaration records the treatment that reconciles rather than
-      # changing a domain number.
-      # OPEN FOR STEPHEN: confirm the CCyB genuinely sits outside the floor for
-      # this archetype, or correct total_floor to 0.125.
+      total_floor: 0.1025
       components_in_total:
         - regulatory_minimum
         - capital_conservation_buffer
+        - countercyclical_buffer
         - d_sib_surcharge
       rationale: >
-        APRA's "unquestionably strong" framework, current state. Big
-        Four are designated D-SIB and carry the +1.0% surcharge.
-        Countercyclical buffer set by APRA, currently 1.0%. Floor for
-        non-D-SIB ADIs (regional banks) is 10.5% (no surcharge).
+        APRA's "unquestionably strong" framework as it stands. CET1
+        minimum (PCR) 4.5% per APS 110. Capital conservation buffer
+        3.75% for ADIs on the IRB approach, against 2.5% standardised;
+        all four majors are IRB. Big Four are designated D-SIB and carry
+        the +1.0% surcharge on top. Countercyclical buffer at APRA's
+        default 1.0% of RWA, effective 1 January 2023 (announced 21
+        December 2022, previously zero since 2016), and inside the
+        requirement rather than beside it. Total for a major therefore
+        4.5 + 3.75 + 1.0 + 1.0 = 10.25%. The comparable figure for a
+        standardised, non-D-SIB ADI is 4.5 + 2.5 + 1.0 = 8.0% — the
+        10.5% previously recorded here for regionals was the same
+        mixed-basis error. Sources: APS 110 Capital Adequacy (Jan 2023);
+        APRA Explains "Capital buffers in banking"; APRA information
+        paper "An Unquestionably Strong Framework for Bank Capital".
 
-    cet1_management_buffer_typical: 0.015
-      # Big Four typically run 50-150bps above the regulatory floor as
-      # management buffer; capital actions (special dividends, buybacks)
-      # triggered when CET1 ratio exceeds management target.
+    cet1_operating_target:
+      level: 0.115
+      basis: >
+        Top of the operating range the Big Four have typically run
+        post-2023, management buffer already inside the level rather
+        than added on top of it. Archetype-level anchor; a company
+        overrides it with its own board-approved target where one is
+        disclosed.
+      rationale: >
+        The level that governs distribution behaviour, which is not the
+        regulatory floor: a bank cuts a dividend or stops a buyback to
+        defend its operating target, long before the floor is in view.
+        Implied management buffer over the corrected floor is 125bp,
+        inside the 50-150bp band the majors have historically run and
+        consistent with APRA's own expectation in the framework paper
+        that majors would operate above 11% from 2023. NOTE for the
+        §15.5 constraint work: Westpac's own disclosure has moved on
+        from the range this archetype level sits at the top of — its
+        board target is now a post-dividend CET1 above 11.25%, stated
+        as replacing the former 11.00-11.50% range, following APRA's
+        phase-out of AT1 from 1 January 2027. That is a company-level
+        figure and belongs in wbc.yaml, not here; recorded as an open
+        item rather than changed in passing.
 
     credit_cycle_anchor:
       through_cycle_loss_rate_bps: 20

@@ -560,9 +560,19 @@
     "source": "Batch 3 item 19, found by the new schema validators",
     "area": "Data",
     "issue": "<b>APRA CET1 floor does not reconcile.</b> australian_major_banks.yaml lists regulatory_minimum 8.0% + capital_conservation_buffer 2.5% + countercyclical_buffer 1.0% + d_sib_surcharge 1.0% = 12.5%, against a stated total_floor of 11.5%. The block's own rationale (regionals at 10.5% with no surcharge) implies the countercyclical buffer sits OUTSIDE the stated floor, which reconciles to 11.5%.",
-    "treatment": "Recorded, not resolved — it is a domain call. The typed schema now requires a <code>components_in_total</code> declaration naming which components the floor comprises, and the file declares minimum + conservation buffer + D-SIB surcharge, which reconciles without changing a number. <b>Stephen to confirm</b> the CCyB genuinely sits outside the floor for this archetype, or correct total_floor to 12.5%. Nothing downstream reads total_floor today, so this is not blocking.",
-    "questions": "Does the countercyclical buffer sit inside or outside the archetype CET1 floor?",
-    "status": "NEEDS",
+    "treatment": "<b>Closed by D-59, 16 Sep 2026 — and the question as recorded was mis-framed.</b> The CCyB is <i>inside</i> the requirement: APS 110 sets it by extending the range of the capital conservation buffer. But the reconciliation the carve-out achieved was hiding a basis error underneath it — regulatory_minimum held the TOTAL capital minimum (Tier 1 plus Tier 2) in a field measured on CET1, and the conservation buffer held the standardised figure for banks that are all IRB. The floor is corrected to the real APRA stack with all four components inside the total, and the figure previously stated as the floor is now declared as what it actually was: an operating target, in its own field, with the management buffer inside the level rather than added on top. A validator now rejects a target at or below its own floor.",
+    "questions": "",
+    "status": "DONE",
     "batch": ""
+  },
+  {
+    "id": "M13",
+    "source": "D-59 work, 16 Sep 2026",
+    "area": "Data",
+    "issue": "<b>WBC's CET1 operating range is superseded, and the block is internally inconsistent.</b> wbc.yaml carries operating_target_range [0.110, 0.115] with commentary \"Management target 11.0-11.5% operating range\", plus a target_minimum of 0.115 that equals the TOP of that range rather than its bottom, and a management_target of 0.12. Westpac's own disclosure has moved on: the board target is a post-dividend CET1 ratio above 11.25%, stated as replacing the former 11.00-11.50% range, following APRA's phase-out of AT1 from 1 January 2027. Reported Level 2 CET1 was 12.53% at 30 Sep 2025 against the 0.1242 the file carries for 1H26.",
+    "treatment": "Not changed in passing — it is a company-level domain call and it is the level the §15.5 constraint and the dividend rule will bind on, so it wants Stephen's ruling rather than a session's reading. Two questions: whether the single \">11.25%\" target replaces the range outright in the data, and how target_minimum should be re-expressed now that it is neither a minimum nor a floor. The company cet1 block is also untyped — no schema class — which is how the internal inconsistency survived; typing it is the natural companion change. Archetype side is settled under D-59.",
+    "questions": "Does WBC's post-dividend >11.25% board target replace the 11.0-11.5% range in the data, and what should target_minimum become?",
+    "status": "NEEDS",
+    "batch": "Batch 4"
   }
 ]

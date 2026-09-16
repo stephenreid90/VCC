@@ -301,12 +301,28 @@ class Cet1Floor(BaseModel):
     """Regulatory CET1 floor, built from its named components.
 
     ``components_in_total`` must name exactly which components the stated floor
-    comprises, and the total is checked against those. It exists because the
-    naive sum of every component is NOT always the floor — a countercyclical
-    buffer can be tracked without sitting inside the headline requirement — and
-    a total that silently disagrees with its own components is unreadable either
-    way. Naming them turns "these do not add up" into "here is what adds up, and
-    here is what is deliberately outside it".
+    comprises, and the total is checked against those. It exists because a total
+    that silently disagrees with its own components is unreadable either way:
+    naming them turns "these do not add up" into "here is what adds up, and here
+    is what is deliberately outside it".
+
+    D-59, 16 September 2026. The declaration was originally used to carve the
+    countercyclical buffer OUT of the major-bank floor, which reconciled the
+    arithmetic and was wrong about APRA: APS 110 sets the CCyB by "extending the
+    range of the capital conservation buffer", so it sits inside the requirement.
+    The carve-out was papering over a larger error. ``regulatory_minimum`` held
+    the TOTAL capital minimum — Tier 1 plus Tier 2 — in a field measured on
+    CET1, where APRA's figure is the much lower CET1 PCR; and the conservation
+    buffer held the standardised figure where all four majors are on the IRB
+    approach and carry the higher one. Every component now shares the CET1
+    basis, and the stated floor is the sum of all four. What the file used to
+    call a floor was an OPERATING target wearing a floor's name, which is why
+    it looked plausible — see :class:`Cet1OperatingTarget`. The figures live in
+    the archetype YAML, sourced to APS 110 and APRA's own explainer.
+
+    The carve-out stays legal, because a buffer genuinely outside a headline
+    requirement is a real configuration in other jurisdictions. It is now a
+    thing a file has to mean rather than a thing it can drift into.
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -334,6 +350,32 @@ class Cet1Floor(BaseModel):
                 f"{total}). Fix the total, the components, or the declaration."
             )
         return self
+
+
+class Cet1OperatingTarget(BaseModel):
+    """The CET1 level a bank actually manages to, which is not the floor.
+
+    D-59. A payout rule does not bind at the regulatory floor. A bank manages to
+    a board-approved operating target and defends THAT — cutting distributions,
+    stopping a buyback — well before the floor is in sight, so the quantity that
+    governs behaviour in a dividend rule is the target, not the requirement. The
+    two were previously one field: an operating level stated as a floor, with a
+    separate ``cet1_management_buffer_typical`` to be added on top of it.
+    Anything reading both would have bound well above what APRA requires, and
+    above where any major has actually run.
+
+    ``level`` is the absolute target, management buffer already inside it, not a
+    spread over the floor. The buffer is then *observed* as the gap to the floor
+    (:attr:`BankArchetype.implied_management_buffer`) rather than asserted
+    beside it — the same reason D-48 strikes capex and depreciation as a pair
+    and reads the gap.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    level: float
+    basis: str
+    rationale: str
 
 
 class CreditCycleAnchor(BaseModel):
@@ -420,10 +462,34 @@ class BankArchetype(BaseModel):
     regulator: str
     secondary_regulators: List[str] = []
     cet1_floor: Cet1Floor
-    cet1_management_buffer_typical: float
+    cet1_operating_target: Cet1OperatingTarget
     credit_cycle_anchor: CreditCycleAnchor
     rwa_density_anchor: RwaDensityAnchor
     cost_of_equity_anchor: BankCostOfEquityAnchor
+
+    @property
+    def implied_management_buffer(self) -> float:
+        """Operating target less regulatory floor — observed, never stored (D-16)."""
+        return self.cet1_operating_target.level - self.cet1_floor.total_floor
+
+    @model_validator(mode="after")
+    def _operating_target_sits_above_the_floor(self) -> "BankArchetype":
+        """A target below its own floor is not a target, it is a mislabelled field.
+
+        This is the check that would have caught D-59's error the day it was
+        written. The operating level against a correctly-stated floor passes;
+        the same level against the floor the file used to claim gives a zero or
+        negative buffer, which reads as the contradiction it is.
+        """
+        gap = self.implied_management_buffer
+        if gap <= 0:
+            raise ValueError(
+                f"cet1_operating_target.level {self.cet1_operating_target.level} is not "
+                f"above cet1_floor.total_floor {self.cet1_floor.total_floor}. A bank "
+                f"manages above its regulatory floor; a target at or below it means one "
+                f"of the two is mislabelled (D-59)."
+            )
+        return self
 
 
 class IndustryArchetypeFile(BaseModel):
