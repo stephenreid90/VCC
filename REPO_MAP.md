@@ -3,10 +3,10 @@
 _Generated 2026-09-16 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `42a085f Regenerate the map now the untracked section is empty` on `main`
-- Unpushed commits: **0**
+- HEAD: `e67d3bf Standing rule 5: plumbing is not the work, and it does not get airtime` on `main`
+- Unpushed commits: **3**
 - Tracked files: 322
-- Untracked files: 0
+- Untracked files: 2
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -108,7 +108,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `build_plan.html` (14.9KB)
   - `engine_implementation_plan.md` (16.5KB)
   - `open_items.css` (3.5KB)
-  - `open_items.json` (29.2KB)
+  - `open_items.json` (31.0KB)
   - `open_questions.json` (1.2KB)
   - `scenarios_workshop.md` (13.5KB)
   - `scenarios_workshop_prep.md` (19.5KB)
@@ -154,14 +154,15 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **vcc_valuations/**
     - `__init__.py` (650B)
     - `derivation.py` (4.4KB)
-    - `translator.py` (55.5KB)
+    - `translator.py` (57.4KB)
     - **assumptions/**
       - `__init__.py` (775B)
       - `trade_working_capital.py` (5.6KB)
       - `wacc.py` (6.0KB)
     - **dcf/**
       - `__init__.py` (50B)
-      - `bank_engine.py` (10.7KB)
+      - `bank_capital.py` (9.8KB)
+      - `bank_engine.py` (13.3KB)
       - `fcf_engine.py` (25.0KB)
       - `fcf_stub.py` (9.8KB)
       - `segment_engine.py` (10.0KB)
@@ -190,6 +191,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `ssot_lint_baseline.json` (6.2KB)
   - `test_adjustments.py` (1.6KB)
   - `test_archetypes_validate.py` (10.2KB)
+  - `test_bank_capital.py` (8.9KB)
   - `test_comps.py` (653B)
   - `test_csl_loads.py` (2.0KB)
   - `test_dcf.py` (1.4KB)
@@ -321,4 +323,12 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `wbc_muddle_through_valuation_v4_formulas.xlsx` (12.5KB)
       - `wbc_scenarios_comparison_v1.xlsx` (11.6KB)
       - `wbc_scenarios_comparison_v2.xlsx` (11.6KB)
+
+## Untracked files
+
+Not in git. Either commit them or clear them — an untracked file is invisible
+to anyone who clones the repo, and is the most common way work gets lost.
+
+- `src/vcc_valuations/dcf/bank_capital.py`
+- `tests/test_bank_capital.py`
 

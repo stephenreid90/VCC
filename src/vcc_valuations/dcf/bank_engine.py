@@ -25,6 +25,7 @@ from dataclasses import dataclass, field
 from typing import List, Optional
 
 from vcc_valuations.derivation import DerivationBuilder
+from vcc_valuations.dcf.bank_capital import Cet1Trajectory, project_cet1
 from vcc_valuations.dcf.fcf_engine import terminal_share_warning
 
 
@@ -58,6 +59,16 @@ class BankInputs:
     cost_of_equity: float
     terminal_roe: float
     terminal_growth: float
+    # §15.5 capital diagnostic (open item 8). Optional, and warn-only: supply all
+    # four and the engine projects the CET1 path and warns; omit any and it is
+    # skipped. Optional rather than required so that the diagnostic can never be
+    # the reason a scenario fails to build -- a check that breaks the valuation it
+    # is checking is worse than no check.
+    cet1_anchor_ratio: Optional[float] = None
+    rwa_anchor: Optional[float] = None
+    rwa_density: Optional[float] = None
+    cet1_floor: Optional[float] = None
+    cet1_operating_target: Optional[float] = None
 
 
 @dataclass
@@ -100,6 +111,16 @@ class BankResult:
     # (PV dividends + PV terminal), there being no EV bridge in the §15 fork.
     terminal_share_of_claim: float = 0.0
     warnings: List[str] = field(default_factory=list)
+    # Per-period equity roll-forward. The engine has always computed retained
+    # earnings as one lump over the horizon, which is all the terminal value
+    # needs; the capital diagnostic needs the year-by-year path. It sums to the
+    # same closing figure by construction -- see the invariant asserted in
+    # tests/test_bank_capital.py -- because equity does not feed NPAT in the §15
+    # build, so exposing it moves nothing.
+    retained_by_period: List[float] = field(default_factory=list)
+    book_equity_path: List[float] = field(default_factory=list)
+    rwa_by_period: List[float] = field(default_factory=list)
+    cet1_trajectory: Optional[Cet1Trajectory] = None
 
 
 class BankEngine:
@@ -145,6 +166,12 @@ class BankEngine:
         pv_div = [dividends[p] * dfs[p] for p in range(n)]
         pv_explicit = sum(pv_div)
 
+        retained_by_period = [npat[p] - dividends[p] for p in range(n)]
+        book_equity_path: List[float] = []
+        _eq = inp.book_equity
+        for r in retained_by_period:
+            _eq += r
+            book_equity_path.append(_eq)
         retained = sum(npat) - sum(dividends)
         closing_equity = inp.book_equity + retained
         g = inp.terminal_growth
@@ -163,6 +190,26 @@ class BankEngine:
         if tv_warning:
             warnings.append(tv_warning)
 
+        # §15.5 capital diagnostic, warn-only (open item 8).
+        rwa_by_period: List[float] = []
+        trajectory: Optional[Cet1Trajectory] = None
+        if inp.rwa_density is not None:
+            rwa_by_period = [aiea[p] * inp.rwa_density for p in range(n)]
+        if (inp.cet1_anchor_ratio is not None and inp.rwa_anchor is not None
+                and inp.cet1_floor is not None and inp.cet1_operating_target is not None
+                and rwa_by_period):
+            trajectory = project_cet1(
+                labels=labels,
+                opening_book_equity=inp.book_equity,
+                retained_by_period=retained_by_period,
+                rwa_by_period=rwa_by_period,
+                rwa_anchor=inp.rwa_anchor,
+                anchor_ratio=inp.cet1_anchor_ratio,
+                floor=inp.cet1_floor,
+                operating_target=inp.cet1_operating_target,
+            )
+            warnings.extend(trajectory.warnings)
+
         return BankResult(
             company_id=inp.company_id, scenario_id=inp.scenario_id,
             period_labels=labels, period_length=period_length,
@@ -180,6 +227,8 @@ class BankEngine:
             treasury_shares=inp.treasury_shares, ordinary_equity_value=ordinary,
             shares_outstanding_m=inp.shares_outstanding_m, value_per_share=vps,
             terminal_share_of_claim=terminal_share, warnings=warnings,
+            retained_by_period=retained_by_period, book_equity_path=book_equity_path,
+            rwa_by_period=rwa_by_period, cet1_trajectory=trajectory,
         )
 
     def per_year_derivation(self, result: BankResult):

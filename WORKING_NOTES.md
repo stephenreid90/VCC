@@ -105,14 +105,46 @@ implemented, one open item closed, one opened.
     is also **untyped** — no schema class at all — which is how the inconsistency
     survived; typing it is the natural companion change.
 
+### Item 8 step 1 is in — the CET1 diagnostic, warn-only
+
+11. **`src/vcc_valuations/dcf/bank_capital.py` projects the CET1 path and the engine warns
+    on it.** No level moved. The ratio is anchored on WBC's *reported* CET1 and rolled
+    forward on the model's own implied rates — equity growth from retained earnings over
+    opening equity, RWA growth from AIEA times a density derived from reported RWA over
+    the AIEA anchor. CET1 is not book equity and the data carries no bridge, so anchoring
+    on the observable was the honest option: the diagnostic is exact on direction and rate
+    of drift, and indicative on the level at which a threshold is crossed.
+12. **It reproduces the finding.** Equity compounds at 2.5–2.8% against RWA at 4.35%, and
+    CET1 erodes in *every* scenario: 97bp on Muddle Through, from 12.42% to 11.45%,
+    crossing the 11.50% operating target at Y5; 165bp on Orderly Convergence, crossing at
+    Y3; 71bp on Stagflation. Nothing breaches the 10.25% floor inside the explicit period,
+    so this is a board event, not a regulator one.
+13. **The ordering is inverted against value, and it is real.** Orderly Convergence is the
+    best scenario for the share price and the worst for capital, because the same strong
+    asset growth that drives the value consumes the capital; Stagflation is the worst for
+    value and the best for capital, because the balance sheet barely grows. Asserted in
+    `tests/test_bank_capital.py` so a change in that relationship is a conscious event, in
+    the spirit of D-56.
+14. **Zero base-tie risk is structural, not asserted.** Book equity is a pure accumulator
+    in the §15 build — NII comes from AIEA, never from equity — so the per-period
+    roll-forward sums to the closing figure the terminal value already used. Tested both
+    ways: the same inputs with the capital block stripped give a bit-identical share price,
+    and a bank with no capital data simply gets no warning rather than failing to build.
+15. **Two ratchet traps cost time and are worth knowing.** The SSOT lint tokenises every
+    number on a line and is comment-blind, so the precision digit inside an inline percent
+    format spec reads as a bare decimal and trips check 3 — twice, the second time from the
+    *docstring* explaining the first. Percent and basis-point formatting now goes through
+    two annotated helpers in that module, and the explanation names no digits.
+
 ### Next in this thread
 
-11. Item 8's warn-only CET1 check — retained earnings against AIEA growth times RWA
-    density — now has a correct floor and a declared target to bind on. Zero base-tie risk
-    by construction. M13 decides which company-level number it reads.
-12. Then the WBC dividend rule: the lesser of the current payout and the capital-
-    constrained one, with "% of capital" defined as the payout holding CET1 flat given
-    asset growth and RWA density. Still has no D-number.
+16. **Step 2, the forced payout cut, is the outstanding part and needs a ruling** — and it
+    is the step that moves all six WBC levels. The question is on item 8: when projected
+    CET1 falls through the target, does the engine hold and warn, cut to whatever holds
+    CET1 flat, or cut to the lesser of the current payout and the capital-constrained one
+    (the rule Stephen asked for) — and does the cut defend the operating target or the
+    floor? M13 gates it too, because the rule has to know which company-level target it is
+    defending.
 
 ---
 

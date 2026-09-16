@@ -1041,6 +1041,35 @@ def build_bank_inputs_from_data(inputs: dict, scenario_id: str):
     drivers = bb["forecast_drivers"]
     income = bb["income_anchors_1h26"]
 
+    # §15.5 capital diagnostic inputs (open item 8), warn-only and all optional.
+    # The reported CET1 ratio and reported RWA are layer-1 observables in the
+    # company file; the floor and the operating target are archetype anchors,
+    # separated under D-59 because a payout rule binds on the target and not on
+    # the regulatory minimum. RWA density is DERIVED here from reported RWA over
+    # the AIEA anchor rather than stored (D-16), and is only second-order anyway:
+    # a constant density cancels out of the ratio's growth term entirely.
+    #
+    # Resolved defensively on purpose. A diagnostic that raises when a block is
+    # absent would make the check a reason a valuation fails to build, which is
+    # the opposite of warn-only; a bank with no capital data simply gets no
+    # capital warning.
+    cet1_anchor_ratio = rwa_anchor = rwa_density = None
+    cet1_floor = cet1_operating_target = None
+    bank_specifics = ((company_raw.get("company_position") or {}).get("bank_specifics") or {})
+    cet1_block = bank_specifics.get("cet1") or {}
+    rwa_block = bank_specifics.get("rwa_composition") or {}
+    cet1_anchor_ratio = cet1_block.get("actual")
+    rwa_anchor = rwa_block.get("total_rwa_level_2")
+    aiea_anchor_value = anchors["aiea_1h26_average"]
+    if rwa_anchor and aiea_anchor_value:
+        rwa_density = rwa_anchor / aiea_anchor_value
+
+    archetype = inputs.get("archetype")
+    bank_arch = getattr(archetype, "bank_archetype", None) if archetype is not None else None
+    if bank_arch is not None:
+        cet1_floor = bank_arch.cet1_floor.total_floor
+        cet1_operating_target = bank_arch.cet1_operating_target.level
+
     return BankInputs(
         company_id=company.id,
         scenario_id=scenario_id,
@@ -1065,6 +1094,11 @@ def build_bank_inputs_from_data(inputs: dict, scenario_id: str):
         cost_of_equity=ke,
         terminal_roe=scen["terminal_roe"],
         terminal_growth=scen["terminal_growth"],
+        cet1_anchor_ratio=cet1_anchor_ratio,
+        rwa_anchor=rwa_anchor,
+        rwa_density=rwa_density,
+        cet1_floor=cet1_floor,
+        cet1_operating_target=cet1_operating_target,
     )
 
 
