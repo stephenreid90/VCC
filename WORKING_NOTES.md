@@ -136,15 +136,38 @@ implemented, one open item closed, one opened.
     *docstring* explaining the first. Percent and basis-point formatting now goes through
     two annotated helpers in that module, and the explanation names no digits.
 
-### Next in this thread
+### D-60 is step 2, and it is built but switched OFF — read this before switching it on
 
-16. **Step 2, the forced payout cut, is the outstanding part and needs a ruling** — and it
-    is the step that moves all six WBC levels. The question is on item 8: when projected
-    CET1 falls through the target, does the engine hold and warn, cut to whatever holds
-    CET1 flat, or cut to the lesser of the current payout and the capital-constrained one
-    (the rule Stephen asked for) — and does the cut defend the operating target or the
-    floor? M13 gates it too, because the rule has to know which company-level target it is
-    defending.
+16. **Ruled and implemented the same day: the payout is cut to hold CET1 on the operating
+    target.** The ratio drifts, and once it reaches the target the payout is reduced by
+    just enough to hold it there. One-sided, so it never raises the payout above the stated
+    ratio. Path-dependent, so it runs inside the engine loop. The level defended is the
+    target, not the floor — no WBC scenario reaches the floor inside the explicit period,
+    so binding on the floor would be a rule that never fires.
+17. **It raises the valuation, and that is why it is off.** Retention lands in closing book
+    equity, which the terminal capitalises at (ROE − g)/(Ke − g). WBC's terminal ROE of
+    10.5% against a cost of equity of 8.05% makes that multiple **1.54×**, while the
+    forgone dividend is worth about 0.7× discounted from Y5. So every dollar withheld is
+    worth more retained than paid: **+0.04 on Muddle Through, +0.66 on Orderly
+    Convergence**, which withholds the most at 5,850m. Terminal share of the claim rises
+    from 74.0% to 77.6% on that scenario.
+18. **The real finding is bigger than the rule.** If withholding a dollar creates value,
+    the model has **no interior optimum on payout** — lower is always worth more, all the
+    way to zero. That is not a statement about Westpac; it is the justified-P/B terminal
+    talking, and it collides directly with **D-45**: of terminal growth, terminal return
+    and reinvestment only two may be chosen, and the third is derived. Terminal ROE and g
+    are both fixed inputs in the §15 build, so retained capital here earns the terminal ROE
+    forever with nothing given up.
+19. **So the outstanding question is not the rule, it is what retention buys.** Three
+    candidate answers, all Stephen's call: terminal ROE fades toward Ke as capital
+    accumulates; or g rises with the retained capital; or the justified-P/B terminal is
+    replaced for the bank fork. Until one is ruled, re-pinning six WBC levels would pin a
+    number that is an artefact of the missing link.
+20. **Nothing moved.** `constrain_payout_to_capital` defaults `False`. Switching it on is a
+    one-line change and `tests/test_bank_capital.py` already exercises the rule with it on,
+    including a test that decomposes the uplift into the retention multiple exactly, so the
+    day retention is linked to ROE or g that test fails and says why.
+21. **M13 still gates the level** the rule would defend, whenever it is switched on.
 
 ---
 

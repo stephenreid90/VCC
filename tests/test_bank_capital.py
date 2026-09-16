@@ -217,3 +217,93 @@ def test_the_capital_ordering_is_inverted_against_value():
     worst_value = min(rows, key=lambda s: rows[s][0])
     best_capital = max(rows, key=lambda s: rows[s][1])
     assert worst_value == best_capital == "stagflation_persists", rows
+
+
+# ------------------------------------- D-60: the rule, built but switched off
+# Ruled 16 September 2026 (answers 6b and 7): let the ratio drift, and once it
+# reaches the OPERATING TARGET cut the payout by just enough to hold it there.
+# Implemented and tested here, and deliberately not switched on -- see
+# test_the_constraint_raises_value_which_is_why_it_is_off for the reason.
+def _on(scenario_id: str):
+    return replace(_wbc(scenario_id), constrain_payout_to_capital=True)
+
+
+def test_the_constraint_is_off_by_default_so_no_level_moved():
+    inp = _wbc("muddle_through")
+    assert inp.constrain_payout_to_capital is False
+    r = BankEngine().run(inp)
+    assert r.value_per_share == pytest.approx(30.0304, abs=1e-3)
+    assert r.capital_constraint_binds_from is None
+    assert r.dividends_forgone == 0.0
+
+
+def test_when_on_it_holds_the_ratio_exactly_on_the_operating_target():
+    """The rule as ruled: the target is a floor for the ratio, not a target to sit on."""
+    r = BankEngine().run(_on("muddle_through"))
+    t = r.cet1_trajectory
+    assert r.capital_constraint_binds_from == "Y5"
+    # Before it binds the ratio drifts freely; from the binding period it sits on
+    # the target to within rounding.
+    assert t.points[-1].cet1_ratio == pytest.approx(t.operating_target, abs=1e-9)
+    assert all(p.cet1_ratio > t.operating_target for p in t.points[:-1])
+
+
+def test_the_rule_is_one_sided_and_never_raises_the_payout():
+    """A bank above its target does not mechanically distribute the surplus."""
+    for s in SCENARIOS:
+        r = BankEngine().run(_on(s))
+        stated = _wbc(s).dividend_payout_ratio
+        assert all(p <= stated + 1e-12 for p in r.payout_applied), (s, r.payout_applied)
+
+
+def test_a_scenario_that_never_reaches_the_target_is_untouched():
+    """Stagflation and Fragmentation erode least, so the rule must not bite."""
+    for s in ("stagflation_persists", "fragmentation"):
+        off = BankEngine().run(_wbc(s))
+        on = BankEngine().run(_on(s))
+        assert on.capital_constraint_binds_from is None, s
+        assert on.value_per_share == pytest.approx(off.value_per_share, abs=1e-12), s
+
+
+def test_the_constraint_raises_value_which_is_why_it_is_off():
+    """The finding that stopped D-60 being switched on.
+
+    Retention is capitalised in the terminal at (ROE - g)/(Ke - g). WBC's
+    terminal ROE exceeds its cost of equity, so that multiple is above one and a
+    withheld dividend is worth more retained than paid. The capital constraint
+    therefore INCREASES the valuation, most where it withholds most. Under D-45
+    that is not admissible: retention is the derived third of terminal growth,
+    terminal return and reinvestment, and here it changes while both of the
+    others stay fixed, so retained capital earns the terminal ROE forever with
+    nothing given up.
+
+    Asserted rather than described so that the day someone links retention to
+    terminal ROE or g, this test fails and says why.
+    """
+    for s in SCENARIOS:
+        inp = _wbc(s)
+        multiple = (inp.terminal_roe - inp.terminal_growth) / (inp.cost_of_equity - inp.terminal_growth)
+        off = BankEngine().run(inp)
+        on = BankEngine().run(_on(s))
+
+        assert multiple > 1.0, (s, multiple)
+        if on.dividends_forgone > 0:
+            assert on.value_per_share > off.value_per_share, (s, off.value_per_share, on.value_per_share)
+            assert on.terminal_share_of_claim > off.terminal_share_of_claim, s
+
+
+def test_the_uplift_is_the_retention_multiple_and_nothing_else():
+    """Decomposed, so the mechanism is pinned rather than just the direction."""
+    inp = _wbc("orderly_convergence")
+    off = BankEngine().run(inp)
+    on = BankEngine().run(_on("orderly_convergence"))
+
+    # Every dollar withheld lands in closing equity.
+    assert on.closing_book_equity - off.closing_book_equity == pytest.approx(
+        on.dividends_forgone, rel=1e-9)
+    # The terminal gains that equity times the justified multiple, discounted.
+    multiple = (inp.terminal_roe - inp.terminal_growth) / (inp.cost_of_equity - inp.terminal_growth)
+    expected = on.dividends_forgone * multiple * on.terminal_discount_factor
+    assert on.pv_terminal_value - off.pv_terminal_value == pytest.approx(expected, rel=1e-9)
+    # And loses the PV of the dividends it did not pay, which is smaller.
+    assert off.pv_explicit_dividends - on.pv_explicit_dividends < expected

@@ -69,6 +69,18 @@ class BankInputs:
     rwa_density: Optional[float] = None
     cet1_floor: Optional[float] = None
     cet1_operating_target: Optional[float] = None
+    # D-60, built but DEFAULTED OFF pending the D-45 reconciliation. When set,
+    # the payout is cut by just enough to hold CET1 at the operating target once
+    # the ratio reaches it. It is off by default because switching it on changes
+    # retention, and under D-45 retention is not a free variable: of terminal
+    # growth, terminal return and reinvestment only two may be chosen and the
+    # third is derived. Terminal ROE and g are fixed inputs here, so retained
+    # capital currently earns the terminal ROE forever with nothing given up --
+    # and since that ROE exceeds Ke, every dollar withheld capitalises at
+    # (ROE - g)/(Ke - g) > 1 and the constraint RAISES the valuation. A capital
+    # discipline that increases value is the model telling us the payout has no
+    # interior optimum, not a result to pin six levels on. See the handover.
+    constrain_payout_to_capital: bool = False
 
 
 @dataclass
@@ -121,6 +133,14 @@ class BankResult:
     book_equity_path: List[float] = field(default_factory=list)
     rwa_by_period: List[float] = field(default_factory=list)
     cet1_trajectory: Optional[Cet1Trajectory] = None
+    # D-60 disclosure. payout_applied is the payout the engine actually paid in
+    # each period; it equals the stated ratio until the capital constraint binds.
+    # dividends_forgone is what the constraint withheld, which is the whole of the
+    # difference between this valuation and the unconstrained one, and belongs on
+    # screen rather than inferred from a level that moved.
+    payout_applied: List[float] = field(default_factory=list)
+    capital_constraint_binds_from: Optional[str] = None
+    dividends_forgone: float = 0.0
 
 
 class BankEngine:
@@ -158,7 +178,67 @@ class BankEngine:
         pre_tax = [pre_prov[p] + impair[p] for p in range(n)]
         tax = [-pre_tax[p] * inp.effective_tax_rate for p in range(n)]
         npat = [pre_tax[p] + tax[p] for p in range(n)]
-        dividends = [npat[p] * inp.dividend_payout_ratio for p in range(n)]
+
+        # --- dividends, subject to the §15.5 capital constraint (D-60)
+        #
+        # The ratio is allowed to drift down; once it reaches the operating
+        # target the payout is cut by just enough to hold it there, and never
+        # raised above the stated payout when the ratio is comfortably above.
+        # One-sided by construction: when the required retention is negative the
+        # stated payout simply wins, so a bank running above its target does not
+        # mechanically distribute the surplus. Distributing it is a capital-action
+        # decision (buyback, special dividend) with its own timing, not an
+        # arithmetic consequence of being above target.
+        #
+        # Path-dependent, so it cannot be computed after the fact: each period's
+        # opening equity and opening ratio depend on every cut before it.
+        rwa_by_period: List[float] = []
+        if inp.rwa_density is not None:
+            rwa_by_period = [aiea[p] * inp.rwa_density for p in range(n)]
+
+        constrained = (
+            inp.constrain_payout_to_capital
+            and inp.cet1_anchor_ratio is not None
+            and inp.rwa_anchor is not None
+            and inp.cet1_operating_target is not None
+            and bool(rwa_by_period)
+        )
+
+        dividends: List[float] = []
+        payout_applied: List[float] = []
+        binds_from: Optional[str] = None
+        forgone = 0.0
+
+        if constrained:
+            _eq = inp.book_equity
+            _ratio = inp.cet1_anchor_ratio
+            _prev_rwa = inp.rwa_anchor
+            _target = inp.cet1_operating_target
+            for p in range(n):
+                rwa_growth = (rwa_by_period[p] / _prev_rwa) - 1.0
+                # Retention that lands the closing ratio exactly on the target.
+                required = _eq * (_target * (1.0 + rwa_growth) / _ratio - 1.0)
+                stated = npat[p] * inp.dividend_payout_ratio
+                div = min(stated, npat[p] - required)
+                if div < 0.0:
+                    # A bank cannot pay a negative dividend. The shortfall is a
+                    # capital-raising question, not a distribution one, and the
+                    # ratio is allowed to fall through the target here rather
+                    # than the engine inventing equity issuance.
+                    div = 0.0
+                if div < stated - 1e-9:
+                    forgone += stated - div
+                    if binds_from is None:
+                        binds_from = labels[p]
+                dividends.append(div)
+                payout_applied.append(div / npat[p] if npat[p] else 0.0)
+                _retained = npat[p] - div
+                _ratio = _ratio * (1.0 + _retained / _eq) / (1.0 + rwa_growth)
+                _eq += _retained
+                _prev_rwa = rwa_by_period[p]
+        else:
+            dividends = [npat[p] * inp.dividend_payout_ratio for p in range(n)]
+            payout_applied = [inp.dividend_payout_ratio] * n
 
         ke = inp.cost_of_equity
         mid_times = [inp.stub_years / 2.0] + [inp.stub_years + (k - 0.5) for k in range(1, H + 1)]  # ssot-allow: structural mid-period offset
@@ -190,11 +270,10 @@ class BankEngine:
         if tv_warning:
             warnings.append(tv_warning)
 
-        # §15.5 capital diagnostic, warn-only (open item 8).
-        rwa_by_period: List[float] = []
+        # §15.5 capital trajectory. Still reported even when the constraint is
+        # active, because it is then the evidence that the rule did its job: the
+        # ratio should sit exactly on the target from the binding period onward.
         trajectory: Optional[Cet1Trajectory] = None
-        if inp.rwa_density is not None:
-            rwa_by_period = [aiea[p] * inp.rwa_density for p in range(n)]
         if (inp.cet1_anchor_ratio is not None and inp.rwa_anchor is not None
                 and inp.cet1_floor is not None and inp.cet1_operating_target is not None
                 and rwa_by_period):
@@ -229,6 +308,9 @@ class BankEngine:
             terminal_share_of_claim=terminal_share, warnings=warnings,
             retained_by_period=retained_by_period, book_equity_path=book_equity_path,
             rwa_by_period=rwa_by_period, cet1_trajectory=trajectory,
+            payout_applied=payout_applied,
+            capital_constraint_binds_from=binds_from,
+            dividends_forgone=forgone,
         )
 
     def per_year_derivation(self, result: BankResult):
