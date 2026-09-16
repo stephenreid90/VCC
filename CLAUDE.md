@@ -182,13 +182,27 @@ quoted back as live.
 
 ## Operational quirks
 
-**Two environment facts, both verified 23 August 2026, both replacing notes here that said
-the opposite. Read them before planning any git work.**
+**Environment facts, verified 23 August 2026 and re-verified 16 September 2026. Read them
+before planning any git work.**
 
 - **The Cowork mount cannot delete or replace ANY file** — not just `.git/*.lock`. `rm`
   returns "Operation not permitted" and so does git's own unlink, which means `git merge`,
-  `git checkout -- <file>` and `git branch -D` all fail on the mount. `mv` works. A session
-  can only move things aside; Stephen clears them from his own cmd window.
+  `git checkout -- <file>` and `git branch -D` all fail on the mount. `mv` works, and so
+  does plain truncate-and-write, which is how a file gets restored after a failed git
+  operation. A session can only move things aside; Stephen clears them from his own cmd
+  window.
+- **This did NOT change when the device shell came back.** `device_bash` was down from the
+  Windows update of 8 September until 16 September. Its return makes reads, writes and
+  searches on the mount work again, and `git push` from the mount authenticates fine with
+  the PAT at `.github-token` — so it is tempting to conclude the bundle dance is over. It
+  is not. Re-tested 16 September: `git checkout -- README.md` on the mount fails, strands a
+  `.git/index.lock` it cannot unlink, and every subsequent git write in that repo is
+  blocked until the lock is cleared from Windows. Pushing without merging would publish the
+  work while leaving Stephen's working tree behind origin, which is worse than not pushing.
+  **The restriction is on the Cowork mount's view of the folder, not on Stephen's machine**
+  — his own cmd window has full access, which is exactly why `land_vcc.cmd` works and a
+  session's shell does not. Do not re-run this experiment; if you do it anyway, the stranded
+  lock is cleared by step 1 of `land_vcc.cmd`, so the recovery is the landing itself.
 - **The cloud container cannot push.** The git proxy allows clone and fetch and refuses
   push for this repo ("not in this session's authorized repository set", 403). The PAT at
   `.github-token` is not the constraint and re-trying will not help.
