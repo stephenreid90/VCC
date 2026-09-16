@@ -1,10 +1,15 @@
-"""Open item 8, step 1: the §15.5 CET1 diagnostic is warn-only and cannot move a level.
+"""Open item 8: the §15.5 CET1 diagnostic, and the D-60 payout constraint on top of it.
 
 The item's finding was that the bank engine holds the payout flat in every world
 while book equity compounds well below AIEA, so the implied capital ratio falls in
-every year and nothing notices. These tests assert three things in order of
-importance: that adding the check moves no number, that the projection is
-arithmetically what it claims to be, and that it actually fires on WBC.
+every year and nothing notices.
+
+Two layers, tested separately. Step 1 is the diagnostic: it observes the drift and
+warns, and cannot move a level. Step 2 is D-60: once the ratio reaches the operating
+target the payout is cut by just enough to hold it there, which DOES move levels --
+upward, because retained equity is capitalised in the terminal at (ROE - g)/(Ke - g)
+and that multiple is above one. The step-1 tests therefore pass ``_off`` explicitly,
+since the world they describe is the one before the constraint arrests the drift.
 """
 
 from __future__ import annotations
@@ -23,9 +28,22 @@ SCENARIOS = sorted(p.stem for p in (ROOT / "data" / "scenarios").glob("*.yaml"))
 
 
 def _wbc(scenario_id: str):
+    """Inputs as assembled from data — D-60 constraint ON, i.e. the ratified path."""
     return build_bank_inputs_from_data(
         load_inputs(ROOT, scenario_id, "australian_major_banks", "wbc"), scenario_id
     )
+
+
+def _off(scenario_id: str):
+    """The same inputs with the payout constraint off.
+
+    Several of the step-1 tests below describe the UNCONSTRAINED world, because
+    that is the world the item 8 finding was about: a flat payout that never
+    responds to asset growth. They have to say so explicitly now that D-60 is on
+    by default, or they would be asserting the drift of a model that already
+    arrests it.
+    """
+    return replace(_wbc(scenario_id), constrain_payout_to_capital=False)
 
 
 # --------------------------------------------------------------- the invariant
@@ -45,7 +63,7 @@ def test_the_equity_path_sums_to_the_closing_equity_the_terminal_uses(scenario_i
 @pytest.mark.parametrize("scenario_id", SCENARIOS)
 def test_the_diagnostic_does_not_change_value_per_share(scenario_id):
     """Same inputs with the capital block stripped must give the same share price."""
-    inp = _wbc(scenario_id)
+    inp = _off(scenario_id)
     without = replace(
         inp, cet1_anchor_ratio=None, rwa_anchor=None, rwa_density=None,
         cet1_floor=None, cet1_operating_target=None,
@@ -60,7 +78,7 @@ def test_the_diagnostic_does_not_change_value_per_share(scenario_id):
 
 def test_a_bank_with_no_capital_data_simply_gets_no_warning():
     """Absent data must not be a reason a valuation fails to build."""
-    inp = replace(_wbc("muddle_through"), cet1_anchor_ratio=None)
+    inp = replace(_off("muddle_through"), cet1_anchor_ratio=None)
     r = BankEngine().run(inp)
     assert r.cet1_trajectory is None
     assert r.value_per_share > 0
@@ -163,7 +181,7 @@ def test_wbc_erodes_capital_in_every_scenario_which_is_the_item_8_finding():
     """Every world erodes, because the payout never responds to asset growth."""
     drifts = {}
     for s in SCENARIOS:
-        t = BankEngine().run(_wbc(s)).cet1_trajectory
+        t = BankEngine().run(_off(s)).cet1_trajectory
         assert t is not None
         drifts[s] = t.drift
 
@@ -172,7 +190,7 @@ def test_wbc_erodes_capital_in_every_scenario_which_is_the_item_8_finding():
     # None of them breaches the regulatory floor inside the explicit period; the
     # problem is the drift and the operating target, not an APRA event.
     for s in SCENARIOS:
-        assert BankEngine().run(_wbc(s)).cet1_trajectory.first_below_floor is None
+        assert BankEngine().run(_off(s)).cet1_trajectory.first_below_floor is None
 
 
 def test_the_cited_drift_figures_come_from_here():
@@ -184,13 +202,13 @@ def test_the_cited_drift_figures_come_from_here():
     would be a tripwire rather than evidence.
     """
     def drift_bps(s):
-        return BankEngine().run(_wbc(s)).cet1_trajectory.drift_bps
+        return BankEngine().run(_off(s)).cet1_trajectory.drift_bps
 
     assert drift_bps("muddle_through") == pytest.approx(-97, abs=5)
     assert drift_bps("orderly_convergence") == pytest.approx(-165, abs=5)
     assert drift_bps("stagflation_persists") == pytest.approx(-71, abs=5)
 
-    central = BankEngine().run(_wbc("muddle_through")).cet1_trajectory
+    central = BankEngine().run(_off("muddle_through")).cet1_trajectory
     assert central.anchor_ratio == pytest.approx(0.1242, abs=1e-6)
     assert central.closing_ratio == pytest.approx(0.1145, abs=5e-4)
     assert central.first_below_target == "Y5"
@@ -207,7 +225,7 @@ def test_the_capital_ordering_is_inverted_against_value():
     """
     rows = {}
     for s in SCENARIOS:
-        r = BankEngine().run(_wbc(s))
+        r = BankEngine().run(_off(s))
         rows[s] = (r.value_per_share, r.cet1_trajectory.drift)
 
     best_value = max(rows, key=lambda s: rows[s][0])
@@ -225,16 +243,16 @@ def test_the_capital_ordering_is_inverted_against_value():
 # Implemented and tested here, and deliberately not switched on -- see
 # test_the_constraint_raises_value_which_is_why_it_is_off for the reason.
 def _on(scenario_id: str):
-    return replace(_wbc(scenario_id), constrain_payout_to_capital=True)
+    return _wbc(scenario_id)
 
 
-def test_the_constraint_is_off_by_default_so_no_level_moved():
+def test_the_constraint_is_on_by_default_and_gives_the_ratified_level():
     inp = _wbc("muddle_through")
-    assert inp.constrain_payout_to_capital is False
+    assert inp.constrain_payout_to_capital is True
     r = BankEngine().run(inp)
-    assert r.value_per_share == pytest.approx(30.0304, abs=1e-3)
-    assert r.capital_constraint_binds_from is None
-    assert r.dividends_forgone == 0.0
+    assert r.value_per_share == pytest.approx(30.0664, abs=1e-3)
+    assert r.capital_constraint_binds_from == "Y5"
+    assert r.dividends_forgone > 0.0
 
 
 def test_when_on_it_holds_the_ratio_exactly_on_the_operating_target():
@@ -259,29 +277,30 @@ def test_the_rule_is_one_sided_and_never_raises_the_payout():
 def test_a_scenario_that_never_reaches_the_target_is_untouched():
     """Stagflation and Fragmentation erode least, so the rule must not bite."""
     for s in ("stagflation_persists", "fragmentation"):
-        off = BankEngine().run(_wbc(s))
+        off = BankEngine().run(_off(s))
         on = BankEngine().run(_on(s))
         assert on.capital_constraint_binds_from is None, s
         assert on.value_per_share == pytest.approx(off.value_per_share, abs=1e-12), s
 
 
-def test_the_constraint_raises_value_which_is_why_it_is_off():
-    """The finding that stopped D-60 being switched on.
+def test_the_constraint_raises_value_which_is_the_retention_trade():
+    """D-60 raises the valuation, and that is the intended reading.
 
-    Retention is capitalised in the terminal at (ROE - g)/(Ke - g). WBC's
-    terminal ROE exceeds its cost of equity, so that multiple is above one and a
-    withheld dividend is worth more retained than paid. The capital constraint
-    therefore INCREASES the valuation, most where it withholds most. Under D-45
-    that is not admissible: retention is the derived third of terminal growth,
-    terminal return and reinvestment, and here it changes while both of the
-    others stay fixed, so retained capital earns the terminal ROE forever with
-    nothing given up.
+    Retention is capitalised in the terminal at (ROE - g)/(Ke - g), which is
+    above one because WBC's terminal ROE exceeds its cost of equity. So a
+    withheld dividend is worth more retained than paid and the constraint
+    INCREASES the valuation, most where it withholds most.
 
-    Asserted rather than described so that the day someone links retention to
-    terminal ROE or g, this test fails and says why.
+    Stephen's ruling, 16 September 2026: that is correct rather than an
+    artefact. The justified price-to-book terminal is derived from g = ROE x b,
+    so the terminal stream already IS the dividend the retained equity supports,
+    growing at the rate retention funds -- a lower dividend now traded for a
+    higher one later. The form says so; the engine now says so too.
+
+    Asserted so the direction is a stated property rather than a surprise.
     """
     for s in SCENARIOS:
-        inp = _wbc(s)
+        inp = _off(s)
         multiple = (inp.terminal_roe - inp.terminal_growth) / (inp.cost_of_equity - inp.terminal_growth)
         off = BankEngine().run(inp)
         on = BankEngine().run(_on(s))
@@ -294,7 +313,7 @@ def test_the_constraint_raises_value_which_is_why_it_is_off():
 
 def test_the_uplift_is_the_retention_multiple_and_nothing_else():
     """Decomposed, so the mechanism is pinned rather than just the direction."""
-    inp = _wbc("orderly_convergence")
+    inp = _off("orderly_convergence")
     off = BankEngine().run(inp)
     on = BankEngine().run(_on("orderly_convergence"))
 

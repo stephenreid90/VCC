@@ -3,7 +3,7 @@
 _Generated 2026-09-16 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `f0b52d5 Item 8 step 1: the bank notices its own capital, and warns` on `main`
+- HEAD: `0b76810 D-60: the payout rule, and the reason it is not switched on` on `main`
 - Unpushed commits: **0**
 - Tracked files: 324
 - Untracked files: 0
@@ -108,7 +108,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `build_plan.html` (14.9KB)
   - `engine_implementation_plan.md` (16.5KB)
   - `open_items.css` (3.5KB)
-  - `open_items.json` (31.5KB)
+  - `open_items.json` (33.2KB)
   - `open_questions.json` (1.2KB)
   - `scenarios_workshop.md` (13.5KB)
   - `scenarios_workshop_prep.md` (19.5KB)
@@ -162,7 +162,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - **dcf/**
       - `__init__.py` (50B)
       - `bank_capital.py` (9.8KB)
-      - `bank_engine.py` (17.8KB)
+      - `bank_engine.py` (17.5KB)
       - `fcf_engine.py` (25.0KB)
       - `fcf_stub.py` (9.8KB)
       - `segment_engine.py` (10.0KB)
@@ -191,7 +191,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `ssot_lint_baseline.json` (6.2KB)
   - `test_adjustments.py` (1.6KB)
   - `test_archetypes_validate.py` (10.2KB)
-  - `test_bank_capital.py` (13.2KB)
+  - `test_bank_capital.py` (14.1KB)
   - `test_comps.py` (653B)
   - `test_csl_loads.py` (2.0KB)
   - `test_dcf.py` (1.4KB)
@@ -220,8 +220,8 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `test_horizon_variant_sets.py` (5.0KB)
     - `test_per_year_derivations.py` (3.8KB)
     - `test_replica_ties_engine.py` (6.1KB)
-    - `test_scenario_goldens.py` (8.7KB)
-    - `test_wbc_bank.py` (2.5KB)
+    - `test_scenario_goldens.py` (9.4KB)
+    - `test_wbc_bank.py` (4.3KB)
     - **golden/**
       - `__init__.py` (0B)
       - `_recalc.py` (4.2KB)
@@ -245,7 +245,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `beta_data.py` (10.0KB)
     - `build_cfgs.py` (93.8KB)
     - `cfgs_gen.json` (213.1KB)
-    - `engine_workbook.py` (91.6KB)
+    - `engine_workbook.py` (91.8KB)
     - `gen_ui.py` (88.7KB)
 
 ## Analyses (workbooks)

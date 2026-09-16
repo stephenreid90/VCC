@@ -1020,7 +1020,12 @@ def build_dnl_workbook_bytes(cfg=None):
 # ======================================================================
 
 def build_wbc_workbook_bytes(cfg=None):
-    """Full audited WBC bank workbook, formula-linked, tying the bank engine (MT 30.03)."""
+    """Full audited WBC bank workbook, formula-linked, tying the bank engine.
+
+    Ties the UNCONSTRAINED engine path: the workbook predates D-60 and carries no
+    capital constraint, so the ratified level (MT 30.07) sits above what this
+    reproduces. See tests/dcf/test_wbc_bank.py for why the tie was not re-pinned.
+    """
     import beta_data as _bd
     from vcc_valuations.translator import (
         load_inputs as _li, resolve_normalised_baseline as _rnb,

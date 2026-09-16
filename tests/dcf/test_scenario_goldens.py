@@ -71,12 +71,19 @@ DNL_GOLDEN = {
 
 # --- WBC: bank DDM / Ke (§15), AUD per share -----------------------------------
 WBC_GOLDEN = {
-    "orderly_convergence": 35.7058,
-    "muddle_through": 30.0304,                     # independently audited (v4 workbook)
-    "ai_productivity_lag": 29.6987,
-    "fragmentation": 27.1096,
-    "disorderly_climate_crystallisation": 22.5807,
-    "stagflation_persists": 18.6488,
+    # Re-pinned 16 Sep 2026 for D-60: the payout is cut to hold CET1 on the
+    # operating target once the ratio reaches it. Retained equity is capitalised
+    # in the terminal at (ROE - g)/(Ke - g), so a withheld dividend is worth more
+    # retained than paid and every level that binds moves UP. Levels before:
+    # 35.7058 / 30.0304 / 29.6987 / 27.1096 / 22.5807 / 18.6488. Fragmentation
+    # and Stagflation are unchanged to the cent because they erode least and the
+    # rule never binds in them -- which is the check that it is one-sided.
+    "orderly_convergence": 36.3661,                # binds Y3, withholds most
+    "muddle_through": 30.0664,                     # binds Y5
+    "ai_productivity_lag": 29.7217,                # binds Y5
+    "fragmentation": 27.1096,                      # never binds
+    "disorderly_climate_crystallisation": 22.5918,  # binds Y5
+    "stagflation_persists": 18.6488,               # never binds
 }
 
 # --- CSL: multi-segment FCFF / Ke (M3), (USD, AUD) per share -------------------
@@ -130,8 +137,8 @@ def test_csl_scenario_level(scenario):
 TERMINAL_BREACH = {
     # (company, scenario) -> terminal share of EV / of the equity claim
     ("dnl", "muddle_through"): 0.7001,
-    ("wbc", "muddle_through"): 0.7631,
-    ("wbc", "stagflation_persists"): 0.8445,       # worst in the project
+    ("wbc", "muddle_through"): 0.7657,     # 0.7631 before D-60
+    ("wbc", "stagflation_persists"): 0.8445,       # worst in the project; D-60 never binds here
     ("csl", "muddle_through"): 0.7538,
 }
 

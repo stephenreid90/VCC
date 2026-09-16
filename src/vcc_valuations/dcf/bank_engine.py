@@ -69,18 +69,15 @@ class BankInputs:
     rwa_density: Optional[float] = None
     cet1_floor: Optional[float] = None
     cet1_operating_target: Optional[float] = None
-    # D-60, built but DEFAULTED OFF pending the D-45 reconciliation. When set,
-    # the payout is cut by just enough to hold CET1 at the operating target once
-    # the ratio reaches it. It is off by default because switching it on changes
-    # retention, and under D-45 retention is not a free variable: of terminal
-    # growth, terminal return and reinvestment only two may be chosen and the
-    # third is derived. Terminal ROE and g are fixed inputs here, so retained
-    # capital currently earns the terminal ROE forever with nothing given up --
-    # and since that ROE exceeds Ke, every dollar withheld capitalises at
-    # (ROE - g)/(Ke - g) > 1 and the constraint RAISES the valuation. A capital
-    # discipline that increases value is the model telling us the payout has no
-    # interior optimum, not a result to pin six levels on. See the handover.
-    constrain_payout_to_capital: bool = False
+    # D-60, ON. The payout is cut by just enough to hold CET1 at the operating
+    # target once the ratio reaches it. It raises the valuation, and that is
+    # correct rather than an artefact: the justified price-to-book terminal is
+    # derived from g = ROE x b, so the terminal stream IS the dividend the
+    # retained equity supports, growing at the rate retention funds. A lower
+    # dividend now is traded for a higher one later and the form already says so.
+    # Switchable because the audited v4 workbook has no capital constraint, so the
+    # independent tie is struck on the unconstrained path (tests/dcf/test_wbc_bank).
+    constrain_payout_to_capital: bool = True
 
 
 @dataclass

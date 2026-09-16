@@ -42,9 +42,10 @@ and spend the conversation on the valuation.
 
 ---
 
-**State:** suite **368**, ratchet **13 checks**, base ties green and UNMOVED —
-DNL 1.989, WBC 30.03, CSL 195.78. No level moved. One decision ruled and
-implemented, one open item closed, one opened.
+**State:** suite **397**, ratchet **13 checks**, base ties green. **WBC HAS MOVED:
+30.03 → 30.07** under D-60, and all six WBC levels are re-pinned. DNL 1.989 and
+CSL 195.78 unmoved. Two decisions ruled and implemented (D-59, D-60), two open
+items closed (M12, item 8), two opened (M13, M14).
 
 ### The device shell came back
 
@@ -136,7 +137,7 @@ implemented, one open item closed, one opened.
     *docstring* explaining the first. Percent and basis-point formatting now goes through
     two annotated helpers in that module, and the explanation names no digits.
 
-### D-60 is step 2, and it is built but switched OFF — read this before switching it on
+### D-60 is step 2, RULED and ON — WBC's levels have moved
 
 16. **Ruled and implemented the same day: the payout is cut to hold CET1 on the operating
     target.** The ratio drifts, and once it reaches the target the payout is reduced by
@@ -144,30 +145,49 @@ implemented, one open item closed, one opened.
     ratio. Path-dependent, so it runs inside the engine loop. The level defended is the
     target, not the floor — no WBC scenario reaches the floor inside the explicit period,
     so binding on the floor would be a rule that never fires.
-17. **It raises the valuation, and that is why it is off.** Retention lands in closing book
-    equity, which the terminal capitalises at (ROE − g)/(Ke − g). WBC's terminal ROE of
-    10.5% against a cost of equity of 8.05% makes that multiple **1.54×**, while the
-    forgone dividend is worth about 0.7× discounted from Y5. So every dollar withheld is
-    worth more retained than paid: **+0.04 on Muddle Through, +0.66 on Orderly
-    Convergence**, which withholds the most at 5,850m. Terminal share of the claim rises
-    from 74.0% to 77.6% on that scenario.
-18. **The real finding is bigger than the rule.** If withholding a dollar creates value,
-    the model has **no interior optimum on payout** — lower is always worth more, all the
-    way to zero. That is not a statement about Westpac; it is the justified-P/B terminal
-    talking, and it collides directly with **D-45**: of terminal growth, terminal return
-    and reinvestment only two may be chosen, and the third is derived. Terminal ROE and g
-    are both fixed inputs in the §15 build, so retained capital here earns the terminal ROE
-    forever with nothing given up.
-19. **So the outstanding question is not the rule, it is what retention buys.** Three
-    candidate answers, all Stephen's call: terminal ROE fades toward Ke as capital
-    accumulates; or g rises with the retained capital; or the justified-P/B terminal is
-    replaced for the bank fork. Until one is ruled, re-pinning six WBC levels would pin a
-    number that is an artefact of the missing link.
-20. **Nothing moved.** `constrain_payout_to_capital` defaults `False`. Switching it on is a
-    one-line change and `tests/test_bank_capital.py` already exercises the rule with it on,
-    including a test that decomposes the uplift into the retention multiple exactly, so the
-    day retention is linked to ROE or g that test fails and says why.
-21. **M13 still gates the level** the rule would defend, whenever it is switched on.
+17. **It raises the valuation, and after a round of argument that is the ruled reading.**
+    Retention lands in closing book equity, which the terminal capitalises at
+    (ROE − g)/(Ke − g) = **1.54×** on the central case, while the forgone dividend is worth
+    about 0.7× discounted from Y5. The session raised this as a possible artefact and
+    Stephen's answer was that it is the retention trade itself: lower dividends now in
+    exchange for higher dividends later. **He is right, and the form already says so** —
+    the justified price-to-book terminal is derived from g = ROE × b, so the terminal stream
+    IS the dividend the retained equity supports, growing at the rate retention funds.
+18. **Checked rather than taken on trust before switching on.** The worry worth testing was
+    whether retention conjures a return the model had not already assumed. It does not: the
+    declared terminal ROE sits at or *below* the ROE the explicit period actually earns in
+    its final year on five of the six scenarios. The sixth is a finding in its own right —
+    see M14 below.
+19. **WBC re-pinned.** Orderly Convergence 35.7058 → **36.3661** (binds Y3, withholds the
+    most at 5,850m), Muddle Through 30.0304 → **30.0664**, AI Lag 29.6987 → **29.7217**,
+    Disorderly 22.5807 → **22.5918**. Fragmentation and Stagflation are unchanged to the
+    cent, because the rule never binds in them — which is the check that it is one-sided.
+    `session_start.py` now expects WBC 30.07. DNL and CSL did not move.
+20. **The audited workbook tie was NOT re-pinned, and that was deliberate.** The v4
+    workbook has no capital constraint in it, so once D-60 was on the engine stopped
+    reproducing it. Re-pinning that test onto the engine's own new answer would have
+    dissolved the only independent check on the §15 mechanics into a self-comparison. The
+    tie is now struck on the unconstrained path, and the constrained level is asserted
+    beside it — including that closing equity less dividends forgone returns exactly the
+    workbook's figure, so the size of the overlay is visible in the suite.
+21. **M13 still gates the level** the rule defends, whenever WBC's own target is corrected.
+
+### Opened: M14, and it is the largest thing found this sitting
+
+22. **The declared terminal ROE bears no tested relationship to the ROE the model earns.**
+    Measured as the final explicit year's NPAT over closing book equity, the declared rate
+    is conservative on five scenarios — between 0.03pp and 3.00pp *below* earned. But on
+    **Stagflation the declared 9.00% sits 4.01pp ABOVE the 4.99% the final year earns**.
+    That is a perpetual recovery assumption and nothing declares it as one.
+23. **It matters most exactly where it is worst.** Stagflation's terminal is **84.45% of
+    the equity claim**, the highest in the project. So the downside valuation is
+    five-sixths driven by a terminal that assumes ROE almost doubles from where the
+    explicit period leaves it. This is a D-50-shaped defect — a rate carried without a
+    declared basis — on the largest single quantity in the bank valuation.
+24. **Take it with D-42**, the terminal-return diagnostic, which is still PROPOSED and is
+    the same shape: print declared against earned, and require a stated reason where the
+    gap exceeds a band. Building a second diagnostic beside it would be the duplication
+    D-42 exists to prevent.
 
 ---
 
