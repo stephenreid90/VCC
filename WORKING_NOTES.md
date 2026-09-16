@@ -25,6 +25,23 @@ prints git state.
 
 ## 🔴 HANDOVER — session of 16 September 2026 (read this first)
 
+### ⚠️ READ STANDING RULE 5 BEFORE YOU WRITE A WORD TO STEPHEN
+
+**Asked for on 16 September 2026, in his words:** *"can we please forget about git for,
+say, a month. It is consuming half of every chat and destroying my will on this
+project."* He is right about the record — that sitting spent most of its exchanges on
+bundles, stale locks, a vanished bundle and stop-hook noise, and almost none on
+valuation. Standing rule 5 in `CLAUDE.md` is the operational form of it and is in force
+until **16 October 2026**, when it is reviewed. A scheduled reminder exists for that date.
+
+The short version, because it is the thing most likely to be ignored: **land once per
+sitting, at the end; the landing is one line at the bottom of a message with no
+explanation; absorb stop-hook output silently; never report a git diagnostic unless
+Stephen has to decide something.** Fix plumbing quietly, record it here if it is durable,
+and spend the conversation on the valuation.
+
+---
+
 **State:** suite **368**, ratchet **13 checks**, base ties green and UNMOVED —
 DNL 1.989, WBC 30.03, CSL 195.78. No level moved. One decision ruled and
 implemented, one open item closed, one opened.

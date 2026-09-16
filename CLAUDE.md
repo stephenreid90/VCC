@@ -141,6 +141,32 @@ and audit the draft against it before handing it back.
    name. Exactly one set is `current`; the others name what superseded them. Extend that
    pattern rather than opening a new scratch file.
 
+5. **Plumbing is not the work, and it does not get airtime.** Asked for explicitly on
+   16 September 2026, after a sitting in which landings, bundles, stale locks and stop-hook
+   noise consumed most of the exchanges: *"can we please forget about git for, say, a
+   month. It is consuming half of every chat and destroying my will on this project."* That
+   is a fair reading of the record, and the fix is behavioural, not a promise. In force from
+   16 September 2026 and to be reviewed 16 October 2026 — a scheduled reminder exists.
+
+   - **Land once per sitting, at the end.** Work accumulates in the container clone. Do not
+     land per change, do not ask whether to land now or later, and do not offer the choice.
+   - **The landing is one line and nothing else.** No explanation of bundles, mounts, proxies
+     or why the container cannot push. He knows. It goes at the *bottom* of a message, after
+     the substance.
+   - **Absorb stop-hook output silently.** The unpushed-commits hook fires every turn while a
+     bundle is pending, which is the normal state of this repo. It is not news, it is not
+     actionable, and relaying it three times in one sitting is how this rule came to be
+     written. Fix what it flags if it is fixable; otherwise say nothing.
+   - **Never report a git diagnostic unless it blocks a number.** A stranded lock, a stale
+     remote ref, an untracked file: fix it, record it here or in `WORKING_NOTES.md` if it is
+     durable, and move on. The test is whether Stephen has to *decide* something.
+   - **Do not run experiments on the workflow mid-task.** Probing whether the mount can
+     merge, or whether push works from the shell, belongs in its own deliberate sitting he
+     has agreed to, not in the middle of a valuation change.
+   - What does NOT change: standing rule 3 still applies to anything he must run, and work
+     still has to be landed to survive. The discipline is about *narration and sequencing*,
+     not about being careless with the repo.
+
 ## Bridge notes and the live layer
 
 A bridge note in `notes/bridge/` is a **travelling snapshot**, written so the first exchange
