@@ -1,0 +1,232 @@
+terminal_return_sets:
+  current:
+    name: current
+    basis: 'Terminal return on NEW capital, from the growth identity g = return x
+      reinvestment_rate, struck on production engine output. For the bank fork the
+      return is declared (terminal_roe) and the identity derives the retention rate
+      instead, so the declared rate is reported. Return on the WHOLE capital base
+      is not reported: FcfEngine carries no invested-capital roll-forward, so it cannot
+      be struck from engine output today.'
+    regenerated_by: scripts/size_terminal_returns.py
+    asserted_by: tests/dcf/test_terminal_return_sets.py
+    decisions:
+    - D-42 (PROPOSED)
+    - M14
+    - D-07 non-blocking precedent
+    rows:
+    - company: dnl
+      scenario: ai_productivity_lag
+      construction: fcff_roic
+      cost_of_capital_name: WACC
+      cost_of_capital: 0.088772
+      terminal_growth: 0.0225
+      reinvestment_rate: 0.199439
+      return_on_new_capital: 0.112816
+      excess_over_cost_of_capital: 0.024045
+      earned_final_explicit: null
+      step_from_earned: null
+      warning_count: 1
+    - company: dnl
+      scenario: disorderly_climate_crystallisation
+      construction: fcff_roic
+      cost_of_capital_name: WACC
+      cost_of_capital: 0.088772
+      terminal_growth: 0.0175
+      reinvestment_rate: 0.221063
+      return_on_new_capital: 0.079163
+      excess_over_cost_of_capital: -0.009609
+      earned_final_explicit: null
+      step_from_earned: null
+      warning_count: 0
+    - company: dnl
+      scenario: fragmentation
+      construction: fcff_roic
+      cost_of_capital_name: WACC
+      cost_of_capital: 0.088772
+      terminal_growth: 0.0225
+      reinvestment_rate: 0.257863
+      return_on_new_capital: 0.087256
+      excess_over_cost_of_capital: -0.001516
+      earned_final_explicit: null
+      step_from_earned: null
+      warning_count: 0
+    - company: dnl
+      scenario: muddle_through
+      construction: fcff_roic
+      cost_of_capital_name: WACC
+      cost_of_capital: 0.088772
+      terminal_growth: 0.025
+      reinvestment_rate: 0.224431
+      return_on_new_capital: 0.111393
+      excess_over_cost_of_capital: 0.022621
+      earned_final_explicit: null
+      step_from_earned: null
+      warning_count: 1
+    - company: dnl
+      scenario: orderly_convergence
+      construction: fcff_roic
+      cost_of_capital_name: WACC
+      cost_of_capital: 0.088772
+      terminal_growth: 0.0275
+      reinvestment_rate: 0.226756
+      return_on_new_capital: 0.121276
+      excess_over_cost_of_capital: 0.032504
+      earned_final_explicit: null
+      step_from_earned: null
+      warning_count: 1
+    - company: dnl
+      scenario: stagflation_persists
+      construction: fcff_roic
+      cost_of_capital_name: WACC
+      cost_of_capital: 0.088772
+      terminal_growth: 0.0225
+      reinvestment_rate: 0.463534
+      return_on_new_capital: 0.04854
+      excess_over_cost_of_capital: -0.040231
+      earned_final_explicit: null
+      step_from_earned: null
+      warning_count: 0
+    - company: wbc
+      scenario: ai_productivity_lag
+      construction: bank_roe
+      cost_of_capital_name: Ke
+      cost_of_capital: 0.0805
+      terminal_growth: 0.0325
+      reinvestment_rate: 0.309524
+      return_on_new_capital: 0.105
+      excess_over_cost_of_capital: 0.0245
+      earned_final_explicit: 0.109608
+      step_from_earned: -0.004608
+      warning_count: 1
+    - company: wbc
+      scenario: disorderly_climate_crystallisation
+      construction: bank_roe
+      cost_of_capital_name: Ke
+      cost_of_capital: 0.0805
+      terminal_growth: 0.0325
+      reinvestment_rate: 0.361111
+      return_on_new_capital: 0.09
+      excess_over_cost_of_capital: 0.0095
+      earned_final_explicit: 0.089869
+      step_from_earned: 0.000131
+      warning_count: 1
+    - company: wbc
+      scenario: fragmentation
+      construction: bank_roe
+      cost_of_capital_name: Ke
+      cost_of_capital: 0.0805
+      terminal_growth: 0.0325
+      reinvestment_rate: 0.325
+      return_on_new_capital: 0.1
+      excess_over_cost_of_capital: 0.0195
+      earned_final_explicit: 0.10118
+      step_from_earned: -0.00118
+      warning_count: 1
+    - company: wbc
+      scenario: muddle_through
+      construction: bank_roe
+      cost_of_capital_name: Ke
+      cost_of_capital: 0.0805
+      terminal_growth: 0.035
+      reinvestment_rate: 0.333333
+      return_on_new_capital: 0.105
+      excess_over_cost_of_capital: 0.0245
+      earned_final_explicit: 0.108422
+      step_from_earned: -0.003422
+      warning_count: 1
+    - company: wbc
+      scenario: orderly_convergence
+      construction: bank_roe
+      cost_of_capital_name: Ke
+      cost_of_capital: 0.0805
+      terminal_growth: 0.0375
+      reinvestment_rate: 0.340909
+      return_on_new_capital: 0.11
+      excess_over_cost_of_capital: 0.0295
+      earned_final_explicit: 0.13117
+      step_from_earned: -0.02117
+      warning_count: 1
+    - company: wbc
+      scenario: stagflation_persists
+      construction: bank_roe
+      cost_of_capital_name: Ke
+      cost_of_capital: 0.0805
+      terminal_growth: 0.0325
+      reinvestment_rate: 0.361111
+      return_on_new_capital: 0.09
+      excess_over_cost_of_capital: 0.0095
+      earned_final_explicit: 0.04995
+      step_from_earned: 0.04005
+      warning_count: 2
+    - company: csl
+      scenario: ai_productivity_lag
+      construction: segment_roic
+      cost_of_capital_name: Ke
+      cost_of_capital: 0.0875
+      terminal_growth: 0.0288
+      reinvestment_rate: 0.041139
+      return_on_new_capital: 0.700071
+      excess_over_cost_of_capital: 0.612571
+      earned_final_explicit: null
+      step_from_earned: null
+      warning_count: 1
+    - company: csl
+      scenario: disorderly_climate_crystallisation
+      construction: segment_roic
+      cost_of_capital_name: Ke
+      cost_of_capital: 0.0875
+      terminal_growth: 0.0275
+      reinvestment_rate: 0.042438
+      return_on_new_capital: 0.648
+      excess_over_cost_of_capital: 0.5605
+      earned_final_explicit: null
+      step_from_earned: null
+      warning_count: 1
+    - company: csl
+      scenario: fragmentation
+      construction: segment_roic
+      cost_of_capital_name: Ke
+      cost_of_capital: 0.0875
+      terminal_growth: 0.0275
+      reinvestment_rate: 0.042664
+      return_on_new_capital: 0.644571
+      excess_over_cost_of_capital: 0.557071
+      earned_final_explicit: null
+      step_from_earned: null
+      warning_count: 1
+    - company: csl
+      scenario: muddle_through
+      construction: segment_roic
+      cost_of_capital_name: Ke
+      cost_of_capital: 0.0875
+      terminal_growth: 0.03
+      reinvestment_rate: 0.04321
+      return_on_new_capital: 0.694286
+      excess_over_cost_of_capital: 0.606786
+      earned_final_explicit: null
+      step_from_earned: null
+      warning_count: 1
+    - company: csl
+      scenario: orderly_convergence
+      construction: segment_roic
+      cost_of_capital_name: Ke
+      cost_of_capital: 0.0875
+      terminal_growth: 0.0325
+      reinvestment_rate: 0.044582
+      return_on_new_capital: 0.729
+      excess_over_cost_of_capital: 0.6415
+      earned_final_explicit: null
+      step_from_earned: null
+      warning_count: 1
+    - company: csl
+      scenario: stagflation_persists
+      construction: segment_roic
+      cost_of_capital_name: Ke
+      cost_of_capital: 0.0875
+      terminal_growth: 0.03
+      reinvestment_rate: 0.048917
+      return_on_new_capital: 0.613286
+      excess_over_cost_of_capital: 0.525786
+      earned_final_explicit: null
+      step_from_earned: null
+      warning_count: 1

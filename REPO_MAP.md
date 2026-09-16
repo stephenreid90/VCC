@@ -3,10 +3,10 @@
 _Generated 2026-09-16 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `0b76810 D-60: the payout rule, and the reason it is not switched on` on `main`
+- HEAD: `9e96f67 D-60 switched on: the retention trade is real, and WBC moves` on `main`
 - Unpushed commits: **0**
 - Tracked files: 324
-- Untracked files: 0
+- Untracked files: 4
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -108,7 +108,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `build_plan.html` (14.9KB)
   - `engine_implementation_plan.md` (16.5KB)
   - `open_items.css` (3.5KB)
-  - `open_items.json` (33.2KB)
+  - `open_items.json` (35.4KB)
   - `open_questions.json` (1.2KB)
   - `scenarios_workshop.md` (13.5KB)
   - `scenarios_workshop_prep.md` (19.5KB)
@@ -125,6 +125,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `equity_bridge_and_valuation_mechanics.md` (70.6KB)
     - `horizon_and_terminal_convergence.md` (46.4KB)
     - `horizon_variant_sets.yaml` (9.5KB)
+    - `terminal_return_sets.yaml` (7.4KB)
     - `working_capital_treatment.md` (23.3KB)
   - **reference/**
     - **discount_rate_iers/**
@@ -166,6 +167,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `fcf_engine.py` (25.0KB)
       - `fcf_stub.py` (9.8KB)
       - `segment_engine.py` (10.0KB)
+      - `terminal_return.py` (10.1KB)
     - **market/**
       - `__init__.py` (606B)
       - `fmp_client.py` (5.7KB)
@@ -221,6 +223,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `test_per_year_derivations.py` (3.8KB)
     - `test_replica_ties_engine.py` (6.1KB)
     - `test_scenario_goldens.py` (9.4KB)
+    - `test_terminal_return_sets.py` (5.7KB)
     - `test_wbc_bank.py` (4.3KB)
     - **golden/**
       - `__init__.py` (0B)
@@ -323,4 +326,14 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `wbc_muddle_through_valuation_v4_formulas.xlsx` (12.5KB)
       - `wbc_scenarios_comparison_v1.xlsx` (11.6KB)
       - `wbc_scenarios_comparison_v2.xlsx` (11.6KB)
+
+## Untracked files
+
+Not in git. Either commit them or clear them — an untracked file is invisible
+to anyone who clones the repo, and is the most common way work gets lost.
+
+- `design/methodology/terminal_return_sets.yaml`
+- `scripts/size_terminal_returns.py`
+- `src/vcc_valuations/dcf/terminal_return.py`
+- `tests/dcf/test_terminal_return_sets.py`
 
