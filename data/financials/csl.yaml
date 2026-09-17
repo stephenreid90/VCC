@@ -54,6 +54,53 @@ balance_sheet:
   net_debt: 9100.0
   net_debt_rationale: >
     1H26 close (USD m); ~1.8x EBITDA. Deducted in the equity bridge at anchor.
+    Includes lease liabilities: the FY25 accounts define interest-bearing
+    liabilities and borrowings as "overdrafts, unsecured notes, and lease
+    liabilities" (Note 11), and 804 current + 10,694 non-current = 11,498 less
+    cash 2,157 gives the 9,341 the feed reports at FY25. That symmetry is what
+    puts right-of-use assets inside invested capital below.
+
+  # Transcribed 17 Sep 2026 so D-53 can strike CSL's terminal capex on a real
+  # capital base rather than on capex = D&A. Layer 1, observed, USD m, from the
+  # primary document; the curated file previously carried net debt only, which is
+  # the "a summary is not a source" trap CLAUDE.md records.
+  property_plant_and_equipment_net: 9797.0
+  property_plant_and_equipment_net_basis:
+    entity: CSL Limited consolidated
+    window: FY2025 (as at 30 June 2025)
+    level: statutory consolidated balance sheet
+    source: >
+      csl_fy25_statutory_accounts_2025-08-19.pdf — "Property, plant and
+      equipment" 8,333 (Note 9) plus "Right-of-use assets" 1,464 (Note 9).
+      Reported as two lines and combined here because the EODHD feed reports
+      the same 9,797 as one propertyPlantAndEquipmentNet, and because DNL's
+      invested capital is struck on that same combined basis. Right-of-use
+      assets are IN because lease liabilities are in net debt; dropping them
+      would count the liability and not the asset.
+
+  intangible_assets: 8120.0
+  intangible_assets_basis:
+    entity: CSL Limited consolidated
+    window: FY2025 (as at 30 June 2025)
+    level: statutory consolidated balance sheet, Note 8
+    source: >
+      csl_fy25_statutory_accounts_2025-08-19.pdf Note 8 — intellectual property
+      7,747 plus software 297 plus intangible work in progress 76. EXCLUDES
+      goodwill (D-44). The balance sheet reports a single "Intangible assets"
+      line of 16,185 which includes goodwill of 8,065; 8,065 + 8,120 = 16,185
+      ties exactly, which is also the check that the feed's intangibleAssets
+      field is ex-goodwill rather than inclusive.
+
+  goodwill: 8065.0
+  goodwill_basis:
+    entity: CSL Limited consolidated
+    window: FY2025 (as at 30 June 2025)
+    level: statutory consolidated balance sheet, Note 8
+    source: >
+      csl_fy25_statutory_accounts_2025-08-19.pdf Note 8, net carrying amount.
+      Carried for completeness and reconciliation only — D-44 excludes goodwill
+      from invested capital, on the ground that a business is not charged in
+      perpetuity for capital its acquirer deployed.
 
 # --- WORKING CAPITAL HISTORY (layer 1, USD millions) ---
 # Source: data/financials/csl_eodhd_fundamentals_2026-06-15.csv, EODHD annual

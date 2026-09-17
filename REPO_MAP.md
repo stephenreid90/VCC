@@ -3,10 +3,10 @@
 _Generated 2026-09-17 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `b3bb3ff The D-42 diagnostic, built before the ruling, and what it found in CSL` on `main`
+- HEAD: `e7538cc D-42 ruled: the defended exception becomes a field, and D-58 closes with it` on `main`
 - Unpushed commits: **0**
-- Tracked files: 328
-- Untracked files: 2
+- Tracked files: 330
+- Untracked files: 0
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -46,7 +46,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 | `data/companies/csl.yaml` | yes (33.4KB) | company position + layer-2 method (judgement) |
 | `data/companies/csl.md` | **NO** | company narrative |
 | `data/companies/csl_documents.yaml` | yes (8.3KB) | document register |
-| `data/financials/csl.yaml` | yes (7.6KB) | curated layer-1 financials (a SUMMARY — check for raw sources too) |
+| `data/financials/csl.yaml` | yes (10.1KB) | curated layer-1 financials (a SUMMARY — check for raw sources too) |
 | `data/financials/csl_*.csv` | **1 file(s)** | RAW feed export — multi-year statements live here, not in the yaml |
 | `data/financials/historical/csl/` | **7 document(s)** | primary source PDFs (annual reports, statutory accounts, presentations) |
 | `analyses/csl/` | yes | 6 workbook(s); subdirs: valuations |
@@ -65,7 +65,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **financials/**
     - `anz_eodhd_fundamentals_2026-06-15.csv` (167.3KB)
     - `cba_eodhd_fundamentals_2026-06-15.csv` (145.3KB)
-    - `csl.yaml` (7.6KB)
+    - `csl.yaml` (10.1KB)
     - `csl_eodhd_fundamentals_2026-06-15.csv` (157.7KB)
     - `dnl.yaml` (12.3KB)
     - `mqg_eodhd_fundamentals_2026-06-15.csv` (152.0KB)
@@ -328,12 +328,4 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `wbc_muddle_through_valuation_v4_formulas.xlsx` (12.5KB)
       - `wbc_scenarios_comparison_v1.xlsx` (11.6KB)
       - `wbc_scenarios_comparison_v2.xlsx` (11.6KB)
-
-## Untracked files
-
-Not in git. Either commit them or clear them — an untracked file is invisible
-to anyone who clones the repo, and is the most common way work gets lost.
-
-- `tests/dcf/test_terminal_defence.py`
-- `tests/terminal_defence_baseline.json`
 
