@@ -265,6 +265,16 @@ class FcfEngineInputs:
     # Required when terminal_reinvestment == "normalised", forbidden otherwise.
     working_capital_intensity: Optional[float] = None
     terminal_capex_pct_revenue: Optional[float] = None
+    # D-42 step 2. Invested capital at the end of the explicit period, as D-49's
+    # roll-forward leaves it. Carried for DISCLOSURE only -- no cash flow reads it,
+    # so it cannot move a level -- and it is the denominator of the terminal return
+    # on the whole capital base, which is the reading D-45 asks the moat work to
+    # declare. None where the capex rule rolls no base forward.
+    terminal_invested_capital: Optional[float] = None
+    # The rate the moat work declares for this scenario, read off the impact
+    # matrix's excess_return_defence. Disclosure only; the diagnostic reconciles
+    # it against what the capital build produces and warns where they disagree.
+    declared_terminal_return: Optional[float] = None
 
     # Discounting
     wacc: Union[WaccBuild, float] = 0.085
@@ -372,6 +382,10 @@ class FcfDcfResult:
     discount_to_market: Optional[float]
     warnings: List[str]
     notes: List[str]
+    # D-42 step 2, disclosure only. Defaulted so they sit after the required
+    # fields; no cash flow reads either, so neither can move a level.
+    terminal_invested_capital: Optional[float] = None
+    terminal_return_on_whole_capital: Optional[float] = None
 
 
 class FcfEngine:
@@ -469,11 +483,15 @@ class FcfEngine:
         # adjusts. The obligation itself is the ratchet in
         # tests/dcf/test_terminal_defence.py.
         from vcc_valuations.dcf.terminal_return import from_fcff_parts
-        warnings.extend(from_fcff_parts(
+        _tr = from_fcff_parts(
             company_id=inp.company_id, scenario_id=inp.scenario_id,
             final_nopat=nopat[-1], terminal_fcff=terminal_fcff,
             terminal_growth=g, cost_of_capital=wacc,
-        ).warnings)
+            terminal_invested_capital=inp.terminal_invested_capital,
+            declared_return=inp.declared_terminal_return,
+        )
+        warnings.extend(_tr.warnings)
+        terminal_return_on_whole_capital = _tr.return_on_whole_capital
 
         # ---- Equity bridge ----
         eb = inp.equity_bridge
@@ -552,6 +570,8 @@ class FcfEngine:
             value_per_share=value_per_share,
             value_per_share_reported=value_per_share_reported,
             terminal_share_of_ev=terminal_share,
+            terminal_invested_capital=inp.terminal_invested_capital,
+            terminal_return_on_whole_capital=terminal_return_on_whole_capital,
             market_reference_price=eb.market_reference_price,
             discount_to_market=discount_to_market,
             warnings=warnings,

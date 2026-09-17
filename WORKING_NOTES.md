@@ -42,11 +42,11 @@ and spend the conversation on the valuation.
 
 ---
 
-**State:** suite **409**, ratchet **13 checks** plus the new D-42 defence ratchet, base ties green. **WBC HAS MOVED:
+**State:** suite **412**, ratchet **13 checks** plus the D-42 defence ratchet, base ties green. **WBC HAS MOVED:
 30.03 → 30.07** under D-60, and all six WBC levels are re-pinned. DNL 1.989 and
 CSL 195.78 unmoved. Two decisions ruled and implemented (D-59, D-60), the D-42
-diagnostic built and sized, two open items closed (M12, item 8), three opened
-(M13, M14, M15).
+diagnostic built, sized and enforced, D-42 and D-58 ruled, two open items closed
+(M12, item 8), four opened (M13, M14, M15, M16).
 
 ### The device shell came back
 
@@ -255,9 +255,56 @@ diagnostic built and sized, two open items closed (M12, item 8), three opened
     sensitivity — and each fails as it should.
 35. **Nothing moved.** No level, no tie.
 
+### D-42 step 2 — the declared return now reconciles, and it does not
+
+40. **D-49's roll-forward already had the answer and threw it away.** It rolled invested
+    capital through the explicit period to strike the capex rate, then discarded the base.
+    It now returns it whole, so the return on the **whole capital base** can be reported
+    rather than only the return on new capital. That is the reading D-45 asks the moat work
+    to declare, and **D-42's obligation is now judged on it**.
+41. **Which reading governs is not cosmetic.** DNL Fragmentation sits **below** its WACC on
+    new capital (8.73%) and **above** it on the whole base (8.92%). So it owes a defence
+    under the better reading and did not under the weaker one. Pinned in a test.
+42. **A defence now states the rate it defends.** `declared_terminal_return`, with a
+    required basis — a rate without a stated derivation is the D-50 defect on the largest
+    number in the valuation.
+43. **And it does not reconcile. This is the finding.** DNL Orderly Convergence declares
+    **9.13%** and the capital build produces **12.46%** — a gap of **333bp**. The declared
+    figure is not invented: the matrix declares terminal_roic positive/small, and the
+    project's own translation table maps positive-small on a rate driver to +25bp over the
+    convergence target its rationale names. So the moat work's view is +25bp and the model
+    delivers +358bp.
+44. **That is M16, and it is a conflict between two ratified decisions.** D-45 and D-49 both
+    nominate reinvestment as the derived quantity — D-45 from the declared return, D-49 from
+    the balance sheet — and they agree only when the declared rate equals terminal earnings
+    over the rolled-forward base. Nothing compared them because **`terminal_roic` was a
+    driver with its own delta convention that no engine ever read**. The moat work's view was
+    recorded in the matrix and discarded.
+45. **Item 8 is done, and honestly.** Muddle Through and AI Lag now carry `terminal_roic`
+    drivers with full defence blocks — barrier-bearing moat sources, the Five Forces horizon,
+    the named threat, the sensitivity. Their direction and magnitude **record what the model
+    already does** (read through the project's own translation table) and say so, with
+    confidence `low`; `declared_terminal_return` is deliberately **absent**, because copying
+    the engine's own answer back at it would make the reconciliation vacuous. Supplying those
+    rates is Stephen's.
+46. **Worth noticing on the scale:** every DNL scenario that asserts an excess return is
+    asserting a **large** one by the project's own translation table (+254 to +358bp against
+    a +200bp "large" band) — and the only scenario anyone ever assessed called it **small**.
+47. **Nothing moved.** All of this is disclosure and declaration; no cash flow reads the
+    capital base or the declared rate.
+
 ### What needs Stephen next
 
-36. **M15 / D-53 for CSL.** Fourteen of the fifteen undeclared excess returns are baselined,
+36. **M16 — which governs the terminal return?** The rate the moat work declares (D-45), or
+    the capital base the explicit period leaves behind (D-49)? One of the two decisions needs
+    amending either way, and on the central case it stands behind roughly 70% of DNL's EV.
+    This is now the most consequential open question in the project.
+37. **Should D-42 carry a materiality floor?** Fragmentation triggers the obligation on a
+    **4bp** excess — the convergence target reached to within rounding, not a claim about a
+    moat. Baselined on that ground rather than softened by a session.
+38. **The two DNL declared rates** — Muddle Through and AI Lag — once M16 settles which
+    direction the declaration runs in.
+39. **M15 / D-53 for CSL.** Fourteen of the fifteen undeclared excess returns are baselined,
     and six of those disappear by arithmetic once D-53 lands rather than by anyone
     justifying them. Moves all six CSL levels; D-55 moves the same six, so they go together.
     This is now the largest thing outstanding.

@@ -55,7 +55,8 @@ def _one(company_id: str, archetype_id: str, scenario_id: str) -> tr.TerminalRet
                                company_id=company_id, scenario_id=scenario_id)
     ei = build_engine_inputs_from_data(inputs, scenario_id)
     return tr.from_fcff(FcfEngine().run(ei),
-                        company_id=company_id, scenario_id=scenario_id)
+                        company_id=company_id, scenario_id=scenario_id,
+                        declared_return=ei.declared_terminal_return)
 
 
 def collect() -> list[tr.TerminalReturn]:
@@ -81,14 +82,20 @@ def as_set(rows: list[tr.TerminalReturn]) -> dict:
             "current": {
                 "name": "current",
                 "basis": (
-                    "Terminal return on NEW capital, from the growth identity "
-                    "g = return x reinvestment_rate, struck on production engine "
-                    "output. For the bank fork the return is declared "
-                    "(terminal_roe) and the identity derives the retention rate "
-                    "instead, so the declared rate is reported. Return on the "
-                    "WHOLE capital base is not reported: FcfEngine carries no "
-                    "invested-capital roll-forward, so it cannot be struck from "
-                    "engine output today."
+                    "Two readings, struck on production engine output. Return on "
+                    "NEW capital comes from the growth identity "
+                    "g = return x reinvestment_rate. Return on the WHOLE capital "
+                    "base is terminal earnings over invested capital as D-49's "
+                    "roll-forward leaves it, and is reported wherever a company "
+                    "declares capex_rule grows_capital_base_at_g -- DNL today. "
+                    "The GOVERNING reading, which D-42's obligation is judged on, "
+                    "is whole-capital where it exists and new-capital otherwise: "
+                    "D-45's ROIC is a return on capital, not on new capital. The "
+                    "distinction is not cosmetic -- DNL Fragmentation sits below "
+                    "its WACC on one reading and above it on the other. For the "
+                    "bank fork the return is declared (terminal_roe) and the "
+                    "identity derives the retention rate instead, so the declared "
+                    "rate is reported."
                 ),
                 "regenerated_by": "scripts/size_terminal_returns.py",
                 "asserted_by": "tests/dcf/test_terminal_return_sets.py",
@@ -112,6 +119,23 @@ def as_set(rows: list[tr.TerminalReturn]) -> dict:
                                                   else round(r.earned_final_explicit, 6)),
                         "step_from_earned": (None if r.step_from_earned is None
                                              else round(r.step_from_earned, 6)),
+                        "return_on_whole_capital": (
+                            None if r.return_on_whole_capital is None
+                            else round(r.return_on_whole_capital, 6)),
+                        "terminal_invested_capital": (
+                            None if r.terminal_invested_capital is None
+                            else round(r.terminal_invested_capital, 3)),
+                        "governing_return": (None if r.governing_return is None
+                                             else round(r.governing_return, 6)),
+                        "excess_on_governing_return": (
+                            None if r.excess_on_governing_return is None
+                            else round(r.excess_on_governing_return, 6)),
+                        "declared_terminal_return": (
+                            None if r.declared_return is None
+                            else round(r.declared_return, 6)),
+                        "declared_versus_whole_capital": (
+                            None if r.declared_versus_whole_capital is None
+                            else round(r.declared_versus_whole_capital, 6)),
                         "warning_count": len(r.warnings),
                     }
                     for r in rows
@@ -122,13 +146,15 @@ def as_set(rows: list[tr.TerminalReturn]) -> dict:
 
 
 def print_table(rows: list[tr.TerminalReturn]) -> None:
-    print(f"{'company':5} {'scenario':34} {'ret_new':>8} {'cost':>7} "
-          f"{'excess':>8} {'earned':>8} {'step':>8}")
-    print("-" * 82)
+    print(f"{'company':5} {'scenario':34} {'on new':>8} {'on whole':>9} "
+          f"{'cost':>7} {'excess*':>8} {'declared':>9} {'gap':>8}")
+    print("-" * 92)
     for r in rows:
         print(f"{r.company_id:5} {r.scenario_id:34} {_pct(r.return_on_new_capital):>8} "
-              f"{_pct(r.cost_of_capital):>7} {_bp(r.excess_over_cost_of_capital):>8} "
-              f"{_pct(r.earned_final_explicit):>8} {_bp(r.step_from_earned):>8}")
+              f"{_pct(r.return_on_whole_capital):>9} {_pct(r.cost_of_capital):>7} "
+              f"{_bp(r.excess_on_governing_return):>8} {_pct(r.declared_return):>9} "
+              f"{_bp(r.declared_versus_whole_capital):>8}")
+    print("  * excess is on the governing reading: whole capital where it exists.")
 
     warned = [w for r in rows for w in r.warnings]
     print(f"\n{len(warned)} warning(s) across {len(rows)} valuations:")

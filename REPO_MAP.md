@@ -3,7 +3,7 @@
 _Generated 2026-09-17 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `e7538cc D-42 ruled: the defended exception becomes a field, and D-58 closes with it` on `main`
+- HEAD: `14e43a1 CSL's balance sheet was in the accounts all along, and D-53 needs it` on `main`
 - Unpushed commits: **0**
 - Tracked files: 330
 - Untracked files: 0
@@ -76,7 +76,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **impact_matrix/**
     - **by_industry/**
       - `australian_major_banks.yaml` (18.5KB)
-      - `industrial_explosives.yaml` (27.6KB)
+      - `industrial_explosives.yaml` (34.8KB)
       - `plasma_derived_therapies.yaml` (11.2KB)
       - `specialty_pharmaceuticals.yaml` (5.1KB)
       - `vaccines.yaml` (4.3KB)
@@ -108,7 +108,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `build_plan.html` (14.9KB)
   - `engine_implementation_plan.md` (16.5KB)
   - `open_items.css` (3.5KB)
-  - `open_items.json` (36.0KB)
+  - `open_items.json` (38.7KB)
   - `open_questions.json` (1.2KB)
   - `scenarios_workshop.md` (13.5KB)
   - `scenarios_workshop_prep.md` (19.5KB)
@@ -125,7 +125,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `equity_bridge_and_valuation_mechanics.md` (70.6KB)
     - `horizon_and_terminal_convergence.md` (46.4KB)
     - `horizon_variant_sets.yaml` (9.5KB)
-    - `terminal_return_sets.yaml` (7.4KB)
+    - `terminal_return_sets.yaml` (11.8KB)
     - `working_capital_treatment.md` (23.3KB)
   - **reference/**
     - **discount_rate_iers/**
@@ -155,7 +155,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **vcc_valuations/**
     - `__init__.py` (650B)
     - `derivation.py` (4.4KB)
-    - `translator.py` (57.4KB)
+    - `translator.py` (59.9KB)
     - **assumptions/**
       - `__init__.py` (775B)
       - `trade_working_capital.py` (5.6KB)
@@ -164,10 +164,10 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `__init__.py` (50B)
       - `bank_capital.py` (9.8KB)
       - `bank_engine.py` (18.1KB)
-      - `fcf_engine.py` (25.6KB)
+      - `fcf_engine.py` (26.9KB)
       - `fcf_stub.py` (9.8KB)
       - `segment_engine.py` (10.0KB)
-      - `terminal_return.py` (11.9KB)
+      - `terminal_return.py` (14.9KB)
     - **market/**
       - `__init__.py` (606B)
       - `fmp_client.py` (5.7KB)
@@ -180,7 +180,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `driver.py` (4.0KB)
       - `frameworks.py` (4.4KB)
       - `industry.py` (17.9KB)
-      - `linkage.py` (11.0KB)
+      - `linkage.py` (12.4KB)
       - `scenario.py` (4.8KB)
 
 ## Tests
@@ -191,7 +191,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `ssot_basis_baseline.json` (494B)
   - `ssot_intra_file_baseline.json` (593B)
   - `ssot_lint_baseline.json` (6.2KB)
-  - `terminal_defence_baseline.json` (2.8KB)
+  - `terminal_defence_baseline.json` (3.3KB)
   - `test_adjustments.py` (1.6KB)
   - `test_archetypes_validate.py` (10.2KB)
   - `test_bank_capital.py` (14.1KB)
@@ -224,8 +224,8 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `test_per_year_derivations.py` (3.8KB)
     - `test_replica_ties_engine.py` (6.1KB)
     - `test_scenario_goldens.py` (9.4KB)
-    - `test_terminal_defence.py` (6.6KB)
-    - `test_terminal_return_sets.py` (5.7KB)
+    - `test_terminal_defence.py` (7.0KB)
+    - `test_terminal_return_sets.py` (8.0KB)
     - `test_wbc_bank.py` (4.3KB)
     - **golden/**
       - `__init__.py` (0B)

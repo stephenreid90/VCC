@@ -144,6 +144,33 @@ best evidence that D-42 is worth ratifying. The three DNL scenarios above the li
 six WBC scenarios, owe the §10.6-compliant defended exception D-42 would require; that
 obligation is not in force until D-42 is ruled.
 
+**D-42 step 2, recorded 17 September 2026 — and it found a conflict between two ratified
+decisions.** The obligation ruled on 17 September was implemented, and then extended on
+Stephen's instruction to reconcile the declared terminal return against what the capital
+build produces. Three things came out of it.
+
+First, D-49's roll-forward already computed invested capital at the end of the explicit
+period and discarded it after striking the capex rate. It is now returned whole, so the
+return on the WHOLE capital base can be reported rather than only the return on new
+capital. That is the reading D-45 asks the moat work to declare, and the better one where
+it exists: **D-42's obligation is now judged on it**, which is not cosmetic — DNL
+Fragmentation sits below its WACC on new capital and above it on the whole base.
+
+Second, `ExcessReturnDefence` gained `declared_terminal_return` with a required basis, so a
+defence states the rate it is defending. DNL Orderly Convergence declares **9.13%**,
+derived from its own declared movement rather than chosen afresh: the matrix says
+terminal_roic is positive and small, and the project's translation table maps positive-small
+on a rate driver to +25bp over the cost-of-capital convergence target its rationale names.
+The capital build produces **12.46%**. The gap is **333bp** and the diagnostic warns on it.
+
+Third, that gap is **M16**, and it is a conflict between D-45 and D-49 rather than an error
+in either implementation. Both nominate reinvestment as the derived quantity — D-45 derives
+it from the declared return, D-49 from the balance sheet — and they agree only when the
+declared return equals terminal earnings over the rolled-forward base. Nothing compared them
+because `terminal_roic` was a driver with its own delta convention that **no engine read**:
+the moat work's view was recorded in the matrix and thrown away. Which of the two governs is
+Stephen's ruling, and on the central case it stands behind roughly 70% of DNL's EV.
+
 **Still PROPOSED, not ratified** (all in `design/methodology/horizon_and_terminal_convergence.md`):
 D-35 horizon rule, D-36 growth fade, D-37 archetype ten-year macro paths, and D-42
 terminal-return diagnostic. D-43 and D-43a were ratified 14 September 2026 and have

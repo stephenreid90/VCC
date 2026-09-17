@@ -783,6 +783,26 @@ def invested_capital_opening_from_data(inputs: dict, wc_intensity: float,
     return b.build("IC3")
 
 
+@dataclass(frozen=True)
+class TerminalCapitalBase:
+    """What D-49's roll-forward produces, rather than only the rate it needed.
+
+    The construction already rolled invested capital through the explicit period
+    to strike the terminal capex rate, and then discarded the base. That base is
+    the denominator of the terminal return on the WHOLE capital base, which is
+    the reading D-45 asks the moat work to declare -- so throwing it away is why
+    a declared terminal ROIC could never be reconciled against anything and the
+    framework's own `terminal_roic` driver was read by nothing. Returned whole
+    (D-42 step 2, 17 Sep 2026); nothing here is stored (D-16).
+    """
+
+    capex_pct_revenue: float
+    invested_capital_final: float
+    fixed_capital_final: float
+    revenue_final: float
+    invested_capital_opening: float
+
+
 def _terminal_capex_growing_capital_base(inputs, company_raw, nb, overlays,
                                          wc_intensity, base_revenue, stub,
                                          horizon, revenue_growth,
@@ -817,7 +837,33 @@ def _terminal_capex_growing_capital_base(inputs, company_raw, nb, overlays,
         capital += rev * cpx - rev * da_pct + w
     revenue_final = revenue[-1]
     fixed_final = capital - wc_intensity * revenue_final
-    return da_pct + g * fixed_final / revenue_final
+    return TerminalCapitalBase(
+        capex_pct_revenue=da_pct + g * fixed_final / revenue_final,
+        invested_capital_final=capital,
+        fixed_capital_final=fixed_final,
+        revenue_final=revenue_final,
+        invested_capital_opening=ic.result,
+    )
+
+
+def declared_terminal_return_from_matrix(inputs: dict, scenario_id: str):
+    """The terminal return the moat work declares for this scenario, or None.
+
+    Read from the impact matrix's ``excess_return_defence`` (D-42). Returns None
+    where no defence is declared or where the defence declares no rate, which is
+    the common case today: of eighteen valuations one carried a defence at all.
+    """
+    matrix = inputs.get("matrix")
+    if matrix is None:
+        return None
+    for entry in getattr(matrix, "matrix", []) or []:
+        if entry.scenario != scenario_id:
+            continue
+        for movement in entry.drivers.values():
+            defence = getattr(movement, "excess_return_defence", None)
+            if defence is not None and defence.declared_terminal_return is not None:
+                return defence.declared_terminal_return
+    return None
 
 
 def build_engine_inputs_from_data(inputs: dict, scenario_id: str):
@@ -896,6 +942,11 @@ def build_engine_inputs_from_data(inputs: dict, scenario_id: str):
             "judgement, not an engine default (working_capital_treatment.md section 1)."
         )
     mode = tr["mode"]
+    # Only the D-49 rule rolls a capital base forward, so only it can report one.
+    # None is the honest answer for the other rules rather than a guess: without a
+    # base there is no denominator for the return on the WHOLE capital base, and
+    # the diagnostic says so rather than substituting the return on new capital.
+    terminal_invested_capital = None
     if mode == "normalised":
         rule = tr["capex_rule"]
         if rule == "equals_da":
@@ -903,10 +954,12 @@ def build_engine_inputs_from_data(inputs: dict, scenario_id: str):
         elif rule == "final_explicit_year":
             terminal_capex_pct = overlays["capex_pct"][-1]
         elif rule == "grows_capital_base_at_g":
-            terminal_capex_pct = _terminal_capex_growing_capital_base(
+            _tcb = _terminal_capex_growing_capital_base(
                 inputs, company_raw, nb, overlays, wc_intensity, base_revenue,
                 stub, horizon, revenue_growth, delta_wc_stub, delta_wc,
             )
+            terminal_capex_pct = _tcb.capex_pct_revenue
+            terminal_invested_capital = _tcb.invested_capital_final
         else:
             raise ValueError(f"{company.id}: unknown terminal capex_rule {rule!r}.")
         terminal_wc_intensity = wc_intensity
@@ -975,6 +1028,8 @@ def build_engine_inputs_from_data(inputs: dict, scenario_id: str):
         delta_wc_stub=delta_wc_stub,
         terminal_reinvestment=mode,
         terminal_capex_pct_revenue=terminal_capex_pct,
+        terminal_invested_capital=terminal_invested_capital,
+        declared_terminal_return=declared_terminal_return_from_matrix(inputs, scenario_id),
         working_capital_intensity=terminal_wc_intensity,
         wacc=wacc,
         terminal_growth=overlays["terminal_growth"],

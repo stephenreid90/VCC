@@ -1,12 +1,16 @@
 terminal_return_sets:
   current:
     name: current
-    basis: 'Terminal return on NEW capital, from the growth identity g = return x
-      reinvestment_rate, struck on production engine output. For the bank fork the
-      return is declared (terminal_roe) and the identity derives the retention rate
-      instead, so the declared rate is reported. Return on the WHOLE capital base
-      is not reported: FcfEngine carries no invested-capital roll-forward, so it cannot
-      be struck from engine output today.'
+    basis: 'Two readings, struck on production engine output. Return on NEW capital
+      comes from the growth identity g = return x reinvestment_rate. Return on the
+      WHOLE capital base is terminal earnings over invested capital as D-49''s roll-forward
+      leaves it, and is reported wherever a company declares capex_rule grows_capital_base_at_g
+      -- DNL today. The GOVERNING reading, which D-42''s obligation is judged on,
+      is whole-capital where it exists and new-capital otherwise: D-45''s ROIC is
+      a return on capital, not on new capital. The distinction is not cosmetic --
+      DNL Fragmentation sits below its WACC on one reading and above it on the other.
+      For the bank fork the return is declared (terminal_roe) and the identity derives
+      the retention rate instead, so the declared rate is reported.'
     regenerated_by: scripts/size_terminal_returns.py
     asserted_by: tests/dcf/test_terminal_return_sets.py
     decisions:
@@ -25,6 +29,12 @@ terminal_return_sets:
       excess_over_cost_of_capital: 0.024045
       earned_final_explicit: null
       step_from_earned: null
+      return_on_whole_capital: 0.115355
+      terminal_invested_capital: 4025.331
+      governing_return: 0.115355
+      excess_on_governing_return: 0.026583
+      declared_terminal_return: null
+      declared_versus_whole_capital: null
       warning_count: 1
     - company: dnl
       scenario: disorderly_climate_crystallisation
@@ -37,6 +47,12 @@ terminal_return_sets:
       excess_over_cost_of_capital: -0.009609
       earned_final_explicit: null
       step_from_earned: null
+      return_on_whole_capital: 0.080548
+      terminal_invested_capital: 4735.29
+      governing_return: 0.080548
+      excess_on_governing_return: -0.008223
+      declared_terminal_return: null
+      declared_versus_whole_capital: null
       warning_count: 0
     - company: dnl
       scenario: fragmentation
@@ -49,6 +65,12 @@ terminal_return_sets:
       excess_over_cost_of_capital: -0.001516
       earned_final_explicit: null
       step_from_earned: null
+      return_on_whole_capital: 0.089219
+      terminal_invested_capital: 4051.904
+      governing_return: 0.089219
+      excess_on_governing_return: 0.000447
+      declared_terminal_return: null
+      declared_versus_whole_capital: null
       warning_count: 0
     - company: dnl
       scenario: muddle_through
@@ -61,6 +83,12 @@ terminal_return_sets:
       excess_over_cost_of_capital: 0.022621
       earned_final_explicit: null
       step_from_earned: null
+      return_on_whole_capital: 0.114178
+      terminal_invested_capital: 4046.618
+      governing_return: 0.114178
+      excess_on_governing_return: 0.025406
+      declared_terminal_return: null
+      declared_versus_whole_capital: null
       warning_count: 1
     - company: dnl
       scenario: orderly_convergence
@@ -73,7 +101,13 @@ terminal_return_sets:
       excess_over_cost_of_capital: 0.032504
       earned_final_explicit: null
       step_from_earned: null
-      warning_count: 1
+      return_on_whole_capital: 0.124611
+      terminal_invested_capital: 4093.136
+      governing_return: 0.124611
+      excess_on_governing_return: 0.035839
+      declared_terminal_return: 0.0913
+      declared_versus_whole_capital: -0.033311
+      warning_count: 2
     - company: dnl
       scenario: stagflation_persists
       construction: fcff_roic
@@ -85,6 +119,12 @@ terminal_return_sets:
       excess_over_cost_of_capital: -0.040231
       earned_final_explicit: null
       step_from_earned: null
+      return_on_whole_capital: 0.049632
+      terminal_invested_capital: 4023.327
+      governing_return: 0.049632
+      excess_on_governing_return: -0.039139
+      declared_terminal_return: null
+      declared_versus_whole_capital: null
       warning_count: 0
     - company: wbc
       scenario: ai_productivity_lag
@@ -97,6 +137,12 @@ terminal_return_sets:
       excess_over_cost_of_capital: 0.0245
       earned_final_explicit: 0.109608
       step_from_earned: -0.004608
+      return_on_whole_capital: null
+      terminal_invested_capital: null
+      governing_return: 0.105
+      excess_on_governing_return: 0.0245
+      declared_terminal_return: null
+      declared_versus_whole_capital: null
       warning_count: 1
     - company: wbc
       scenario: disorderly_climate_crystallisation
@@ -109,6 +155,12 @@ terminal_return_sets:
       excess_over_cost_of_capital: 0.0095
       earned_final_explicit: 0.089869
       step_from_earned: 0.000131
+      return_on_whole_capital: null
+      terminal_invested_capital: null
+      governing_return: 0.09
+      excess_on_governing_return: 0.0095
+      declared_terminal_return: null
+      declared_versus_whole_capital: null
       warning_count: 1
     - company: wbc
       scenario: fragmentation
@@ -121,6 +173,12 @@ terminal_return_sets:
       excess_over_cost_of_capital: 0.0195
       earned_final_explicit: 0.10118
       step_from_earned: -0.00118
+      return_on_whole_capital: null
+      terminal_invested_capital: null
+      governing_return: 0.1
+      excess_on_governing_return: 0.0195
+      declared_terminal_return: null
+      declared_versus_whole_capital: null
       warning_count: 1
     - company: wbc
       scenario: muddle_through
@@ -133,6 +191,12 @@ terminal_return_sets:
       excess_over_cost_of_capital: 0.0245
       earned_final_explicit: 0.108422
       step_from_earned: -0.003422
+      return_on_whole_capital: null
+      terminal_invested_capital: null
+      governing_return: 0.105
+      excess_on_governing_return: 0.0245
+      declared_terminal_return: null
+      declared_versus_whole_capital: null
       warning_count: 1
     - company: wbc
       scenario: orderly_convergence
@@ -145,6 +209,12 @@ terminal_return_sets:
       excess_over_cost_of_capital: 0.0295
       earned_final_explicit: 0.13117
       step_from_earned: -0.02117
+      return_on_whole_capital: null
+      terminal_invested_capital: null
+      governing_return: 0.11
+      excess_on_governing_return: 0.0295
+      declared_terminal_return: null
+      declared_versus_whole_capital: null
       warning_count: 1
     - company: wbc
       scenario: stagflation_persists
@@ -157,6 +227,12 @@ terminal_return_sets:
       excess_over_cost_of_capital: 0.0095
       earned_final_explicit: 0.04995
       step_from_earned: 0.04005
+      return_on_whole_capital: null
+      terminal_invested_capital: null
+      governing_return: 0.09
+      excess_on_governing_return: 0.0095
+      declared_terminal_return: null
+      declared_versus_whole_capital: null
       warning_count: 2
     - company: csl
       scenario: ai_productivity_lag
@@ -169,6 +245,12 @@ terminal_return_sets:
       excess_over_cost_of_capital: 0.612571
       earned_final_explicit: null
       step_from_earned: null
+      return_on_whole_capital: null
+      terminal_invested_capital: null
+      governing_return: 0.700071
+      excess_on_governing_return: 0.612571
+      declared_terminal_return: null
+      declared_versus_whole_capital: null
       warning_count: 1
     - company: csl
       scenario: disorderly_climate_crystallisation
@@ -181,6 +263,12 @@ terminal_return_sets:
       excess_over_cost_of_capital: 0.5605
       earned_final_explicit: null
       step_from_earned: null
+      return_on_whole_capital: null
+      terminal_invested_capital: null
+      governing_return: 0.648
+      excess_on_governing_return: 0.5605
+      declared_terminal_return: null
+      declared_versus_whole_capital: null
       warning_count: 1
     - company: csl
       scenario: fragmentation
@@ -193,6 +281,12 @@ terminal_return_sets:
       excess_over_cost_of_capital: 0.557071
       earned_final_explicit: null
       step_from_earned: null
+      return_on_whole_capital: null
+      terminal_invested_capital: null
+      governing_return: 0.644571
+      excess_on_governing_return: 0.557071
+      declared_terminal_return: null
+      declared_versus_whole_capital: null
       warning_count: 1
     - company: csl
       scenario: muddle_through
@@ -205,6 +299,12 @@ terminal_return_sets:
       excess_over_cost_of_capital: 0.606786
       earned_final_explicit: null
       step_from_earned: null
+      return_on_whole_capital: null
+      terminal_invested_capital: null
+      governing_return: 0.694286
+      excess_on_governing_return: 0.606786
+      declared_terminal_return: null
+      declared_versus_whole_capital: null
       warning_count: 1
     - company: csl
       scenario: orderly_convergence
@@ -217,6 +317,12 @@ terminal_return_sets:
       excess_over_cost_of_capital: 0.6415
       earned_final_explicit: null
       step_from_earned: null
+      return_on_whole_capital: null
+      terminal_invested_capital: null
+      governing_return: 0.729
+      excess_on_governing_return: 0.6415
+      declared_terminal_return: null
+      declared_versus_whole_capital: null
       warning_count: 1
     - company: csl
       scenario: stagflation_persists
@@ -229,4 +335,10 @@ terminal_return_sets:
       excess_over_cost_of_capital: 0.525786
       earned_final_explicit: null
       step_from_earned: null
+      return_on_whole_capital: null
+      terminal_invested_capital: null
+      governing_return: 0.613286
+      excess_on_governing_return: 0.525786
+      declared_terminal_return: null
+      declared_versus_whole_capital: null
       warning_count: 1

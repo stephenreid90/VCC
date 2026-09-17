@@ -68,6 +68,12 @@ class TerminalReturn:
     reinvestment_rate: Optional[float]
     return_on_new_capital: Optional[float]
     earned_final_explicit: Optional[float] = None
+    # D-42 step 2. Terminal earnings over invested capital at the end of the
+    # explicit period -- the return on the WHOLE base, not on new capital. This
+    # is the reading D-45 asks the moat work to declare, and the one the two
+    # decisions have to agree on.
+    terminal_invested_capital: Optional[float] = None
+    declared_return: Optional[float] = None
     warnings: List[str] = field(default_factory=list)
 
     @property
@@ -75,6 +81,39 @@ class TerminalReturn:
         if self.return_on_new_capital is None:
             return None
         return self.return_on_new_capital - self.cost_of_capital
+
+    @property
+    def return_on_whole_capital(self) -> Optional[float]:
+        """Terminal earnings over the rolled-forward invested capital base."""
+        if not self.terminal_invested_capital:
+            return None
+        return self.terminal_earnings / self.terminal_invested_capital
+
+    @property
+    def governing_return(self) -> Optional[float]:
+        """The reading the obligation is judged on: whole capital where it exists.
+
+        D-45's ROIC is a return on capital, not a return on new capital, so where
+        a rolled-forward base exists that is the reading that governs. It is not
+        a rounding difference in which one is used: DNL Fragmentation sits BELOW
+        its WACC on new capital and ABOVE it on the whole base, so the two
+        readings disagree about whether a defence is owed at all.
+        """
+        return self.return_on_whole_capital or self.return_on_new_capital
+
+    @property
+    def excess_on_governing_return(self) -> Optional[float]:
+        if self.governing_return is None:
+            return None
+        return self.governing_return - self.cost_of_capital
+
+    @property
+    def declared_versus_whole_capital(self) -> Optional[float]:
+        """Declared terminal return less the one the capital build produces."""
+        whole = self.return_on_whole_capital
+        if whole is None or self.declared_return is None:
+            return None
+        return self.declared_return - whole
 
     @property
     def step_from_earned(self) -> Optional[float]:
@@ -103,6 +142,14 @@ def _reinvestment_and_return(terminal_earnings: float, terminal_free_cash: float
     return rate, g / rate
 
 
+def _pct(x) -> str:
+    return "-" if x is None else f"{x:.2%}"  # ssot-allow: display format
+
+
+def _bp(x) -> str:
+    return "-" if x is None else f"{x * 10000:.0f}bp"  # ssot-allow: display format
+
+
 def _warnings_for(t: TerminalReturn) -> List[str]:
     out: List[str] = []
 
@@ -124,6 +171,18 @@ def _warnings_for(t: TerminalReturn) -> List[str]:
             f"claiming reinvestment above the cost of capital in perpetuity, which "
             f"§11.4.2 check 2 requires be defended under §10.6: name the moat "
             f"source, the decay horizon, the threat and the sensitivity (D-42)."
+        )
+
+    gap = t.declared_versus_whole_capital
+    if gap is not None and abs(gap) > _MATERIAL_STEP:
+        out.append(
+            f"{t.company_id}/{t.scenario_id}: the defence declares a terminal "
+            f"return of {_pct(t.declared_return)} and the capital build produces "
+            f"{_pct(t.return_on_whole_capital)} on the whole base -- a gap of "
+            f"{_bp(abs(gap))}. D-45 and D-49 both derive reinvestment, one from "
+            f"the declared return and one from the balance sheet, and they only "
+            f"agree when these two do. One of them is wrong here, and which is a "
+            f"judgement rather than a rounding."
         )
 
     step = t.step_from_earned
@@ -167,7 +226,9 @@ def from_bank_parts(*, company_id: str, scenario_id: str, closing_book_equity: f
 
 def from_fcff_parts(*, company_id: str, scenario_id: str, final_nopat: float,
                     terminal_fcff: float, terminal_growth: float,
-                    cost_of_capital: float) -> TerminalReturn:
+                    cost_of_capital: float,
+                    terminal_invested_capital: Optional[float] = None,
+                    declared_return: Optional[float] = None) -> TerminalReturn:
     """Single-segment FCFF fork from primitives. See :func:`from_fcff`."""
     terminal_nopat = final_nopat * (1.0 + terminal_growth)
     rate, ret = _reinvestment_and_return(terminal_nopat, terminal_fcff, terminal_growth)
@@ -176,6 +237,8 @@ def from_fcff_parts(*, company_id: str, scenario_id: str, final_nopat: float,
         cost_of_capital=cost_of_capital, cost_of_capital_name="WACC",
         terminal_growth=terminal_growth, terminal_earnings=terminal_nopat,
         reinvestment_rate=rate, return_on_new_capital=ret,
+        terminal_invested_capital=terminal_invested_capital,
+        declared_return=declared_return,
     )
     t.warnings = _warnings_for(t)
     return t
@@ -215,7 +278,8 @@ def from_bank(result, inputs) -> TerminalReturn:
     )
 
 
-def from_fcff(result, *, company_id: str, scenario_id: str) -> TerminalReturn:
+def from_fcff(result, *, company_id: str, scenario_id: str,
+              declared_return: Optional[float] = None) -> TerminalReturn:
     """Single-segment FCFF fork: the return the terminal cash flows assert.
 
     Terminal NOPAT is the final explicit year's NOPAT grown at g, which is exactly
@@ -226,6 +290,8 @@ def from_fcff(result, *, company_id: str, scenario_id: str) -> TerminalReturn:
         company_id=company_id, scenario_id=scenario_id,
         final_nopat=result.nopat[-1], terminal_fcff=result.terminal_fcff,
         terminal_growth=result.terminal_growth, cost_of_capital=result.wacc,
+        terminal_invested_capital=result.terminal_invested_capital,
+        declared_return=declared_return,
     )
 
 

@@ -63,10 +63,17 @@ def _declared_defences() -> dict:
 
 @pytest.fixture(scope="module")
 def asserting_excess():
-    """The valuations that claim a terminal return above their cost of capital."""
+    """The valuations that claim a terminal return above their cost of capital.
+
+    Judged on the GOVERNING reading — the return on the whole capital base where
+    D-49's roll-forward provides one, the return on new capital otherwise. That
+    choice changes the answer: DNL Fragmentation is below its WACC on new capital
+    and above it on the whole base, so it owes a defence under the better reading
+    and did not under the weaker one.
+    """
     return [r for r in collect()
-            if r.excess_over_cost_of_capital is not None
-            and r.excess_over_cost_of_capital > 0]
+            if r.excess_on_governing_return is not None
+            and r.excess_on_governing_return > 0]
 
 
 def test_every_excess_return_is_declared_or_baselined(asserting_excess):

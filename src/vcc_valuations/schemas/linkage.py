@@ -113,6 +113,28 @@ class ExcessReturnDefence(BaseModel):
     named_threat: str
     sensitivity: str
     finite_horizon_sensitivity: Optional[str] = None
+    # D-42 step 2, and the reason the whole exercise exists. D-45 says the
+    # terminal return is PINNED by the moat work and reinvestment is derived from
+    # it; D-49 derives reinvestment from the balance sheet, which leaves the
+    # return to emerge. The two are only consistent when the declared rate equals
+    # terminal earnings over the rolled-forward capital base -- and nothing
+    # compared them, because `terminal_roic` was a driver no engine read. Declare
+    # the rate here and the diagnostic reconciles it. Optional, because a scenario
+    # that has not yet formed the view should say so by absence rather than by a
+    # number copied off the engine, which would make the check vacuous.
+    declared_terminal_return: Optional[float] = None
+    declared_terminal_return_basis: Optional[str] = None
+
+    @model_validator(mode="after")
+    def _a_declared_rate_carries_its_basis(self) -> "ExcessReturnDefence":
+        if self.declared_terminal_return is not None and not (
+                self.declared_terminal_return_basis or "").strip():
+            raise ValueError(
+                "declared_terminal_return needs declared_terminal_return_basis: a "
+                "terminal return without a stated derivation is the defect D-50 "
+                "was written about, on the largest number in the valuation."
+            )
+        return self
 
     @model_validator(mode="after")
     def _indefinite_horizon_declares_its_finite_sensitivity(self) -> "ExcessReturnDefence":

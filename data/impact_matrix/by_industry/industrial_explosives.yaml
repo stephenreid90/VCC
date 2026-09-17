@@ -81,6 +81,63 @@ matrix:
           created_by: tara@reidadvisory.net
           created_at: 2026-05-17T10:00:00Z
 
+      terminal_roic:
+        # Created 17 Sep 2026 under D-42. This scenario had NO terminal_roic
+        # driver, so the excess return it asserts was emergent from the capex
+        # rule, the working-capital intensity and terminal growth, and had never
+        # been assessed by anyone. Direction and magnitude below RECORD what the
+        # model already does, read through the project's own translation table
+        # (positive-large maps to +200bp on a rate driver, and the measured excess
+        # is 254bp over WACC on the whole capital base) -- they are not
+        # yet a view from the moat work, which is why confidence is low and why
+        # declared_terminal_return is deliberately ABSENT. Supplying that rate is
+        # Stephen's call; leaving it out keeps the reconciliation live rather than
+        # making it vacuous by copying the engine's own answer back at it.
+        direction: positive
+        magnitude: large
+        confidence: low
+        rationale: >
+          The central case, and the headline Denali valuation.
+          Recorded rather than chosen: the terminal return this scenario
+          asserts sits 254bp above the WACC on the whole capital
+          base, which on the project's translation scale is a large positive
+          movement, not the small one the only previously-assessed scenario
+          declared. The defended exception below carries the parts that do not
+          depend on a scenario view -- the barrier-bearing moat sources, the
+          decay horizon from the Five Forces reading, the named threat and the
+          sensitivity. The rate itself awaits the moat work.
+        not_applicable: false
+        evidence_refs: []
+        excess_return_defence:
+          # Scale and switching cost only. The resource leg is a RENT under
+          # D-43a -- gas contracts, dated in the margin path under D-40 -- and a
+          # rent expiring inside the explicit period cannot hold up a
+          # ten-to-fifteen year horizon.
+          moat_sources:
+            - scale
+            - switching_cost
+          decay_horizon:
+            years_low: 10
+            years_high: 15
+            basis: >
+              Five Forces ratings for industrial explosives -- threat of new
+              entrants low, rivalry high, substitutes low -- read per section
+              12: entrant threat sets the barrier height and rivalry the speed
+              the excess is competed away. Those three ratings are
+              archetype-level and do not move by scenario, which is why the
+              band is the same as the Orderly Convergence block. A scenario
+              that shortens the horizon should say so and why, as the
+              Disorderly Climate block does.
+          named_threat: >
+            Orica competitive response. The scale and switching-cost legs both
+            rest on installed on-site capacity and customer integration, and
+            Orica is the one competitor able to match both.
+          sensitivity: >
+            Halving the decay horizon to five to seven years is the test the
+            Disorderly Climate block uses and section 12 puts that at a 15-20%
+            terminal-value impact. Sized properly once the declared rate
+            exists, since the sensitivity is a sensitivity OF that rate.
+
   # ----------------------------------------------------------------------
   - scenario: orderly_convergence
     scenario_version: "2026-Q2-v1"
@@ -214,6 +271,17 @@ matrix:
             Halving the fade-period extension still preserves positive
             scenario value, so the excess return is not load-bearing for the
             sign of this scenario's result.
+          declared_terminal_return: 0.0913
+          declared_terminal_return_basis: >
+            Derived from this block's OWN declared movement rather than chosen
+            afresh: terminal_roic is direction positive, magnitude small, and
+            the project's translation table (RATE_DELTA_BPS in translator.py)
+            maps positive-small on a rate driver to +25bp. The baseline it is a
+            delta from is the cost-of-capital convergence target named in the
+            rationale above, i.e. the WACC of 8.877%, giving 9.13%. Recorded so
+            the declared view can be reconciled against what the capital build
+            actually produces. It does not reconcile — see the handover — and
+            that mismatch is the finding, not a defect in this field.
         governance:
           created_by: tara@reidadvisory.net
           created_at: 2026-05-17T10:00:00Z
@@ -758,3 +826,61 @@ matrix:
         governance:
           created_by: tara@reidadvisory.net
           created_at: 2026-05-17T10:00:00Z
+
+      terminal_roic:
+        # Created 17 Sep 2026 under D-42. This scenario had NO terminal_roic
+        # driver, so the excess return it asserts was emergent from the capex
+        # rule, the working-capital intensity and terminal growth, and had never
+        # been assessed by anyone. Direction and magnitude below RECORD what the
+        # model already does, read through the project's own translation table
+        # (positive-large maps to +200bp on a rate driver, and the measured excess
+        # is 266bp over WACC on the whole capital base) -- they are not
+        # yet a view from the moat work, which is why confidence is low and why
+        # declared_terminal_return is deliberately ABSENT. Supplying that rate is
+        # Stephen's call; leaving it out keeps the reconciliation live rather than
+        # making it vacuous by copying the engine's own answer back at it.
+        direction: positive
+        magnitude: large
+        confidence: low
+        rationale: >
+          Productivity surprise arriving late rather than not at all.
+          Recorded rather than chosen: the terminal return this scenario
+          asserts sits 266bp above the WACC on the whole capital
+          base, which on the project's translation scale is a large positive
+          movement, not the small one the only previously-assessed scenario
+          declared. The defended exception below carries the parts that do not
+          depend on a scenario view -- the barrier-bearing moat sources, the
+          decay horizon from the Five Forces reading, the named threat and the
+          sensitivity. The rate itself awaits the moat work.
+        not_applicable: false
+        evidence_refs: []
+        excess_return_defence:
+          # Scale and switching cost only. The resource leg is a RENT under
+          # D-43a -- gas contracts, dated in the margin path under D-40 -- and a
+          # rent expiring inside the explicit period cannot hold up a
+          # ten-to-fifteen year horizon.
+          moat_sources:
+            - scale
+            - switching_cost
+          decay_horizon:
+            years_low: 10
+            years_high: 15
+            basis: >
+              Five Forces ratings for industrial explosives -- threat of new
+              entrants low, rivalry high, substitutes low -- read per section
+              12: entrant threat sets the barrier height and rivalry the speed
+              the excess is competed away. Those three ratings are
+              archetype-level and do not move by scenario, which is why the
+              band is the same as the Orderly Convergence block. A scenario
+              that shortens the horizon should say so and why, as the
+              Disorderly Climate block does.
+          named_threat: >
+            Orica competitive response. The scale and switching-cost legs both
+            rest on installed on-site capacity and customer integration, and
+            Orica is the one competitor able to match both.
+          sensitivity: >
+            Halving the decay horizon to five to seven years is the test the
+            Disorderly Climate block uses and section 12 puts that at a 15-20%
+            terminal-value impact. Sized properly once the declared rate
+            exists, since the sensitivity is a sensitivity OF that rate.
+

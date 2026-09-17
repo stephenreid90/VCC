@@ -122,6 +122,50 @@ def test_dnl_splits_on_the_cost_of_capital_which_is_what_d42_is_for(rows):
         assert not any("exceeds" in w for w in dnl[s].warnings), s
 
 
+def test_the_two_readings_disagree_about_fragmentation(rows):
+    """Which reading governs is a substantive choice, not a rounding preference.
+
+    DNL Fragmentation sits BELOW its WACC on the return on new capital and ABOVE
+    it on the whole capital base. So under the weaker reading it owes no defended
+    exception and under the better one it does. Asserted because the day these
+    two agree everywhere, the distinction stops earning its keep — and because a
+    silent change of reading would silently change who owes a defence.
+    """
+    frag = next(r for r in rows if r.company_id == "dnl"
+                and r.scenario_id == "fragmentation")
+    assert frag.excess_over_cost_of_capital < 0, frag.excess_over_cost_of_capital
+    assert frag.excess_on_governing_return > 0, frag.excess_on_governing_return
+    assert frag.governing_return == frag.return_on_whole_capital
+
+
+def test_the_declared_rate_does_not_reconcile_with_the_capital_build(rows):
+    """The D-42 step 2 finding: D-45 and D-49 disagree, and by how much.
+
+    Orderly Convergence is the only valuation in the project that declares a
+    terminal return. The rate comes from its own declared movement — positive,
+    small, which the project's translation table maps to +25bp on the
+    convergence target — so it is the moat work's view rather than an invention.
+    The capital build produces something far above it. Both cannot be right.
+    """
+    oc = next(r for r in rows if r.company_id == "dnl"
+              and r.scenario_id == "orderly_convergence")
+    assert oc.declared_return == pytest.approx(0.0913, abs=1e-6)
+    assert oc.return_on_whole_capital == pytest.approx(0.1246, abs=5e-4)
+    assert oc.declared_versus_whole_capital == pytest.approx(-0.0333, abs=5e-4)
+    assert any("declares a terminal return" in w for w in oc.warnings)
+
+
+def test_only_dnl_reports_a_return_on_the_whole_capital_base(rows):
+    """Because only DNL declares the capex rule that rolls a base forward.
+
+    WBC has no invested-capital construction at all and CSL still runs
+    capex = D&A (D-53, unimplemented), so neither can report the better reading.
+    Asserted so that when CSL gains one, this test says so.
+    """
+    have = {r.company_id for r in rows if r.return_on_whole_capital is not None}
+    assert have == {"dnl"}, have
+
+
 def test_the_bank_reports_its_declared_rate_not_an_inverted_one(rows):
     """The bank terminal declares the return; the identity derives retention.
 

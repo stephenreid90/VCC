@@ -7,11 +7,11 @@
     "a new undeclared pair fails the test. Same ratchet shape as tests/moat_role_baseline.json",
     "and ssot check 13.",
     "Recorded 16 September 2026, when the D-42 diagnostic was first run. One of the fifteen",
-    "valuations asserting an excess return carried a defence at that moment, and it was prose."
+    "valuations asserting an excess return carried a defence at that moment, and it was prose.",
+    "Updated 17 Sep 2026. The obligation now triggers on the GOVERNING reading -- the return on the whole capital base where D-49's roll-forward gives one -- which is why dnl:fragmentation appears: it sits below its WACC on new capital and above it on the whole base. dnl:muddle_through and dnl:ai_productivity_lag have LEFT this list, which is the ratchet tightening as intended."
   ],
   "undeclared": [
-    "dnl:muddle_through",
-    "dnl:ai_productivity_lag",
+    "dnl:fragmentation",
     "wbc:muddle_through",
     "wbc:orderly_convergence",
     "wbc:ai_productivity_lag",
@@ -27,12 +27,14 @@
   ],
   "reasons": {
     "dnl": [
-      "Neither scenario carries a terminal_roic driver in the impact matrix at all, so the",
-      "excess return is emergent from the cash-flow assumptions and was never assessed.",
-      "Muddle Through is the headline valuation and asserts 226bp of excess over WACC, so",
-      "this is the most pressing of the three groups. Orderly Convergence was the only",
-      "valuation in the project with a defence and is now declared structurally; these two",
-      "need the same treatment, and the Orderly Convergence block is the worked example."
+      "dnl:fragmentation only, and it raises a question about the rule rather than about the",
+      "scenario. Its terminal return on the whole capital base is 8.92% against a WACC of",
+      "8.88% -- an excess of FOUR basis points. That is not an economic claim about a moat;",
+      "it is the convergence target reached to within rounding, and requiring a full section",
+      "10.6 defended exception for it would be disproportionate. Baselined on that ground,",
+      "with the open question: should D-42's obligation carry a materiality floor rather than",
+      "triggering at any excess above zero? Left as ruled (above zero) rather than softened",
+      "by a session. Muddle Through and AI Lag were baselined here and are now declared."
     ],
     "wbc": [
       "The bank matrix carries no terminal_roic driver for any scenario. In the section 15",
