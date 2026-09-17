@@ -55,20 +55,34 @@ def test_muddle_through_ties_workbook():
     assert r.cost_of_equity == pytest.approx(0.0805, abs=1e-6)
 
 
-def test_muddle_through_with_the_capital_constraint_is_the_ratified_level():
-    """D-60 on: the level the register carries, and the gap to the workbook tie.
+def test_muddle_through_no_longer_binds_so_it_ties_the_workbook_on_both_paths():
+    """M13, 17 Sep 2026: correcting the target to 11.25% stopped the bite.
 
-    The whole difference between this and the test above is the dividends the
-    capital constraint withholds from Y5, retained into closing equity and
-    capitalised in the terminal. Asserting both means the size of the overlay is
-    visible in the suite rather than inferred from two numbers in a comment.
+    D-60 bound the payout to the archetype's 11.50% and Muddle Through's CET1
+    crossed it at Y5. Westpac's own board target is above 11.25% post-dividend,
+    and the company target overrides the archetype anchor, so the ratio no longer
+    reaches the level it has to defend. The constrained and unconstrained paths
+    therefore agree here, and both tie the audited v4 workbook -- which is a
+    stronger position than the overlay it replaced.
     """
     r = _run("muddle_through")
-    assert r.value_per_share == pytest.approx(30.0664, abs=1e-3)
-    assert r.capital_constraint_binds_from == "Y5"
-    assert r.cost_of_equity == pytest.approx(0.0805, abs=1e-6)
-    # Closing equity is the workbook's, plus exactly what was withheld.
-    assert r.closing_book_equity - r.dividends_forgone == pytest.approx(83682.114, abs=0.1)
+    assert r.value_per_share == pytest.approx(30.0304, abs=1e-3)
+    assert r.capital_constraint_binds_from is None
+    assert r.dividends_forgone == 0.0
+    assert r.closing_book_equity == pytest.approx(83682.114, abs=0.1)
+
+
+def test_orderly_convergence_is_the_one_scenario_the_constraint_still_bites():
+    """It erodes fastest — 165bp — so it is the one that still reaches 11.25%.
+
+    Keeps a live assertion on the D-60 machinery. If this stops binding too, the
+    payout constraint has become dead code and the register should say so.
+    """
+    r = _run("orderly_convergence")
+    assert r.value_per_share == pytest.approx(36.1619, abs=1e-3)
+    assert r.capital_constraint_binds_from == "Y4"
+    assert r.dividends_forgone > 0
+    assert r.cet1_trajectory.operating_target == pytest.approx(0.1125, abs=1e-9)
 
 
 def test_all_six_scenarios_value_and_are_ordered():

@@ -211,7 +211,11 @@ def test_the_cited_drift_figures_come_from_here():
     central = BankEngine().run(_off("muddle_through")).cet1_trajectory
     assert central.anchor_ratio == pytest.approx(0.1242, abs=1e-6)
     assert central.closing_ratio == pytest.approx(0.1145, abs=5e-4)
-    assert central.first_below_target == "Y5"
+    # Against the corrected 11.25% target (M13) the unconstrained central case
+    # lands just above it rather than crossing, which is why D-60 stopped biting.
+    assert central.operating_target == pytest.approx(0.1125, abs=1e-9)
+    assert central.first_below_target is None
+    assert central.closing_ratio > central.operating_target
 
 
 def test_the_capital_ordering_is_inverted_against_value():
@@ -247,23 +251,39 @@ def _on(scenario_id: str):
 
 
 def test_the_constraint_is_on_by_default_and_gives_the_ratified_level():
+    """On by default, and on the central case it no longer bites (M13).
+
+    D-60 bound the payout to the archetype's 11.50% target and Muddle Through
+    crossed it at Y5. Westpac's own board target is above 11.25% post-dividend
+    and the company figure overrides the archetype anchor, so the central case
+    no longer reaches the level it defends and returns to the audited value.
+    """
     inp = _wbc("muddle_through")
     assert inp.constrain_payout_to_capital is True
+    assert inp.cet1_operating_target == pytest.approx(0.1125, abs=1e-9)
     r = BankEngine().run(inp)
-    assert r.value_per_share == pytest.approx(30.0664, abs=1e-3)
-    assert r.capital_constraint_binds_from == "Y5"
-    assert r.dividends_forgone > 0.0
+    assert r.value_per_share == pytest.approx(30.0304, abs=1e-3)
+    assert r.capital_constraint_binds_from is None
+    assert r.dividends_forgone == 0.0
 
 
 def test_when_on_it_holds_the_ratio_exactly_on_the_operating_target():
-    """The rule as ruled: the target is a floor for the ratio, not a target to sit on."""
-    r = BankEngine().run(_on("muddle_through"))
+    """The rule as ruled: the target is a floor for the ratio, not a level to sit on.
+
+    Orderly Convergence rather than the central case, because at the corrected
+    11.25% board target (M13) it is the only scenario that still reaches the
+    level it has to defend. It erodes fastest — 165bp — and binds at Y4.
+    """
+    r = BankEngine().run(_on("orderly_convergence"))
     t = r.cet1_trajectory
-    assert r.capital_constraint_binds_from == "Y5"
-    # Before it binds the ratio drifts freely; from the binding period it sits on
-    # the target to within rounding.
-    assert t.points[-1].cet1_ratio == pytest.approx(t.operating_target, abs=1e-9)
-    assert all(p.cet1_ratio > t.operating_target for p in t.points[:-1])
+    assert r.capital_constraint_binds_from == "Y4"
+    # Before it binds the ratio drifts freely; from the binding period onward it
+    # sits on the target to within rounding.
+    binds_at = [i for i, p in enumerate(t.points) if p.label == "Y4"][0]
+    for p in t.points[:binds_at]:
+        assert p.cet1_ratio > t.operating_target, p.label
+    for p in t.points[binds_at:]:
+        assert p.cet1_ratio == pytest.approx(t.operating_target, abs=1e-9), p.label
 
 
 def test_the_rule_is_one_sided_and_never_raises_the_payout():

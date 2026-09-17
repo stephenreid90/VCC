@@ -3,7 +3,7 @@
 _Generated 2026-09-17 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `14e43a1 CSL's balance sheet was in the accounts all along, and D-53 needs it` on `main`
+- HEAD: `2efe2fc D-42 step 2: the declared terminal return reconciles against the capital build, and fails` on `main`
 - Unpushed commits: **0**
 - Tracked files: 330
 - Untracked files: 0
@@ -31,7 +31,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
 | Path | Present | What it is |
 |---|---|---|
-| `data/companies/wbc.yaml` | yes (35.9KB) | company position + layer-2 method (judgement) |
+| `data/companies/wbc.yaml` | yes (36.8KB) | company position + layer-2 method (judgement) |
 | `data/companies/wbc.md` | yes (7.6KB) | company narrative |
 | `data/companies/wbc_documents.yaml` | yes (19.9KB) | document register |
 | `data/financials/wbc.yaml` | yes (1.9KB) | curated layer-1 financials (a SUMMARY — check for raw sources too) |
@@ -60,7 +60,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `dnl.yaml` (42.0KB)
     - `dnl_documents.yaml` (8.5KB)
     - `wbc.md` (7.6KB)
-    - `wbc.yaml` (35.9KB)
+    - `wbc.yaml` (36.8KB)
     - `wbc_documents.yaml` (19.9KB)
   - **financials/**
     - `anz_eodhd_fundamentals_2026-06-15.csv` (167.3KB)
@@ -108,7 +108,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `build_plan.html` (14.9KB)
   - `engine_implementation_plan.md` (16.5KB)
   - `open_items.css` (3.5KB)
-  - `open_items.json` (38.7KB)
+  - `open_items.json` (39.3KB)
   - `open_questions.json` (1.2KB)
   - `scenarios_workshop.md` (13.5KB)
   - `scenarios_workshop_prep.md` (19.5KB)
@@ -155,7 +155,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **vcc_valuations/**
     - `__init__.py` (650B)
     - `derivation.py` (4.4KB)
-    - `translator.py` (59.9KB)
+    - `translator.py` (60.3KB)
     - **assumptions/**
       - `__init__.py` (775B)
       - `trade_working_capital.py` (5.6KB)
@@ -194,7 +194,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `terminal_defence_baseline.json` (3.3KB)
   - `test_adjustments.py` (1.6KB)
   - `test_archetypes_validate.py` (10.2KB)
-  - `test_bank_capital.py` (14.1KB)
+  - `test_bank_capital.py` (15.2KB)
   - `test_comps.py` (653B)
   - `test_csl_loads.py` (2.0KB)
   - `test_dcf.py` (1.4KB)
@@ -223,10 +223,10 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `test_horizon_variant_sets.py` (5.0KB)
     - `test_per_year_derivations.py` (3.8KB)
     - `test_replica_ties_engine.py` (6.1KB)
-    - `test_scenario_goldens.py` (9.4KB)
+    - `test_scenario_goldens.py` (10.1KB)
     - `test_terminal_defence.py` (7.0KB)
     - `test_terminal_return_sets.py` (8.0KB)
-    - `test_wbc_bank.py` (4.3KB)
+    - `test_wbc_bank.py` (4.9KB)
     - **golden/**
       - `__init__.py` (0B)
       - `_recalc.py` (4.2KB)

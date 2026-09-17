@@ -1124,6 +1124,13 @@ def build_bank_inputs_from_data(inputs: dict, scenario_id: str):
     if bank_arch is not None:
         cet1_floor = bank_arch.cet1_floor.total_floor
         cet1_operating_target = bank_arch.cet1_operating_target.level
+    # M13: a company's OWN board target overrides the archetype anchor where it is
+    # declared. The archetype level is a peer-group anchor -- the top of the range
+    # the majors have typically run -- and a bank that publishes its own target is
+    # the better authority on the level it defends. D-60 binds on this, so the
+    # override is load-bearing rather than cosmetic.
+    if cet1_block.get("target_minimum") is not None:
+        cet1_operating_target = cet1_block["target_minimum"]
 
     return BankInputs(
         company_id=company.id,

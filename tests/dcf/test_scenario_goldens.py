@@ -78,12 +78,21 @@ WBC_GOLDEN = {
     # 35.7058 / 30.0304 / 29.6987 / 27.1096 / 22.5807 / 18.6488. Fragmentation
     # and Stagflation are unchanged to the cent because they erode least and the
     # rule never binds in them -- which is the check that it is one-sided.
-    "orderly_convergence": 36.3661,                # binds Y3, withholds most
-    "muddle_through": 30.0664,                     # binds Y5
-    "ai_productivity_lag": 29.7217,                # binds Y5
-    "fragmentation": 27.1096,                      # never binds
-    "disorderly_climate_crystallisation": 22.5918,  # binds Y5
-    "stagflation_persists": 18.6488,               # never binds
+    # Re-pinned twice in two days, and the second one largely undid the first.
+    # D-60 (16 Sep) bound the payout to the ARCHETYPE operating target of 11.50%
+    # and lifted four levels. M13 (17 Sep) corrected WBC's own board target to
+    # 11.25% post-dividend -- Westpac's stated figure, replacing the 11.0-11.5%
+    # range the file had -- and the company target overrides the archetype anchor.
+    # At 11.25% the constraint stops binding in five of six scenarios, so those
+    # five return to their pre-D-60 values and only Orderly Convergence, which
+    # erodes fastest, still binds. Pre-D-60: 35.7058 / 30.0304 / 29.6987 /
+    # 27.1096 / 22.5807 / 18.6488.
+    "orderly_convergence": 36.1619,                # binds Y4 (was Y3 at 11.50%)
+    "muddle_through": 30.0304,                     # no longer binds; ties the v4 workbook again
+    "ai_productivity_lag": 29.6987,                # no longer binds
+    "fragmentation": 27.1096,                      # never bound
+    "disorderly_climate_crystallisation": 22.5807,  # no longer binds
+    "stagflation_persists": 18.6488,               # never bound
 }
 
 # --- CSL: multi-segment FCFF / Ke (M3), (USD, AUD) per share -------------------
@@ -137,7 +146,7 @@ def test_csl_scenario_level(scenario):
 TERMINAL_BREACH = {
     # (company, scenario) -> terminal share of EV / of the equity claim
     ("dnl", "muddle_through"): 0.7001,
-    ("wbc", "muddle_through"): 0.7657,     # 0.7631 before D-60
+    ("wbc", "muddle_through"): 0.7631,     # back to the pre-D-60 figure (M13)
     ("wbc", "stagflation_persists"): 0.8445,       # worst in the project; D-60 never binds here
     ("csl", "muddle_through"): 0.7538,
 }

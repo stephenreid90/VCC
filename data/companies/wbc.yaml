@@ -545,16 +545,28 @@ company_position:
 
     cet1:
       actual: 0.1242
-      target_minimum: 0.115
-      management_buffer: 0.005
-      management_target: 0.12
-      operating_target_range: [0.110, 0.115]
-      current_buffer_bps: 92
+      # Corrected 17 Sep 2026 (M13). The board target is now a POST-DIVIDEND CET1
+      # ratio above 11.25% in normal operating conditions, stated by Westpac as
+      # replacing the former 11.00-11.50% operating range, following APRA's
+      # phase-out of AT1 capital instruments from 1 January 2027. The block
+      # previously carried target_minimum 0.115 -- the TOP of the old range, not a
+      # minimum -- alongside the range itself and a management_target above both,
+      # so three fields described the same thing inconsistently.
+      target_minimum: 0.1125
+      target_basis: >
+        Post-dividend CET1 above 11.25% in normal operating conditions. Source:
+        Westpac FY25 Pillar 3 report and the FY25 presentation and investor
+        discussion pack, both stating it replaces the previous 11.00-11.50%
+        operating range. Revised upward following APRA's phase-out of Additional
+        Tier 1 from 1 January 2027.
+      superseded_operating_target_range: [0.110, 0.115]
+      current_buffer_bps: 117
       capital_actions_in_progress: "On-market buyback active; AUD 581m executed FY25"
       commentary: >
-        Level 2 CET1 12.42%. Management target 11.0-11.5% operating
-        range; current position 92bps above the upper end of target.
-        Buyback in progress reduces buffer toward target over FY26.
+        Level 2 CET1 12.42% against a board target of above 11.25%
+        post-dividend, so 117bps of headroom. The buyback reduces that toward
+        target over FY26. The former 11.0-11.5% range is kept above as
+        superseded_operating_target_range for history only; nothing reads it.
 
     rwa_composition:
       total_rwa_level_2: 458343
