@@ -179,13 +179,41 @@ matrix:
           Slightly above cost-of-capital convergence target via productivity
           surprise sustaining excess returns marginally longer. Subject to
           §11.4.2 convergence discipline — terminal ROIC should still
-          approach WACC over the fade period. Defended exception per §10.6
-          rule 2: moat source = scale + switching_cost + resource (long-term
-          contracts); decay horizon = 10-15 years; named threat = Orica
-          competitive response; sensitivity test = halving the fade period
-          extension still preserves positive scenario value.
+          approach WACC over the fade period. The §10.6 rule 2 defended
+          exception that used to be stated here in prose is now declared
+          structurally in excess_return_defence below (D-42, D-58): a
+          horizon written as a sentence cannot be validated, and §12 puts
+          this quantity at 15-20% of terminal value.
         not_applicable: false
         evidence_refs: []
+        excess_return_defence:
+          # The resource leg is deliberately NOT listed. D-43a separated a rent
+          # from a barrier: Denali's gas contracts confer a cash advantage with
+          # an end date, already dated in the margin path under D-40, and a
+          # terminal excess return cannot be defended on something that expires
+          # inside the explicit period. Scale and switching cost are the legs
+          # that stop a rival taking the business.
+          moat_sources:
+            - scale
+            - switching_cost
+          decay_horizon:
+            years_low: 10
+            years_high: 15
+            basis: >
+              Five Forces ratings for industrial explosives — threat of new
+              entrants low, rivalry high, substitutes low — read per §12:
+              entrant threat sets the barrier height, rivalry the speed the
+              excess is competed away. High rivalry against a low entrant
+              threat is what puts the band at ten to fifteen years rather
+              than beyond it.
+          named_threat: >
+            Orica competitive response. The scale and switching-cost legs both
+            rest on installed on-site capacity and customer integration, and
+            Orica is the one competitor able to match both.
+          sensitivity: >
+            Halving the fade-period extension still preserves positive
+            scenario value, so the excess return is not load-bearing for the
+            sign of this scenario's result.
         governance:
           created_by: tara@reidadvisory.net
           created_at: 2026-05-17T10:00:00Z

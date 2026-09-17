@@ -267,6 +267,18 @@ class BankEngine:
         if tv_warning:
             warnings.append(tv_warning)
 
+        # D-42: surface the terminal return against the cost of capital on
+        # every valuation. Non-blocking (D-07): it warns and obliges, it never
+        # adjusts. The obligation itself is the ratchet in
+        # tests/dcf/test_terminal_defence.py.
+        from vcc_valuations.dcf.terminal_return import from_bank_parts
+        warnings.extend(from_bank_parts(
+            company_id=inp.company_id, scenario_id=inp.scenario_id,
+            closing_book_equity=closing_equity, final_npat=npat[-1],
+            terminal_roe=inp.terminal_roe, terminal_growth=g,
+            cost_of_equity=ke,
+        ).warnings)
+
         # §15.5 capital trajectory. Still reported even when the constraint is
         # active, because it is then the evidence that the rule did its job: the
         # ratio should sit exactly on the target from the binding period onward.

@@ -1,0 +1,54 @@
+{
+  "_comment": [
+    "D-42 ratchet baseline. Every (company:scenario) pair whose terminal return exceeds",
+    "its cost of capital owes a structured excess_return_defence in the archetype impact",
+    "matrix. The pairs below assert one and do not yet declare it, each for a stated",
+    "reason. The list may only SHRINK: a pair that acquires a defence must be removed, and",
+    "a new undeclared pair fails the test. Same ratchet shape as tests/moat_role_baseline.json",
+    "and ssot check 13.",
+    "Recorded 16 September 2026, when the D-42 diagnostic was first run. One of the fifteen",
+    "valuations asserting an excess return carried a defence at that moment, and it was prose."
+  ],
+  "undeclared": [
+    "dnl:muddle_through",
+    "dnl:ai_productivity_lag",
+    "wbc:muddle_through",
+    "wbc:orderly_convergence",
+    "wbc:ai_productivity_lag",
+    "wbc:fragmentation",
+    "wbc:disorderly_climate_crystallisation",
+    "wbc:stagflation_persists",
+    "csl:muddle_through",
+    "csl:orderly_convergence",
+    "csl:ai_productivity_lag",
+    "csl:fragmentation",
+    "csl:disorderly_climate_crystallisation",
+    "csl:stagflation_persists"
+  ],
+  "reasons": {
+    "dnl": [
+      "Neither scenario carries a terminal_roic driver in the impact matrix at all, so the",
+      "excess return is emergent from the cash-flow assumptions and was never assessed.",
+      "Muddle Through is the headline valuation and asserts 226bp of excess over WACC, so",
+      "this is the most pressing of the three groups. Orderly Convergence was the only",
+      "valuation in the project with a defence and is now declared structurally; these two",
+      "need the same treatment, and the Orderly Convergence block is the worked example."
+    ],
+    "wbc": [
+      "The bank matrix carries no terminal_roic driver for any scenario. In the section 15",
+      "fork the terminal return is a DECLARED input on the scenario overlay (terminal_roe)",
+      "rather than a matrix cell, so a defence has nowhere to live without deciding where a",
+      "bank's terminal-return defence belongs. That is a structural question, not an",
+      "omission to be filled in, and it needs Stephen rather than a session.",
+      "All six scenarios exceed Ke, by 95 to 295bp."
+    ],
+    "csl": [
+      "Do not write a defence for a defect. CSL's 61-73% terminal return on new capital is",
+      "an artefact of D-53 being unimplemented: terminal_capex_pct_revenue is declared equal",
+      "to da_pct_revenue, so net terminal capex is zero and almost nothing is reinvested.",
+      "See M15. Implementing D-53 should drop the implied return into the range DNL occupies",
+      "and most of these pairs should leave this list by arithmetic rather than by being",
+      "justified. CSL also has no impact-matrix file, so there is no home for a defence yet."
+    ]
+  }
+}

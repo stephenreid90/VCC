@@ -1,12 +1,12 @@
 # REPO_MAP — what exists, and where
 
-_Generated 2026-09-16 by `scripts/repo_inventory.py`. **Regenerate at the start of
+_Generated 2026-09-17 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `9e96f67 D-60 switched on: the retention trade is real, and WBC moves` on `main`
+- HEAD: `b3bb3ff The D-42 diagnostic, built before the ruling, and what it found in CSL` on `main`
 - Unpushed commits: **0**
-- Tracked files: 324
-- Untracked files: 4
+- Tracked files: 328
+- Untracked files: 2
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -76,7 +76,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **impact_matrix/**
     - **by_industry/**
       - `australian_major_banks.yaml` (18.5KB)
-      - `industrial_explosives.yaml` (26.1KB)
+      - `industrial_explosives.yaml` (27.6KB)
       - `plasma_derived_therapies.yaml` (11.2KB)
       - `specialty_pharmaceuticals.yaml` (5.1KB)
       - `vaccines.yaml` (4.3KB)
@@ -108,7 +108,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `build_plan.html` (14.9KB)
   - `engine_implementation_plan.md` (16.5KB)
   - `open_items.css` (3.5KB)
-  - `open_items.json` (35.4KB)
+  - `open_items.json` (36.0KB)
   - `open_questions.json` (1.2KB)
   - `scenarios_workshop.md` (13.5KB)
   - `scenarios_workshop_prep.md` (19.5KB)
@@ -163,11 +163,11 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - **dcf/**
       - `__init__.py` (50B)
       - `bank_capital.py` (9.8KB)
-      - `bank_engine.py` (17.5KB)
-      - `fcf_engine.py` (25.0KB)
+      - `bank_engine.py` (18.1KB)
+      - `fcf_engine.py` (25.6KB)
       - `fcf_stub.py` (9.8KB)
       - `segment_engine.py` (10.0KB)
-      - `terminal_return.py` (10.1KB)
+      - `terminal_return.py` (11.9KB)
     - **market/**
       - `__init__.py` (606B)
       - `fmp_client.py` (5.7KB)
@@ -180,7 +180,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `driver.py` (4.0KB)
       - `frameworks.py` (4.4KB)
       - `industry.py` (17.9KB)
-      - `linkage.py` (6.9KB)
+      - `linkage.py` (11.0KB)
       - `scenario.py` (4.8KB)
 
 ## Tests
@@ -191,6 +191,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `ssot_basis_baseline.json` (494B)
   - `ssot_intra_file_baseline.json` (593B)
   - `ssot_lint_baseline.json` (6.2KB)
+  - `terminal_defence_baseline.json` (2.8KB)
   - `test_adjustments.py` (1.6KB)
   - `test_archetypes_validate.py` (10.2KB)
   - `test_bank_capital.py` (14.1KB)
@@ -223,6 +224,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `test_per_year_derivations.py` (3.8KB)
     - `test_replica_ties_engine.py` (6.1KB)
     - `test_scenario_goldens.py` (9.4KB)
+    - `test_terminal_defence.py` (6.6KB)
     - `test_terminal_return_sets.py` (5.7KB)
     - `test_wbc_bank.py` (4.3KB)
     - **golden/**
@@ -332,8 +334,6 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 Not in git. Either commit them or clear them — an untracked file is invisible
 to anyone who clones the repo, and is the most common way work gets lost.
 
-- `design/methodology/terminal_return_sets.yaml`
-- `scripts/size_terminal_returns.py`
-- `src/vcc_valuations/dcf/terminal_return.py`
-- `tests/dcf/test_terminal_return_sets.py`
+- `tests/dcf/test_terminal_defence.py`
+- `tests/terminal_defence_baseline.json`
 

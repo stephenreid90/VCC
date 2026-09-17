@@ -464,6 +464,17 @@ class FcfEngine:
         if tv_warning:
             warnings.append(tv_warning)
 
+        # D-42: surface the terminal return against the cost of capital on
+        # every valuation. Non-blocking (D-07): it warns and obliges, it never
+        # adjusts. The obligation itself is the ratchet in
+        # tests/dcf/test_terminal_defence.py.
+        from vcc_valuations.dcf.terminal_return import from_fcff_parts
+        warnings.extend(from_fcff_parts(
+            company_id=inp.company_id, scenario_id=inp.scenario_id,
+            final_nopat=nopat[-1], terminal_fcff=terminal_fcff,
+            terminal_growth=g, cost_of_capital=wacc,
+        ).warnings)
+
         # ---- Equity bridge ----
         eb = inp.equity_bridge
         if eb is None:

@@ -140,6 +140,64 @@ def _warnings_for(t: TerminalReturn) -> List[str]:
     return out
 
 
+
+# --- "parts" constructors -------------------------------------------------------
+# The engines strike the diagnostic inside run(), before a result object exists, so
+# they call these with primitives. The result-object constructors below are thin
+# wrappers over them, which keeps one definition rather than two that can drift.
+
+
+def from_bank_parts(*, company_id: str, scenario_id: str, closing_book_equity: float,
+                    final_npat: float, terminal_roe: float, terminal_growth: float,
+                    cost_of_equity: float) -> TerminalReturn:
+    """Bank fork from primitives. See :func:`from_bank` for the reasoning."""
+    rate = terminal_growth / terminal_roe if terminal_roe else None
+    earned = final_npat / closing_book_equity if closing_book_equity else None
+    t = TerminalReturn(
+        company_id=company_id, scenario_id=scenario_id, construction="bank_roe",
+        cost_of_capital=cost_of_equity, cost_of_capital_name="Ke",
+        terminal_growth=terminal_growth,
+        terminal_earnings=closing_book_equity * terminal_roe,
+        reinvestment_rate=rate, return_on_new_capital=terminal_roe,
+        earned_final_explicit=earned,
+    )
+    t.warnings = _warnings_for(t)
+    return t
+
+
+def from_fcff_parts(*, company_id: str, scenario_id: str, final_nopat: float,
+                    terminal_fcff: float, terminal_growth: float,
+                    cost_of_capital: float) -> TerminalReturn:
+    """Single-segment FCFF fork from primitives. See :func:`from_fcff`."""
+    terminal_nopat = final_nopat * (1.0 + terminal_growth)
+    rate, ret = _reinvestment_and_return(terminal_nopat, terminal_fcff, terminal_growth)
+    t = TerminalReturn(
+        company_id=company_id, scenario_id=scenario_id, construction="fcff_roic",
+        cost_of_capital=cost_of_capital, cost_of_capital_name="WACC",
+        terminal_growth=terminal_growth, terminal_earnings=terminal_nopat,
+        reinvestment_rate=rate, return_on_new_capital=ret,
+    )
+    t.warnings = _warnings_for(t)
+    return t
+
+
+def from_segment_parts(*, company_id: str, scenario_id: str, final_revenue: float,
+                       terminal_ebit_margin: float, tax_rate: float,
+                       terminal_fcff: float, terminal_growth: float,
+                       cost_of_capital: float) -> TerminalReturn:
+    """Segment fork from primitives. See :func:`from_segment`."""
+    terminal_nopat = (final_revenue * terminal_ebit_margin * (1.0 - tax_rate)
+                      * (1.0 + terminal_growth))
+    rate, ret = _reinvestment_and_return(terminal_nopat, terminal_fcff, terminal_growth)
+    t = TerminalReturn(
+        company_id=company_id, scenario_id=scenario_id, construction="segment_roic",
+        cost_of_capital=cost_of_capital, cost_of_capital_name="Ke",
+        terminal_growth=terminal_growth, terminal_earnings=terminal_nopat,
+        reinvestment_rate=rate, return_on_new_capital=ret,
+    )
+    t.warnings = _warnings_for(t)
+    return t
+
 def from_bank(result, inputs) -> TerminalReturn:
     """Bank fork: the declared terminal ROE, against Ke and against what is earned.
 
@@ -149,26 +207,12 @@ def from_bank(result, inputs) -> TerminalReturn:
     as the g/ROE the form implies, and the return on new capital simply is the
     declared ROE -- there is nothing to invert. Both benchmarks still apply.
     """
-    roe = inputs.terminal_roe
-    terminal_npat = result.closing_book_equity * roe
-    rate = inputs.terminal_growth / roe if roe else None
-    earned = (result.cash_npat[-1] / result.closing_book_equity
-              if result.closing_book_equity else None)
-
-    t = TerminalReturn(
-        company_id=result.company_id,
-        scenario_id=result.scenario_id,
-        construction="bank_roe",
-        cost_of_capital=result.cost_of_equity,
-        cost_of_capital_name="Ke",
-        terminal_growth=inputs.terminal_growth,
-        terminal_earnings=terminal_npat,
-        reinvestment_rate=rate,
-        return_on_new_capital=roe,
-        earned_final_explicit=earned,
+    return from_bank_parts(
+        company_id=result.company_id, scenario_id=result.scenario_id,
+        closing_book_equity=result.closing_book_equity, final_npat=result.cash_npat[-1],
+        terminal_roe=inputs.terminal_roe, terminal_growth=inputs.terminal_growth,
+        cost_of_equity=result.cost_of_equity,
     )
-    t.warnings = _warnings_for(t)
-    return t
 
 
 def from_fcff(result, *, company_id: str, scenario_id: str) -> TerminalReturn:
@@ -178,23 +222,11 @@ def from_fcff(result, *, company_id: str, scenario_id: str) -> TerminalReturn:
     what the engine uses: it strikes the terminal on the final period's margin and
     tax rate applied to revenue grown at g, and NOPAT is their product.
     """
-    g = result.terminal_growth
-    terminal_nopat = result.nopat[-1] * (1.0 + g)
-    rate, ret = _reinvestment_and_return(terminal_nopat, result.terminal_fcff, g)
-
-    t = TerminalReturn(
-        company_id=company_id,
-        scenario_id=scenario_id,
-        construction="fcff_roic",
-        cost_of_capital=result.wacc,
-        cost_of_capital_name="WACC",
-        terminal_growth=g,
-        terminal_earnings=terminal_nopat,
-        reinvestment_rate=rate,
-        return_on_new_capital=ret,
+    return from_fcff_parts(
+        company_id=company_id, scenario_id=scenario_id,
+        final_nopat=result.nopat[-1], terminal_fcff=result.terminal_fcff,
+        terminal_growth=result.terminal_growth, cost_of_capital=result.wacc,
     )
-    t.warnings = _warnings_for(t)
-    return t
 
 
 def from_segment(result, inputs, *, company_id: str, scenario_id: str) -> TerminalReturn:
@@ -205,22 +237,10 @@ def from_segment(result, inputs, *, company_id: str, scenario_id: str) -> Termin
     terminal NOPAT is not the last year's NOPAT grown at g and has to be rebuilt
     from the inputs the engine used.
     """
-    g = inputs.terminal_growth
-    final_revenue = result.group_revenue[-1]
-    terminal_nopat = (final_revenue * inputs.terminal_ebit_margin
-                      * (1.0 - inputs.tax_rate) * (1.0 + g))
-    rate, ret = _reinvestment_and_return(terminal_nopat, result.terminal_fcff, g)
-
-    t = TerminalReturn(
-        company_id=company_id,
-        scenario_id=scenario_id,
-        construction="segment_roic",
+    return from_segment_parts(
+        company_id=company_id, scenario_id=scenario_id,
+        final_revenue=result.group_revenue[-1],
+        terminal_ebit_margin=inputs.terminal_ebit_margin, tax_rate=inputs.tax_rate,
+        terminal_fcff=result.terminal_fcff, terminal_growth=inputs.terminal_growth,
         cost_of_capital=inputs.cost_of_equity,
-        cost_of_capital_name="Ke",
-        terminal_growth=g,
-        terminal_earnings=terminal_nopat,
-        reinvestment_rate=rate,
-        return_on_new_capital=ret,
     )
-    t.warnings = _warnings_for(t)
-    return t

@@ -42,7 +42,7 @@ and spend the conversation on the valuation.
 
 ---
 
-**State:** suite **405**, ratchet **13 checks**, base ties green. **WBC HAS MOVED:
+**State:** suite **409**, ratchet **13 checks** plus the new D-42 defence ratchet, base ties green. **WBC HAS MOVED:
 30.03 → 30.07** under D-60, and all six WBC levels are re-pinned. DNL 1.989 and
 CSL 195.78 unmoved. Two decisions ruled and implemented (D-59, D-60), the D-42
 diagnostic built and sized, two open items closed (M12, item 8), three opened
@@ -225,16 +225,50 @@ diagnostic built and sized, two open items closed (M12, item 8), three opened
     defines one for DNL. Wiring it is the natural next step and is named in the set's own
     `basis` field so nobody reads the reported figure as the other one.
 
+### D-42 is RULED and enforced, and D-58 is closed by the same field
+
+31. **The defended exception is structural now, not prose.** `excess_return_defence` on the
+    impact-matrix driver carries `moat_sources`, a `decay_horizon` (year band or
+    `indefinite`, with a basis), a `named_threat` and a `sensitivity`. The engines surface
+    the diagnostic on every valuation and warn; nothing adjusts (D-07). The obligation is a
+    ratchet in `tests/dcf/test_terminal_defence.py`: declare a defence or be named in
+    `tests/terminal_defence_baseline.json`, and the baseline may only shrink.
+32. **The sizing is why the prose form could not survive.** Fifteen of eighteen valuations
+    assert a terminal return above their cost of capital and exactly **one** carried a
+    defence. Two DNL scenarios — including **Muddle Through, the headline valuation, at
+    226bp of excess** — carry no `terminal_roic` driver at all. The WBC matrix carries none
+    for any scenario though all six exceed Ke. CSL has no matrix file and its apparent
+    excess is a D-53 artefact, so its six are baselined with the explicit instruction **not
+    to write a defence for a defect**.
+33. **Orderly Convergence is the worked example, and declaring it dropped a leg.** The prose
+    defended the excess return on scale + switching_cost + resource. Under D-43a the
+    resource leg is a **rent** — gas contracts, dated in the margin path under D-40 — and a
+    rent that expires inside the explicit period cannot hold up a ten-to-fifteen year
+    horizon. The structured block names scale and switching cost only. A ratchet test
+    enforces that tie, which no schema can see: the moat lives on the company file and the
+    defence on the archetype matrix.
+34. **D-58 is closed by the same field.** `DecayHorizon` is the structured home the horizon
+    never had. It rejects a block declaring neither a band nor indefinite, or both, and
+    enforces D-58's own rule: an indefinite horizon requires `finite_horizon_sensitivity`
+    beside it. All four probes were run — removing a baseline entry, baselining something
+    that asserts nothing, defending on a rent, and an indefinite horizon with no
+    sensitivity — and each fails as it should.
+35. **Nothing moved.** No level, no tie.
+
 ### What needs Stephen next
 
-31. **Ratify or reject D-42.** The diagnostic exists and warns; what is not in force is the
-    obligation — that a terminal return above the cost of capital owes a §10.6-compliant
-    defended exception naming the moat source, the decay horizon, the threat and a
-    sensitivity. Three DNL scenarios and all six WBC scenarios would owe one today.
-32. **M14:** is Stagflation's terminal ROE 4pp above its final earned year intended as a
-    recovery, and where should that be declared?
-33. **M15 / D-53:** implementing it moves all six CSL levels, and D-55 moves the same six,
-    so they land together.
+36. **M15 / D-53 for CSL.** Fourteen of the fifteen undeclared excess returns are baselined,
+    and six of those disappear by arithmetic once D-53 lands rather than by anyone
+    justifying them. Moves all six CSL levels; D-55 moves the same six, so they go together.
+    This is now the largest thing outstanding.
+37. **Where does a BANK's terminal-return defence live?** The §15 fork declares terminal ROE
+    on the scenario overlay, not as an impact-matrix driver, so all six WBC scenarios are
+    baselined for want of a home rather than for want of a reason. Structural question.
+38. **M14:** is Stagflation's terminal ROE 4pp above its final earned year intended as a
+    recovery, and what is its basis? The `decay_horizon.basis` field is where the answer
+    goes once 37 is settled.
+39. **Two DNL defences to write** — Muddle Through and AI Lag — with Orderly Convergence as
+    the template. Muddle Through is the headline number, so it is the one that matters.
 
 ---
 

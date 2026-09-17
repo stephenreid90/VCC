@@ -46,6 +46,87 @@ class Governance(BaseModel):
 # ---- Impact matrix entries (section 10.3) ----
 
 
+class DecayHorizon(BaseModel):
+    """How long an excess return is assumed to last, as a value rather than a sentence.
+
+    D-58's implementation. Before this the horizon lived as prose inside
+    ``DriverMovement.rationale`` — "decay horizon = 10-15 years" is a sentence, so
+    there was nothing for a validator to read and nothing a test could hold to the
+    rule, on a quantity §12 puts at 15-20% of terminal value. Dated horizons carry
+    a band because that is how the evidence arrives; ``indefinite`` is admissible
+    for a barrier of any kind under D-58, but never by omission.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    years_low: Optional[int] = None
+    years_high: Optional[int] = None
+    indefinite: bool = False
+    basis: str
+
+    @model_validator(mode="after")
+    def _dated_or_indefinite_but_not_neither(self) -> "DecayHorizon":
+        dated = self.years_low is not None or self.years_high is not None
+        if self.indefinite and dated:
+            raise ValueError(
+                "decay_horizon is both indefinite and dated; choose one. An "
+                "indefinite horizon with a band attached reads as a hedge rather "
+                "than a declaration (D-58)."
+            )
+        if not self.indefinite and not dated:
+            raise ValueError(
+                "decay_horizon declares neither a year band nor indefinite. D-58 "
+                "permits indefinite for any barrier, but not by omission."
+            )
+        if dated:
+            if self.years_low is None or self.years_high is None:
+                raise ValueError("a dated decay_horizon needs both years_low and years_high.")
+            if self.years_low <= 0 or self.years_high < self.years_low:
+                raise ValueError(
+                    f"decay_horizon band must be positive and ordered, got "
+                    f"[{self.years_low}, {self.years_high}]."
+                )
+        return self
+
+
+class ExcessReturnDefence(BaseModel):
+    """The §10.6 rule 2 defended exception, structured (D-42).
+
+    D-42 requires that where a terminal return exceeds the cost of capital, the
+    valuation names four things: the moat source, the decay horizon, the threat,
+    and a sensitivity test. All four were expressible in prose and one of them —
+    the horizon — is a number, which is why the prose form could never be checked.
+
+    ``moat_sources`` must name barrier-bearing sources. D-43a separated a RENT (a
+    cash advantage with an end date, carried in the explicit period) from a BARRIER
+    (what stops a rival taking the business, which is what the decay horizon
+    measures), so defending a terminal excess return on a rent-bearing source is
+    the confusion that ruling exists to prevent. The tie to ``Moat.source_roles``
+    is not enforced here because the moat lives on the company file and this on the
+    archetype matrix; the ratchet test is where the two are compared.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    moat_sources: List[str] = Field(..., min_length=1)
+    decay_horizon: DecayHorizon
+    named_threat: str
+    sensitivity: str
+    finite_horizon_sensitivity: Optional[str] = None
+
+    @model_validator(mode="after")
+    def _indefinite_horizon_declares_its_finite_sensitivity(self) -> "ExcessReturnDefence":
+        """D-58: indefinite is admissible, but never silent."""
+        if self.decay_horizon.indefinite and not (self.finite_horizon_sensitivity or "").strip():
+            raise ValueError(
+                "decay_horizon is indefinite, so D-58 requires the finite-horizon "
+                "sensitivity declared beside it. Terminal value is the majority of "
+                "these valuations; the most valuable assumption does not get to be "
+                "the silent one."
+            )
+        return self
+
+
 class DriverMovement(BaseModel):
     """One cell of the impact matrix — scenario x archetype x driver."""
 
@@ -66,6 +147,12 @@ class DriverMovement(BaseModel):
     )
     evidence_refs: List[EvidenceRef] = []
     governance: Optional[Governance] = None
+    # D-42. Present only on drivers that assert a terminal excess return, which in
+    # practice means terminal_roic. Optional in the schema and obligatory in the
+    # ratchet: tests/dcf/test_terminal_defence.py requires one wherever the
+    # diagnostic measures a return above the cost of capital, or the pair named in
+    # a baseline that may only shrink.
+    excess_return_defence: Optional[ExcessReturnDefence] = None
 
 
 class ImpactMatrixEntry(BaseModel):
