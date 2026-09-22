@@ -1,12 +1,12 @@
 # REPO_MAP — what exists, and where
 
-_Generated 2026-09-17 by `scripts/repo_inventory.py`. **Regenerate at the start of
+_Generated 2026-09-22 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `2efe2fc D-42 step 2: the declared terminal return reconciles against the capital build, and fails` on `main`
+- HEAD: `5291410 M13 and D-61: the target was 11.25 per cent, and that undoes most of D-60` on `main`
 - Unpushed commits: **0**
 - Tracked files: 330
-- Untracked files: 0
+- Untracked files: 5
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -125,7 +125,9 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `equity_bridge_and_valuation_mechanics.md` (70.6KB)
     - `horizon_and_terminal_convergence.md` (46.4KB)
     - `horizon_variant_sets.yaml` (9.5KB)
+    - `terminal_option_sets.yaml` (62.4KB)
     - `terminal_return_sets.yaml` (11.8KB)
+    - `terminal_value.md` (24.8KB)
     - `working_capital_treatment.md` (23.3KB)
   - **reference/**
     - **discount_rate_iers/**
@@ -225,6 +227,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `test_replica_ties_engine.py` (6.1KB)
     - `test_scenario_goldens.py` (10.1KB)
     - `test_terminal_defence.py` (7.0KB)
+    - `test_terminal_option_sets.py` (7.9KB)
     - `test_terminal_return_sets.py` (8.0KB)
     - `test_wbc_bank.py` (4.9KB)
     - **golden/**
@@ -328,4 +331,15 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `wbc_muddle_through_valuation_v4_formulas.xlsx` (12.5KB)
       - `wbc_scenarios_comparison_v1.xlsx` (11.6KB)
       - `wbc_scenarios_comparison_v2.xlsx` (11.6KB)
+
+## Untracked files
+
+Not in git. Either commit them or clear them — an untracked file is invisible
+to anyone who clones the repo, and is the most common way work gets lost.
+
+- `design/methodology/terminal_option_sets.yaml`
+- `design/methodology/terminal_value.md`
+- `notes/bridge/bridge_note_2026-09-22.md`
+- `scripts/size_terminal_options.py`
+- `tests/dcf/test_terminal_option_sets.py`
 

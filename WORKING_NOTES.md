@@ -23,7 +23,67 @@ prints git state.
 
 ---
 
-## 🔴 HANDOVER — session of 16 September 2026 (read this first)
+## 🔴 HANDOVER — sitting of 18–22 September 2026 (read this first)
+
+**Standing rule 5 is still in force until 16 October 2026** (see the block below and
+`CLAUDE.md`). Plumbing gets no airtime.
+
+**State:** suite **444**, ratchet unchanged, base ties green and **unmoved** — DNL 1.989,
+WBC 30.03, CSL 195.78. No engine code moved this sitting. All work is on origin/main;
+Stephen's working tree fast-forwards the next time `land_vcc.cmd` runs.
+
+### The terminal value was stepped back from, and redesigned — PROPOSED, not built
+
+Stephen stepped back from the component-built terminal (D-49 capital roll-forward, D-45
+declared returns, D-42 reconciliation, M16) as over-engineered for something nobody can
+see: *"we don't know what will happen, which is why it is in the TV."* The replacement is
+written up in **`design/methodology/terminal_value.md`** — read it in full before any
+terminal work. Every figure in it comes from `scripts/size_terminal_options.py` → the
+committed set `design/methodology/terminal_option_sets.yaml`, asserted by
+`tests/dcf/test_terminal_option_sets.py` (29 tests, including the maths identities).
+
+The design in one paragraph: **default terminal = C + PV of N years of economic profit**,
+closed form `TV = C × [m(1 − k^N) + k^N]`, m = (R − g)/(r − g), k = (1 + g)/(1 + r), on
+capital C at the end of the forecast. Moat length N is a **band** from the five-forces work
+(short / medium / long / indefinite), counted from the valuation date. Two levers: moat
+length and excess return; **the return lever holds capital and flexes earnings** (the other
+convention makes value fall as return rises). Simple TV and exit multiple stay selectable.
+Every basis reports seven disclosures, led by **TV/capital** and **implied moat**.
+
+Findings Stephen has seen, all in the paper:
+
+1. The current DNL terminal implies a **66–72 year moat** that nobody chose; WBC's declared
+   terminal ROEs imply 22–42 years and ARE an indefinite two-stage already.
+2. A 15-year moat takes DNL MT 1.99 → 1.69 and WBC MT 30.03 → 25.32, about −15% each —
+   five-year figures; D-35's ten-year forecast will move them.
+3. Simple TV is agnostic about components (Stephen's correction, accepted: the earlier
+   "least humble" framing was wrong) but still implies a return on new capital — 14.2% on
+   DNL MT against 11.4% earned — and capitalises one year, which breaks mid-glide (DNL
+   Disorderly: 1,925 against 4,169).
+4. DNL at the 3.61 market price needs a perpetual return of about 18.5% on all capital.
+5. WBC Stagflation (M14) shows up automatically as "other side of capital".
+
+### What needs Stephen next
+
+1. **Ratify D-62 to D-66** (paper §11). D-65 — how long a return *below* the cost of
+   capital persists — is a genuine choice with large numbers attached (paper §5).
+2. **D-35 to D-37 alongside** (ten-year default, growth fade, ten-year macro paths).
+3. On ratification these close or become moot: **M16**, the **D-42 materiality floor**,
+   **where a bank's defence lives**, **D-53/D-55 for CSL** (replaced by a CSL invested-capital
+   build). M14 stays open and needs his answer.
+
+### Build order once ruled (paper §12)
+
+1. Sourced fade-evidence note, checked against the PDFs, fixing the band edges. The
+   citations in the paper came through a summarising tool and are flagged as such.
+2. CSL invested-capital base (D-44 on the FY25 balance sheet, rolled forward).
+3. Terminal module in `src/`, wired into all three engines; `ExcessReturnDefence.decay_horizon`
+   is the moat band and `declared_terminal_return` is the return lever — the schema exists.
+4. Re-pin all goldens once, with the move explained per scenario.
+
+---
+
+## HANDOVER — session of 16 September 2026 (superseded by the block above)
 
 ### ⚠️ READ STANDING RULE 5 BEFORE YOU WRITE A WORD TO STEPHEN
 
