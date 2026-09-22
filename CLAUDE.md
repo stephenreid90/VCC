@@ -229,6 +229,12 @@ before planning any git work.**
   — his own cmd window has full access, which is exactly why `land_vcc.cmd` works and a
   session's shell does not. Do not re-run this experiment; if you do it anyway, the stranded
   lock is cleared by step 1 of `land_vcc.cmd`, so the recovery is the landing itself.
+- **`device_commit_files` cannot overwrite an existing file on the mount, and says it
+  did.** Found 22 September 2026: it reported `session.bundle` written, updated the mtime,
+  and left the old bytes in place. This is almost certainly the "vanished bundle" of
+  16 September. Write to a NEW filename, then in `device_bash` truncate-and-write it over
+  the target (`cat new > target`) and `mv` the new file into `.git/_stale_delete_me/`.
+  Always check size or `git bundle list-heads` on the device before fetching.
 - **The cloud container cannot push.** The git proxy allows clone and fetch and refuses
   push for this repo ("not in this session's authorized repository set", 403). The PAT at
   `.github-token` is not the constraint and re-trying will not help.
