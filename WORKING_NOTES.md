@@ -21,9 +21,62 @@ kept getting reopened.
 It regenerates the two maps, runs the suite and the ratchet, checks the base ties and
 prints git state.
 
+## 🔴 HANDOVER — sitting of 24 September 2026 (read this first)
+
+**Standing rule 5 is still in force until 16 October 2026.** Plumbing gets no airtime;
+one exception below because it affects whether anything in this block survives.
+
+**State:** suite and base ties as at the 18–22 September sitting — nothing re-run this
+sitting. No engine code moved. **The mount was behind by 13 commits** (a landing from the
+22 September sitting had not reached Stephen's checkout — the `device_commit_files`
+overwrite bug noted in `CLAUDE.md` operational quirks). Caught up and pushed this sitting;
+`origin/main` and Stephen's mount now agree. If a fresh chat reads this and finds the mount
+behind again, that bug is still live and worth its own sitting to fix properly rather than
+worked around again by hand.
+
+### D-62 to D-66 and D-35 to D-37 — all ratified
+
+Stephen ruled on all eight this sitting; recorded in `DECISIONS.md`. Two are worth flagging
+because they added to or sharpened the paper's recommendation rather than just accepting it:
+
+1. **D-63** (moat band) — ratified, plus a UI requirement: value has to be shown at more
+   than one moat length (band ends and indefinite), not just the chosen default, so the
+   point estimate never hides what the choice costs.
+2. **D-65** (below cost of capital) — not tied to a five-forces judgement call as first
+   proposed. Every scenario already carries a `time_profile` with a declared year at which
+   it reaches its own equilibrium phase (Stagflation Persists: year 5). The reversion year
+   is read from there. Stephen's own question — "do our ten-year models all converge by
+   then?" — checked out: every scenario reaches its equilibrium phase at or before year 10
+   except Fragmentation, which reaches it exactly at year 10 (not embedded in it — worth a
+   line in the write-up). This means D-65 mostly stops mattering once D-35 lands, because
+   the stress-to-resolution transition happens inside the explicit forecast, not the
+   terminal.
+
+Consequences of ratification, all now closed or moot rather than open: **M16** (D-45 vs
+D-49 conflict — D-49 supplies capital C, nothing else declares a terminal return), the
+**D-42 materiality floor** question, **where a bank's terminal-return defence lives**,
+**D-53/D-55 for CSL**, the two outstanding **DNL excess-return defences**, and **M14**
+(superseded by D-65's mechanism — say so explicitly in the write-up once built, rather than
+letting it quietly vanish).
+
+### What needs Stephen next
+
+Nothing — the build order below is implementation, not a question.
+
+### Build order (paper §12), now the active list
+
+1. Sourced fade-evidence note, checked against the PDFs, fixing the D-63 band edges. The
+   citations in the paper came through a summarising tool and are flagged as such.
+2. CSL invested-capital base (D-44 on the FY25 balance sheet, rolled forward).
+3. Terminal module in `src/`, wired into all three engines; `ExcessReturnDefence.decay_horizon`
+   is the moat band and `declared_terminal_return` is the return lever — the schema exists.
+4. D-35/D-36/D-37 engine changes: per-year revenue-growth path (fade), horizon-length
+   selection, and the archetype macro-driver paths plus SSOT check 13.
+5. Re-pin all goldens once, with the move explained per scenario.
+
 ---
 
-## 🔴 HANDOVER — sitting of 18–22 September 2026 (read this first)
+## HANDOVER — sitting of 18–22 September 2026 (superseded by the block above)
 
 **Standing rule 5 is still in force until 16 October 2026** (see the block below and
 `CLAUDE.md`). Plumbing gets no airtime.
