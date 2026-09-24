@@ -783,6 +783,52 @@ def invested_capital_opening_from_data(inputs: dict, wc_intensity: float,
     return b.build("IC3")
 
 
+def roll_forward_invested_capital(opening_capital: float, capex: List[float],
+                                  da: List[float], wc_change: List[float]) -> float:
+    """Roll invested capital forward through the explicit period (D-44/D-62 build order
+    item 2).
+
+    ``capex`` and ``wc_change`` are the engine's own cash-flow-signed per-year amounts
+    (negative -- a use of cash); ``da`` is positive. The capital STOCK moves the other
+    way from the cash flow: a capex outflow adds to the stock, depreciation reduces it,
+    and a working-capital cash outflow (an increase in the working-capital stock) adds
+    to it. Company-agnostic -- it consumes whatever per-year arrays an engine already
+    produced (D-51: no separate reimplementation of the flows), so it is reused as-is
+    for every FCFF-based company that needs a capital base for the new terminal, not
+    just CSL.
+    """
+    capital = opening_capital
+    for cx, d, wc in zip(capex, da, wc_change):
+        capital += (-cx) - d + (-wc)
+    return capital
+
+
+def csl_terminal_invested_capital(inputs: dict, scenario_id: str) -> float:
+    """CSL's invested capital at the end of the explicit period, for one scenario.
+
+    Closes the CSL half of D-53/D-55 (absorbed on the D-62 ratification, 24 Sep 2026):
+    CSL no longer needs its own terminal-capex rule or capital-structure workaround,
+    it needs the capital base the new two-stage terminal actually asks for. The FY25
+    balance sheet (net PP&E including right-of-use 9,797, intangibles excluding
+    goodwill 8,120 -- D-53's transcription) gives the opening stock via the same
+    ``invested_capital_opening_from_data`` DNL uses; the segment engine's own per-year
+    capex/D&A/working-capital arrays (already computed, already tested) roll it
+    forward to FY31. Nothing here is stored (D-16) and nothing here re-derives a flow
+    the engine already produced (D-51).
+    """
+    from vcc_valuations.dcf.segment_engine import SegmentEngine
+
+    si = build_segment_inputs_from_data(inputs, scenario_id)
+    res = SegmentEngine().run(si)
+    wc_intensity = working_capital_intensity_from_data(inputs).result
+    base_revenue = res.group_revenue[0]  # FY25 anchor
+    ic = invested_capital_opening_from_data(inputs, wc_intensity, base_revenue)
+    if ic is None:
+        raise ValueError("csl: invested_capital_opening_from_data needs net PP&E and "
+                          "intangibles on the balance sheet (D-44).")
+    return roll_forward_invested_capital(ic.result, res.capex, res.da, res.wc_change)
+
+
 @dataclass(frozen=True)
 class TerminalCapitalBase:
     """What D-49's roll-forward produces, rather than only the rate it needed.

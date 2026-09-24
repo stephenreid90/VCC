@@ -45,7 +45,7 @@ from vcc_valuations.dcf.fcf_engine import FcfEngine  # noqa: E402
 from vcc_valuations.dcf.segment_engine import SegmentEngine  # noqa: E402
 from vcc_valuations.translator import (  # noqa: E402
     build_bank_inputs_from_data, build_engine_inputs_from_data,
-    build_segment_inputs_from_data, load_inputs,
+    build_segment_inputs_from_data, csl_terminal_invested_capital, load_inputs,
 )
 
 SET_PATH = ROOT / "design" / "methodology" / "terminal_option_sets.yaml"
@@ -185,7 +185,7 @@ def _engine_facts(company_id: str, archetype_id: str, scenario_id: str) -> Dict:
             t=t, construction="segment_roic", horizon=len(res.fcff) - 1,
             earnings_T=res.nopat[-1], cash_flow_T=res.fcff[-1],
             ebit_T=res.group_ebit[-1], ebitda_T=res.group_ebit[-1] + res.da[-1],
-            capital=None,  # no invested-capital build yet: the build step supplies it
+            capital=csl_terminal_invested_capital(inputs, scenario_id),  # D-44/D-62 build order item 2
             tv=res.terminal_value, tdf=res.terminal_discount_factor,
             value_total=res.enterprise_value, vps=res.value_per_share_aud,
             shares=res.shares_outstanding_m,

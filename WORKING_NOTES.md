@@ -65,6 +65,15 @@ Nothing — the build order below is implementation, not a question.
 
 ### Build order (paper §12), now the active list
 
+2. **DONE 24 Sep 2026.** CSL's invested-capital base is built. Opening capital from the
+   FY25 balance sheet (D-44, already transcribed), rolled forward through FY26–FY31 on
+   the segment engine's own capex/D&A/working-capital arrays — reused, not
+   reimplemented (D-51). Lands 22,643–23,594 USDm across the six scenarios; CSL earns
+   18.2%–24.9% on it against an 8.75% Ke. That is a real, high number, not the old
+   D-53 defect (which was about return on NEW capital going to 61–73% because
+   `capex = D&A` zeroed out net reinvestment — a different quantity, now not measured
+   at all since the new terminal doesn't need it). Every disclosure in
+   `terminal_option_sets.yaml` now prices for CSL. Full suite green (444 passed).
 1. **DONE 24 Sep 2026.** Sourced fade-evidence note,
    `design/methodology/terminal_moat_fade_evidence.md`, checked all four citations against
    the actual source PDFs (all four numbers held). Recommendation: keep the band edges as

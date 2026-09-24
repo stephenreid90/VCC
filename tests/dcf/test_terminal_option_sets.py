@@ -175,8 +175,24 @@ def test_the_market_price_needs_a_return_the_forecast_does_not_show(by_key):
     assert 0.17 < b.implied_perpetual_return < 0.20
 
 
-def test_csl_cannot_be_placed_on_the_axis_until_its_capital_base_is_built(rows):
-    """Asserted so that the day CSL gains an invested-capital build, this test says so."""
+def test_csl_capital_base_is_built_and_on_the_axis(rows):
+    """Build order item 2, 24 Sep 2026: CSL gained an invested-capital build.
+
+    Superseded ``test_csl_cannot_be_placed_on_the_axis_until_its_capital_base_is_built``
+    -- that test was asserted so the day this changed would be a conscious event, and
+    this is that day. The FY25 opening stock (net PP&E 9,797 + intangibles ex-goodwill
+    8,120, D-53) rolled forward through the explicit period via the segment engine's
+    own capex/D&A/working-capital arrays (D-51: no separate reimplementation).
+    """
     for v in (x for x in rows if x.company_id == "csl"):
-        assert v.capital is None
-        assert not any(b.name.startswith("two_stage") for b in v.bases)
+        assert v.capital is not None
+        assert 20_000 < v.capital < 26_000, (
+            "CSL's rolled-forward capital should sit near the FY25 opening stock "
+            "(~17.9bn) plus five years of net reinvestment, not a different order "
+            "of magnitude")
+        assert v.earned_return is not None
+        # CSL earns well above its cost of equity on the corrected capital base --
+        # a capital-light franchise, not the D-53 defect (61-73% return on NEW
+        # capital, which this does not measure or repeat).
+        assert v.earned_return > v.cost_of_capital
+        assert any(b.name.startswith("two_stage") for b in v.bases)
