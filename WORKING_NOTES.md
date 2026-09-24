@@ -65,8 +65,14 @@ Nothing — the build order below is implementation, not a question.
 
 ### Build order (paper §12), now the active list
 
-1. Sourced fade-evidence note, checked against the PDFs, fixing the D-63 band edges. The
-   citations in the paper came through a summarising tool and are flagged as such.
+1. **DONE 24 Sep 2026.** Sourced fade-evidence note,
+   `design/methodology/terminal_moat_fade_evidence.md`, checked all four citations against
+   the actual source PDFs (all four numbers held). Recommendation: keep the band edges as
+   proposed (5–10 / 10–20 / 20–30 / indefinite); the evidence argues for discipline in how
+   they're used, not different numbers — the short band already sits above the population
+   baseline, the medium band's floor is a coin-flip-grade claim (not a round number), and
+   long/indefinite need D-43a's company-specific barrier rather than an industry's own
+   track record. For Stephen to confirm alongside the next sitting's work.
 2. CSL invested-capital base (D-44 on the FY25 balance sheet, rolled forward).
 3. Terminal module in `src/`, wired into all three engines; `ExcessReturnDefence.decay_horizon`
    is the moat band and `declared_terminal_return` is the return lever — the schema exists.

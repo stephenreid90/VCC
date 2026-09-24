@@ -209,9 +209,17 @@ keep one have something structural and identifiable. **The five-forces work exis
 decide which of those two populations a company belongs to.** That is a question it can
 answer.
 
-Calibrating the band edges against this evidence is the first research task of the build
-(§12). The citations above were gathered through a summarising tool and are to be checked
-against the source documents before this paper is used outside the project.
+Calibrating the band edges against this evidence was the first research task of the
+build (§12), done 24 September 2026 in
+`design/methodology/terminal_moat_fade_evidence.md`. The citations above were gathered
+through a summarising tool and have now been checked against the source documents; all
+four numbers held. The band edges stand as proposed; that note adds the usage discipline
+the checking surfaced — the short band already sits above the population baseline
+(Fama-French implies a 1.4-year half-life with no named advantage at all), the medium
+band's floor is a coin-flip-grade claim rather than a round number (McKinsey: 50% of
+already-elite performers persist nine years), and the long/indefinite bands need the
+company-specific barrier D-43a requires rather than an industry's own track record
+(Jiang and Koller's four-decade persistence is industry-level, not company-level).
 
 **Indefinite moats need a second lever, not a longer first one.** Stephen's instinct is
 that the Australian majors' moat is indefinite, and the evidence does not contradict him.
@@ -405,14 +413,22 @@ they are what reduce the weight on the moat band.
 ### Sources
 
 [^ff]: Fama, E.F. and French, K.R. (2000), "Forecasting Profitability and Earnings",
-    *Journal of Business* 73(2), 161–175. The 38% rate is from the abstract; the table
-    reference is to be confirmed. https://www.jstor.org/stable/10.1086/209638
+    *Journal of Business* 73(2), 161–175. The 38%/year rate is from the abstract, checked
+    24 September 2026 against the paper's own text: reversion is faster below the long-run
+    average and faster the further profitability sits from it in either direction — see
+    `design/methodology/terminal_moat_fade_evidence.md` §1.
+    https://www.jstor.org/stable/10.1086/209638
 [^mck1]: Cao, B., Jiang, B. and Koller, T. (2006), "Balancing ROIC and growth to build
     value", *McKinsey on Finance*, Spring 2006.
     https://www.mckinsey.com/capabilities/strategy-and-corporate-finance/our-insights/balancing-roic-and-growth-to-build-value
 [^mck2]: Jiang, B. and Koller, T. (2006), "A long-term look at ROIC", *McKinsey Quarterly*
-    2006 No. 1. https://www.mckinsey.com/capabilities/strategy-and-corporate-finance/our-insights/a-long-term-look-at-roic
+    2006 No. 1. Checked 24 September 2026: an industry-level, not company-level, finding —
+    see `design/methodology/terminal_moat_fade_evidence.md` §1–2.
+    https://www.mckinsey.com/capabilities/strategy-and-corporate-finance/our-insights/a-long-term-look-at-roic
 [^brb]: Mauboussin, M., Callahan, D. and Majd, D. (2016), *The Base Rate Book*, Credit
-    Suisse, Exhibits 7–8 and p.15. Persistence is measured on CFROI rather than ROIC.
+    Suisse, Exhibit 8 (p.13) and the Microsoft worked example (p.15). Persistence is
+    measured on CFROI rather than ROIC. Checked 24 September 2026 against the source PDF;
+    0.78 / 0.35 confirmed exactly — see
+    `design/methodology/terminal_moat_fade_evidence.md` §1.
 [^d2]: Damodaran, A., *Valuation* online lectures, Session 9, "Terminal Value";
     and "Estimating Firm Value", ch. 6. https://pages.stern.nyu.edu/~adamodar/pdfiles/valonlineslides/session9.pdf
