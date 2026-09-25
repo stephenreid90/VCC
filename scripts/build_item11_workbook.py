@@ -25,8 +25,11 @@ from scripts.size_horizon_variants import (
 )
 
 CFG = load_sets()
+# "current_reference", not "current": this whole file (like size_horizon_variants.py)
+# is EXPLORATORY sizing, not the live production build -- see the header comment in
+# horizon_variant_sets.yaml.
 SPEC = CFG["sets"][
-    [n for n, s in CFG["sets"].items() if s.get("status") == "current"][0]
+    [n for n, s in CFG["sets"].items() if s.get("status") == "current_reference"][0]
 ]
 CENTRAL = "muddle_through"
 IC_OPEN = CFG["invested_capital_opening"]

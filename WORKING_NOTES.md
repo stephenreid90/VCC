@@ -162,6 +162,17 @@ Nothing — the build order below is implementation, not a question.
    headline construction (rather than a disclosure) is still a later, separate pass.
 6. Write-up: the seven §8 disclosures in every company write-up's terminal section. Still
    open — the next build-order item.
+7. **Cleared up 25 Sep 2026:** Stephen asked why DNL's horizon reads 6, having recalled
+   "10 years" from earlier discussion. D-35 as ratified never set a flat 10-year
+   horizon — it set a rule (straight-line convergence, minimum 3 years), which computes
+   6 for DNL specifically because D-69's gas roll-off is the longest-converging driver.
+   The "10 years" was `horizon_and_terminal_convergence.md` §6/§7's illustrative/data-
+   readiness discussion and the pre-D-35/D-36 exploratory harness
+   (`horizon_variant_sets.yaml`), whose `post_restatement` set was still labelled
+   `status: current` — read as "the production build" when it was exploratory sizing
+   history. Relabelled to `current_reference` (`size_horizon_variants.py`,
+   `build_item11_workbook.py` updated to match) and the YAML's header comment now says
+   plainly that none of its sets is the live build. Full suite still green (456 passed).
 
 ---
 

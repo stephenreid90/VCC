@@ -1,4 +1,13 @@
-# Assumption sets behind every published horizon/terminal table.
+# Assumption sets behind every published EXPLORATORY horizon/terminal table.
+#
+# NONE of these sets is the live production build. The live DNL numbers come from
+# `data/companies/dnl.yaml` via `build_engine_inputs_from_data` (D-35/D-36/D-69/D-70:
+# horizon runs until the drivers straight-line, which computes 6 years for DNL, not
+# a chosen default of any kind). This file is this project's history of exploratory
+# sizing tables that predate D-35/D-36 -- several assumed a flat 10-year horizon to
+# illustrate the capex-wedge and archetype-data-readiness arguments in
+# horizon_and_terminal_convergence.md sections 6-7 -- pinned so a table already
+# published in a document stays reproducible rather than silently drifting.
 #
 # Each entry is the complete declared assumption block for one table: the horizon,
 # the fade, the explicit capex path, the gas roll-off, the Disorderly capex arc and
@@ -7,8 +16,9 @@
 # a table in a document can no longer drift away from the assumptions that produced
 # it. See "the committed-code rule" in CLAUDE.md.
 #
-# `status` is the only field a reader should need in order to know which table is
-# current. Exactly one set carries `current`.
+# `status` is the only field a reader should need in order to know which EXPLORATORY
+# table is the most recent. Exactly one set carries `current_reference` -- deliberately
+# not the bare word "current", which read as "the production build" and was not.
 
 company_id: dnl
 archetype_id: industrial_explosives
@@ -127,7 +137,7 @@ sets:
       stagflation_persists: 0.5841
 
   post_restatement:
-    status: current
+    status: current_reference
     published_in: WORKING_NOTES.md, handover of 14 September 2026
     note: >
       The first set struck on the restated operating base (D-48, D-50). It carries

@@ -359,9 +359,15 @@ def run_capex_intensity_rule(cfg: dict, set_name: str = "current") -> Dict[str, 
 
 
 def _current_set_name(cfg: dict) -> str:
-    current = [n for n, s in cfg["sets"].items() if s.get("status") == "current"]
+    """The most recent EXPLORATORY set -- not the live production build.
+
+    `current_reference`, not the bare word `current`: this whole file predates
+    D-35/D-36 and none of its sets is what the engine actually runs. See the
+    header comment in horizon_variant_sets.yaml.
+    """
+    current = [n for n, s in cfg["sets"].items() if s.get("status") == "current_reference"]
     if len(current) != 1:
-        raise ValueError(f"exactly one set must be current; found {current}")
+        raise ValueError(f"exactly one set must be current_reference; found {current}")
     return current[0]
 
 

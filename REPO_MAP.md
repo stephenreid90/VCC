@@ -3,7 +3,7 @@
 _Generated 2026-09-25 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `99565d9 D-37: archetype-declared macro-driver paths and SSOT check 14 (build order item 4, schema/check only)` on `main`
+- HEAD: `17a4887 D-35/D-36/D-69/D-70: per-year revenue-growth fade and horizon extension (build order item 4); fixes D-49 terminal-capex roll-forward` on `main`
 - Unpushed commits: **0**
 - Tracked files: 341
 - Untracked files: 0
@@ -124,7 +124,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `dnl_working_capital_derivation.md` (12.4KB)
     - `equity_bridge_and_valuation_mechanics.md` (71.8KB)
     - `horizon_and_terminal_convergence.md` (47.1KB)
-    - `horizon_variant_sets.yaml` (9.8KB)
+    - `horizon_variant_sets.yaml` (10.3KB)
     - `terminal_disclosure_set.yaml` (10.2KB)
     - `terminal_moat_fade_evidence.md` (6.9KB)
     - `terminal_option_sets.yaml` (75.4KB)
