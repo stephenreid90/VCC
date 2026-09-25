@@ -78,14 +78,20 @@ def test_the_return_lever_moves_value_the_way_a_user_expects():
 
 def test_the_other_lever_convention_runs_backwards(by_key):
     """Paper section 6. Holding earnings and solving for capital makes a higher return
-    LOWER the value: DNL Muddle Through, ten-year moat, 16% gives about 3,728."""
+    LOWER the value: DNL Muddle Through, ten-year moat, 16% gives about 3,473.
+
+    Re-pinned 25 Sep 2026 (D-35): the horizon is now 6 years, so ten years from
+    the valuation date is 4 years beyond the forecast, not 5. Re-pinned again the
+    same day once the D-49 terminal-capex roll-forward was fixed to compound on
+    D-36's actual per-year revenue path rather than a re-flattened rate (4381 ->
+    4379; the fix moves the earned return, not this test's shape)."""
     v = by_key[("dnl", "muddle_through")]
     e1 = v.capital * v.earned_return
-    n = 5  # ten years from valuation, five beyond the forecast
+    n = 10 - v.horizon_years  # ten years from valuation, the rest beyond the forecast
     measured = two_stage(v.capital, v.earned_return, v.cost_of_capital, v.terminal_growth, n)
     backwards = two_stage(e1 / 0.16, 0.16, v.cost_of_capital, v.terminal_growth, n)
-    assert measured == pytest.approx(4467, abs=1)
-    assert backwards == pytest.approx(3728, abs=1)
+    assert measured == pytest.approx(4379, abs=1)
+    assert backwards == pytest.approx(3473, abs=1)
     assert backwards < measured
 
 
@@ -104,7 +110,12 @@ def test_implied_perpetual_return_is_the_cost_of_capital_at_convergence():
 
 def test_engine_current_reproduces_every_engine_value_per_share(rows):
     """The per-share translation swaps the TV and nothing else."""
-    pinned = {("dnl", "muddle_through"): 1.9895, ("wbc", "muddle_through"): 30.0304,
+    # DNL re-pinned 25 Sep 2026 for D-35/D-36 (1.9895 -> 1.8461). Re-pinned again
+    # the same day for the D-49 terminal-capex roll-forward fix (1.8734 -> 1.8461):
+    # that roll-forward was still compounding revenue at a flat re-derived rate
+    # instead of D-36's actual per-year fade path, which had been overstating the
+    # earned return the component terminal capitalises.
+    pinned = {("dnl", "muddle_through"): 1.8461, ("wbc", "muddle_through"): 30.0304,
               ("csl", "muddle_through"): 195.7835}
     for key, vps in pinned.items():
         v = next(x for x in rows if (x.company_id, x.scenario_id) == key)
@@ -113,15 +124,21 @@ def test_engine_current_reproduces_every_engine_value_per_share(rows):
 
 # ------------------------------------------------------------ findings
 def test_the_current_terminal_already_assumes_a_moat_nobody_chose(by_key):
-    """Finding 1. DNL's component-built terminal implies a moat of 66 to 72 years on its
-    three above-WACC scenarios; WBC's declared terminal ROEs imply 22 to 42 years."""
+    """Finding 1. DNL's component-built terminal implies a finite but very long
+    moat on its three above-WACC scenarios -- 58 to 64 years, close to the
+    pre-D-35/D-36 finding of 66-72 years (the D-49 roll-forward fix below pulled
+    this back from an intermediate, overstated "perpetual_or_more" reading: that
+    reading came from the roll-forward still compounding revenue at a flat
+    re-derived rate rather than D-36's actual per-year fade to g, which
+    overstated the earned return R). WBC's declared terminal ROEs imply 17 to
+    37 years."""
     for s in ("muddle_through", "ai_productivity_lag", "orderly_convergence"):
         m = _basis(by_key[("dnl", s)], "engine_current").implied_moat
-        assert m.status == "finite" and 60 < 5 + m.extension_years < 80, (s, m)
+        assert m.status == "finite" and 55 < m.extension_years < 68, (s, m)
     for s in ("muddle_through", "ai_productivity_lag", "orderly_convergence",
               "fragmentation", "disorderly_climate_crystallisation"):
         m = _basis(by_key[("wbc", s)], "engine_current").implied_moat
-        assert m.status == "finite" and 20 < 5 + m.extension_years < 45, (s, m)
+        assert m.status == "finite" and 15 < 5 + m.extension_years < 42, (s, m)
 
 
 def test_wbc_stagflation_recovery_shows_up_on_the_new_axis(by_key):
@@ -134,9 +151,11 @@ def test_wbc_stagflation_recovery_shows_up_on_the_new_axis(by_key):
 
 def test_simple_tv_inherits_whatever_the_final_year_happens_to_be(by_key):
     """Finding 3. Where the forecast ends mid-glide, capitalising the final year's cash
-    flow is a large call on one year. DNL Disorderly Climate: under half the engine TV."""
+    flow is a large call on one year. DNL Disorderly Climate: about 55% of the engine TV
+    (was under half pre-D-35/D-36; the longer horizon and the fade both narrow the gap,
+    but simple TV still meaningfully understates the component-built terminal)."""
     v = by_key[("dnl", "disorderly_climate_crystallisation")]
-    assert _basis(v, "simple").terminal_value < 0.5 * _basis(v, "engine_current").terminal_value
+    assert _basis(v, "simple").terminal_value < 0.6 * _basis(v, "engine_current").terminal_value
 
 
 def test_simple_tv_is_a_claim_about_returns_on_new_capital(by_key):

@@ -112,27 +112,24 @@ class PlanResult:
 def _run_rate(plan: Plan, t: float) -> float:
     """The annualised revenue run-rate ``t`` years past the base year.
 
-    Whole years compound along the path. A fractional ``t`` -- the stub -- sits
-    inside the first forecast year, so it compounds at that year's rate. With a
-    flat path this is the engine's ``base * (1 + g) ** t`` for every ``t``.
+    Mirrors FcfEngine.run's own ``cum_growth`` exactly: the (1 + g) factors are
+    compounded together FIRST, one year at a time, and the base is multiplied
+    in ONCE at the end -- not interleaved into the loop. D-36 made the path the
+    general case (not always a run of equal rates), and floating-point
+    multiplication is not associative, so matching the engine's own operation
+    order, not just its result, is what lets the tie be asserted at
+    floating-point equality rather than at a tolerance chosen to hide the
+    difference. A fractional ``t`` -- the stub -- sits inside the first
+    forecast year, so it compounds at that year's rate.
     """
     whole = int(t)
-    rate = plan.base_year_revenue
-    # Compound a run of equal rates in one exponentiation rather than year by
-    # year. On a flat path that is exactly the engine's ``base * (1 + g) ** k``,
-    # bit for bit -- which is what lets the tie be asserted at floating-point
-    # equality instead of at a tolerance chosen to hide the difference.
-    k = 0
-    while k < whole:
-        j = k
-        while j < whole and plan.growth_path[j] == plan.growth_path[k]:
-            j += 1
-        rate *= (1.0 + plan.growth_path[k]) ** (j - k)
-        k = j
+    cum_growth = 1.0
+    for k in range(whole):
+        cum_growth *= 1.0 + plan.growth_path[k]
     frac = t - whole
     if frac:
-        rate *= (1.0 + plan.growth_path[min(whole, plan.horizon_years - 1)]) ** frac
-    return rate
+        cum_growth *= (1.0 + plan.growth_path[min(whole, plan.horizon_years - 1)]) ** frac
+    return plan.base_year_revenue * cum_growth
 
 
 def run(plan: Plan) -> PlanResult:
@@ -290,7 +287,7 @@ def plan_from_engine_inputs(inp, *, invested_capital_opening: Optional[float] = 
         horizon_years=H,
         stub_years=inp.stub_years,
         base_year_revenue=inp.base_year_revenue,
-        growth_path=[inp.revenue_growth] * H,
+        growth_path=list(inp.revenue_growth),  # D-36: already a per-year path
         base_ebit_margin=inp.base_ebit_margin,
         margin_delta=[
             inp.margin_transformation[k] + inp.margin_gas_rolloff[k] for k in range(H)

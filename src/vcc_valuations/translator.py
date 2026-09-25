@@ -622,6 +622,63 @@ def revenue_growth_from_data(inputs: dict, scenario_id: str):
     return None if chain is None else chain.result
 
 
+def fade_period_length_from_data(inputs: dict, scenario_id: str) -> Optional[int]:
+    """D-70: the declared length, in years, of D-36's revenue-growth fade.
+
+    A per-scenario field on ``normalised_baseline.engine_overlays.by_scenario``
+    (the same place ``margin_delta_pp`` / ``capex_delta_pp`` live), not inferred
+    at runtime from the impact matrix's qualitative ``fade_period_length``
+    rating -- that rating is direction/magnitude only, and D-70 is the one-off
+    reading of it into a number, done once by whoever wrote the company file,
+    the same way a qualitative moat rating is not auto-converted into a pp
+    delta. ``None`` if the scenario declares no ``engine_overlays`` at all.
+    """
+    company_raw = inputs.get("company_raw") or {}
+    nb = company_raw.get("normalised_baseline") or {}
+    overlays = nb.get("engine_overlays") or {}
+    scen = (overlays.get("by_scenario") or {}).get(scenario_id)
+    if scen is None:
+        return None
+    return scen.get("fade_period_length_years")
+
+
+def revenue_growth_path_from_data(inputs: dict, scenario_id: str,
+                                   horizon_years: int, terminal_growth: float) -> List[float]:
+    """D-36: the per-year revenue-growth path -- chain rate, then a fade to g.
+
+    Holds the §11 chain-derived rate (``revenue_growth_from_data``) for the
+    forecast segment, then glides LINEARLY to ``terminal_growth`` across the
+    final ``fade_period_length_years`` (D-70) years, landing exactly on g in
+    the final explicit year -- so the final year is a genuine steady state
+    rather than one that steps down discontinuously at the terminal boundary.
+    Raises if the scenario declares no chain or no fade length, or if the fade
+    would run longer than the horizon itself.
+    """
+    chain_rate = revenue_growth_from_data(inputs, scenario_id)
+    if chain_rate is None:
+        raise ValueError(f"{scenario_id}: no revenue_growth_chain to fade from (D-36).")
+    fade_years = fade_period_length_from_data(inputs, scenario_id)
+    if fade_years is None:
+        raise ValueError(
+            f"{scenario_id}: no fade_period_length_years declared (D-70) -- required "
+            "to build the D-36 revenue-growth fade."
+        )
+    if fade_years < 1:
+        raise ValueError(f"{scenario_id}: fade_period_length_years must be >= 1, got {fade_years}.")
+    if fade_years > horizon_years:
+        raise ValueError(
+            f"{scenario_id}: fade_period_length_years ({fade_years}) exceeds "
+            f"horizon_years ({horizon_years})."
+        )
+    flat_years = horizon_years - fade_years
+    path = [chain_rate] * flat_years
+    path += [
+        chain_rate + (terminal_growth - chain_rate) * (j / fade_years)
+        for j in range(1, fade_years + 1)
+    ]
+    return path
+
+
 def working_capital_intensity_from_data(inputs: dict):
     """Non-cash working-capital intensity, per
     ``design/methodology/working_capital_treatment.md``.
@@ -851,7 +908,7 @@ class TerminalCapitalBase:
 
 def _terminal_capex_growing_capital_base(inputs, company_raw, nb, overlays,
                                          wc_intensity, base_revenue, stub,
-                                         horizon, revenue_growth,
+                                         horizon, revenue_growth_path,
                                          delta_wc_stub, delta_wc) -> float:
     """D-49: the rate that compounds the fixed capital base at g, forever.
 
@@ -861,6 +918,12 @@ def _terminal_capex_growing_capital_base(inputs, company_raw, nb, overlays,
     dA and capex (d + g)A, all compounding at g -- capex exceeding depreciation
     by g x A permanently. The base is the one the explicit period leaves behind,
     so it has to be rolled forward on the same flows the valuation uses.
+
+    D-36: ``revenue_growth_path`` is the per-year path (chain rate, then the
+    fade to g), the same one ``FcfEngine.run`` and the delta-WC build above
+    compound -- not a flat rate. Rolling this base forward on a re-flattened
+    rate would silently disagree with the revenue the rest of the engine
+    actually produces once the fade bites in the final years.
     """
     ic = invested_capital_opening_from_data(inputs, wc_intensity, base_revenue)
     if ic is None:
@@ -872,9 +935,11 @@ def _terminal_capex_growing_capital_base(inputs, company_raw, nb, overlays,
     da_pct = overlays["da_pct_revenue"]
     g = overlays["terminal_growth"]
 
-    revenue = [base_revenue * stub] + [
-        base_revenue * (1.0 + revenue_growth) ** k for k in range(1, horizon + 1)
-    ]
+    cum = 1.0
+    revenue = [base_revenue * stub]
+    for g_year in revenue_growth_path:
+        cum *= 1.0 + g_year
+        revenue.append(base_revenue * cum)
     capex_pct = [overlays["capex_pct_stub"]] + list(overlays["capex_pct"])
     dwc = [delta_wc_stub] + list(delta_wc)
 
@@ -992,8 +1057,23 @@ def build_engine_inputs_from_data(inputs: dict, scenario_id: str):
     stub = nb["stub_years"]
     base_revenue = nb["base_year_revenue"]
 
+    # D-36: revenue_growth is a per-year path, not a constant rate -- the
+    # working-capital build needs the same annualised run-rate the engine's own
+    # revenue loop produces, so it is built off the same path rather than a
+    # re-derived scalar. Year 1's rate applies fractionally within the stub
+    # (which sits inside year 1, before the first FY-end); a whole year k
+    # compounds the path's first k entries, matching FcfEngine.run cumulatively.
+    revenue_growth_path = revenue_growth_path_from_data(
+        inputs, scenario_id, horizon, overlays["terminal_growth"]
+    )
+    cum_growth = [1.0]
+    for g_year in revenue_growth_path:
+        cum_growth.append(cum_growth[-1] * (1.0 + g_year))
+
     def _run_rate(t: float) -> float:
-        return base_revenue * (1.0 + revenue_growth) ** t
+        if t <= 1.0:
+            return base_revenue * (1.0 + revenue_growth_path[0]) ** t
+        return base_revenue * cum_growth[int(round(t))]
 
     delta_wc_stub = wc_intensity * (_run_rate(stub) - base_revenue)
     delta_wc = [wc_intensity * (_run_rate(1.0) - _run_rate(stub))]
@@ -1025,7 +1105,7 @@ def build_engine_inputs_from_data(inputs: dict, scenario_id: str):
         elif rule == "grows_capital_base_at_g":
             _tcb = _terminal_capex_growing_capital_base(
                 inputs, company_raw, nb, overlays, wc_intensity, base_revenue,
-                stub, horizon, revenue_growth, delta_wc_stub, delta_wc,
+                stub, horizon, revenue_growth_path, delta_wc_stub, delta_wc,
             )
             terminal_capex_pct = _tcb.capex_pct_revenue
             terminal_invested_capital = _tcb.invested_capital_final
@@ -1084,7 +1164,7 @@ def build_engine_inputs_from_data(inputs: dict, scenario_id: str):
         horizon_years=nb["horizon_years"],
         stub_years=nb["stub_years"],
         base_year_revenue=nb["base_year_revenue"],
-        revenue_growth=revenue_growth,
+        revenue_growth=revenue_growth_path,
         base_ebit_margin=overlays["base_ebit_margin"],
         margin_transformation=overlays["margin_transformation"],
         margin_gas_rolloff=overlays["margin_gas_rolloff"],

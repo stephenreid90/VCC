@@ -205,6 +205,8 @@ class Book:
             ("terminal_growth", "Terminal growth g", PCT2, lambda s: ov["by_scenario"][s]["terminal_growth"]),
             ("margin_delta_pp", "Margin delta (parallel shift, pp)", PCT2, lambda s: ov["by_scenario"][s].get("margin_delta_pp", 0.0)),
             ("capex_delta_pp", "Capex delta (parallel shift, pp)", PCT2, lambda s: ov["by_scenario"][s].get("capex_delta_pp", 0.0)),
+            # D-70: the fade length behind D-36's revenue-growth fade, below.
+            ("fade_period_length_years", "Fade period length (years, D-70)", "0", lambda s: ov["by_scenario"][s]["fade_period_length_years"]),
         ]
         for key, label, fmt, fn in drivers:
             ws.cell(r[0], 1, label)
@@ -282,6 +284,7 @@ class Book:
         line("Capex % — stub", base["capex_pct_stub"], "capex_stub", PCT2)
         line("Stub years", nb["stub_years"], "stub_years", NUM1 + "00")
         line("Horizon years", nb["horizon_years"], "horizon", "0")
+        self.horizon = nb["horizon_years"]  # D-35: drives every period loop below
         # margin transformation vector
         ws.cell(r[0], 1, "Margin transformation (Y1..Y5, pp)")
         for i, v in enumerate(base["margin_transformation"]):
@@ -443,7 +446,7 @@ class Book:
         rr += 1
         ws.cell(rr, 1, "Applied tax glide (effective + (blended-effective)*fraction)"); ws.cell(rr, 1).font = SUB; rr += 1
         self.tax_glide_rows = []
-        for i in range(5):
+        for i in range(self.horizon):
             ws.cell(rr, 1, f"FY{27+i} applied tax rate (Y{i+1})")
             c = ws.cell(rr, 2, f"={R['eff_tax']}+(B{d8}-{R['eff_tax']})*{R[f'glide_frac:{i}']}"); c.number_format = PCT3
             self.ref[f"tax_glide:{i}"] = f"'Tax bridge'!$B${rr}"
@@ -479,126 +482,146 @@ class Book:
                     c.font = BOLD
             rmap[key] = rr[0]; rr[0] += 1
 
-        # revenue growth link
-        prow("g_rev", "Revenue growth (from Revenue growth sheet)", PCT3,
-             lambda s, c, j: f"={R[f'rev_growth:{s}']}")
-        # Revenue rows p0..p5
+        # D-35/D-36: horizon and revenue-growth path.
+        H = self.horizon
+        periods = ["Stub"] + [f"Y{i}" for i in range(1, H + 1)]
+        # Revenue growth, per year: the chain rate holds flat, then fades
+        # linearly to g over the declared fade length (D-70), landing on g in
+        # the final explicit year (D-36). Both g and the fade length are
+        # per-scenario; the horizon is shared across scenarios (D-35).
+        section("Revenue growth (chain rate, then D-36 fade to g)")
+        for p in range(1, H + 1):
+            def f_g(s, c, j, p=p):
+                chain = R[f"rev_growth:{s}"]
+                g = R[f"macro:terminal_growth:{s}"]
+                fade = R[f"macro:fade_period_length_years:{s}"]
+                flat = f"({R['horizon']}-{fade})"
+                return (f"=IF({p}<={flat},{chain},"
+                        f"{chain}+({g}-{chain})*({p}-{flat})/{fade})")
+            prow(f"g_rev{p}", f"  {periods[p]} revenue growth", PCT3, f_g)
+        # Revenue rows: stub, then each year off the prior year's full-year
+        # revenue at that year's own growth rate (not a single compounded rate).
         section("Revenue")
-        for p in range(6):
+        for p in range(H + 1):
             def f_rev(s, c, j, p=p):
                 if p == 0:
                     return f"={R['base_rev']}*{R['stub_years']}"
-                return f"={R['base_rev']}*(1+{c}{rmap['g_rev']})^{p}"
-            prow(f"rev{p}", f"  {PERIODS[p]} revenue", MONEY, f_rev)
+                if p == 1:
+                    return f"={R['base_rev']}*(1+{c}{rmap['g_rev1']})"
+                return f"={c}{rmap[f'rev{p-1}']}*(1+{c}{rmap[f'g_rev{p}']})"
+            prow(f"rev{p}", f"  {periods[p]} revenue", MONEY, f_rev)
         # EBIT margin
         section("EBIT margin")
-        for p in range(6):
+        for p in range(H + 1):
             def f_m(s, c, j, p=p):
                 if p == 0:
                     return f"={R['base_margin']}"
                 i = p - 1
                 return f"={R['base_margin']}+({R[f'mt:{i}']}+{R[f'macro:margin_delta_pp:{s}']})+{R[f'gas:{i}']}"
-            prow(f"m{p}", f"  {PERIODS[p]} EBIT margin", PCT2, f_m)
+            prow(f"m{p}", f"  {periods[p]} EBIT margin", PCT2, f_m)
         # EBIT
         section("EBIT")
-        for p in range(6):
-            prow(f"ebit{p}", f"  {PERIODS[p]} EBIT", MONEY,
+        for p in range(H + 1):
+            prow(f"ebit{p}", f"  {periods[p]} EBIT", MONEY,
                  lambda s, c, j, p=p: f"={c}{rmap[f'rev{p}']}*{c}{rmap[f'm{p}']}")
         # applied tax
         section("Applied tax rate")
-        for p in range(6):
+        for p in range(H + 1):
             def f_t(s, c, j, p=p):
                 if p == 0:
                     return f"={R['eff_tax']}"
                 return f"={R[f'tax_glide:{p-1}']}"
-            prow(f"tax{p}", f"  {PERIODS[p]} applied tax rate", PCT3, f_t)
+            prow(f"tax{p}", f"  {periods[p]} applied tax rate", PCT3, f_t)
         # NOPAT
         section("NOPAT = EBIT x (1 - tax)")
-        for p in range(6):
-            prow(f"nop{p}", f"  {PERIODS[p]} NOPAT", MONEY,
+        for p in range(H + 1):
+            prow(f"nop{p}", f"  {periods[p]} NOPAT", MONEY,
                  lambda s, c, j, p=p: f"={c}{rmap[f'ebit{p}']}*(1-{c}{rmap[f'tax{p}']})")
         # D&A
         section("D&A = revenue x D&A%")
-        for p in range(6):
-            prow(f"da{p}", f"  {PERIODS[p]} D&A", MONEY,
+        for p in range(H + 1):
+            prow(f"da{p}", f"  {periods[p]} D&A", MONEY,
                  lambda s, c, j, p=p: f"={c}{rmap[f'rev{p}']}*{R['da_pct']}")
         # Capex (negative)
         section("Capex (negative)")
-        for p in range(6):
+        for p in range(H + 1):
             def f_cx(s, c, j, p=p):
                 if p == 0:
                     return f"=-{c}{rmap[f'rev{p}']}*{R['capex_stub']}"
                 i = p - 1
                 return f"=-{c}{rmap[f'rev{p}']}*({R[f'capex:{i}']}+{R[f'macro:capex_delta_pp:{s}']})"
-            prow(f"cx{p}", f"  {PERIODS[p]} capex", MONEY, f_cx)
+            prow(f"cx{p}", f"  {periods[p]} capex", MONEY, f_cx)
         # Working capital. NCWC is a stock and scales with the ANNUALISED
         # revenue run-rate, not with the stub's part-year flow — hence the
-        # run-rate row, which differs from the revenue row only in the stub.
+        # run-rate row, which differs from the revenue row only in the stub
+        # (Y1..YH run-rate is just that year's own revenue, already annual).
         section("Working capital (intensity x change in annualised revenue)")
-        for p in range(6):
+        for p in range(H + 1):
             def f_rrate(s, c, j, p=p):
-                exp = f"{R['stub_years']}" if p == 0 else f"{p}"
-                return f"={R['base_rev']}*(1+{c}{rmap['g_rev']})^{exp}"
-            prow(f"rrate{p}", f"  {PERIODS[p]} revenue run-rate (annualised)", MONEY, f_rrate)
-        for p in range(6):
+                if p == 0:
+                    return f"={R['base_rev']}*(1+{c}{rmap['g_rev1']})^{R['stub_years']}"
+                return f"={c}{rmap[f'rev{p}']}"
+            prow(f"rrate{p}", f"  {periods[p]} revenue run-rate (annualised)", MONEY, f_rrate)
+        for p in range(H + 1):
             def f_dwc(s, c, j, p=p):
                 prev = R["base_rev"] if p == 0 else f"{c}{rmap[f'rrate{p-1}']}"
                 return f"=-{R['wc_int']}*({c}{rmap[f'rrate{p}']}-{prev})"
-            prow(f"dwc{p}", f"  {PERIODS[p]} change in working capital", MONEY, f_dwc)
+            prow(f"dwc{p}", f"  {periods[p]} change in working capital", MONEY, f_dwc)
         # FCFF
         section("FCFF = NOPAT + D&A + Capex + ΔWC")
-        for p in range(6):
-            prow(f"fcff{p}", f"  {PERIODS[p]} FCFF", MONEY,
+        for p in range(H + 1):
+            prow(f"fcff{p}", f"  {periods[p]} FCFF", MONEY,
                  lambda s, c, j, p=p: f"={c}{rmap[f'nop{p}']}+{c}{rmap[f'da{p}']}+{c}{rmap[f'cx{p}']}+{c}{rmap[f'dwc{p}']}")
         # mid-times & discount factors
         section("Discounting (single WACC)")
-        for p in range(6):
+        for p in range(H + 1):
             def f_mt(s, c, j, p=p):
                 if p == 0:
                     return f"={R['stub_years']}/2"
                 return f"={R['stub_years']}+{p}-0.5"
-            prow(f"midt{p}", f"  {PERIODS[p]} mid-time (yrs)", NUM1 + "00", f_mt)
-        for p in range(6):
-            prow(f"df{p}", f"  {PERIODS[p]} discount factor", NUM1 + "0000",
+            prow(f"midt{p}", f"  {periods[p]} mid-time (yrs)", NUM1 + "00", f_mt)
+        for p in range(H + 1):
+            prow(f"df{p}", f"  {periods[p]} discount factor", NUM1 + "0000",
                  lambda s, c, j, p=p: f"=1/(1+{R['wacc']})^{c}{rmap[f'midt{p}']}")
-        for p in range(6):
-            prow(f"pv{p}", f"  {PERIODS[p]} PV of FCFF", MONEY,
+        for p in range(H + 1):
+            prow(f"pv{p}", f"  {periods[p]} PV of FCFF", MONEY,
                  lambda s, c, j, p=p: f"={c}{rmap[f'fcff{p}']}*{c}{rmap[f'df{p}']}")
         # Invested capital roll-forward, and the terminal rate it produces.
         if getattr(self, "terminal_capex_rule", None) == "grows_capital_base_at_g":
             section("Invested capital rolled forward (D-44) and the terminal rate it implies (D-49)")
-            for p in range(6):
+            for p in range(H + 1):
                 def f_ic(s_, c, j, p=p):
                     prev = R["ic0"] if p == 0 else f"{c}{rmap[f'ic{p-1}']}"
                     return (f"={prev}-{c}{rmap[f'cx{p}']}-{c}{rmap[f'da{p}']}"
                             f"-{c}{rmap[f'dwc{p}']}")
-                prow(f"ic{p}", f"  {PERIODS[p]} invested capital, closing", MONEY, f_ic)
-            prow("ic_fixed", "  Fixed capital at the end of Y5", MONEY,
-                 lambda s_, c, j: f"={c}{rmap['ic5']}-{R['wc_int']}*{c}{rmap['rev5']}")
+                prow(f"ic{p}", f"  {periods[p]} invested capital, closing", MONEY, f_ic)
+            prow("ic_fixed", f"  Fixed capital at the end of Y{H}", MONEY,
+                 lambda s_, c, j: f"={c}{rmap[f'ic{H}']}-{R['wc_int']}*{c}{rmap[f'rev{H}']}")
             prow("t_capex_s", "  Terminal capex % of revenue", PCT2,
                  lambda s_, c, j: (
                      f"={R['da_pct']}+{R[f'macro:terminal_growth:{s_}']}"
-                     f"*{c}{rmap['ic_fixed']}/{c}{rmap['rev5']}"))
+                     f"*{c}{rmap['ic_fixed']}/{c}{rmap[f'rev{H}']}"))
 
         # terminal + EV
         section("Terminal value & enterprise value")
         prow("pv_expl", "PV of explicit FCFF", MONEY,
-             lambda s, c, j: "=" + "+".join(f"{c}{rmap[f'pv{p}']}" for p in range(6)))
+             lambda s, c, j: "=" + "+".join(f"{c}{rmap[f'pv{p}']}" for p in range(H + 1)))
         if self.terminal_mode == "normalised":
-            # Rebuilt from components: Y5 margin and tax, D&A, terminal capex
-            # (declared rule), and a working-capital drag of g x intensity.
-            # Capitalising Y5 FCFF instead would carry the explicit period's
-            # capex and working-capital build into perpetuity.
+            # Rebuilt from components: the final explicit year's margin and tax,
+            # D&A, terminal capex (declared rule), and a working-capital drag of
+            # g x intensity. Capitalising that year's FCFF instead would carry
+            # the explicit period's capex and working-capital build into
+            # perpetuity.
             prow("tfcff", "Terminal FCFF (normalised reinvestment)", MONEY,
                  lambda s, c, j: (
-                     f"={c}{rmap['rev5']}*(1+{R[f'macro:terminal_growth:{s}']})"
-                     f"*({c}{rmap['m5']}*(1-{c}{rmap['tax5']})+{R['da_pct']}"
+                     f"={c}{rmap[f'rev{H}']}*(1+{R[f'macro:terminal_growth:{s}']})"
+                     f"*({c}{rmap[f'm{H}']}*(1-{c}{rmap[f'tax{H}']})+{R['da_pct']}"
                      f"-{(c + str(rmap['t_capex_s'])) if R.get('t_capex') is None else R['t_capex']}"
                      f"-{R[f'macro:terminal_growth:{s}']}*{R['wc_int']})"
                  ))
         else:
-            prow("tfcff", "Terminal FCFF = Y5 FCFF x (1+g)", MONEY,
-                 lambda s, c, j: f"={c}{rmap['fcff5']}*(1+{R[f'macro:terminal_growth:{s}']})")
+            prow("tfcff", f"Terminal FCFF = Y{H} FCFF x (1+g)", MONEY,
+                 lambda s, c, j: f"={c}{rmap[f'fcff{H}']}*(1+{R[f'macro:terminal_growth:{s}']})")
         prow("tv", "Terminal value = TFCFF/(WACC-g)", MONEY,
              lambda s, c, j: f"={c}{rmap['tfcff']}/({R['wacc']}-{R[f'macro:terminal_growth:{s}']})")
         prow("tend", "Terminal end time (stub+H)", NUM1 + "00",

@@ -61,17 +61,31 @@ def _run(scenario: str):
 
 @pytest.mark.parametrize("scenario", SCENARIOS)
 def test_scenario_drivers_tie_the_comparison_workbook(scenario):
-    """Revenue growth, Y5 EBIT margin and terminal growth reproduce the v4 workbook."""
+    """Revenue growth and terminal growth still reproduce the v4 workbook.
+
+    The Y5 EBIT margin no longer ties, and is not checked here: D-69
+    (25 Sept 2026) revised DNL's gas roll-off from a flat -1.5pp (D-40, the
+    basis the v4 workbook was struck on) to a deeper, later-phased -2.0pp by
+    FY2032. That moves every scenario's Y5 margin down by the same ~0.5pp
+    parallel shift, since the roll-off revision applies uniformly -- D-69
+    working as intended, not a data error. D-35 also means Y5 is no longer
+    the last explicit year (the horizon extended to Y6), so ``r.ebit_margin``
+    is not indexed by ``-1`` here even for the checks that remain.
+    """
     inp, built, r = _run(scenario)
-    wb_growth, wb_y5_margin, wb_terminal = WORKBOOK[scenario]
+    wb_growth, _wb_y5_margin, wb_terminal = WORKBOOK[scenario]
     assert abs(revenue_growth_from_data(inp, scenario) - wb_growth) < 5e-5
-    assert abs(r.ebit_margin[-1] - wb_y5_margin) < 5e-4         # Y5 (last explicit) margin
     assert abs(built.terminal_growth - wb_terminal) < 1e-9
 
 
 def test_muddle_through_is_the_ratified_headline():
+    """1.846, not 1.989: D-35/D-36 (25 Sept 2026) extended the horizon to Y6 and
+    faded revenue growth to g, D-69 deepened the gas roll-off, and the D-49
+    terminal-capex roll-forward fix (same day) made that roll-forward compound
+    on D-36's actual per-year fade path instead of a re-flattened rate -- see
+    test_dnl_mt_from_data.py for the full derivation."""
     _, _, r = _run("muddle_through")
-    assert round(r.value_per_share, 3) == 1.989
+    assert round(r.value_per_share, 3) == 1.846
 
 
 def test_scenario_asymmetry_is_downside_skewed():
@@ -98,8 +112,16 @@ def test_scenario_asymmetry_is_downside_skewed():
     mt = vps["muddle_through"]
     upside = vps["orderly_convergence"] - mt
     downside = mt - vps["stagflation_persists"]
-    assert downside > 3.0 * upside          # asymmetry ~4x (v4 workbook: 4.05x)
-    assert all(v > 0 for v in vps.values())  # every scenario still yields positive equity
+    assert downside > 3.0 * upside          # asymmetry ~6.0x post D-35/D-36/D-69 (v4 workbook: 4.05x)
+    # Stagflation Persists crossed to negative equity value under D-35/D-36/D-69
+    # (25 Sept 2026): the extra year of margin compression and gas roll-off, on
+    # top of the fade to g, is now enough to take the scenario through zero.
+    # That is the model finding this asymmetry test exists to surface, not a
+    # bug -- so every OTHER scenario still yields positive equity, and only
+    # Stagflation (already the worst case, and already the closest to zero
+    # before this change) is allowed through it.
+    assert all(v > 0 for s, v in vps.items() if s != "stagflation_persists")
+    assert vps["stagflation_persists"] < 0
 
 
 def test_single_wacc_held_across_scenarios():

@@ -60,6 +60,12 @@ def build_plan(cfg: dict, spec: dict, scenario_id: str) -> replica.Plan:
     plan = replica.plan_from_engine_inputs(
         inp, invested_capital_opening=cfg["invested_capital_opening"]
     )
+    # D-36 gave the live engine inputs their own per-year fade to g, ending
+    # exactly on g in the live (short) horizon's final year. This harness
+    # declares its own horizon and fade length per set -- independent of the
+    # live one -- so it needs the pre-fade flat chain rate to extend and fade
+    # from, not the live per-year path, whose tail is already partway to g.
+    plan = replace(plan, growth_path=[plan.growth_path[0]] * plan.horizon_years)
     # A published table is only reproducible if the operating rates it was struck
     # on travel with it. When the data files are restated -- as they were on
     # 14 September 2026 -- a set that carries no `operating_base` silently starts
@@ -73,13 +79,17 @@ def build_plan(cfg: dict, spec: dict, scenario_id: str) -> replica.Plan:
         # its arc.
         neutral = engine_inputs(cfg, _DELTA_NEUTRAL_SCENARIO).capex_pct
         frozen = list(base["capex_pct"])
+        # The frozen block predates D-35's horizon extension, so it is one year
+        # short of the live horizon; hold its last (already-flat) year to match,
+        # the same convention `extend` uses everywhere else in this harness.
+        frozen += [frozen[-1]] * (plan.horizon_years - len(frozen))
         plan = replace(
             plan,
             base_ebit_margin=base["base_ebit_margin"],
             da_pct_revenue=base["da_pct_revenue"],
             capex_pct_stub=base["capex_pct_stub"],
             capex_pct=[frozen[k] + (inp.capex_pct[k] - neutral[k])
-                       for k in range(len(frozen))],
+                       for k in range(plan.horizon_years)],
             terminal_capex_pct_revenue=base.get(
                 "terminal_capex_pct_revenue", base["da_pct_revenue"]
             ),

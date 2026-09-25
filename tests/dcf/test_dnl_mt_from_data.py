@@ -47,14 +47,23 @@ def _load():
 
 def test_engine_inputs_assembled_from_data_reproduce_ratified_per_share():
     """The whole engine input is built from data and reproduces the ratified
-    β-1.10 headline. Restated 23 Aug 2026 when working capital and the
-    normalised terminal went live (D-13): 2.831/share, EV 6,580.3, WACC
-    8.8772% — the WACC is untouched, the reinvestment side is not."""
+    β-1.10 headline. Restated 25 Sep 2026 when D-35/D-36 landed (build order
+    item 4): horizon 5 -> 6 years, revenue growth a 2-year fade to g rather
+    than a constant chain rate, gas roll-off -2.0pp on the D-69 phasing rather
+    than -1.5pp. Restated again the same day for the D-49 terminal-capex
+    roll-forward fix: that roll-forward was compounding revenue at a flat
+    re-derived rate rather than D-36's actual per-year fade path, overstating
+    the fixed capital base it rolled forward and so understating the terminal
+    capex rate. EV 4,837.6, 1.846/share -- down from 1.989, the combined effect
+    of an extra year of margin compression (the roll-off's heaviest single-year
+    hit), slower final-year growth (the fade) and the corrected terminal capex
+    rate, only partly offset by a sixth year of cash flow. The WACC is
+    untouched."""
     inp = build_engine_inputs_from_data(_load(), "muddle_through")
     r = FcfEngine().run(inp)
     assert abs(r.wacc - 0.088772) < 1e-4
-    assert round(r.enterprise_value, 1) == 5091.3
-    assert round(r.value_per_share, 3) == 1.989
+    assert round(r.enterprise_value, 1) == 4837.6
+    assert round(r.value_per_share, 3) == 1.846
     assert r.value_per_share < r.market_reference_price
 
 
@@ -107,19 +116,31 @@ def test_assembled_inputs_match_the_golden_field_by_field():
     gold = dnl_muddle_through_inputs()
 
     assert data.base_year_revenue == gold.base_year_revenue
-    assert data.horizon_years == gold.horizon_years
+    # D-35 (25 Sep 2026) extended the live horizon to 6 years; the golden stays
+    # frozen at the v6 audit's 5. Same exception as the operating-rate restatement
+    # below: asserting equality would force the audited oracle to move with the
+    # live data, which is exactly what freezing it exists to prevent.
+    assert data.horizon_years == 6 and gold.horizon_years == 5
     assert data.stub_years == gold.stub_years
-    assert abs(data.revenue_growth - gold.revenue_growth) < 1e-12
+    # D-36 (25 Sep 2026): revenue_growth is now a 6-year fade path, not the
+    # golden's constant 5-year rate. The first (pre-fade) year still ties the
+    # golden's chain rate exactly -- the fade only touches years 5-6.
+    assert len(data.revenue_growth) == 6 and len(gold.revenue_growth) == 5
+    assert abs(data.revenue_growth[0] - gold.revenue_growth[0]) < 1e-12
     # The operating rates are excepted alongside the WACC half. The golden is
     # frozen at the v6 audit (see its docstring) while the data carries the
     # 14 September 2026 restatement — margin 12.72% against the golden's 14.10%,
-    # depreciation 8.24% against 7.30%, capex 9.18% against the 8.0/7.0 path.
-    # Asserting equality here would force the audited oracle to be restated with
-    # the data, which is exactly what freezing it is meant to prevent.
-    assert data.margin_transformation == gold.margin_transformation
-    assert data.margin_gas_rolloff == gold.margin_gas_rolloff
-    assert len(data.tax_rate_glide) == len(gold.tax_rate_glide)
-    assert all(abs(a - b) < 1e-9 for a, b in zip(data.tax_rate_glide, gold.tax_rate_glide))
+    # depreciation 8.24% against 7.30%, capex 9.18% against the 8.0/7.0 path --
+    # and now the 25 Sep 2026 D-35/D-69 extension: 6 years, not 5, and the gas
+    # roll-off revised to -2.0pp (D-69, superseding D-40's -1.5pp). Asserting
+    # equality here would force the audited oracle to be restated with the
+    # data, which is exactly what freezing it is meant to prevent.
+    assert data.margin_transformation[:5] == gold.margin_transformation
+    assert data.margin_transformation[5] == data.margin_transformation[4]  # Y6 holds flat
+    assert data.margin_gas_rolloff != gold.margin_gas_rolloff
+    assert len(data.tax_rate_glide) == 6 and len(gold.tax_rate_glide) == 5
+    assert all(abs(a - b) < 1e-9 for a, b in zip(data.tax_rate_glide[:5], gold.tax_rate_glide))
+    assert data.tax_rate_glide[5] == data.tax_rate_glide[4]  # Y6 holds at statutory
     assert data.terminal_growth == gold.terminal_growth
 
     db, gb = data.equity_bridge, gold.equity_bridge
@@ -136,17 +157,22 @@ def test_assembled_inputs_match_the_golden_field_by_field():
 
 def test_tax_bridge_derivation_derives_blended_statutory_and_glide():
     """The Tax Bridge derives the blended statutory rate (D8) from revenue-weighted
-    jurisdictional rates and the applied-tax glide (B12-B16) as the effective rate
+    jurisdictional rates and the applied-tax glide (B12-B17) as the effective rate
     closing the gap to statutory — reproducing the golden glide, which used to be
-    STORED. Weights come from geographic_concentration (US .55/AU .35/RoW .10)."""
+    STORED. Weights come from geographic_concentration (US .55/AU .35/RoW .10).
+    Six years, not five, since D-35 extended DNL's horizon to 6 (25 Sep 2026); the
+    glide's sixth year holds at the fully-closed statutory rate (D-35's own
+    year-6 extension of glide_fractions)."""
     d = tax_bridge_from_data(_load())
     assert d is not None
     assert abs(d["D8"].value - 0.275) < 1e-9        # 0.55x0.26 + 0.35x0.30 + 0.10x0.27
-    glide = [d[f"B{11 + i}"].value for i in range(1, 6)]
-    golden = [0.225, 0.2375, 0.25, 0.2625, 0.275]   # the value that used to be hardcoded
+    glide = [d[f"B{11 + i}"].value for i in range(1, 7)]
+    golden = [0.225, 0.2375, 0.25, 0.2625, 0.275, 0.275]   # year 6 holds at statutory
     assert all(abs(a - b) < 1e-9 for a, b in zip(glide, golden))
     # D8 depends on the statutory rates, so it is genuinely derived, not stored:
-    assert [s.cell for s in d] == ["D5", "D6", "D7", "D8", "B12", "B13", "B14", "B15", "B16"]
+    assert [s.cell for s in d] == [
+        "D5", "D6", "D7", "D8", "B12", "B13", "B14", "B15", "B16", "B17",
+    ]
 
 
 def test_tax_glide_is_no_longer_stored_in_overlays():
@@ -183,7 +209,7 @@ def test_equity_bridge_derivation_traces_walk_and_per_share():
         ["B6", "B7", "B8", "B10", "B11", "B27", "B28", "B29", "B30", "B31", "B33", "B37"]
     assert abs(d["B11"].value - 1224.0329) < 1e-3   # net debt at valuation (golden)
     assert abs(d["B29"].value - (-151.65)) < 1e-2   # adjustments net (§4.2)
-    assert round(d.result, 3) == 1.989              # B33 value per share
+    assert round(d.result, 3) == 1.846              # B33 value per share (D-35/D-36 + D-49 fix, 25 Sep 2026)
     # B33 must equal the engine's own value_per_share, not a re-derivation drift.
     inp = build_engine_inputs_from_data(_load(), "muddle_through")
     from vcc_valuations.dcf.fcf_engine import FcfEngine

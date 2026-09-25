@@ -47,7 +47,10 @@ def _scenario_inputs(scenario_id):
         "wc": inp.working_capital_intensity,
         "g": inp.terminal_growth,
         "wacc": inp.wacc_scalar,
-        "chain_growth": inp.revenue_growth,
+        # D-36: revenue_growth is now a per-year path that fades to g in the
+        # final years; year 1 is always the flat, pre-fade chain rate, which is
+        # what this row (and the split against volume/pricing below) is about.
+        "chain_growth": inp.revenue_growth[0],
         "growth_path": list(plan.growth_path),
         "margin_delta": list(plan.margin_delta),
         "capex_pct": list(plan.capex_pct),

@@ -231,7 +231,13 @@ class FcfEngineInputs:
 
     # Revenue
     base_year_revenue: float
-    revenue_growth: float                 # constant compound rate (chain-derived)
+    # D-36, 25 Sep 2026: per-year path (len horizon_years), not a constant rate.
+    # Chain-derived rate held through the forecast segment, then glides linearly
+    # to terminal_growth across the declared fade segment, landing exactly on g
+    # in the final explicit year. A single-scenario constant path (same rate
+    # repeated horizon_years times) is a special case, not disallowed -- see
+    # tests/dcf/test_dnl_all_scenarios.py for a company with no fade declared.
+    revenue_growth: List[float]
 
     # EBIT margin glide (base + overlays), shown as separate rows
     base_ebit_margin: float
@@ -288,6 +294,7 @@ class FcfEngineInputs:
     def __post_init__(self) -> None:
         H = self.horizon_years
         for name, vec in (
+            ("revenue_growth", self.revenue_growth),
             ("margin_transformation", self.margin_transformation),
             ("margin_gas_rolloff", self.margin_gas_rolloff),
             ("tax_rate_glide", self.tax_rate_glide),
@@ -404,9 +411,13 @@ class FcfEngine:
             )
 
         # ---- Revenue (stub = base x stub-fraction; years compound from base) ----
+        # D-36: revenue_growth is a per-year path, cumulatively compounded --
+        # reduces to the old (1 + g) ** k when every year carries the same rate.
         revenue = [inp.base_year_revenue * inp.stub_years]
+        cum_growth = 1.0
         for k in range(1, H + 1):
-            revenue.append(inp.base_year_revenue * (1.0 + inp.revenue_growth) ** k)
+            cum_growth *= 1.0 + inp.revenue_growth[k - 1]
+            revenue.append(inp.base_year_revenue * cum_growth)
 
         # ---- EBIT margin glide (stub at base; years = base + overlays) ----
         ebit_margin = [inp.base_ebit_margin]

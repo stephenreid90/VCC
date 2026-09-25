@@ -339,12 +339,15 @@ normalised_baseline:
     3,905.4 (data/financials/dnl.yaml) — that basis question was ruled on: 3,400
     is the clean forward base for the surviving explosives business; 3,905 mixes
     in separated activity and 4,139 is an FY27 figure, not a base.
-  horizon_years: 5
+  horizon_years: 6
   horizon_years_rationale: >
-    Five explicit forecast years (workbook B78) before the Gordon-growth
-    terminal. Short enough that structural shifts (e.g. §9.7 demographics) sit
-    beyond it; long enough to carry the margin-transformation and gas-roll-off
-    glides to steady state.
+    D-35, implemented 25 Sep 2026: the explicit period runs until the drivers
+    straight-line. Margin transformation converges by year 3 and the tax glide
+    by year 5; the gas roll-off (D-69, superseding D-40's magnitude) is the
+    binding one, completing FY2032 — year 6 from this valuation date. Six years
+    is therefore the longest any DNL scenario needs, and D-35 runs every
+    scenario at that length. Was five years (workbook B78) before D-35/D-36
+    landed; the old rationale is quoted in the 25 Sep 2026 build-order commit.
   # The valuation date, stated rather than implied. It was only ever recoverable
   # by adding period_a_days to the financials' anchor date and reading a comment,
   # which is not a source of truth (batch 3, item 13). Now checked against both
@@ -770,17 +773,37 @@ normalised_baseline:
           income whose persistence is not established. Revisit when the FY2026
           result lands and the Phosphate Hill sale has completed.
 
-      margin_transformation: [0.006, 0.018, 0.02, 0.02, 0.02]   # B45..B49 (cum pp)
-      margin_gas_rolloff: [0.0, 0.0, -0.005, -0.01, -0.015]     # B52..B56 (cum pp, <=0)
+      margin_transformation: [0.006, 0.018, 0.02, 0.02, 0.02, 0.02]  # B45..B49 (cum pp), Y6 holds flat (D-35)
+      # D-69, 25 Sep 2026: supersedes D-40's -1.5pp magnitude. Total -2.0pp by
+      # FY2032 -- continuing the declared -0.5pp/year pace one more year, since
+      # the archetype's own maturity profile (us_gas_contract_maturity_profile)
+      # says the roll-off finishes a year past where the old 5-year ramp
+      # stopped: the minimal non-inventive reading, and the more conservative
+      # of the two available. Phased as cumulative fractions
+      # [0.05, 0.30, 0.60, 0.85, 0.95, 1.00] across years 1-6, putting 80% of
+      # the movement in FY2028-FY2030 -- the archetype's own stated re-pricing
+      # window. Ratified with the rider that the World Scenarios / Five Forces
+      # work should land a properly derived number while that work is under
+      # way; this is not asserted as more than a reasoned placeholder.
+      margin_gas_rolloff: [-0.001, -0.006, -0.012, -0.017, -0.019, -0.02]
     by_scenario:
       # margin_delta_pp / capex_delta_pp are parallel shifts vs the baseline path;
       # terminal_growth is absolute (B77 base 0.025 + the comparison's delta).
-      muddle_through:                     {margin_delta_pp:  0.000, capex_delta_pp: 0.00, terminal_growth: 0.0250}
-      orderly_convergence:                {margin_delta_pp:  0.005, capex_delta_pp: 0.00, terminal_growth: 0.0275}
-      ai_productivity_lag:                {margin_delta_pp:  0.005, capex_delta_pp: 0.00, terminal_growth: 0.0225}
-      fragmentation:                      {margin_delta_pp: -0.030, capex_delta_pp: 0.00, terminal_growth: 0.0225}
-      disorderly_climate_crystallisation: {margin_delta_pp: -0.030, capex_delta_pp: 0.03, terminal_growth: 0.0175}
-      stagflation_persists:               {margin_delta_pp: -0.075, capex_delta_pp: 0.00, terminal_growth: 0.0225}
+      # fade_period_length_years (D-70, 25 Sep 2026): D-36's revenue-growth fade
+      # length. Baseline 2 years for a scenario with no declared override.
+      # Disorderly Climate carries the impact matrix's only quantified
+      # fade_period_length driver (direction: negative, magnitude: small --
+      # "faster fade to convergence under transition pressures"), read here as
+      # one year shorter than baseline: small magnitude, one step. No scale
+      # beyond this one small/negative case has been needed yet; extend the
+      # convention (moderate = 2 steps, large = 3) if a future scenario
+      # declares a stronger rating.
+      muddle_through:                     {margin_delta_pp:  0.000, capex_delta_pp: 0.00, terminal_growth: 0.0250, fade_period_length_years: 2}
+      orderly_convergence:                {margin_delta_pp:  0.005, capex_delta_pp: 0.00, terminal_growth: 0.0275, fade_period_length_years: 2}
+      ai_productivity_lag:                {margin_delta_pp:  0.005, capex_delta_pp: 0.00, terminal_growth: 0.0225, fade_period_length_years: 2}
+      fragmentation:                      {margin_delta_pp: -0.030, capex_delta_pp: 0.00, terminal_growth: 0.0225, fade_period_length_years: 2}
+      disorderly_climate_crystallisation: {margin_delta_pp: -0.030, capex_delta_pp: 0.03, terminal_growth: 0.0175, fade_period_length_years: 1}
+      stagflation_persists:               {margin_delta_pp: -0.075, capex_delta_pp: 0.00, terminal_growth: 0.0225, fade_period_length_years: 2}
 
   # --- Tax Bridge (workbook Tax Bridge sheet; migrated 2026-08-12). INPUTS ONLY:
   # the FY26 effective rate (B59), the per-jurisdiction statutory rates (C5-C7,
@@ -795,4 +818,4 @@ normalised_baseline:
       United States: 0.26                # Dyno Nobel Americas (US federal + state blended)
       Australia: 0.30                    # Dyno Nobel Asia Pacific (AU statutory)
       Rest of World: 0.27                # Dyno Nobel EMEA & LATAM (blended)
-    glide_fractions: [0.0, 0.25, 0.5, 0.75, 1.0]   # E12-E16: fraction of the effective->statutory gap closed
+    glide_fractions: [0.0, 0.25, 0.5, 0.75, 1.0, 1.0]   # E12-E16: fraction of the effective->statutory gap closed; Y6 holds flat (D-35)

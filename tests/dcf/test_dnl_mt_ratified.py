@@ -100,7 +100,17 @@ def test_engine_overlays_data_driven_reproduce_headline():
     This composition deliberately keeps the FROZEN golden's terminal capex rate,
     so the number it produces isolates the effect of the overlays and the WACC and
     excludes D-49's terminal. The full data path — overlays, WACC and terminal
-    together — is ``test_dnl_mt_from_data`` and lands at 1.990.
+    together — is ``test_dnl_mt_from_data`` and lands at 1.873 (D-35/D-36/D-69,
+    25 Sept 2026; was 1.990 before the horizon extended to Y6).
+
+    D-35 extended the live horizon to six years, so the data-driven overlays
+    (margin/gas/tax/capex) below are all six-year paths now. The frozen golden's
+    own horizon and revenue-growth path predate that and stay five years by
+    design (it is a fixed 23-Aug-2026 mechanics oracle) -- so both are overridden
+    here to six years, holding the frozen chain rate flat for the extra year,
+    exactly as D-35's own "extend" convention does everywhere else. That is the
+    one deliberate divergence from "frozen golden + live overlays"; every other
+    field below is still the live overlay, untouched.
     """
     import yaml
     from vcc_valuations.translator import engine_overlays_from_data, tax_bridge_from_data
@@ -109,9 +119,15 @@ def test_engine_overlays_data_driven_reproduce_headline():
     ov = engine_overlays_from_data(raw, "muddle_through", _load()["financials"])
     # Applied tax now comes from the derived Tax Bridge, not stored overlays.
     tax = tax_bridge_from_data(_load())
-    glide = [tax[f"B{11 + i}"].value for i in range(1, 6)]
+    glide = [tax[f"B{11 + i}"].value for i in range(1, 7)]
+    frozen = dnl_muddle_through_inputs()
+    frozen_growth = list(frozen.revenue_growth) + [frozen.revenue_growth[-1]]
+    frozen_delta_wc = list(frozen.delta_wc) + [frozen.delta_wc[-1]]
     inp = dataclasses.replace(
-        dnl_muddle_through_inputs(),
+        frozen,
+        horizon_years=6,
+        revenue_growth=frozen_growth,
+        delta_wc=frozen_delta_wc,
         wacc=build_wacc_from_inputs(_load()),
         base_ebit_margin=ov["base_ebit_margin"],
         margin_transformation=ov["margin_transformation"],
@@ -124,4 +140,4 @@ def test_engine_overlays_data_driven_reproduce_headline():
         terminal_growth=ov["terminal_growth"],
     )
     r = FcfEngine().run(inp)
-    assert round(r.value_per_share, 3) == 2.397     # data overlays + data WACC, frozen terminal
+    assert round(r.value_per_share, 3) == 2.354     # data overlays + data WACC, frozen terminal

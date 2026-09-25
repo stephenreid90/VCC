@@ -122,20 +122,33 @@ def test_dnl_splits_on_the_cost_of_capital_which_is_what_d42_is_for(rows):
         assert not any("exceeds" in w for w in dnl[s].warnings), s
 
 
-def test_the_two_readings_disagree_about_fragmentation(rows):
-    """Which reading governs is a substantive choice, not a rounding preference.
+def test_the_two_readings_no_longer_disagree_about_fragmentation(rows):
+    """Which reading governs is a substantive choice, not a rounding preference --
+    and as of 25 Sep 2026 (D-35/D-36) the two readings have stopped disagreeing
+    anywhere in DNL, Fragmentation included.
 
-    DNL Fragmentation sits BELOW its WACC on the return on new capital and ABOVE
-    it on the whole capital base. So under the weaker reading it owes no defended
-    exception and under the better one it does. Asserted because the day these
-    two agree everywhere, the distinction stops earning its keep — and because a
-    silent change of reading would silently change who owes a defence.
+    Before the horizon extended and revenue growth started fading to g,
+    Fragmentation sat BELOW its WACC on the return on new capital and ABOVE it
+    on the whole capital base: under the weaker reading it owed no defended
+    exception and under the better one it did. The longer horizon and the fade
+    both smooth the gap between the two readings, and Fragmentation now sits
+    (slightly) below WACC on BOTH. Documented rather than silently dropped,
+    because a silent change of reading would silently change who owes a
+    defence -- this asserts the new state explicitly so the next change to
+    disagree is caught rather than assumed away.
     """
     frag = next(r for r in rows if r.company_id == "dnl"
                 and r.scenario_id == "fragmentation")
     assert frag.excess_over_cost_of_capital < 0, frag.excess_over_cost_of_capital
-    assert frag.excess_on_governing_return > 0, frag.excess_on_governing_return
+    assert frag.excess_on_governing_return < 0, frag.excess_on_governing_return
     assert frag.governing_return == frag.return_on_whole_capital
+    # No DNL scenario disagrees between the two readings any more (all six agree
+    # in sign); revisit this test the day one does.
+    dnl_rows = [r for r in rows if r.company_id == "dnl"]
+    assert all(
+        (r.excess_over_cost_of_capital > 0) == (r.excess_on_governing_return > 0)
+        for r in dnl_rows
+    ), [r.scenario_id for r in dnl_rows]
 
 
 def test_the_declared_rate_does_not_reconcile_with_the_capital_build(rows):
@@ -150,8 +163,11 @@ def test_the_declared_rate_does_not_reconcile_with_the_capital_build(rows):
     oc = next(r for r in rows if r.company_id == "dnl"
               and r.scenario_id == "orderly_convergence")
     assert oc.declared_return == pytest.approx(0.0913, abs=1e-6)
-    assert oc.return_on_whole_capital == pytest.approx(0.1246, abs=5e-4)
-    assert oc.declared_versus_whole_capital == pytest.approx(-0.0333, abs=5e-4)
+    # Re-pinned 25 Sep 2026 for D-35/D-36 (was 0.1246 / -0.0333): the longer
+    # horizon and the growth fade both lower the return the capital build
+    # produces, narrowing but not closing the gap against the declared rate.
+    assert oc.return_on_whole_capital == pytest.approx(0.1193, abs=5e-4)
+    assert oc.declared_versus_whole_capital == pytest.approx(-0.0280, abs=5e-4)
     assert any("declares a terminal return" in w for w in oc.warnings)
 
 

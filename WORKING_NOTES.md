@@ -102,8 +102,8 @@ Nothing — the build order below is implementation, not a question.
    `tests/dcf/test_two_stage_disclosure.py`. Full suite green (455 passed). **Assigning
    moat lengths for the other fifteen valuations is a later, dedicated pass — not
    attempted here.**
-4. D-35/D-36/D-37 engine changes: per-year revenue-growth path (fade), horizon-length
-   selection, and the archetype macro-driver paths plus a new SSOT check.
+4. **DONE 25 Sep 2026 — D-35/D-36/D-37 all live.** Per-year revenue-growth path (fade),
+   horizon-length selection, and the archetype macro-driver paths plus a new SSOT check.
    - **D-37 DONE 25 Sep 2026, schema/check only.** `required_macro_drivers` on
      `IndustryArchetype`; `industrial_explosives` declares the three scalars its chain
      reads (`global_mining_real_growth`, `dm_inflation`, `gas_price_growth`). New SSOT
@@ -111,16 +111,57 @@ Nothing — the build order below is implementation, not a question.
      basis check) — baselined honestly at 18/18 gaps, since these still live as flat
      per-scenario scalars in `dnl.yaml`, not year-anchored paths; no path was invented to
      close a gap the data doesn't support. WBC/CSL declare no required drivers, so the
-     check is correctly vacuous for them. Full suite green (456 passed).
-   - **D-35 + D-36 still pending, deliberately.** Asked Stephen how to sequence — his
-     call: D-37 only tonight. D-35 (longest-scenario horizon) and D-36 (revenue-growth
-     fade to g) are engine changes that move every DNL golden and only make sense done
-     together (extending the horizon without the fade first is the +16.8% distortion
-     §3 of the paper warns about) — left for a dedicated sitting.
-5. Re-pin all goldens once, with the move explained per scenario — blocked on D-35/D-36
-   above, and on the moat-length assignment pass that would let the two-stage terminal
-   become the headline construction rather than a disclosure.
-6. Write-up: the seven §8 disclosures in every company write-up's terminal section.
+     check is correctly vacuous for them.
+   - **D-35 + D-36 DONE 25 Sep 2026.** Sequenced as their own piece per Stephen's call
+     (D-37 only, that sitting). Needed two numbers neither decision nor the paper had
+     settled — the fade length, and the gas roll-off's true magnitude (D-40 already fixed
+     it at −1.5pp, a DIFFERENT and earlier number than the paper's §8 proposal of −2.0pp
+     — caught before reusing "D-40" as if still open). Stephen ratified both: **D-69**
+     supersedes D-40's magnitude to −2.0pp by FY2032 (D-40's own phasing kept), with an
+     explicit rider that this is a placeholder pending the World Scenarios / Five Forces
+     work; **D-70** sets the fade-length convention (2-year default, 1 year for Disorderly
+     Climate's declared override). `FcfEngineInputs.revenue_growth` is now a per-year
+     `List[float]` (was a scalar), assembled by `translator.revenue_growth_path_from_data`;
+     DNL's horizon extends 5 → 6 years (D-69's roll-off is now the binding, longest-to-
+     converge driver). `tests/dcf/harness/replica.py` and the frozen v6 golden were
+     updated to match bit-for-bit (`rel=1e-15`).
+   - **Bug found and fixed the same sitting, not a new decision:** the D-49 terminal-capex
+     roll-forward (`_terminal_capex_growing_capital_base`) was still compounding revenue
+     at a flat, re-derived rate for the whole horizon rather than D-36's actual per-year
+     fade path — invisible until the fade's tail years actually diverged from a flat
+     projection, which only started happening once D-36 landed. The independent
+     LibreOffice-recalculated workbook oracle (`test_dnl_workbook_tie.py`) caught it: the
+     Excel formulas (written straight off the per-year growth rows) disagreed with the
+     engine's `terminal_fcff` by a few tenths of a percent everywhere `grows_capital_base_
+     at_g` is the terminal rule, which is DNL's live rule. Fixed in `translator.py` to
+     compound the SAME `revenue_growth_path` the rest of the engine uses (D-51). This
+     moved every DNL golden a second time within the sitting — see the numbers below.
+   - **The standalone-UI Excel generator (`ui_prototypes/_generator/engine_workbook.py`)
+     was generalised from a hardcoded 5-year horizon and a single constant revenue-growth
+     rate to a variable horizon (`self.horizon`) and D-36's per-year fade formula
+     (`IF` on the declared flat/fade split), so it and its LibreOffice-recalculated oracle
+     (`tests/dcf/golden/dnl_workbook_all_scenarios.json`, `_recalc_generated_workbooks.py`)
+     regenerate correctly at 6 years. This is what surfaced the D-49 bug above.**
+   - DNL Muddle Through: 1.9895 → 1.8734 (D-35/D-36 alone) → **1.8461** (after the D-49
+     fix) — down from 1.9895, roughly two-thirds margin/roll-off/fade, one-third the
+     corrected terminal capex rate. Stagflation Persists crosses to slightly negative
+     (−0.0661/sh); Disorderly Climate now breaches the 70% terminal-share warning in
+     Muddle Through's old place. DNL's implied moat on the three above-WACC scenarios
+     came back to "finite, 58–64 years" (close to the pre-D-35/D-36 finding of 66–72) —
+     an intermediate reading of "perpetual_or_more", produced by the same roll-forward
+     bug, did not survive the fix. `tests/dcf/test_horizon_variant_sets.py`'s exploratory
+     harness (pre-dates D-35/D-36, its own assumption sets) needed its own fix, unrelated
+     to the bug above: it was re-deriving its declared horizon/fade from the LIVE
+     (already-faded, already-extended) engine inputs instead of the flat pre-fade chain
+     rate its own `fade_growth`/`extend` transforms assume — fixed to flatten first, so
+     the harness stays genuinely independent of whatever the live translator does. Full
+     suite green (456 passed, 2 deselected).
+5. **DONE 25 Sep 2026**, folded into item 4 above: every DNL golden re-pinned in one pass,
+   with the move explained per scenario in each test file and in `DECISIONS.md`/here.
+   The moat-length assignment pass that would let the two-stage terminal become the
+   headline construction (rather than a disclosure) is still a later, separate pass.
+6. Write-up: the seven §8 disclosures in every company write-up's terminal section. Still
+   open — the next build-order item.
 
 ---
 

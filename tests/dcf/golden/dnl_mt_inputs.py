@@ -93,7 +93,7 @@ def dnl_muddle_through_inputs() -> FcfEngineInputs:
         horizon_years=5,                      # B78
         stub_years=0.351,                     # B6 (128 days / 365)
         base_year_revenue=3400.0,             # B9
-        revenue_growth=_revenue_growth_chain(),  # B42
+        revenue_growth=[_revenue_growth_chain()] * 5,  # B42 (constant path -- D-36 postdates this frozen oracle)
         base_ebit_margin=0.141,               # B10
         margin_transformation=[0.006, 0.018, 0.02, 0.02, 0.02],   # B45..B49
         margin_gas_rolloff=[0.0, 0.0, -0.005, -0.01, -0.015],     # B52..B56

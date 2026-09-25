@@ -8,10 +8,10 @@
     "and ssot check 13.",
     "Recorded 16 September 2026, when the D-42 diagnostic was first run. One of the fifteen",
     "valuations asserting an excess return carried a defence at that moment, and it was prose.",
-    "Updated 17 Sep 2026. The obligation now triggers on the GOVERNING reading -- the return on the whole capital base where D-49's roll-forward gives one -- which is why dnl:fragmentation appears: it sits below its WACC on new capital and above it on the whole base. dnl:muddle_through and dnl:ai_productivity_lag have LEFT this list, which is the ratchet tightening as intended."
+    "Updated 17 Sep 2026. The obligation now triggers on the GOVERNING reading -- the return on the whole capital base where D-49's roll-forward gives one -- which is why dnl:fragmentation appears: it sits below its WACC on new capital and above it on the whole base. dnl:muddle_through and dnl:ai_productivity_lag have LEFT this list, which is the ratchet tightening as intended.",
+    "Updated 25 Sep 2026 (D-35/D-36, build order item 4). dnl:fragmentation has LEFT this list: the longer horizon and the revenue-growth fade both narrow the gap between the return-on-new-capital and return-on-whole-capital readings, and Fragmentation now sits (slightly) below WACC on both -- the four-basis-point excess the dnl reason below describes no longer exists. The ratchet tightening as intended."
   ],
   "undeclared": [
-    "dnl:fragmentation",
     "wbc:muddle_through",
     "wbc:orderly_convergence",
     "wbc:ai_productivity_lag",

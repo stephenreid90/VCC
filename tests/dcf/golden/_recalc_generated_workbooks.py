@@ -46,8 +46,10 @@ SCENARIOS = [
 ]
 
 # Row labels on the "DCF build" sheet -> the engine attribute they must tie to.
-# Per-period rows are matched by their "  <period> <label>" prefix.
-PERIODS = ["Stub", "Y1", "Y2", "Y3", "Y4", "Y5"]
+# Per-period rows are matched by their "  <period> <label>" prefix. D-35
+# (25 Sept 2026) extended DNL's horizon from five years to six -- bump this
+# alongside horizon_years in data/companies/dnl.yaml if it moves again.
+PERIODS = ["Stub", "Y1", "Y2", "Y3", "Y4", "Y5", "Y6"]
 VECTORS = {
     "revenue": "revenue",
     "EBIT": "ebit",
@@ -68,7 +70,7 @@ SCALARS = {
 }
 TERMINAL_FCFF_LABELS = (
     "Terminal FCFF (normalised reinvestment)",
-    "Terminal FCFF = Y5 FCFF x (1+g)",
+    "Terminal FCFF = Y6 FCFF x (1+g)",  # not DNL's live mode; kept for the other branch
 )
 
 

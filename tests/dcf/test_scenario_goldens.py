@@ -56,17 +56,35 @@ SCENARIOS = [
 
 # --- DNL: industrial FCFF / WACC, AUD per share --------------------------------
 DNL_GOLDEN = {
-    "orderly_convergence": 2.3316,
-    "muddle_through": 1.9895,                      # independently audited (generated workbook, all six)
-    # Re-pinned 14 Sep 2026, twice. First the operating base was restated to the
-    # explosives segments over FY24-FY25 (D-48, D-50); then the terminal moved to
-    # a capital base growing at g (D-49) and the declared transition-cost
-    # normalisation was added. Levels before the day's work: 3.2740 / 2.8307 /
-    # 2.7705 / 1.9926 / 1.7015 / 0.8061.
-    "ai_productivity_lag": 2.0127,
-    "fragmentation": 1.2241,
-    "disorderly_climate_crystallisation": 0.9924,
-    "stagflation_persists": 0.0491,
+    # Re-pinned 25 Sep 2026 for D-35/D-36 (build order item 4): the explicit
+    # horizon extends 5 -> 6 years (the longest any DNL scenario's drivers take
+    # to straight-line, once D-69's gas roll-off revision is folded in), revenue
+    # growth fades linearly to g over the final 2 years (1 for Disorderly
+    # Climate, D-70) instead of holding the chain rate flat, and the gas
+    # roll-off is -2.0pp total on the D-69 phasing rather than -1.5pp. Re-pinned
+    # again the same day for the D-49 terminal-capex roll-forward fix: that
+    # roll-forward was compounding revenue at a flat re-derived rate rather
+    # than D-36's actual per-year fade path, overstating the fixed capital base
+    # and so understating the terminal capex rate. Every level moves down: an
+    # extra year of margin compression from the heaviest part of the roll-off,
+    # slower final-year growth from the fade, and the corrected (higher)
+    # terminal capex rate, only partly offset by a sixth year of cash flow.
+    # Levels before D-35/D-36: 2.3316 / 1.9895 / 2.0127 / 1.2241 / 0.9924 /
+    # 0.0491. Levels after D-35/D-36 but before the D-49 fix: 2.2026 / 1.8734 /
+    # 1.8981 / 1.1121 / 0.8391 / -0.0452.
+    "orderly_convergence": 2.1626,
+    "muddle_through": 1.8461,                      # independently audited (generated workbook, all six)
+    "ai_productivity_lag": 1.8768,
+    "fragmentation": 1.0860,
+    "disorderly_climate_crystallisation": 0.8180,
+    # Stagflation Persists crosses to slightly NEGATIVE. It was already earning
+    # barely above its own cost of capital on new capital under the old 5-year
+    # build (4.96% earned vs 8.877% WACC -- see terminal_return_sets.yaml); a
+    # sixth year of margin compression, a fading growth rate and the corrected
+    # terminal capex rate tip it under. Not a broken run: it is the honest
+    # consequence of a scenario the model already had sitting right at the
+    # margin.
+    "stagflation_persists": -0.0661,
 }
 
 # --- WBC: bank DDM / Ke (§15), AUD per share -----------------------------------
@@ -145,7 +163,13 @@ def test_csl_scenario_level(scenario):
 # so the two valuations that most need the sensitivity pass can finally say so.
 TERMINAL_BREACH = {
     # (company, scenario) -> terminal share of EV / of the equity claim
-    ("dnl", "muddle_through"): 0.7001,
+    # DNL Muddle Through dropped OUT of breach on 25 Sep 2026 (D-35/D-36: the
+    # longer horizon and the growth fade both shrink the terminal's share of
+    # value) and Disorderly Climate is now the one DNL case that breaches --
+    # exactly the finding horizon_and_terminal_convergence.md §10 anticipated.
+    # Re-pinned again the same day for the D-49 terminal-capex roll-forward fix
+    # (0.766 -> 0.7631).
+    ("dnl", "disorderly_climate_crystallisation"): 0.7631,
     ("wbc", "muddle_through"): 0.7631,     # back to the pre-D-60 figure (M13)
     ("wbc", "stagflation_persists"): 0.8445,       # worst in the project; D-60 never binds here
     ("csl", "muddle_through"): 0.7538,
@@ -200,13 +224,18 @@ def test_terminal_shares_are_measured_case_by_case():
     case by case rather than universally. Measuring each share is the honest
     form of the same guard.
     """
+    # Re-pinned 25 Sep 2026 for D-35/D-36: every DNL terminal share falls, since
+    # the terminal's share of value shrinks once the explicit period is longer
+    # and revenue growth fades rather than holding at the chain rate. Only
+    # Disorderly Climate still breaches 70% (see TERMINAL_BREACH above).
     dnl_shares = {
-        "orderly_convergence": 0.7168,
-        "muddle_through": 0.7001,
-        "ai_productivity_lag": 0.6933,
-        "fragmentation": 0.6873,
-        "disorderly_climate_crystallisation": 0.7950,
-        "stagflation_persists": 0.6189,
+        # Re-pinned 25 Sep 2026 (D-35/D-36, then the D-49 roll-forward fix).
+        "orderly_convergence": 0.6649,
+        "muddle_through": 0.6485,
+        "ai_productivity_lag": 0.6418,
+        "fragmentation": 0.6324,
+        "disorderly_climate_crystallisation": 0.7631,
+        "stagflation_persists": 0.5498,
     }
     for scenario in SCENARIOS:
         assert _dnl(scenario).terminal_share_of_ev == pytest.approx(

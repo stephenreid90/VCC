@@ -21,8 +21,8 @@ terminal_disclosure_set:
     reason: null
     cost_of_capital: 0.088772
     terminal_growth: 0.0225
-    capital: 4025.331
-    earned_return: 0.115355
+    capital: 4070.734
+    earned_return: 0.110732
     moat_years: 12.5
     moat_band: 10-15
     moat_basis: 'Five Forces ratings for industrial explosives -- threat of new entrants
@@ -33,10 +33,10 @@ terminal_disclosure_set:
       the horizon should say so and why, as the Disorderly Climate block does.
 
       '
-    terminal_value: 4903.503
-    value_per_share: 1.7597
-    engine_terminal_value: 5609.233
-    engine_value_per_share: 2.0127
+    terminal_value: 4804.384
+    value_per_share: 1.6845
+    engine_terminal_value: 5388.564
+    engine_value_per_share: 1.8768
   - company: dnl
     scenario: disorderly_climate_crystallisation
     available: false
@@ -44,15 +44,15 @@ terminal_disclosure_set:
       moat-length assignment pending)
     cost_of_capital: 0.088772
     terminal_growth: 0.0175
-    capital: 4735.29
-    earned_return: 0.080548
+    capital: 4943.17
+    earned_return: 0.074796
     moat_years: null
     moat_band: null
     moat_basis: null
     terminal_value: null
     value_per_share: null
-    engine_terminal_value: 4168.585
-    engine_value_per_share: 0.9924
+    engine_terminal_value: 3952.608
+    engine_value_per_share: 0.818
   - company: dnl
     scenario: fragmentation
     available: false
@@ -60,23 +60,23 @@ terminal_disclosure_set:
       moat-length assignment pending)
     cost_of_capital: 0.088772
     terminal_growth: 0.0225
-    capital: 4051.904
-    earned_return: 0.089219
+    capital: 4096.415
+    earned_return: 0.084326
     moat_years: null
     moat_band: null
     moat_basis: null
     terminal_value: null
     value_per_share: null
-    engine_terminal_value: 4048.305
-    engine_value_per_share: 1.2241
+    engine_terminal_value: 3790.306
+    engine_value_per_share: 1.086
   - company: dnl
     scenario: muddle_through
     available: true
     reason: null
     cost_of_capital: 0.088772
     terminal_growth: 0.025
-    capital: 4046.618
-    earned_return: 0.114178
+    capital: 4093.83
+    earned_return: 0.109501
     moat_years: 12.5
     moat_band: 10-15
     moat_basis: 'Five Forces ratings for industrial explosives -- threat of new entrants
@@ -87,18 +87,18 @@ terminal_disclosure_set:
       the horizon should say so and why, as the Disorderly Climate block does.
 
       '
-    terminal_value: 4900.635
-    value_per_share: 1.732
-    engine_terminal_value: 5619.104
-    engine_value_per_share: 1.9895
+    terminal_value: 4798.756
+    value_per_share: 1.6533
+    engine_terminal_value: 5384.411
+    engine_value_per_share: 1.8461
   - company: dnl
     scenario: orderly_convergence
     available: true
     reason: null
     cost_of_capital: 0.088772
     terminal_growth: 0.0275
-    capital: 4093.136
-    earned_return: 0.124611
+    capital: 4141.431
+    earned_return: 0.119381
     moat_years: 12.5
     moat_band: 10-15
     moat_basis: 'Five Forces ratings for industrial explosives — threat of new entrants
@@ -108,10 +108,10 @@ terminal_disclosure_set:
       beyond it.
 
       '
-    terminal_value: 5326.614
-    value_per_share: 1.9337
-    engine_terminal_value: 6436.792
-    engine_value_per_share: 2.3316
+    terminal_value: 5207.36
+    value_per_share: 1.8493
+    engine_terminal_value: 6159.28
+    engine_value_per_share: 2.1626
   - company: dnl
     scenario: stagflation_persists
     available: false
@@ -119,15 +119,15 @@ terminal_disclosure_set:
       moat-length assignment pending)
     cost_of_capital: 0.088772
     terminal_growth: 0.0225
-    capital: 4023.327
-    earned_return: 0.049632
+    capital: 4068.794
+    earned_return: 0.045339
     moat_years: null
     moat_band: null
     moat_basis: null
     terminal_value: null
     value_per_share: null
-    engine_terminal_value: 1616.46
-    engine_value_per_share: 0.0491
+    engine_terminal_value: 1371.11
+    engine_value_per_share: -0.0661
   - company: wbc
     scenario: ai_productivity_lag
     available: false

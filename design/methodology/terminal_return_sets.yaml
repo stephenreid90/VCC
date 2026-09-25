@@ -24,15 +24,15 @@ terminal_return_sets:
       cost_of_capital_name: WACC
       cost_of_capital: 0.088772
       terminal_growth: 0.0225
-      reinvestment_rate: 0.199439
-      return_on_new_capital: 0.112816
-      excess_over_cost_of_capital: 0.024045
+      reinvestment_rate: 0.207765
+      return_on_new_capital: 0.108295
+      excess_over_cost_of_capital: 0.019524
       earned_final_explicit: null
       step_from_earned: null
-      return_on_whole_capital: 0.115355
-      terminal_invested_capital: 4025.331
-      governing_return: 0.115355
-      excess_on_governing_return: 0.026583
+      return_on_whole_capital: 0.110732
+      terminal_invested_capital: 4070.734
+      governing_return: 0.110732
+      excess_on_governing_return: 0.021961
       declared_terminal_return: null
       declared_versus_whole_capital: null
       warning_count: 1
@@ -42,15 +42,15 @@ terminal_return_sets:
       cost_of_capital_name: WACC
       cost_of_capital: 0.088772
       terminal_growth: 0.0175
-      reinvestment_rate: 0.221063
-      return_on_new_capital: 0.079163
-      excess_over_cost_of_capital: -0.009609
+      reinvestment_rate: 0.238065
+      return_on_new_capital: 0.073509
+      excess_over_cost_of_capital: -0.015262
       earned_final_explicit: null
       step_from_earned: null
-      return_on_whole_capital: 0.080548
-      terminal_invested_capital: 4735.29
-      governing_return: 0.080548
-      excess_on_governing_return: -0.008223
+      return_on_whole_capital: 0.074796
+      terminal_invested_capital: 4943.17
+      governing_return: 0.074796
+      excess_on_governing_return: -0.013976
       declared_terminal_return: null
       declared_versus_whole_capital: null
       warning_count: 0
@@ -60,15 +60,15 @@ terminal_return_sets:
       cost_of_capital_name: WACC
       cost_of_capital: 0.088772
       terminal_growth: 0.0225
-      reinvestment_rate: 0.257863
-      return_on_new_capital: 0.087256
-      excess_over_cost_of_capital: -0.001516
+      reinvestment_rate: 0.272826
+      return_on_new_capital: 0.08247
+      excess_over_cost_of_capital: -0.006302
       earned_final_explicit: null
       step_from_earned: null
-      return_on_whole_capital: 0.089219
-      terminal_invested_capital: 4051.904
-      governing_return: 0.089219
-      excess_on_governing_return: 0.000447
+      return_on_whole_capital: 0.084326
+      terminal_invested_capital: 4096.415
+      governing_return: 0.084326
+      excess_on_governing_return: -0.004446
       declared_terminal_return: null
       declared_versus_whole_capital: null
       warning_count: 0
@@ -78,15 +78,15 @@ terminal_return_sets:
       cost_of_capital_name: WACC
       cost_of_capital: 0.088772
       terminal_growth: 0.025
-      reinvestment_rate: 0.224431
-      return_on_new_capital: 0.111393
-      excess_over_cost_of_capital: 0.022621
+      reinvestment_rate: 0.234017
+      return_on_new_capital: 0.10683
+      excess_over_cost_of_capital: 0.018058
       earned_final_explicit: null
       step_from_earned: null
-      return_on_whole_capital: 0.114178
-      terminal_invested_capital: 4046.618
-      governing_return: 0.114178
-      excess_on_governing_return: 0.025406
+      return_on_whole_capital: 0.109501
+      terminal_invested_capital: 4093.83
+      governing_return: 0.109501
+      excess_on_governing_return: 0.020729
       declared_terminal_return: null
       declared_versus_whole_capital: null
       warning_count: 1
@@ -96,17 +96,17 @@ terminal_return_sets:
       cost_of_capital_name: WACC
       cost_of_capital: 0.088772
       terminal_growth: 0.0275
-      reinvestment_rate: 0.226756
-      return_on_new_capital: 0.121276
-      excess_over_cost_of_capital: 0.032504
+      reinvestment_rate: 0.236689
+      return_on_new_capital: 0.116186
+      excess_over_cost_of_capital: 0.027415
       earned_final_explicit: null
       step_from_earned: null
-      return_on_whole_capital: 0.124611
-      terminal_invested_capital: 4093.136
-      governing_return: 0.124611
-      excess_on_governing_return: 0.035839
+      return_on_whole_capital: 0.119381
+      terminal_invested_capital: 4141.431
+      governing_return: 0.119381
+      excess_on_governing_return: 0.03061
       declared_terminal_return: 0.0913
-      declared_versus_whole_capital: -0.033311
+      declared_versus_whole_capital: -0.028081
       warning_count: 2
     - company: dnl
       scenario: stagflation_persists
@@ -114,15 +114,15 @@ terminal_return_sets:
       cost_of_capital_name: WACC
       cost_of_capital: 0.088772
       terminal_growth: 0.0225
-      reinvestment_rate: 0.463534
-      return_on_new_capital: 0.04854
-      excess_over_cost_of_capital: -0.040231
+      reinvestment_rate: 0.507432
+      return_on_new_capital: 0.044341
+      excess_over_cost_of_capital: -0.044431
       earned_final_explicit: null
       step_from_earned: null
-      return_on_whole_capital: 0.049632
-      terminal_invested_capital: 4023.327
-      governing_return: 0.049632
-      excess_on_governing_return: -0.039139
+      return_on_whole_capital: 0.045339
+      terminal_invested_capital: 4068.794
+      governing_return: 0.045339
+      excess_on_governing_return: -0.043433
       declared_terminal_return: null
       declared_versus_whole_capital: null
       warning_count: 0
