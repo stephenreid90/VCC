@@ -1,0 +1,20 @@
+[
+  "industrial_explosives:ai_productivity_lag:dm_inflation",
+  "industrial_explosives:ai_productivity_lag:gas_price_growth",
+  "industrial_explosives:ai_productivity_lag:global_mining_real_growth",
+  "industrial_explosives:disorderly_climate_crystallisation:dm_inflation",
+  "industrial_explosives:disorderly_climate_crystallisation:gas_price_growth",
+  "industrial_explosives:disorderly_climate_crystallisation:global_mining_real_growth",
+  "industrial_explosives:fragmentation:dm_inflation",
+  "industrial_explosives:fragmentation:gas_price_growth",
+  "industrial_explosives:fragmentation:global_mining_real_growth",
+  "industrial_explosives:muddle_through:dm_inflation",
+  "industrial_explosives:muddle_through:gas_price_growth",
+  "industrial_explosives:muddle_through:global_mining_real_growth",
+  "industrial_explosives:orderly_convergence:dm_inflation",
+  "industrial_explosives:orderly_convergence:gas_price_growth",
+  "industrial_explosives:orderly_convergence:global_mining_real_growth",
+  "industrial_explosives:stagflation_persists:dm_inflation",
+  "industrial_explosives:stagflation_persists:gas_price_growth",
+  "industrial_explosives:stagflation_persists:global_mining_real_growth"
+]

@@ -616,3 +616,76 @@ def test_every_rate_declares_the_basis_it_was_struck_on():
         "declaration (good, regenerate so the ratchet tightens) or was "
         "removed:\n  " + "\n  ".join(stale)
     )
+
+
+# ---------------------------------------------------------------- check 14
+# D-37: an archetype declares the macro drivers its revenue-growth chain
+# actually consumes (``required_macro_drivers``); every scenario should carry
+# a year-anchored ``macro_variables`` time series for each one, reaching at
+# least year 10, so the horizon (D-35) and fade (D-36) work has real paths to
+# read rather than a flat per-scenario scalar frozen at whatever the forecast
+# happened to be when it was typed. Today those scalars live in each company's
+# own ``revenue_growth_chain.by_scenario.<scenario>.macro`` block (DNL only),
+# not as a scenario-level time series, so this check starts fully baselined
+# and tightens as paths are built -- the same ratchet shape as checks 10, 13.
+MACRO_DRIVER_BASELINE = ROOT / "tests" / "ssot_macro_driver_baseline.json"
+
+
+def _archetype_files():
+    return sorted((ROOT / "data" / "industries").glob("*.yaml"))
+
+
+def _scenario_files():
+    return sorted((ROOT / "data" / "scenarios").glob("*.yaml"))
+
+
+def _macro_variable_reaches_year_10(scenario_doc: dict, driver: str) -> bool:
+    for mv in (scenario_doc.get("scenario", {}) or {}).get("macro_variables", []) or []:
+        if mv.get("variable") != driver:
+            continue
+        series = mv.get("time_series") or []
+        return any((point.get("year") or 0) >= 10 for point in series)
+    return False
+
+
+def _macro_driver_gaps() -> list[str]:
+    out: list[str] = []
+    for archetype_path in _archetype_files():
+        doc = _load(archetype_path).get("industry_archetype", {}) or {}
+        archetype_id = doc.get("id", archetype_path.stem)
+        drivers = doc.get("required_macro_drivers") or []
+        if not drivers:
+            continue
+        for scenario_path in _scenario_files():
+            scenario_doc = _load(scenario_path)
+            scenario_id = (scenario_doc.get("scenario", {}) or {}).get("id", scenario_path.stem)
+            for driver in drivers:
+                if not _macro_variable_reaches_year_10(scenario_doc, driver):
+                    out.append(f"{archetype_id}:{scenario_id}:{driver}")
+    return sorted(out)
+
+
+def test_every_required_macro_driver_has_a_path_to_year_10_or_is_baselined():
+    """Ratcheted like checks 3, 10 and 13: a NEW gap fails, and a closed one must leave the baseline.
+
+    Recorded 25 September 2026, when ``required_macro_drivers`` was first declared
+    (industrial_explosives only, three drivers x six scenarios = eighteen pairs, all
+    currently scalar rather than a time series). The baseline may only shrink.
+    """
+    if not MACRO_DRIVER_BASELINE.exists():
+        pytest.skip("no baseline recorded yet — run scripts/ssot_lint_baseline.py")
+    baseline = set(json.loads(MACRO_DRIVER_BASELINE.read_text(encoding="utf-8")))
+    found = set(_macro_driver_gaps())
+    new = sorted(found - baseline)
+    assert not new, (
+        "A required macro driver has no year-10 path and is not baselined "
+        "(D-37):\n  " + "\n  ".join(new)
+        + "\nAdd a year-anchored macro_variables time series to the scenario file, "
+          "or add the pair to tests/ssot_macro_driver_baseline.json with a reason."
+    )
+    stale = sorted(baseline - found)
+    assert not stale, (
+        "Baseline entries no longer match — a driver has gained a year-10 path "
+        "(good, regenerate so the ratchet tightens) or the archetype/scenario "
+        "changed:\n  " + "\n  ".join(stale)
+    )

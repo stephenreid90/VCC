@@ -103,10 +103,23 @@ Nothing — the build order below is implementation, not a question.
    moat lengths for the other fifteen valuations is a later, dedicated pass — not
    attempted here.**
 4. D-35/D-36/D-37 engine changes: per-year revenue-growth path (fade), horizon-length
-   selection, and the archetype macro-driver paths plus SSOT check 13.
-5. Re-pin all goldens once, with the move explained per scenario — blocked on item 4, and
-   on the moat-length assignment pass that would let the two-stage terminal become the
-   headline construction rather than a disclosure.
+   selection, and the archetype macro-driver paths plus a new SSOT check.
+   - **D-37 DONE 25 Sep 2026, schema/check only.** `required_macro_drivers` on
+     `IndustryArchetype`; `industrial_explosives` declares the three scalars its chain
+     reads (`global_mining_real_growth`, `dm_inflation`, `gas_price_growth`). New SSOT
+     **check 14** (the paper's proposed "13" collided with D-50's already-shipped rate-
+     basis check) — baselined honestly at 18/18 gaps, since these still live as flat
+     per-scenario scalars in `dnl.yaml`, not year-anchored paths; no path was invented to
+     close a gap the data doesn't support. WBC/CSL declare no required drivers, so the
+     check is correctly vacuous for them. Full suite green (456 passed).
+   - **D-35 + D-36 still pending, deliberately.** Asked Stephen how to sequence — his
+     call: D-37 only tonight. D-35 (longest-scenario horizon) and D-36 (revenue-growth
+     fade to g) are engine changes that move every DNL golden and only make sense done
+     together (extending the horizon without the fade first is the +16.8% distortion
+     §3 of the paper warns about) — left for a dedicated sitting.
+5. Re-pin all goldens once, with the move explained per scenario — blocked on D-35/D-36
+   above, and on the moat-length assignment pass that would let the two-stage terminal
+   become the headline construction rather than a disclosure.
 6. Write-up: the seven §8 disclosures in every company write-up's terminal section.
 
 ---

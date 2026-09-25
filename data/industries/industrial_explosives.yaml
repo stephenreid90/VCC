@@ -3,6 +3,17 @@ industry_archetype:
   name: Industrial Explosives and Blasting Services
   version: 2026-Q2-v1
 
+  # D-37. The macro variables DNL's own revenue_growth_chain (workbook B25/B29)
+  # actually reads for company nominal growth -- global_mining_real_growth
+  # drives industry volume growth (B25), dm_inflation and gas_price_growth
+  # drive industry pricing growth (B29). Declared here so a scenario missing a
+  # year-anchored path on exactly these can be told apart from one that simply
+  # has no macro chain at all (ssot check 14).
+  required_macro_drivers:
+    - global_mining_real_growth
+    - dm_inflation
+    - gas_price_growth
+
   geography: multi_geographic
 
   submarkets:

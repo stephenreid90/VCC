@@ -289,6 +289,14 @@ class IndustryArchetype(BaseModel):
     # §7.4-v2 additions carried by the newer archetypes.
     archetype_class: Optional[str] = None
     bank_archetype: Optional[BankArchetype] = None
+    # D-37. The macro-variable names (matching a scenario's own
+    # ``macro_variables[].variable``) this archetype's revenue-growth chain
+    # actually reads. Declared here so a scenario can be checked for a
+    # year-anchored path on exactly the drivers this archetype consumes,
+    # rather than the full general macro set section 6.4 already carries.
+    # Empty by default: most archetypes read a company's own scenario overlay
+    # directly rather than a shared macro chain, so there is nothing to check.
+    required_macro_drivers: List[str] = Field(default_factory=list)
 
 
 # ---------------------------------------------------------------- §7.4-v2 bank
