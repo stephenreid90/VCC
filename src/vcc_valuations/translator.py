@@ -912,6 +912,29 @@ def declared_terminal_return_from_matrix(inputs: dict, scenario_id: str):
     return None
 
 
+def decay_horizon_from_matrix(inputs: dict, scenario_id: str):
+    """The moat length the five-forces work declares for this scenario, or None.
+
+    Read from the impact matrix's ``excess_return_defence.decay_horizon`` (D-42,
+    D-58). Returns None where no defence is declared, or a defence is declared
+    without a decay horizon -- the horizon is required on ``ExcessReturnDefence``
+    so in practice this is "no defence at all". Used by build order item 3
+    (D-62 to D-66) to disclose the two-stage terminal only where a moat length
+    has actually been assigned, never a default nobody chose.
+    """
+    matrix = inputs.get("matrix")
+    if matrix is None:
+        return None
+    for entry in getattr(matrix, "matrix", []) or []:
+        if entry.scenario != scenario_id:
+            continue
+        for movement in entry.drivers.values():
+            defence = getattr(movement, "excess_return_defence", None)
+            if defence is not None and defence.decay_horizon is not None:
+                return defence.decay_horizon
+    return None
+
+
 def build_engine_inputs_from_data(inputs: dict, scenario_id: str):
     """Assemble the whole ``FcfEngineInputs`` for one company x scenario from data.
 

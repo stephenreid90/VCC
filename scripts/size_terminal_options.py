@@ -39,13 +39,9 @@ sys.path.insert(0, str(ROOT / "src"))
 
 import yaml  # noqa: E402
 
-from vcc_valuations.dcf import terminal_return as tr  # noqa: E402
-from vcc_valuations.dcf.bank_engine import BankEngine  # noqa: E402
-from vcc_valuations.dcf.fcf_engine import FcfEngine  # noqa: E402
-from vcc_valuations.dcf.segment_engine import SegmentEngine  # noqa: E402
-from vcc_valuations.translator import (  # noqa: E402
-    build_bank_inputs_from_data, build_engine_inputs_from_data,
-    build_segment_inputs_from_data, csl_terminal_invested_capital, load_inputs,
+from vcc_valuations.dcf.terminal_value import (  # noqa: E402
+    ImpliedMoat, engine_facts, implied_moat, implied_perpetual_return,
+    perpetual_multiple, return_on_new_capital, two_stage,
 )
 
 SET_PATH = ROOT / "design" / "methodology" / "terminal_option_sets.yaml"
@@ -63,74 +59,6 @@ EXTENSION_GRID = (0, 5, 10, 20)
 # Forward EV/EBITDA multiples shown for the exit-multiple basis. Illustrative only,
 # chosen to bracket what the option looks like, not a market view.
 EXIT_MULTIPLE_GRID = (8, 10, 12)
-
-
-# ------------------------------------------------------------------ the maths
-def perpetual_multiple(ret: float, r: float, g: float) -> float:
-    """Justified price-to-capital of an excess return held forever."""
-    return (ret - g) / (r - g)
-
-
-def two_stage(capital: float, ret: float, r: float, g: float, n: float) -> float:
-    """Terminal value when the return R runs n years beyond the forecast, then fades to r.
-
-    Holds capital and sets next-year earnings = capital x R (D-64): a higher return
-    therefore always means a higher value, which is the direction a user expects of
-    the lever.
-    """
-    if n <= 0:
-        return capital
-    k = (1.0 + g) / (1.0 + r)
-    return capital * (perpetual_multiple(ret, r, g) * (1.0 - k ** n) + k ** n)
-
-
-@dataclass(frozen=True)
-class ImpliedMoat:
-    # "finite"            the TV sits between convergence and the perpetual earned return
-    # "perpetual_or_more" the TV holds the earned return forever, or moves further still
-    # "other_side"        the TV sits on the far side of capital from where the earned
-    #                     return points: a recovery above, or a fall below, the cost of
-    #                     capital that the forecast itself does not show
-    # "no_excess"         the earned return equals the cost of capital; moat is moot
-    status: str
-    extension_years: Optional[float]  # years beyond the forecast; None unless finite
-
-
-_TOL = 1e-9
-
-
-def implied_moat(tv: float, capital: float, ret: float, r: float, g: float) -> ImpliedMoat:
-    """Invert the two-stage form: how long must R run to reproduce this TV?"""
-    m = perpetual_multiple(ret, r, g)
-    x = tv / capital
-    if abs(m - 1.0) < _TOL:
-        return ImpliedMoat("no_excess", None)
-    # Position of the TV on the line from convergence (0) to perpetual (1).
-    position = (x - 1.0) / (m - 1.0)
-    if position >= 1.0 - _TOL:
-        return ImpliedMoat("perpetual_or_more", None)
-    if position < -_TOL:
-        return ImpliedMoat("other_side", None)
-    if position <= _TOL:
-        return ImpliedMoat("finite", 0.0)
-    k = (1.0 + g) / (1.0 + r)
-    return ImpliedMoat("finite", math.log(1.0 - position) / math.log(k))
-
-
-def implied_perpetual_return(tv: float, capital: float, r: float, g: float) -> float:
-    """The single return on all capital, held forever, that reproduces this TV.
-
-    Inverts TV = C x (R - g) / (r - g). Equal to r exactly when TV = C.
-    """
-    return g + (tv / capital) * (r - g)
-
-
-def return_on_new_capital(cash_flow_1: float, earnings_1: float, g: float) -> Optional[float]:
-    """Growth identity g = return x reinvestment, solved for the return."""
-    reinvestment = 1.0 - cash_flow_1 / earnings_1
-    if reinvestment <= 0:
-        return None
-    return g / reinvestment
 
 
 # ------------------------------------------------------------ one valuation
@@ -162,55 +90,9 @@ class Valuation:
     bases: List[Basis] = field(default_factory=list)
 
 
-def _engine_facts(company_id: str, archetype_id: str, scenario_id: str) -> Dict:
-    """Year-T figures in one shape across the three engines."""
-    inputs = load_inputs(ROOT, scenario_id, archetype_id, company_id)
-    if company_id == "wbc":
-        bi = build_bank_inputs_from_data(inputs, scenario_id)
-        res = BankEngine().run(bi)
-        t = tr.from_bank(res, bi)
-        return dict(
-            t=t, construction="bank_roe", horizon=len(res.period_labels) - 1,
-            earnings_T=res.cash_npat[-1], cash_flow_T=res.dividends[-1],
-            ebit_T=None, ebitda_T=None, capital=res.closing_book_equity,
-            tv=res.terminal_value, tdf=res.terminal_discount_factor,
-            value_total=res.total_equity_claim, vps=res.value_per_share,
-            shares=res.shares_outstanding_m, per_share_scale=1.0,
-        )
-    if company_id == "csl":
-        si = build_segment_inputs_from_data(inputs, scenario_id)
-        res = SegmentEngine().run(si)
-        t = tr.from_segment(res, si, company_id=company_id, scenario_id=scenario_id)
-        return dict(
-            t=t, construction="segment_roic", horizon=len(res.fcff) - 1,
-            earnings_T=res.nopat[-1], cash_flow_T=res.fcff[-1],
-            ebit_T=res.group_ebit[-1], ebitda_T=res.group_ebit[-1] + res.da[-1],
-            capital=csl_terminal_invested_capital(inputs, scenario_id),  # D-44/D-62 build order item 2
-            tv=res.terminal_value, tdf=res.terminal_discount_factor,
-            value_total=res.enterprise_value, vps=res.value_per_share_aud,
-            shares=res.shares_outstanding_m,
-            per_share_scale=res.value_per_share_aud / res.value_per_share_usd,
-        )
-    ei = build_engine_inputs_from_data(inputs, scenario_id)
-    res = FcfEngine().run(ei)
-    t = tr.from_fcff(res, company_id=company_id, scenario_id=scenario_id,
-                     declared_return=ei.declared_terminal_return)
-    return dict(
-        t=t, construction="fcff_roic", horizon=res.horizon_years,
-        earnings_T=res.nopat[-1], cash_flow_T=res.fcff[-1],
-        ebit_T=res.ebit[-1], ebitda_T=res.ebit[-1] + res.da[-1],
-        capital=res.terminal_invested_capital,
-        tv=res.terminal_value, tdf=res.terminal_discount_factor,
-        value_total=res.enterprise_value, vps=res.value_per_share,
-        shares=res.shares_outstanding, per_share_scale=1.0,
-        market_price=res.market_reference_price,
-        reported_per_engine=res.value_per_share_reported / res.value_per_share,
-    )
-
-
 def size_one(company_id: str, archetype_id: str, scenario_id: str) -> Valuation:
-    f = _engine_facts(company_id, archetype_id, scenario_id)
-    t: tr.TerminalReturn = f["t"]
+    f = engine_facts(ROOT, company_id, archetype_id, scenario_id)
+    t = f["t"]
     r, g = t.cost_of_capital, t.terminal_growth
     grow = 1.0 + g
     e1 = f["earnings_T"] * grow

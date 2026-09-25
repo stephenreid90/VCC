@@ -1,0 +1,322 @@
+terminal_disclosure_set:
+  name: current
+  basis: The two-stage terminal (D-62 to D-66), disclosed alongside each engine's
+    own headline terminal value, wherever a moat length has been declared for that
+    company x scenario (D-63's excess_return_defence.decay_horizon). N is the band
+    midpoint (D-63's default); the band ends are a sensitivity, not shown here. Not
+    available means no decay_horizon is declared yet -- assigning the rest is a later,
+    dedicated pass, not a default.
+  regenerated_by: scripts/size_two_stage_disclosure.py
+  asserted_by: tests/dcf/test_two_stage_disclosure.py
+  decisions:
+  - D-62
+  - D-63
+  - D-64
+  - D-65
+  - D-66
+  rows:
+  - company: dnl
+    scenario: ai_productivity_lag
+    available: true
+    reason: null
+    cost_of_capital: 0.088772
+    terminal_growth: 0.0225
+    capital: 4025.331
+    earned_return: 0.115355
+    moat_years: 12.5
+    moat_band: 10-15
+    moat_basis: 'Five Forces ratings for industrial explosives -- threat of new entrants
+      low, rivalry high, substitutes low -- read per section 12: entrant threat sets
+      the barrier height and rivalry the speed the excess is competed away. Those
+      three ratings are archetype-level and do not move by scenario, which is why
+      the band is the same as the Orderly Convergence block. A scenario that shortens
+      the horizon should say so and why, as the Disorderly Climate block does.
+
+      '
+    terminal_value: 4903.503
+    value_per_share: 1.7597
+    engine_terminal_value: 5609.233
+    engine_value_per_share: 2.0127
+  - company: dnl
+    scenario: disorderly_climate_crystallisation
+    available: false
+    reason: no decay_horizon declared for this company x scenario yet (five-forces
+      moat-length assignment pending)
+    cost_of_capital: 0.088772
+    terminal_growth: 0.0175
+    capital: 4735.29
+    earned_return: 0.080548
+    moat_years: null
+    moat_band: null
+    moat_basis: null
+    terminal_value: null
+    value_per_share: null
+    engine_terminal_value: 4168.585
+    engine_value_per_share: 0.9924
+  - company: dnl
+    scenario: fragmentation
+    available: false
+    reason: no decay_horizon declared for this company x scenario yet (five-forces
+      moat-length assignment pending)
+    cost_of_capital: 0.088772
+    terminal_growth: 0.0225
+    capital: 4051.904
+    earned_return: 0.089219
+    moat_years: null
+    moat_band: null
+    moat_basis: null
+    terminal_value: null
+    value_per_share: null
+    engine_terminal_value: 4048.305
+    engine_value_per_share: 1.2241
+  - company: dnl
+    scenario: muddle_through
+    available: true
+    reason: null
+    cost_of_capital: 0.088772
+    terminal_growth: 0.025
+    capital: 4046.618
+    earned_return: 0.114178
+    moat_years: 12.5
+    moat_band: 10-15
+    moat_basis: 'Five Forces ratings for industrial explosives -- threat of new entrants
+      low, rivalry high, substitutes low -- read per section 12: entrant threat sets
+      the barrier height and rivalry the speed the excess is competed away. Those
+      three ratings are archetype-level and do not move by scenario, which is why
+      the band is the same as the Orderly Convergence block. A scenario that shortens
+      the horizon should say so and why, as the Disorderly Climate block does.
+
+      '
+    terminal_value: 4900.635
+    value_per_share: 1.732
+    engine_terminal_value: 5619.104
+    engine_value_per_share: 1.9895
+  - company: dnl
+    scenario: orderly_convergence
+    available: true
+    reason: null
+    cost_of_capital: 0.088772
+    terminal_growth: 0.0275
+    capital: 4093.136
+    earned_return: 0.124611
+    moat_years: 12.5
+    moat_band: 10-15
+    moat_basis: 'Five Forces ratings for industrial explosives — threat of new entrants
+      low, rivalry high, substitutes low — read per §12: entrant threat sets the barrier
+      height, rivalry the speed the excess is competed away. High rivalry against
+      a low entrant threat is what puts the band at ten to fifteen years rather than
+      beyond it.
+
+      '
+    terminal_value: 5326.614
+    value_per_share: 1.9337
+    engine_terminal_value: 6436.792
+    engine_value_per_share: 2.3316
+  - company: dnl
+    scenario: stagflation_persists
+    available: false
+    reason: no decay_horizon declared for this company x scenario yet (five-forces
+      moat-length assignment pending)
+    cost_of_capital: 0.088772
+    terminal_growth: 0.0225
+    capital: 4023.327
+    earned_return: 0.049632
+    moat_years: null
+    moat_band: null
+    moat_basis: null
+    terminal_value: null
+    value_per_share: null
+    engine_terminal_value: 1616.46
+    engine_value_per_share: 0.0491
+  - company: wbc
+    scenario: ai_productivity_lag
+    available: false
+    reason: no decay_horizon declared for this company x scenario yet (five-forces
+      moat-length assignment pending)
+    cost_of_capital: 0.0805
+    terminal_growth: 0.0325
+    capital: 83803.935
+    earned_return: 0.11351
+    moat_years: null
+    moat_band: null
+    moat_basis: null
+    terminal_value: null
+    value_per_share: null
+    engine_terminal_value: 126578.86
+    engine_value_per_share: 29.6987
+  - company: wbc
+    scenario: disorderly_climate_crystallisation
+    available: false
+    reason: no decay_horizon declared for this company x scenario yet (five-forces
+      moat-length assignment pending)
+    cost_of_capital: 0.0805
+    terminal_growth: 0.0325
+    capital: 81630.418
+    earned_return: 0.093202
+    moat_years: null
+    moat_band: null
+    moat_basis: null
+    terminal_value: null
+    value_per_share: null
+    engine_terminal_value: 97786.438
+    engine_value_per_share: 22.5807
+  - company: wbc
+    scenario: fragmentation
+    available: false
+    reason: no decay_horizon declared for this company x scenario yet (five-forces
+      moat-length assignment pending)
+    cost_of_capital: 0.0805
+    terminal_growth: 0.0325
+    capital: 82885.427
+    earned_return: 0.104468
+    moat_years: null
+    moat_band: null
+    moat_basis: null
+    terminal_value: null
+    value_per_share: null
+    engine_terminal_value: 116557.632
+    engine_value_per_share: 27.1096
+  - company: wbc
+    scenario: muddle_through
+    available: false
+    reason: no decay_horizon declared for this company x scenario yet (five-forces
+      moat-length assignment pending)
+    cost_of_capital: 0.0805
+    terminal_growth: 0.035
+    capital: 83682.114
+    earned_return: 0.112718
+    moat_years: null
+    moat_band: null
+    moat_basis: null
+    terminal_value: null
+    value_per_share: null
+    engine_terminal_value: 128741.714
+    engine_value_per_share: 30.0304
+  - company: wbc
+    scenario: orderly_convergence
+    available: false
+    reason: no decay_horizon declared for this company x scenario yet (five-forces
+      moat-length assignment pending)
+    cost_of_capital: 0.0805
+    terminal_growth: 0.0375
+    capital: 90707.162
+    earned_return: 0.139113
+    moat_years: null
+    moat_band: null
+    moat_basis: null
+    terminal_value: null
+    value_per_share: null
+    engine_terminal_value: 152936.495
+    engine_value_per_share: 36.1619
+  - company: wbc
+    scenario: stagflation_persists
+    available: false
+    reason: no decay_horizon declared for this company x scenario yet (five-forces
+      moat-length assignment pending)
+    cost_of_capital: 0.0805
+    terminal_growth: 0.0325
+    capital: 77464.272
+    earned_return: 0.051573
+    moat_years: null
+    moat_band: null
+    moat_basis: null
+    terminal_value: null
+    value_per_share: null
+    engine_terminal_value: 92795.743
+    engine_value_per_share: 18.6488
+  - company: csl
+    scenario: ai_productivity_lag
+    available: false
+    reason: no decay_horizon declared for this company x scenario yet (five-forces
+      moat-length assignment pending)
+    cost_of_capital: 0.0875
+    terminal_growth: 0.0288
+    capital: 23143.999
+    earned_return: 0.223126
+    moat_years: null
+    moat_band: null
+    moat_basis: null
+    terminal_value: null
+    value_per_share: null
+    engine_terminal_value: 79868.215
+    engine_value_per_share: 191.2137
+  - company: csl
+    scenario: disorderly_climate_crystallisation
+    available: false
+    reason: no decay_horizon declared for this company x scenario yet (five-forces
+      moat-length assignment pending)
+    cost_of_capital: 0.0875
+    terminal_growth: 0.0275
+    capital: 22988.948
+    earned_return: 0.203515
+    moat_years: null
+    moat_band: null
+    moat_basis: null
+    terminal_value: null
+    value_per_share: null
+    engine_terminal_value: 70246.902
+    engine_value_per_share: 168.1047
+  - company: csl
+    scenario: fragmentation
+    available: false
+    reason: no decay_horizon declared for this company x scenario yet (five-forces
+      moat-length assignment pending)
+    cost_of_capital: 0.0875
+    terminal_growth: 0.0275
+    capital: 22834.73
+    earned_return: 0.196282
+    moat_years: null
+    moat_band: null
+    moat_basis: null
+    terminal_value: null
+    value_per_share: null
+    engine_terminal_value: 67956.057
+    engine_value_per_share: 161.9522
+  - company: csl
+    scenario: muddle_through
+    available: false
+    reason: no decay_horizon declared for this company x scenario yet (five-forces
+      moat-length assignment pending)
+    cost_of_capital: 0.0875
+    terminal_growth: 0.03
+    capital: 23235.23
+    earned_return: 0.226036
+    moat_years: null
+    moat_band: null
+    moat_basis: null
+    terminal_value: null
+    value_per_share: null
+    engine_terminal_value: 81986.398
+    engine_value_per_share: 195.7835
+  - company: csl
+    scenario: orderly_convergence
+    available: false
+    reason: no decay_horizon declared for this company x scenario yet (five-forces
+      moat-length assignment pending)
+    cost_of_capital: 0.0875
+    terminal_growth: 0.0325
+    capital: 23594.025
+    earned_return: 0.248592
+    moat_years: null
+    moat_band: null
+    moat_basis: null
+    terminal_value: null
+    value_per_share: null
+    engine_terminal_value: 95512.615
+    engine_value_per_share: 227.4294
+  - company: csl
+    scenario: stagflation_persists
+    available: false
+    reason: no decay_horizon declared for this company x scenario yet (five-forces
+      moat-length assignment pending)
+    cost_of_capital: 0.0875
+    terminal_growth: 0.03
+    capital: 22642.583
+    earned_return: 0.18238
+    moat_years: null
+    moat_band: null
+    moat_basis: null
+    terminal_value: null
+    value_per_share: null
+    engine_terminal_value: 64877.993
+    engine_value_per_share: 153.5455
