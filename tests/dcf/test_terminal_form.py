@@ -123,7 +123,7 @@ def test_the_simpler_option_is_selectable(results):
     gordon = FcfEngine().run(dataclasses.replace(inp, terminal_form="gordon",
                                                  convergence_years=None))
     assert gordon.terminal_form == "gordon"
-    assert gordon.value_per_share == pytest.approx(2.2288, abs=5e-4)
+    assert gordon.value_per_share == pytest.approx(3.0063, abs=5e-4)   # D-72 paths; was 2.2288 under D-71 alone
     assert gordon.value_per_share > results["muddle_through"].value_per_share
 
 

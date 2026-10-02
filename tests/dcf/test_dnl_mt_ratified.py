@@ -143,7 +143,10 @@ def test_engine_overlays_data_driven_reproduce_headline():
         capex_pct_stub=ov["capex_pct_stub"],
         capex_pct=ov["capex_pct"],
         da_pct_revenue=ov["da_pct_revenue"],
-        terminal_growth=ov["terminal_growth"],
+        # D-72: terminal g is derived, no longer an overlay field. This composition
+        # keeps the FROZEN golden's terminal (Gordon at its typed 2.5%), so the
+        # derived g is deliberately NOT applied here -- the full data path is
+        # test_dnl_mt_from_data.
     )
     r = FcfEngine().run(inp)
     assert round(r.value_per_share, 3) == 2.678     # data overlays + data WACC, frozen terminal (D-71 ten-year horizon; was 2.354 at six)

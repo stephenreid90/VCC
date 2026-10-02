@@ -102,7 +102,7 @@ def test_wbc_stagflation_terminal_roe_is_a_recovery_assumption(rows):
 
 # ------------------------------------------------------- finding 3: DNL / D-42
 def test_dnl_splits_on_the_cost_of_capital_which_is_what_d42_is_for(rows):
-    """Four DNL scenarios assert an excess return and two do not.
+    """Five DNL scenarios assert an excess return and one does not.
 
     This is the diagnostic behaving as D-42 intends: the terminal return is not
     uniformly above or below the discount rate, so the warning discriminates
@@ -118,9 +118,12 @@ def test_dnl_splits_on_the_cost_of_capital_which_is_what_d42_is_for(rows):
     above = {s for s, r in dnl.items() if r.excess_over_cost_of_capital > 0}
     below = set(dnl) - above
 
+    # D-72 (same day): Stagflation joins too -- cyclical, its margin hit has
+    # reverted by year 10 and it earns 11.8% on the whole base. Baselined with
+    # Fragmentation in tests/terminal_defence_baseline.json.
     assert above == {"muddle_through", "ai_productivity_lag", "orderly_convergence",
-                     "fragmentation"}, above
-    assert below == {"disorderly_climate_crystallisation", "stagflation_persists"}, below
+                     "fragmentation", "stagflation_persists"}, above
+    assert below == {"disorderly_climate_crystallisation"}, below
     for s in above:
         assert any("D-42" in w for w in dnl[s].warnings)
     for s in below:
@@ -178,8 +181,10 @@ def test_the_declared_rate_does_not_reconcile_with_the_capital_build(rows):
     # extra years of chain growth RAISE the return the capital build produces,
     # widening the gap against the declared rate. The disagreement is the
     # finding; it is now larger, not smaller.
-    assert oc.return_on_whole_capital == pytest.approx(0.1432, abs=5e-4)
-    assert oc.declared_versus_whole_capital == pytest.approx(-0.0519, abs=5e-4)
+    # D-72 (same day): 0.1432 / -0.0519 -> 0.1552 / -0.0639 -- the scenario's
+    # own paths (higher CPI pass-through, mining supercycle spread) raise it again.
+    assert oc.return_on_whole_capital == pytest.approx(0.1552, abs=5e-4)
+    assert oc.declared_versus_whole_capital == pytest.approx(-0.0639, abs=5e-4)
     assert any("declares a terminal return" in w for w in oc.warnings)
 
 

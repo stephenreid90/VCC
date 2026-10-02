@@ -37,6 +37,21 @@ invested_capital_opening: 3681.1
 # D-40. Cumulative fractions of the roll-off total, Y1..Y6, flat thereafter.
 gas_rolloff_phasing: [0.05, 0.30, 0.60, 0.85, 0.95, 1.00]
 
+# D-72 (2 Oct 2026) made the live engine inputs year-by-year: the chain reads the
+# scenario's own macro paths, terminal g is derived, and the margin shift is
+# shaped by the scenario's phases. Every set in this file was published on the
+# PRE-D-72 inputs -- one flat chain rate, a typed terminal g and a parallel
+# margin shift per scenario -- so those are frozen here and the harness builds
+# every plan from them (scripts/size_horizon_variants.py build_plan). They are
+# the v4-workbook anchors the chain was struck on; they are not live anywhere.
+frozen_pre_d72_inputs:
+  orderly_convergence:                {chain_rate: 0.0744152500, terminal_growth: 0.0275, chain_volume_B25: 0.0500000000, chain_pricing_B29: 0.0235000000}
+  muddle_through:                     {chain_rate: 0.0615488763, terminal_growth: 0.0250, chain_volume_B25: 0.0327500000, chain_pricing_B29: 0.0285000000}
+  ai_productivity_lag:                {chain_rate: 0.0554575850, terminal_growth: 0.0225, chain_volume_B25: 0.0270000000, chain_pricing_B29: 0.0285000000}
+  fragmentation:                      {chain_rate: 0.0630408312, terminal_growth: 0.0225, chain_volume_B25: 0.0212500000, chain_pricing_B29: 0.0415000000}
+  disorderly_climate_crystallisation: {chain_rate: 0.0755559750, terminal_growth: 0.0175, chain_volume_B25: 0.0270000000, chain_pricing_B29: 0.0475000000}
+  stagflation_persists:               {chain_rate: 0.0548771800, terminal_growth: 0.0225, chain_volume_B25: 0.0040000000, chain_pricing_B29: 0.0515000000}
+
 # D-41. Peak shift held to `hold_to_year`, decaying to `persistent_pp` by `decay_to_year`.
 disorderly_capex_arc:
   peak_pp: 0.030

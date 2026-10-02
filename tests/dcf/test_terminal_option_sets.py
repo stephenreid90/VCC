@@ -90,8 +90,9 @@ def test_the_other_lever_convention_runs_backwards(by_key):
     n = 10
     measured = two_stage(v.capital, v.earned_return, v.cost_of_capital, v.terminal_growth, n)
     backwards = two_stage(e1 / 0.16, 0.16, v.cost_of_capital, v.terminal_growth, n)
-    assert measured == pytest.approx(5698, abs=1)
-    assert backwards == pytest.approx(5359, abs=1)
+    # Re-pinned D-72 (same day, derived g 5.27%): 5698 / 5359 -> 6316 / 6129.
+    assert measured == pytest.approx(6316, abs=1)
+    assert backwards == pytest.approx(6129, abs=1)
     assert backwards < measured
 
 
@@ -117,7 +118,8 @@ def test_engine_current_reproduces_every_engine_value_per_share(rows):
     # earned return the component terminal capitalises.
     # DNL re-pinned 2 Oct 2026 for D-71 (1.8461 -> 1.9422): fixed ten-year
     # horizon, excess-return convergence headline.
-    pinned = {("dnl", "muddle_through"): 1.9422, ("wbc", "muddle_through"): 30.0304,
+    # D-72 (same day): 1.9422 -> 2.1382 (scenario paths, derived g).
+    pinned = {("dnl", "muddle_through"): 2.1382, ("wbc", "muddle_through"): 30.0304,
               ("csl", "muddle_through"): 195.7835}
     for key, vps in pinned.items():
         v = next(x for x in rows if (x.company_id, x.scenario_id) == key)
@@ -156,11 +158,12 @@ def test_wbc_stagflation_recovery_shows_up_on_the_new_axis(by_key):
 
 def test_simple_tv_inherits_whatever_the_final_year_happens_to_be(by_key):
     """Finding 3. Where the forecast ends mid-glide, capitalising the final year's cash
-    flow is a large call on one year. DNL Disorderly Climate: about 55% of the engine TV
-    (was under half pre-D-35/D-36; the longer horizon and the fade both narrow the gap,
-    but simple TV still meaningfully understates the component-built terminal)."""
+    flow is a large call on one year. DNL Disorderly Climate: about 83% of the engine
+    TV under D-72 (was ~55%: the derived terminal g, 4.9% against the typed 1.75%,
+    and the shaped margin path narrow the gap a lot -- but simple TV still
+    understates the component-built terminal, which is the finding)."""
     v = by_key[("dnl", "disorderly_climate_crystallisation")]
-    assert _basis(v, "simple").terminal_value < 0.6 * _basis(v, "engine_current").terminal_value
+    assert _basis(v, "simple").terminal_value < 0.9 * _basis(v, "engine_current").terminal_value
 
 
 def test_simple_tv_is_a_claim_about_returns_on_new_capital(by_key):
@@ -183,22 +186,27 @@ def test_moat_length_matters_less_than_whether_it_ends(by_key):
 
 def test_exit_multiples_assert_returns_far_above_what_is_earned(by_key):
     """Finding 6. Eight times forward EBITDA on DNL Muddle Through needs a perpetual
-    return on all capital about four points above the earned return."""
+    return on all capital above the earned return -- about four points before
+    D-72, under half a point after it, because the derived 5.27% terminal g
+    makes the component terminal itself much larger. Still above, still perpetual."""
     v = by_key[("dnl", "muddle_through")]
     b = _basis(v, "exit_8x_ebitda")
     assert b.implied_moat.status == "perpetual_or_more"
-    assert b.implied_perpetual_return > v.earned_return + 0.03
+    assert b.implied_perpetual_return > v.earned_return
 
 
 def test_the_market_price_needs_a_return_the_forecast_does_not_show(by_key):
     """Finding 7. At the reference price, DNL's terminal must carry a perpetual return
-    on all capital near 21 per cent against 12.7 earned -- or the forecast is light.
-    (18.5 against 11.4 before D-71's ten-year horizon moved the capital base and
-    the earned return; the gap to the market is the finding, and it widened.)"""
+    on all capital near 15.6 per cent against 13.8 earned -- or the forecast is light.
+    (18.5 against 11.4 before D-71; 21 against 12.7 under D-71 alone; D-72's
+    derived 5.27% g and scenario paths close most of the gap to the market, which
+    is itself worth knowing: the market was pricing something closer to the
+    scenario's own growth than to a typed 2.5%.)"""
     v = by_key[("dnl", "muddle_through")]
     b = _basis(v, "market_implied")
     assert b.value_per_share == pytest.approx(3.61, abs=1e-9)
-    assert 0.20 < b.implied_perpetual_return < 0.22
+    assert 0.14 < b.implied_perpetual_return < 0.17
+    assert b.implied_perpetual_return > v.earned_return
 
 
 def test_csl_capital_base_is_built_and_on_the_axis(rows):

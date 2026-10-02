@@ -65,7 +65,19 @@ def build_plan(cfg: dict, spec: dict, scenario_id: str) -> replica.Plan:
     # declares its own horizon and fade length per set -- independent of the
     # live one -- so it needs the pre-fade flat chain rate to extend and fade
     # from, not the live per-year path, whose tail is already partway to g.
-    plan = replace(plan, growth_path=[plan.growth_path[0]] * plan.horizon_years)
+    frozen_in = cfg["frozen_pre_d72_inputs"][scenario_id]
+    plan = replace(plan, growth_path=[frozen_in["chain_rate"]] * plan.horizon_years,
+                   terminal_growth=frozen_in["terminal_growth"])
+    # ... and the PARALLEL margin shift the sets were published on, not D-72's
+    # phase-shaped one: resolve the overlays without the scenario's time_profile.
+    from vcc_valuations.translator import engine_overlays_from_data
+    _raw = load_inputs(ROOT, scenario_id=scenario_id, archetype_id=cfg["archetype_id"],
+                       company_id=cfg["company_id"])
+    _ov = engine_overlays_from_data(_raw["company_raw"], scenario_id, _raw.get("financials"))
+    plan = replace(plan, margin_delta=[
+        _ov["margin_transformation"][k] + _ov["margin_gas_rolloff"][k]
+        for k in range(plan.horizon_years)
+    ])
     # D-71 (2 Oct 2026) made excess-return convergence the live headline
     # terminal. Every set in this file was published on a Gordon terminal and
     # declares its own terminal treatment (``terminal_capex``), so the live
@@ -105,7 +117,7 @@ def build_plan(cfg: dict, spec: dict, scenario_id: str) -> replica.Plan:
     plan = replica.extend(plan, horizon)
     plan = replica.fade_growth(plan, spec["fade_period_length"])
 
-    keep = list(inp.margin_transformation)
+    keep = list(_ov["margin_transformation"])
     keep += [keep[-1]] * (horizon - len(keep))
     plan = replica.reshape_margin(
         plan, spec["gas_rolloff_total_pp"], cfg["gas_rolloff_phasing"], keep=keep
@@ -180,8 +192,8 @@ def capital_growth_path(cfg: dict, spec: dict, scenario_id: str, position: dict,
         # inflated at asset inflation. Stripping the chain's pricing rate out of the
         # year's growth leaves its volume component, so the path fades with revenue
         # instead of holding the chain rate through years the fade has already slowed.
-        inflation = engine_inputs(cfg, scenario_id).terminal_growth
-        pricing = _chain_rate(cfg, scenario_id, "B29")
+        inflation = cfg["frozen_pre_d72_inputs"][scenario_id]["terminal_growth"]
+        pricing = cfg["frozen_pre_d72_inputs"][scenario_id]["chain_pricing_B29"]
         return [
             (1.0 + g) * (1.0 + inflation) / (1.0 + pricing) - 1.0
             for g in plan.growth_path
@@ -190,8 +202,8 @@ def capital_growth_path(cfg: dict, spec: dict, scenario_id: str, position: dict,
         # The same basis with the chain's own volume rate held for every year, which
         # is how the 25 August handover struck it. Kept so the two readings can be
         # compared without either being re-derived from memory.
-        inflation = engine_inputs(cfg, scenario_id).terminal_growth
-        volume = _chain_rate(cfg, scenario_id, "B25")
+        inflation = cfg["frozen_pre_d72_inputs"][scenario_id]["terminal_growth"]
+        volume = cfg["frozen_pre_d72_inputs"][scenario_id]["chain_volume_B25"]
         return [(1.0 + volume) * (1.0 + inflation) - 1.0] * H
     raise ValueError(f"unknown capital growth basis {kind!r}")
 

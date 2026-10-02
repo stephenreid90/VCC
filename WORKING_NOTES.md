@@ -77,7 +77,31 @@ today's data; they are not an endorsement of it.
    Orderly Convergence. Four of six DNL scenarios now carry a declared decay horizon.
 2. The five-forces gap audit (free transcription wins vs genuine gaps).
 
-### D-72 — growth inside the period, and where terminal g comes from (ratified in principle)
+### D-72 — IMPLEMENTED (second landing, same sitting)
+
+Stephen ruled on all four translation questions and it is wired, 498 passed, base tie
+DNL **2.138**. What changed, in plain terms:
+
+1. The revenue chain now reads each scenario's own year-by-year inputs (mining growth,
+   inflation, gas) instead of one flat number. Two of those series are derived into the
+   scenario files by `scripts/derive_macro_driver_paths.py` (mining = world GDP + a fixed
+   gap; gas = the scenario's anchor until its equilibrium year, then normal) and asserted
+   by `tests/test_macro_driver_paths.py`. Inflation is the scenario's own CPI series.
+   D-37's "18 gaps" check is now at zero.
+2. Terminal growth is derived per scenario (the chain with its temporary extras switched
+   off at year 10, capped at the scenario's nominal GDP): 5.3% / 5.4% / 4.7% / 4.5% /
+   4.9% / 3.2%. The typed numbers are gone from `dnl.yaml`.
+3. The margin hit ramps in over the scenario's first phase, holds, then persists
+   (Fragmentation, Disorderly Climate) or reverts by year 10 (Stagflation).
+4. Consequences to read before quoting: Stagflation is now a cyclical scenario and is
+   NO LONGER the worst case (1.39; Disorderly Climate is, at 1.08). AI Lag drops back
+   below Muddle Through. No DNL scenario breaches the 70% terminal-share line any more.
+   Fragmentation and Stagflation both earn above WACC at year 10 with no decay horizon
+   declared, so both sit on the D-42 defence baseline and the D-71 Gordon-fallback
+   baseline until the Five Forces pass assigns horizons -- that pass is now the single
+   biggest open data item.
+
+### D-72 — growth inside the period, and where terminal g comes from (ratified in principle, superseded by the block above)
 
 Stephen's two follow-up questions, answered as one principle (DECISIONS D-72): explicit
 growth = the chain evaluated per year on the scenario paths + time-limited company
@@ -92,9 +116,9 @@ unchanged by it.
 
 ### Next (in order)
 
-1. **Stephen rules on the four questions in the translation proposal** (§0 equilibrium
-   chain vs typed g — this one moves every level materially; §2 spread vs multiple; §3
-   gas shape; §4 margin persist/revert). Then wire D-37's paths and the per-year chain via a translation table Stephen
+1. **Five-forces pass for the genuine gaps** (now the top item): Fragmentation and
+   Stagflation decay horizons; AI Lag gas; WBC and CSL decay horizons. Each one that
+   lands shrinks two baselines. (The translation rulings are done -- see above.) Then via a translation table Stephen
    approves (gap audit §2–4): `dm_inflation` → wire to the scenario file's own
    `cpi_inflation_advanced` series (already agreed); `global_mining_real_growth` → shape
    from `real_gdp_growth_world` with a spread/multiple calibrated to the existing flat

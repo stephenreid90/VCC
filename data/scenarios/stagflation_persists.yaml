@@ -64,6 +64,29 @@ scenario:
         real rates.
 
   macro_variables:
+    # D-72 derived paths (2 Oct 2026) -- written by scripts/derive_macro_driver_paths.py,
+    # asserted by tests/test_macro_driver_paths.py. Not hand-typed; edit the level
+    # anchors in data/companies/dnl.yaml or the series they derive from, then rerun.
+    - variable: global_mining_real_growth
+      units: percent_yoy
+      type: time_series
+      # real_gdp_growth_world plus a fixed gap of -1.86pp (decision 2: spread, not multiple)
+      time_series:
+        - {year: 1, value: 0.14}
+        - {year: 3, value: -0.36}
+        - {year: 5, value: -0.06}
+        - {year: 7, value: 0.14}
+        - {year: 10, value: 0.14}
+    - variable: gas_price_growth
+      units: percent_yoy
+      type: time_series
+      # DNL's transition-phase anchor until the equilibrium year (5), then the baseline (decision 3)
+      time_series:
+        - {year: 1, value: 5.0}
+        - {year: 3, value: 5.0}
+        - {year: 5, value: 2.0}
+        - {year: 7, value: 2.0}
+        - {year: 10, value: 2.0}
     - variable: real_gdp_growth_world
       units: percent_yoy
       type: time_series
@@ -73,6 +96,9 @@ scenario:
         - {year: 3, value: 1.5, confidence_low: 0.5, confidence_high: 2.0}
         - {year: 5, value: 1.8, confidence_low: 1.2, confidence_high: 2.5}
         - {year: 7, value: 2.0, confidence_low: 1.5, confidence_high: 2.5}
+        # Year 10 holds year 7 (D-72, 2 Oct 2026): the scenario resolves by year 5 and the
+        # series ended at 7; D-37 needs a year-10 anchor, and holding is the non-inventive read.
+        - {year: 10, value: 2.0, confidence_low: 1.5, confidence_high: 2.5}
 
     - variable: real_gdp_growth_advanced
       units: percent_yoy
@@ -93,6 +119,8 @@ scenario:
         - {year: 3, value: 5.0, confidence_low: 4.0, confidence_high: 6.0}
         - {year: 5, value: 4.0, confidence_low: 3.0, confidence_high: 5.0}
         - {year: 7, value: 3.5, confidence_low: 2.5, confidence_high: 4.5}
+        # Year 10 holds year 7 (D-72, 2 Oct 2026) -- same reason as real_gdp_growth_world above.
+        - {year: 10, value: 3.5, confidence_low: 2.5, confidence_high: 4.5}
 
     - variable: policy_rate_real_advanced
       units: percent

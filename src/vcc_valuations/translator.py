@@ -430,8 +430,36 @@ def operating_rates_from_history(financials: dict, window: str):
     return b.build("OR5")
 
 
+def margin_shift_shape(time_profile, horizon_years: int, persistence: str) -> List[float]:
+    """D-72 decision 4: the fraction of a scenario's margin shift applied each year.
+
+    Ramps in linearly over the scenario's FIRST phase (to its ``year_end``; a
+    one-year or open first phase ramps in year 1), holds at 1.0 through the
+    transition, and from the equilibrium year either PERSISTS at 1.0
+    (``structural`` -- Fragmentation's duplication costs, Disorderly Climate's
+    carbon cost) or REVERTS linearly to 0 by the final explicit year
+    (``cyclical`` -- Stagflation's resolution). ``time_profile`` is the
+    scenario's own; nothing here is a judgement.
+    """
+    if persistence not in ("structural", "cyclical"):
+        raise ValueError(f"margin_shift_persistence must be structural|cyclical, got {persistence!r}")
+    phases = sorted(time_profile, key=lambda p: p.year_start)
+    first_end = phases[0].year_end or 1
+    eq = max(p.year_start for p in phases)
+    shape = []
+    for k in range(1, horizon_years + 1):
+        if k <= first_end:
+            f = k / first_end
+        elif persistence == "structural" or k < eq or eq >= horizon_years:
+            f = 1.0
+        else:
+            f = 1.0 - (k - eq) / (horizon_years - eq)
+        shape.append(f)
+    return shape
+
+
 def engine_overlays_from_data(company_raw: dict, scenario_id: str,
-                              financials: dict | None = None):
+                              financials: dict | None = None, time_profile=None):
     """Per-year engine overlays for a scenario (methodology §11), RESOLVED.
 
     ``engine_overlays`` is stored as a ``baseline`` operating build (the Muddle
@@ -453,6 +481,16 @@ def engine_overlays_from_data(company_raw: dict, scenario_id: str,
         return None
     margin_delta = scen.get("margin_delta_pp", 0.0)
     capex_delta = scen.get("capex_delta_pp", 0.0)
+    # D-72 decision 4: with the scenario's time_profile the margin shift is
+    # SHAPED (ramp, hold, persist or revert); without it -- the frozen-golden
+    # tests and the pre-D-72 reading -- it stays the parallel shift.
+    if time_profile is not None:
+        shape = margin_shift_shape(
+            time_profile, len(base["margin_transformation"]),
+            scen.get("margin_shift_persistence", "structural"),
+        )
+    else:
+        shape = [1.0] * len(base["margin_transformation"])
 
     # D-48: where the company declares an operating-rate window, the capital,
     # depreciation and margin rates are DERIVED from the raw segment history for
@@ -483,12 +521,13 @@ def engine_overlays_from_data(company_raw: dict, scenario_id: str,
 
     return {
         "base_ebit_margin": base_margin,
-        "margin_transformation": [x + margin_delta for x in base["margin_transformation"]],
+        "margin_transformation": [x + margin_delta * f
+                                  for x, f in zip(base["margin_transformation"], shape)],
+        "margin_shift_shape": shape,
         "margin_gas_rolloff": list(base["margin_gas_rolloff"]),
         "capex_pct_stub": resolved_capex_stub,
         "capex_pct": [x + capex_delta for x in resolved_capex],
         "da_pct_revenue": resolved_da,
-        "terminal_growth": scen["terminal_growth"],
     }
 
 
@@ -507,7 +546,46 @@ def _geographic_regions(company_raw: dict) -> list:
     return []
 
 
-def revenue_growth_chain_from_data(inputs: dict, scenario_id: str):
+PERCENT = 100.0  # scenario macro series are percent_yoy; the engine works in decimals  # ssot-allow
+
+
+def macro_series_at(inputs: dict, variable: str, year: float) -> float:
+    """A scenario macro time series, linearly interpolated at ``year`` (D-37 anchors).
+
+    Held flat beyond the series' first and last points. Values are returned as
+    DECIMALS (the scenario files carry percent_yoy).
+    """
+    scenario = inputs["scenario"]
+    for mv in scenario.macro_variables:
+        if mv.variable != variable or not mv.time_series:
+            continue
+        pts = sorted((p.year, p.value) for p in mv.time_series)
+        if year <= pts[0][0]:
+            return pts[0][1] / PERCENT  # ssot-allow
+        if year >= pts[-1][0]:
+            return pts[-1][1] / PERCENT  # ssot-allow
+        for (y0, v0), (y1, v1) in zip(pts, pts[1:]):
+            if y0 <= year <= y1:
+                return (v0 + (v1 - v0) * (year - y0) / (y1 - y0)) / PERCENT  # ssot-allow
+    raise KeyError(f"{scenario.id}: no time series for macro variable {variable!r}")
+
+
+# The chain's three macro inputs and the scenario series each is read from
+# (D-72). ``dm_inflation`` is the scenario's advanced-economy CPI.
+CHAIN_MACRO_SERIES = {
+    "global_mining_real_growth": "global_mining_real_growth",
+    "dm_inflation": "cpi_inflation_advanced",
+    "gas_price_growth": "gas_price_growth",
+}
+
+
+def chain_macro_at(inputs: dict, year: float) -> dict:
+    """The chain's macro inputs at ``year``, from the scenario's own series."""
+    return {k: macro_series_at(inputs, v, year) for k, v in CHAIN_MACRO_SERIES.items()}
+
+
+def revenue_growth_chain_from_data(inputs: dict, scenario_id: str, year: float = 1,
+                                   equilibrium: bool = False):
     """The §11 revenue-growth chain as a fully-traceable :class:`Derivation`.
 
     Reproduces the workbook Assumptions B18-B42 build at full V6 granularity:
@@ -540,13 +618,27 @@ def revenue_growth_chain_from_data(inputs: dict, scenario_id: str):
         return None
 
     ib = shared["industry_structure"]     # scenario-invariant coefficients
-    macro = scen["macro"]                 # per-scenario B18/B19/B20
     co = shared["company_offset"]         # scenario-invariant company offset
-    b = DerivationBuilder(f"revenue_growth_chain[{scenario_id}]")
+    # D-72 (2 Oct 2026): the three macro inputs are read off the SCENARIO's own
+    # year-anchored series (D-37), at ``year``, not off the flat per-scenario
+    # anchors in the company file. Those anchors remain as the LEVEL the
+    # derived mining and gas paths are calibrated to (see
+    # scripts/derive_macro_driver_paths.py); DM inflation is the scenario's
+    # cpi_inflation_advanced, which closes the 12 Aug 2026 reconciliation note.
+    macro = chain_macro_at(inputs, year)
+    label = f"revenue_growth_chain[{scenario_id}]" + (
+        "[equilibrium]" if equilibrium else f"[year {year}]")
+    b = DerivationBuilder(label)
 
-    a = ib["volume_coefficient_a"]
+    # In EQUILIBRIUM (D-72) the chain's current-cycle extras are switched off:
+    # explosives volume tracks mining one-for-one (no volume beta, no ore-grade
+    # pickup), pricing carries no retained productivity, and the geographic-mix
+    # multiplier and the five-forces offsets -- all time-limited by their own
+    # descriptions -- are zero. What is left is the growth of the world the
+    # scenario ends in.
+    a = 1.0 if equilibrium else ib["volume_coefficient_a"]
     mining = macro["global_mining_real_growth"]
-    b_const = ib["volume_constant_b"]
+    b_const = 0.0 if equilibrium else ib["volume_constant_b"]
     volume = b.step(
         "B25", "Industry volume growth", a * mining + b_const,
         "a * mining_real_growth + b",
@@ -557,7 +649,7 @@ def revenue_growth_chain_from_data(inputs: dict, scenario_id: str):
     dm_infl = macro["dm_inflation"]
     w_gas = ib["pricing_weight_gas"]
     gas = macro["gas_price_growth"]
-    prod = ib["productivity_sharing"]
+    prod = 0.0 if equilibrium else ib["productivity_sharing"]
     pricing = b.step(
         "B29", "Industry pricing growth", w_infl * dm_infl + w_gas * gas + prod,
         "w_infl * DM_inflation + w_gas * gas_growth + productivity",
@@ -585,7 +677,7 @@ def revenue_growth_chain_from_data(inputs: dict, scenario_id: str):
         {r["geo"]: r["share_of_revenue"] for r in regions if r["geo"] not in developed},
         cell="B34", units="%",
     )
-    em_premium = co["em_growth_premium"]
+    em_premium = 1.0 if equilibrium else co["em_growth_premium"]
     geo_mix = b.step(
         "B36", "Geographic-mix multiplier", dm_weight + em_weight * em_premium,
         "DM_weight + EM_weight * EM_premium",
@@ -594,6 +686,8 @@ def revenue_growth_chain_from_data(inputs: dict, scenario_id: str):
     )
 
     ff = co["five_forces_offset"]
+    if equilibrium:
+        ff = {k: 0.0 for k in ff}
     net_offset = b.step(
         "B41", "Net company-position offset",
         ff["rivalry_competitive_position"] + ff["rivalry_product_mix"]
@@ -612,14 +706,49 @@ def revenue_growth_chain_from_data(inputs: dict, scenario_id: str):
     return b.build(result_key="B42")
 
 
-def revenue_growth_from_data(inputs: dict, scenario_id: str):
-    """Company nominal revenue growth (workbook B42) for a scenario.
+def revenue_growth_from_data(inputs: dict, scenario_id: str, year: float = 1):
+    """Company nominal revenue growth (workbook B42) for a scenario, at ``year``.
 
     Thin wrapper over :func:`revenue_growth_chain_from_data` returning just the
-    headline scalar for the engine assembler; ``None`` if there is no chain.
+    headline scalar; ``None`` if there is no chain.
     """
-    chain = revenue_growth_chain_from_data(inputs, scenario_id)
+    chain = revenue_growth_chain_from_data(inputs, scenario_id, year=year)
     return None if chain is None else chain.result
+
+
+def terminal_growth_from_data(inputs: dict, scenario_id: str, horizon_years: int):
+    """D-72 decision 1: terminal growth, DERIVED, scenario-specific, capped.
+
+    The chain in equilibrium (current-cycle extras off) at the end of the
+    explicit period: mining real growth plus the inflation / gas pricing
+    pass-through of the world the scenario ends in. Capped at the scenario's
+    own nominal GDP at that year ((1 + real world GDP)(1 + CPI) - 1): a mature
+    company does not outgrow the economy it sells into in perpetuity
+    (Damodaran; Koller et al.). Returns a :class:`Derivation` with result key
+    ``g``; ``None`` if the company carries no chain.
+    """
+    from vcc_valuations.derivation import DerivationBuilder
+
+    chain = revenue_growth_chain_from_data(inputs, scenario_id, year=horizon_years,
+                                           equilibrium=True)
+    if chain is None:
+        return None
+    b = DerivationBuilder(f"terminal_growth[{scenario_id}]")
+    uncapped = b.step(
+        "g_chain", "Equilibrium chain growth at the end of the explicit period",
+        chain.result, "revenue_growth_chain[equilibrium] at year H",
+        {"year": horizon_years, "chain": chain.result}, units="%",
+    )
+    gdp = macro_series_at(inputs, "real_gdp_growth_world", horizon_years)
+    cpi = macro_series_at(inputs, "cpi_inflation_advanced", horizon_years)
+    cap = b.step(
+        "g_cap", "Scenario nominal GDP at the end of the explicit period",
+        (1.0 + gdp) * (1.0 + cpi) - 1.0, "(1 + real_gdp_growth_world)(1 + cpi) - 1",
+        {"real_gdp_growth_world": gdp, "cpi_inflation_advanced": cpi}, units="%",
+    )
+    b.step("g", "Terminal growth (capped)", min(uncapped, cap), "min(g_chain, g_cap)",
+           {"g_chain": uncapped, "g_cap": cap}, units="%")
+    return b.build(result_key="g")
 
 
 def fade_period_length_from_data(inputs: dict, scenario_id: str) -> Optional[int]:
@@ -644,19 +773,16 @@ def fade_period_length_from_data(inputs: dict, scenario_id: str) -> Optional[int
 
 def revenue_growth_path_from_data(inputs: dict, scenario_id: str,
                                    horizon_years: int, terminal_growth: float) -> List[float]:
-    """D-36: the per-year revenue-growth path -- chain rate, then a fade to g.
+    """D-72: the per-year revenue-growth path -- the chain each year, then onto g.
 
-    Holds the §11 chain-derived rate (``revenue_growth_from_data``) for the
-    forecast segment, then glides LINEARLY to ``terminal_growth`` across the
-    final ``fade_period_length_years`` (D-70) years, landing exactly on g in
-    the final explicit year -- so the final year is a genuine steady state
-    rather than one that steps down discontinuously at the terminal boundary.
-    Raises if the scenario declares no chain or no fade length, or if the fade
-    would run longer than the horizon itself.
+    Year k's rate is the §11 chain evaluated on the scenario's own macro series
+    at year k (D-37 anchors, interpolated). Over the final
+    ``fade_period_length_years`` (D-70) the path glides LINEARLY from the chain's
+    own value that year onto ``terminal_growth`` -- D-36's mechanism, now
+    bridging only the chain's current-cycle extras (volume beta, ore-grade
+    pickup, productivity, geo-mix, five-forces offsets) as they expire, rather
+    than a typed number. Lands exactly on g in the final explicit year.
     """
-    chain_rate = revenue_growth_from_data(inputs, scenario_id)
-    if chain_rate is None:
-        raise ValueError(f"{scenario_id}: no revenue_growth_chain to fade from (D-36).")
     fade_years = fade_period_length_from_data(inputs, scenario_id)
     if fade_years is None:
         raise ValueError(
@@ -670,12 +796,16 @@ def revenue_growth_path_from_data(inputs: dict, scenario_id: str,
             f"{scenario_id}: fade_period_length_years ({fade_years}) exceeds "
             f"horizon_years ({horizon_years})."
         )
+    path = []
     flat_years = horizon_years - fade_years
-    path = [chain_rate] * flat_years
-    path += [
-        chain_rate + (terminal_growth - chain_rate) * (j / fade_years)
-        for j in range(1, fade_years + 1)
-    ]
+    for k in range(1, horizon_years + 1):
+        rate = revenue_growth_from_data(inputs, scenario_id, year=k)
+        if rate is None:
+            raise ValueError(f"{scenario_id}: no revenue_growth_chain (D-72).")
+        if k > flat_years:
+            j = k - flat_years
+            rate = rate + (terminal_growth - rate) * (j / fade_years)
+        path.append(rate)
     return path
 
 
@@ -1077,10 +1207,17 @@ def build_engine_inputs_from_data(inputs: dict, scenario_id: str):
             "handles WACC-discipline companies only; banks / CSL use Ke / M3)."
         )
     overlays = engine_overlays_from_data(
-        company_raw, scenario_id, inputs.get("financials")
+        company_raw, scenario_id, inputs.get("financials"),
+        time_profile=inputs["scenario"].time_profile,      # D-72: shaped margin shift
     )
     if overlays is None:
         raise ValueError(f"{company.id}: no engine_overlays for scenario {scenario_id!r}.")
+    # D-72 decision 1: terminal growth is derived from the chain in equilibrium
+    # at the end of the explicit period, capped at scenario nominal GDP.
+    _tg = terminal_growth_from_data(inputs, scenario_id, nb["horizon_years"])
+    if _tg is None:
+        raise ValueError(f"{company.id}: no revenue_growth_chain to derive terminal growth from (D-72).")
+    overlays["terminal_growth"] = _tg.result
     revenue_growth = revenue_growth_from_data(inputs, scenario_id)
     if revenue_growth is None:
         raise ValueError(f"{company.id}: no revenue_growth_chain for scenario {scenario_id!r}.")

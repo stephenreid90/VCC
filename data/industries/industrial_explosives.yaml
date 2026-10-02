@@ -10,8 +10,10 @@ industry_archetype:
   # year-anchored path on exactly these can be told apart from one that simply
   # has no macro chain at all (ssot check 14).
   required_macro_drivers:
+    # D-72 (2 Oct 2026): DM inflation is the scenario's own cpi_inflation_advanced;
+    # the other two are derived into each scenario file by scripts/derive_macro_driver_paths.py.
     - global_mining_real_growth
-    - dm_inflation
+    - cpi_inflation_advanced
     - gas_price_growth
 
   geography: multi_geographic

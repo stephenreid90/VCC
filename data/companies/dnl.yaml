@@ -490,6 +490,13 @@ normalised_baseline:
           new_entrants_pipeline_uplift: 0.0015   # B39: DNEL LATAM/Africa ramp (time-limited). +15bps
           buyer_supplier_substitutes: 0.0        # B40: at industry average. net 0
     by_scenario:
+      # D-72 (2 Oct 2026): these are LEVEL ANCHORS now, not the engine's inputs.
+      # The chain reads the scenario's own year-anchored series
+      # (data/scenarios/<id>.yaml: global_mining_real_growth, gas_price_growth --
+      # both derived FROM these anchors by scripts/derive_macro_driver_paths.py --
+      # and cpi_inflation_advanced for DM inflation). dm_inflation was removed
+      # here the same day: the scenario CPI series replaces it, which closes the
+      # 12 Aug 2026 reconciliation note below.
       # Per-scenario macro (B18/B19/B20 + B17 context memo). dm_real_gdp_growth is
       # carried for traceability but NOT consumed (the chain keys off mining real
       # growth + DM inflation). Values are the dnl_scenarios_comparison_v4 Inputs sheet.
@@ -506,17 +513,17 @@ normalised_baseline:
       # NOT wired together today; formally deriving the chain input from the scenario CPI is a macro-
       # layer decision that WOULD move the valuation, so it is deferred to Stephen (methodology owner).
       muddle_through:
-        macro: {dm_real_gdp_growth: 0.020, dm_inflation: 0.025, global_mining_real_growth: 0.025, gas_price_growth: 0.020}
+        macro: {dm_real_gdp_growth: 0.020, global_mining_real_growth: 0.025, gas_price_growth: 0.020}
       orderly_convergence:
-        macro: {dm_real_gdp_growth: 0.025, dm_inflation: 0.020, global_mining_real_growth: 0.040, gas_price_growth: 0.015}
+        macro: {dm_real_gdp_growth: 0.025, global_mining_real_growth: 0.040, gas_price_growth: 0.015}
       ai_productivity_lag:
-        macro: {dm_real_gdp_growth: 0.017, dm_inflation: 0.025, global_mining_real_growth: 0.020, gas_price_growth: 0.020}
+        macro: {dm_real_gdp_growth: 0.017, global_mining_real_growth: 0.020, gas_price_growth: 0.020}
       fragmentation:
-        macro: {dm_real_gdp_growth: 0.010, dm_inflation: 0.035, global_mining_real_growth: 0.015, gas_price_growth: 0.040}
+        macro: {dm_real_gdp_growth: 0.010, global_mining_real_growth: 0.015, gas_price_growth: 0.040}
       disorderly_climate_crystallisation:
-        macro: {dm_real_gdp_growth: 0.015, dm_inflation: 0.035, global_mining_real_growth: 0.020, gas_price_growth: 0.060}
+        macro: {dm_real_gdp_growth: 0.015, global_mining_real_growth: 0.020, gas_price_growth: 0.060}
       stagflation_persists:
-        macro: {dm_real_gdp_growth: 0.005, dm_inflation: 0.045, global_mining_real_growth: 0.000, gas_price_growth: 0.050}
+        macro: {dm_real_gdp_growth: 0.005, global_mining_real_growth: 0.000, gas_price_growth: 0.050}
 
   # Net-debt override
   net_debt: 1300.0
@@ -797,7 +804,17 @@ normalised_baseline:
       margin_gas_rolloff: [-0.001, -0.006, -0.012, -0.017, -0.019, -0.02, -0.02, -0.02, -0.02, -0.02]  # D-69 phasing to FY2032 (Y6); Y7-Y10 hold the completed roll-off (D-71)
     by_scenario:
       # margin_delta_pp / capex_delta_pp are parallel shifts vs the baseline path;
-      # terminal_growth is absolute (B77 base 0.025 + the comparison's delta).
+      # terminal_growth is no longer stored here (D-72, 2 Oct 2026): it is DERIVED
+      # per scenario by translator.terminal_growth_from_data -- the revenue chain
+      # in equilibrium at the end of the explicit period, capped at the
+      # scenario's nominal GDP. The typed values it replaces were 0.0250 /
+      # 0.0275 / 0.0225 / 0.0225 / 0.0175 / 0.0225.
+      # margin_shift_persistence (D-72 decision 4): the margin shift ramps in
+      # over the scenario's first phase and holds through its transition; from
+      # the equilibrium year it PERSISTS (structural, the default) or REVERTS
+      # to zero by the final explicit year (cyclical). Stagflation's own
+      # 'resolution' phase is the one cyclical case; Fragmentation's duplication
+      # costs and Disorderly Climate's carbon cost are structural.
       # fade_period_length_years (D-70, 25 Sep 2026): D-36's revenue-growth fade
       # length. Baseline 2 years for a scenario with no declared override.
       # Disorderly Climate carries the impact matrix's only quantified
@@ -807,12 +824,12 @@ normalised_baseline:
       # beyond this one small/negative case has been needed yet; extend the
       # convention (moderate = 2 steps, large = 3) if a future scenario
       # declares a stronger rating.
-      muddle_through:                     {margin_delta_pp:  0.000, capex_delta_pp: 0.00, terminal_growth: 0.0250, fade_period_length_years: 2}
-      orderly_convergence:                {margin_delta_pp:  0.005, capex_delta_pp: 0.00, terminal_growth: 0.0275, fade_period_length_years: 2}
-      ai_productivity_lag:                {margin_delta_pp:  0.005, capex_delta_pp: 0.00, terminal_growth: 0.0225, fade_period_length_years: 2}
-      fragmentation:                      {margin_delta_pp: -0.030, capex_delta_pp: 0.00, terminal_growth: 0.0225, fade_period_length_years: 2}
-      disorderly_climate_crystallisation: {margin_delta_pp: -0.030, capex_delta_pp: 0.03, terminal_growth: 0.0175, fade_period_length_years: 1}
-      stagflation_persists:               {margin_delta_pp: -0.075, capex_delta_pp: 0.00, terminal_growth: 0.0225, fade_period_length_years: 2}
+      muddle_through:                     {margin_delta_pp:  0.000, capex_delta_pp: 0.00, fade_period_length_years: 2}
+      orderly_convergence:                {margin_delta_pp:  0.005, capex_delta_pp: 0.00, fade_period_length_years: 2}
+      ai_productivity_lag:                {margin_delta_pp:  0.005, capex_delta_pp: 0.00, fade_period_length_years: 2}
+      fragmentation:                      {margin_delta_pp: -0.030, capex_delta_pp: 0.00, fade_period_length_years: 2, margin_shift_persistence: structural}
+      disorderly_climate_crystallisation: {margin_delta_pp: -0.030, capex_delta_pp: 0.03, fade_period_length_years: 1, margin_shift_persistence: structural}
+      stagflation_persists:               {margin_delta_pp: -0.075, capex_delta_pp: 0.00, fade_period_length_years: 2, margin_shift_persistence: cyclical}
 
   # --- Tax Bridge (workbook Tax Bridge sheet; migrated 2026-08-12). INPUTS ONLY:
   # the FY26 effective rate (B59), the per-jurisdiction statutory rates (C5-C7,

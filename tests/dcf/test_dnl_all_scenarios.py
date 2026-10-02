@@ -60,22 +60,37 @@ def _run(scenario: str):
 
 
 @pytest.mark.parametrize("scenario", SCENARIOS)
-def test_scenario_drivers_tie_the_comparison_workbook(scenario):
-    """Revenue growth and terminal growth still reproduce the v4 workbook.
+def test_scenario_drivers_are_derived_from_the_scenario_not_the_v4_workbook(scenario):
+    """D-72 (2 Oct 2026) retired the v4-workbook tie on growth and terminal g.
 
-    The Y5 EBIT margin no longer ties, and is not checked here: D-69
-    (25 Sept 2026) revised DNL's gas roll-off from a flat -1.5pp (D-40, the
-    basis the v4 workbook was struck on) to a deeper, later-phased -2.0pp by
-    FY2032. That moves every scenario's Y5 margin down by the same ~0.5pp
-    parallel shift, since the roll-off revision applies uniformly -- D-69
-    working as intended, not a data error. D-35 also means Y5 is no longer
-    the last explicit year (the horizon extended to Y6), so ``r.ebit_margin``
-    is not indexed by ``-1`` here even for the checks that remain.
+    The v4 Inputs sheet supplied flat per-scenario scalars; they survive as the
+    LEVEL anchors the derived mining and gas paths are calibrated to (asserted
+    in tests/test_macro_driver_paths.py). The chain now reads the scenario's
+    own year-anchored series -- DM inflation is the scenario CPI, ~0.5pp above
+    the old "through-cycle" value on the central scenarios, so year-1 growth
+    sits above the v4 figure by 0.7 x that gap, by construction. Terminal g is
+    derived (equilibrium chain, capped at scenario nominal GDP), not the typed
+    number the WORKBOOK tuple carries.
     """
+    from vcc_valuations.translator import (
+        chain_macro_at, macro_series_at, terminal_growth_from_data,
+    )
     inp, built, r = _run(scenario)
     wb_growth, _wb_y5_margin, wb_terminal = WORKBOOK[scenario]
-    assert abs(revenue_growth_from_data(inp, scenario) - wb_growth) < 5e-5
-    assert abs(built.terminal_growth - wb_terminal) < 1e-9
+    # The chain's inputs at year 1 ARE the scenario series at year 1.
+    m = chain_macro_at(inp, 1)
+    assert m["dm_inflation"] == pytest.approx(macro_series_at(inp, "cpi_inflation_advanced", 1))
+    assert m["global_mining_real_growth"] == pytest.approx(
+        macro_series_at(inp, "global_mining_real_growth", 1))
+    # Terminal g is derived and capped, and is no longer the typed v4 number.
+    tg = terminal_growth_from_data(inp, scenario, built.horizon_years)
+    assert built.terminal_growth == pytest.approx(tg.result)
+    assert built.terminal_growth <= tg["g_cap"].value + 1e-12
+    assert built.terminal_growth != pytest.approx(wb_terminal, abs=1e-4)
+    assert 0.03 <= built.terminal_growth <= 0.06        # the range Stephen set, 2 Oct 2026
+    # The year-1 chain moved off the v4 growth by the DM-inflation basis change only
+    # where the scenario series differ from the old anchors; it is not pinned to v4.
+    assert abs(revenue_growth_from_data(inp, scenario) - wb_growth) < 0.02
 
 
 def test_muddle_through_is_the_ratified_headline():
@@ -86,7 +101,9 @@ def test_muddle_through_is_the_ratified_headline():
     test_dnl_mt_from_data.py for the full derivation."""
     _, _, r = _run("muddle_through")
     # 1.942 under D-71 (2 Oct 2026): fixed ten-year horizon, convergence terminal.
-    assert round(r.value_per_share, 3) == 1.942
+    # 2.138 under D-72 (same day): the chain on the scenario's own paths (CPI
+    # 3.0% vs the old 2.5% DM-inflation anchor) and a derived 5.27% terminal g.
+    assert round(r.value_per_share, 3) == 2.138
 
 
 def test_scenario_asymmetry_is_downside_skewed():
@@ -102,31 +119,28 @@ def test_scenario_asymmetry_is_downside_skewed():
     central case is a question for the owner, flagged in WORKING_NOTES.
     """
     vps = {s: _run(s)[2].value_per_share for s in SCENARIOS}
+    # D-72 (2 Oct 2026) reordered the downside. Decisions 3 and 4 make
+    # Stagflation a CYCLICAL scenario -- its gas spike ends and its margin hit
+    # reverts at its own 'resolution' phase (year 5) -- while Fragmentation's
+    # duplication costs and Disorderly Climate's carbon cost are STRUCTURAL and
+    # persist. So Stagflation is no longer the floor: Disorderly Climate is, and
+    # Stagflation sits between Fragmentation and it. AI Lag also drops back
+    # below Muddle Through (its lower derived g no longer buys the terminal
+    # capex relief it did under a typed 2.25%). Ordering before D-72:
+    # OC > AI > MT > Frag > DCC > Stag.
     assert (
         vps["orderly_convergence"]
-        > vps["ai_productivity_lag"]
         > vps["muddle_through"]
+        > vps["ai_productivity_lag"]
         > vps["fragmentation"]
-        > vps["disorderly_climate_crystallisation"]
         > vps["stagflation_persists"]
+        > vps["disorderly_climate_crystallisation"]
     )
     mt = vps["muddle_through"]
     upside = vps["orderly_convergence"] - mt
-    downside = mt - vps["stagflation_persists"]
-    assert downside > 3.0 * upside          # asymmetry ~6.0x post D-35/D-36/D-69 (v4 workbook: 4.05x)
-    # Stagflation Persists crossed to negative equity value under D-35/D-36/D-69
-    # (25 Sept 2026): the extra year of margin compression and gas roll-off, on
-    # top of the fade to g, is now enough to take the scenario through zero.
-    # That is the model finding this asymmetry test exists to surface, not a
-    # bug -- so every OTHER scenario still yields positive equity, and only
-    # Stagflation (already the worst case, and already the closest to zero
-    # before this change) is allowed through it.
-    # D-71 (2 Oct 2026): the ten-year horizon's extra years of chain growth put
-    # Stagflation back slightly above zero (0.072). Every scenario positive,
-    # Stagflation still the floor and still the one sitting at the margin.
+    downside = mt - min(vps.values())
+    assert downside > 2.5 * upside          # asymmetry ~3.0x post D-72 (was ~6x; v4 workbook: 4.05x)
     assert all(v > 0 for v in vps.values())
-    assert vps["stagflation_persists"] == min(vps.values())
-    assert vps["stagflation_persists"] < 0.1
 
 
 def test_single_wacc_held_across_scenarios():

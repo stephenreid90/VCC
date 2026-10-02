@@ -23,7 +23,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_BASES = {"DNL": "1.942", "WBC": "30.03", "CSL": "195.78"}  # DNL 2 Oct (D-71: fixed ten-year horizon, convergence terminal); WBC back to 30.03 on 17 Sep (M13)
+EXPECTED_BASES = {"DNL": "2.138", "WBC": "30.03", "CSL": "195.78"}  # DNL 2 Oct (D-71 + D-72: ten-year horizon, convergence terminal, scenario paths, derived g); WBC back to 30.03 on 17 Sep (M13)
 
 
 def run(cmd: list[str], timeout: int = 900, cwd: Path | None = None) -> tuple[int, str]:

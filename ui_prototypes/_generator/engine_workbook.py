@@ -210,11 +210,12 @@ class Book:
         r[0] += 1
         macro_rows = {}
         drivers = [
-            ("dm_inflation", "DM inflation", PCT2, lambda s: rgc["by_scenario"][s]["macro"]["dm_inflation"]),
-            ("global_mining_real_growth", "Global mining real growth", PCT2, lambda s: rgc["by_scenario"][s]["macro"]["global_mining_real_growth"]),
-            ("gas_price_growth", "Gas price growth", PCT2, lambda s: rgc["by_scenario"][s]["macro"]["gas_price_growth"]),
-            ("terminal_growth", "Terminal growth g", PCT2, lambda s: ov["by_scenario"][s]["terminal_growth"]),
-            ("margin_delta_pp", "Margin delta (parallel shift, pp)", PCT2, lambda s: ov["by_scenario"][s].get("margin_delta_pp", 0.0)),
+            # D-72: the chain's macro inputs are year-anchored paths (the block
+            # below), not scalars; these two rows are the LEVEL anchors the
+            # derived paths are calibrated to, shown for the audit trail.
+            ("global_mining_real_growth_anchor", "Global mining real growth (level anchor)", PCT2, lambda s: rgc["by_scenario"][s]["macro"]["global_mining_real_growth"]),
+            ("gas_price_growth_anchor", "Gas price growth (transition anchor)", PCT2, lambda s: rgc["by_scenario"][s]["macro"]["gas_price_growth"]),
+            ("margin_delta_pp", "Margin shift (pp, shaped by the scenario's phases -- D-72)", PCT2, lambda s: ov["by_scenario"][s].get("margin_delta_pp", 0.0)),
             ("capex_delta_pp", "Capex delta (parallel shift, pp)", PCT2, lambda s: ov["by_scenario"][s].get("capex_delta_pp", 0.0)),
             # D-70: the fade length behind D-36's revenue-growth fade, below.
             ("fade_period_length_years", "Fade period length (years, D-70)", "0", lambda s: ov["by_scenario"][s]["fade_period_length_years"]),
@@ -232,6 +233,46 @@ class Book:
             r[0] += 1
         blank()
 
+        # --- D-37 / D-72: year-anchored macro paths, one block per scenario ---
+        # The chain reads these per year (interpolated between the 1/3/5/7/10
+        # anchors by the translator; the interpolated per-year values are what
+        # the engine consumes, so they are what is written here). Terminal
+        # growth is a FORMULA off the year-H cells: the chain in equilibrium
+        # (extras off), capped at scenario nominal GDP.
+        from vcc_valuations.translator import macro_series_at, margin_shift_shape
+        H = nb["horizon_years"]
+        ws.cell(r[0], 1, "Macro paths by year (D-37 anchors, interpolated; D-72)"); ws.cell(r[0], 1).font = SUB; r[0] += 1
+        ws.cell(r[0], 1, "Scenario / series"); ws.cell(r[0], 1).font = BOLD
+        for p in range(1, H + 1):
+            c = ws.cell(r[0], 2 + p, f"Y{p}"); c.font = BOLD; c.alignment = Alignment(horizontal="right")
+        r[0] += 1
+        PATHS = [
+            ("global_mining_real_growth", "global_mining_real_growth", "mining real growth"),
+            ("cpi_inflation_advanced", "cpi_inflation_advanced", "DM inflation (scenario CPI)"),
+            ("gas_price_growth", "gas_price_growth", "gas price growth"),
+            ("real_gdp_growth_world", "real_gdp_growth_world", "world real GDP (cap)"),
+        ]
+        for j, (sid, nm) in enumerate(SCEN):
+            sinp = load_inputs(_ROOT, sid, "industrial_explosives", "dnl")
+            for key, var, label in PATHS:
+                ws.cell(r[0], 1, f"{nm}: {label}")
+                for p in range(1, H + 1):
+                    c = ws.cell(r[0], 2 + p, macro_series_at(sinp, var, p))
+                    c.fill = YELLOW; c.font = BLUEFONT; c.number_format = PCT2
+                    self.ref[f"path:{key}:{sid}:{p}"] = f"'Assumptions'!${_col(2 + p)}${r[0]}"
+                r[0] += 1
+            shape = margin_shift_shape(
+                sinp["scenario"].time_profile, H,
+                ov["by_scenario"][sid].get("margin_shift_persistence", "structural"),
+            )
+            ws.cell(r[0], 1, f"{nm}: margin shift applied (fraction, D-72 shape)")
+            for p in range(1, H + 1):
+                c = ws.cell(r[0], 2 + p, shape[p - 1])
+                c.fill = YELLOW; c.font = BLUEFONT; c.number_format = NUM1 + "00"
+                self.ref[f"shape:{sid}:{p}"] = f"'Assumptions'!${_col(2 + p)}${r[0]}"
+            r[0] += 1
+        blank()
+
         # --- Industry structure (shared, scenario-invariant) ---
         ws.cell(r[0], 1, "Industry-structure coefficients (archetype baseline, shared)"); ws.cell(r[0], 1).font = SUB; r[0] += 1
         line("Volume coefficient a (mining beta)", istr["volume_coefficient_a"], "a", NUM1 + "0")
@@ -239,6 +280,19 @@ class Book:
         line("Pricing weight — inflation", istr["pricing_weight_inflation"], "w_infl", NUM1 + "0")
         line("Pricing weight — gas", istr["pricing_weight_gas"], "w_gas", NUM1 + "0")
         line("Productivity sharing", istr["productivity_sharing"], "prod", PCT2)
+        blank()
+        # derived terminal growth, per scenario, as a formula (D-72 decision 1)
+        ws.cell(r[0], 1, "Terminal growth g (D-72: equilibrium chain at Y{}, capped at nominal GDP)".format(H))
+        for j, (sid, nm) in enumerate(SCEN):
+            m = self.ref[f"path:global_mining_real_growth:{sid}:{H}"]
+            ci = self.ref[f"path:cpi_inflation_advanced:{sid}:{H}"]
+            g_ = self.ref[f"path:gas_price_growth:{sid}:{H}"]
+            gdp = self.ref[f"path:real_gdp_growth_world:{sid}:{H}"]
+            f = (f"=MIN((1+{m})*(1+{self.ref['w_infl']}*{ci}+{self.ref['w_gas']}*{g_})-1,"
+                 f"(1+{gdp})*(1+{ci})-1)")
+            c = ws.cell(r[0], 3 + j, f); c.number_format = PCT2
+            self.ref[f"macro:terminal_growth:{sid}"] = f"'Assumptions'!${_col(3 + j)}${r[0]}"
+        r[0] += 1
         blank()
 
         # --- Company offset (shared) ---
@@ -301,17 +355,17 @@ class Book:
         line("Horizon years", nb["horizon_years"], "horizon", "0")
         self.horizon = nb["horizon_years"]  # D-35: drives every period loop below
         # margin transformation vector
-        ws.cell(r[0], 1, "Margin transformation (Y1..Y5, pp)")
+        ws.cell(r[0], 1, "Margin transformation (Y1..Y10, pp)")
         for i, v in enumerate(base["margin_transformation"]):
             c = ws.cell(r[0], 3 + i, v); c.fill = YELLOW; c.font = BLUEFONT; c.number_format = PCT2
             self.ref[f"mt:{i}"] = f"'Assumptions'!${_col(3 + i)}${r[0]}"
         r[0] += 1
-        ws.cell(r[0], 1, "Margin gas roll-off (Y1..Y5, pp)")
+        ws.cell(r[0], 1, "Margin gas roll-off (Y1..Y10, pp)")
         for i, v in enumerate(base["margin_gas_rolloff"]):
             c = ws.cell(r[0], 3 + i, v); c.fill = YELLOW; c.font = BLUEFONT; c.number_format = PCT2
             self.ref[f"gas:{i}"] = f"'Assumptions'!${_col(3 + i)}${r[0]}"
         r[0] += 1
-        ws.cell(r[0], 1, "Capex % (Y1..Y5)")
+        ws.cell(r[0], 1, "Capex % (Y1..Y10)")
         for i, v in enumerate(base["capex_pct"]):
             c = ws.cell(r[0], 3 + i, v); c.fill = YELLOW; c.font = BLUEFONT; c.number_format = PCT2
             self.ref[f"capex:{i}"] = f"'Assumptions'!${_col(3 + i)}${r[0]}"
@@ -397,9 +451,9 @@ class Book:
         # We know DM = developed regions; build explicit sums
         # (developed flagged by geo_dm == 'Yes'); we captured membership when writing Assumptions
         put("B25", "B25 Industry volume growth",
-            PCT3, lambda s, c: f"={R['a']}*{R[f'macro:global_mining_real_growth:{s}']}+{R['b']}")
+            PCT3, lambda s, c: f"={R['a']}*{R[f'path:global_mining_real_growth:{s}:1']}+{R['b']}")
         put("B29", "B29 Industry pricing growth",
-            PCT3, lambda s, c: f"={R['w_infl']}*{R[f'macro:dm_inflation:{s}']}+{R['w_gas']}*{R[f'macro:gas_price_growth:{s}']}+{R['prod']}")
+            PCT3, lambda s, c: f"={R['w_infl']}*{R[f'path:cpi_inflation_advanced:{s}:1']}+{R['w_gas']}*{R[f'path:gas_price_growth:{s}:1']}+{R['prod']}")
         put("B30", "B30 Industry nominal growth",
             PCT3, lambda s, c: f"=(1+{c}{row['B25']})*(1+{c}{row['B29']})-1")
         # DM/EM weighting: sum revenue weights of developed / non-developed regions
@@ -504,10 +558,16 @@ class Book:
         # linearly to g over the declared fade length (D-70), landing on g in
         # the final explicit year (D-36). Both g and the fade length are
         # per-scenario; the horizon is shared across scenarios (D-35).
-        section("Revenue growth (chain rate, then D-36 fade to g)")
+        section("Revenue growth (D-72: chain on the year's macro path, then D-36 glide onto g)")
         for p in range(1, H + 1):
             def f_g(s, c, j, p=p):
-                chain = R[f"rev_growth:{s}"]
+                m = R[f"path:global_mining_real_growth:{s}:{p}"]
+                ci = R[f"path:cpi_inflation_advanced:{s}:{p}"]
+                ga = R[f"path:gas_price_growth:{s}:{p}"]
+                geo = f"'Revenue growth'!{c}{self.rev_rows['B36']}"
+                off = f"'Revenue growth'!{c}{self.rev_rows['B41']}"
+                chain = (f"(((1+{R['a']}*{m}+{R['b']})*(1+{R['w_infl']}*{ci}+{R['w_gas']}*{ga}+{R['prod']})-1)"
+                         f"*{geo}+{off})")
                 g = R[f"macro:terminal_growth:{s}"]
                 fade = R[f"macro:fade_period_length_years:{s}"]
                 flat = f"({R['horizon']}-{fade})"
@@ -532,7 +592,8 @@ class Book:
                 if p == 0:
                     return f"={R['base_margin']}"
                 i = p - 1
-                return f"={R['base_margin']}+({R[f'mt:{i}']}+{R[f'macro:margin_delta_pp:{s}']})+{R[f'gas:{i}']}"
+                return (f"={R['base_margin']}+({R[f'mt:{i}']}+{R[f'macro:margin_delta_pp:{s}']}"
+                        f"*{R[f'shape:{s}:{p}']})+{R[f'gas:{i}']}")
             prow(f"m{p}", f"  {periods[p]} EBIT margin", PCT2, f_m)
         # EBIT
         section("EBIT")

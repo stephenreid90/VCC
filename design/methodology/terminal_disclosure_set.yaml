@@ -20,9 +20,9 @@ terminal_disclosure_set:
     available: true
     reason: null
     cost_of_capital: 0.088772
-    terminal_growth: 0.0225
-    capital: 4420.939
-    earned_return: 0.12653
+    terminal_growth: 0.046727
+    capital: 4479.676
+    earned_return: 0.135887
     moat_years: 12.5
     moat_band: 10-15
     moat_basis: 'Five Forces ratings for industrial explosives -- threat of new entrants
@@ -33,18 +33,18 @@ terminal_disclosure_set:
       the horizon should say so and why, as the Disorderly Climate block does.
 
       '
-    terminal_value: 5790.895
-    value_per_share: 1.9481
-    engine_terminal_value: 5790.895
-    engine_value_per_share: 1.9481
+    terminal_value: 6431.241
+    value_per_share: 2.1071
+    engine_terminal_value: 6431.241
+    engine_value_per_share: 2.1071
   - company: dnl
     scenario: disorderly_climate_crystallisation
     available: true
     reason: null
     cost_of_capital: 0.088772
-    terminal_growth: 0.0175
-    capital: 6169.173
-    earned_return: 0.080202
+    terminal_growth: 0.049389
+    capital: 6174.5
+    earned_return: 0.083151
     moat_years: 12.5
     moat_band: 10-15
     moat_basis: 'Same Five Forces read as Muddle Through / Orderly Convergence (new
@@ -55,34 +55,34 @@ terminal_disclosure_set:
       central band -- carries that risk.
 
       '
-    terminal_value: 5745.651
-    value_per_share: 1.0302
-    engine_terminal_value: 5745.651
-    engine_value_per_share: 1.0302
+    terminal_value: 5849.293
+    value_per_share: 1.0762
+    engine_terminal_value: 5849.293
+    engine_value_per_share: 1.0762
   - company: dnl
     scenario: fragmentation
     available: false
     reason: no decay_horizon declared for this company x scenario yet (five-forces
       moat-length assignment pending)
     cost_of_capital: 0.088772
-    terminal_growth: 0.0225
-    capital: 4486.96
-    earned_return: 0.098313
+    terminal_growth: 0.044536
+    capital: 4504.337
+    earned_return: 0.102203
     moat_years: null
     moat_band: null
     moat_basis: null
     terminal_value: null
     value_per_share: null
-    engine_terminal_value: 5098.694
-    engine_value_per_share: 1.3844
+    engine_terminal_value: 5670.008
+    engine_value_per_share: 1.5776
   - company: dnl
     scenario: muddle_through
     available: true
     reason: null
     cost_of_capital: 0.088772
-    terminal_growth: 0.025
-    capital: 4476.902
-    earned_return: 0.127154
+    terminal_growth: 0.052675
+    capital: 4547.095
+    earned_return: 0.137836
     moat_years: 12.5
     moat_band: 10-15
     moat_basis: 'Five Forces ratings for industrial explosives -- threat of new entrants
@@ -93,18 +93,18 @@ terminal_disclosure_set:
       the horizon should say so and why, as the Disorderly Climate block does.
 
       '
-    terminal_value: 5904.284
-    value_per_share: 1.9422
-    engine_terminal_value: 5904.284
-    engine_value_per_share: 1.9422
+    terminal_value: 6672.643
+    value_per_share: 2.1382
+    engine_terminal_value: 6672.643
+    engine_value_per_share: 2.1382
   - company: dnl
     scenario: orderly_convergence
     available: true
     reason: null
     cost_of_capital: 0.088772
-    terminal_growth: 0.0275
-    capital: 4599.526
-    earned_return: 0.14324
+    terminal_growth: 0.05369
+    capital: 4681.251
+    earned_return: 0.155166
     moat_years: 12.5
     moat_band: 10-15
     moat_basis: 'Five Forces ratings for industrial explosives — threat of new entrants
@@ -114,26 +114,26 @@ terminal_disclosure_set:
       beyond it.
 
       '
-    terminal_value: 6706.07
-    value_per_share: 2.2582
-    engine_terminal_value: 6706.07
-    engine_value_per_share: 2.2582
+    terminal_value: 7657.63
+    value_per_share: 2.4908
+    engine_terminal_value: 7657.63
+    engine_value_per_share: 2.4908
   - company: dnl
     scenario: stagflation_persists
     available: false
     reason: no decay_horizon declared for this company x scenario yet (five-forces
       moat-length assignment pending)
     cost_of_capital: 0.088772
-    terminal_growth: 0.0225
-    capital: 4416.022
-    earned_return: 0.051726
+    terminal_growth: 0.031943
+    capital: 4372.516
+    earned_return: 0.118271
     moat_years: null
     moat_band: null
     moat_basis: null
     terminal_value: null
     value_per_share: null
-    engine_terminal_value: 1913.756
-    engine_value_per_share: 0.0717
+    engine_terminal_value: 6563.761
+    engine_value_per_share: 1.3898
   - company: wbc
     scenario: ai_productivity_lag
     available: false

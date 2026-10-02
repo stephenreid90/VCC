@@ -64,8 +64,11 @@ def test_engine_inputs_assembled_from_data_reproduce_ratified_per_share():
     assert abs(r.wacc - 0.088772) < 1e-4
     # D-71 (2 Oct 2026): EV 5,007.7, 1.942/share -- fixed ten-year horizon,
     # excess-return convergence terminal over the declared 12.5-year horizon.
-    assert round(r.enterprise_value, 1) == 5007.7
-    assert round(r.value_per_share, 3) == 1.942
+    # D-72 (same day): EV 5,354.6, 2.138/share -- the chain reads the scenario's
+    # own series (CPI 3.0% replaces the 2.5% DM-inflation anchor) and terminal g
+    # is derived (5.27%, the equilibrium chain, under the 5.37% nominal-GDP cap).
+    assert round(r.enterprise_value, 1) == 5354.6
+    assert round(r.value_per_share, 3) == 2.138
     assert r.value_per_share < r.market_reference_price
 
 
@@ -74,7 +77,11 @@ def test_revenue_growth_chain_derived_from_data_ties_golden():
     company-offset data rows, reproduces the hand-typed golden derivation."""
     g = revenue_growth_from_data(_load(), "muddle_through")
     assert g is not None
-    assert abs(g - _revenue_growth_chain()) < 1e-12
+    # D-72: the chain reads DM inflation off the scenario's cpi_inflation_advanced
+    # (3.0%) rather than the golden's 2.5% anchor; everything else in the chain
+    # is unchanged, so the gap is exactly 0.7 x 0.5pp x the geo-mix multiplier.
+    # (multiplicative in the chain: x (1 + volume growth)).
+    assert abs(g - (_revenue_growth_chain() + 0.7 * 0.005 * (1 + 0.03275) * 1.03)) < 1e-9
 
 
 def test_chain_intermediate_steps_tie_v6_row_by_row():
@@ -84,13 +91,13 @@ def test_chain_intermediate_steps_tie_v6_row_by_row():
     assert d is not None
     expected = {
         "B25": 0.03275,        # industry volume growth   = 1.15 x 0.025 + 0.004
-        "B29": 0.0285,         # industry pricing growth  = 0.7 x 0.025 + 0.3 x 0.02 + 0.005
-        "B30": 0.062183375,    # industry nominal growth  = (1+vol)(1+price) - 1
+        "B29": 0.032,          # industry pricing growth  = 0.7 x 0.030 + 0.3 x 0.02 + 0.005 (D-72: scenario CPI)
+        "B30": 0.065798,       # industry nominal growth  = (1+vol)(1+price) - 1
         "B33": 0.90,           # DM weighting (US 0.55 + AU 0.35), derived from geo-concentration
         "B34": 0.10,           # EM weighting (RoW 0.10)
         "B36": 1.03,           # geo-mix multiplier       = 0.9 + 0.1 x 1.3
         "B41": -0.0025,        # net company offset       = -0.003 -0.001 +0.0015 +0
-        "B42": 0.06154887625,  # company nominal growth   = B30 x B36 + B41
+        "B42": 0.06527194,     # company nominal growth   = B30 x B36 + B41
     }
     for cell, want in expected.items():
         assert abs(d[cell].value - want) < 1e-9, f"{cell}={d[cell].value} != {want}"
@@ -128,7 +135,10 @@ def test_assembled_inputs_match_the_golden_field_by_field():
     # golden's constant 5-year rate. The first (pre-fade) year still ties the
     # golden's chain rate exactly -- the fade only touches years 5-6.
     assert len(data.revenue_growth) == 10 and len(gold.revenue_growth) == 5
-    assert abs(data.revenue_growth[0] - gold.revenue_growth[0]) < 1e-12
+    # D-72: year 1 differs from the golden's chain rate by the DM-inflation basis
+    # change only (scenario CPI 3.0% vs the frozen 2.5%, at the 0.7 weight and
+    # the 1.03 geo-mix multiplier).
+    assert abs(data.revenue_growth[0] - (gold.revenue_growth[0] + 0.7 * 0.005 * (1 + 0.03275) * 1.03)) < 1e-9
     # The operating rates are excepted alongside the WACC half. The golden is
     # frozen at the v6 audit (see its docstring) while the data carries the
     # 14 September 2026 restatement — margin 12.72% against the golden's 14.10%,
@@ -143,7 +153,11 @@ def test_assembled_inputs_match_the_golden_field_by_field():
     assert len(data.tax_rate_glide) == 10 and len(gold.tax_rate_glide) == 5
     assert all(abs(a - b) < 1e-9 for a, b in zip(data.tax_rate_glide[:5], gold.tax_rate_glide))
     assert data.tax_rate_glide[5] == data.tax_rate_glide[4]  # Y6 holds at statutory
-    assert data.terminal_growth == gold.terminal_growth
+    # D-72: terminal g is DERIVED (equilibrium chain at Y10, capped at scenario
+    # nominal GDP) -- 5.27% against the frozen golden's typed 2.5%. Excepted here
+    # the same way the restated operating rates are.
+    assert abs(data.terminal_growth - 0.05267) < 5e-5
+    assert gold.terminal_growth == 0.025
 
     db, gb = data.equity_bridge, gold.equity_bridge
     assert abs(db.net_debt_at_valuation - gb.net_debt_at_valuation) < 1e-9
@@ -212,7 +226,7 @@ def test_equity_bridge_derivation_traces_walk_and_per_share():
         ["B6", "B7", "B8", "B10", "B11", "B27", "B28", "B29", "B30", "B31", "B33", "B37"]
     assert abs(d["B11"].value - 1224.0329) < 1e-3   # net debt at valuation (golden)
     assert abs(d["B29"].value - (-151.65)) < 1e-2   # adjustments net (§4.2)
-    assert round(d.result, 3) == 1.942              # B33 value per share (D-71, 2 Oct 2026)
+    assert round(d.result, 3) == 2.138              # B33 value per share (D-71 + D-72, 2 Oct 2026)
     # B33 must equal the engine's own value_per_share, not a re-derivation drift.
     inp = build_engine_inputs_from_data(_load(), "muddle_through")
     from vcc_valuations.dcf.fcf_engine import FcfEngine
