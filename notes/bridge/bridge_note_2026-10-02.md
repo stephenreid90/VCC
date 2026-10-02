@@ -74,37 +74,59 @@ Two story changes, both ruled SETTLED by Stephen on 2 October:
    matters little once the excess return is gone (sized in the 2 Oct chat: 2.5% → 5% moved
    the MT terminal by ~3%, not 24%).
 
-## THE PLAN FOR THIS CHAT — the Five Forces pass, DNL gaps only
+## THE PLAN FOR THIS CHAT — make the process repeatable; DNL is instance one, not the job
 
-Three items. Each one that lands removes entries from two baselines
-(`tests/terminal_form_baseline.json`, `tests/terminal_defence_baseline.json`) and moves
-the Fragmentation / Stagflation goldens from Gordon to convergence. Work through
-`design/frameworks/five_forces_questions.md` for the relevant sub-determinants only, per
-scenario, and record the answer in the structured YAML — never as prose alone.
+**Stephen's instruction (2 Oct, 15:55): the focus is a repeatable process, not a solution
+for DNL.** Everything landed so far is correct for DNL but three pieces are still
+DNL-shaped. Generalise each, prove it on DNL (no golden should move), then run it for WBC
+and CSL. Order:
 
-1. **Fragmentation — terminal ROIC and decay horizon.** Nothing exists: no `terminal_roic`
-   driver in `data/impact_matrix/by_industry/industrial_explosives.yaml`, nothing in
-   `analyses/dnl/scenarios/fragmentation.md`. It earns 10.2% on the whole capital base
-   against an 8.9% WACC at year 10, so D-42 says it owes a defence. Add a `terminal_roic`
-   movement with an `excess_return_defence` block (moat_sources — barrier-bearing only,
-   never the gas contracts, which D-43a makes a rent; decay_horizon band with basis;
-   named_threat; sensitivity). Pattern: the Disorderly Climate block, lines ~720–760.
-2. **Stagflation Persists — the same.** Nothing exists. Earns 11.8% at year 10 once its
-   cyclical margin hit has reverted.
-3. **AI Productivity Lag — gas / supplier power.** Its write-up explicitly lists five
-   drivers and gas is not one; its gas anchor is the baseline by absence. Assess
-   `input_cost_pass_through` for it; if the answer is "neutral", say so in the structured
-   driver so the baseline-by-absence becomes a baseline-by-assessment.
+1. **Driver paths for any archetype, not just explosives.** Today
+   `scripts/derive_macro_driver_paths.py` hard-codes DNL's two drivers and reads DNL's
+   anchors. Make the archetype YAML declare, for each entry in `required_macro_drivers`,
+   HOW it is derived from the world scenario — e.g.
+   `derivation: {from: real_gdp_growth_world, method: spread, anchor: <company field>}` or
+   `{method: transition_then_baseline, anchor: ..., baseline_scenario: muddle_through}` or
+   `{method: scenario_series, series: cpi_inflation_advanced}` — and have one script
+   derive every archetype's paths from those declarations. Add the derivation methods
+   as a small enum with a test each. Schema: `IndustryArchetype` in
+   `src/vcc_valuations/schemas/industry.py`; SSOT check 14 already reads the result.
+   WBC and CSL declare no required drivers today; decide with Stephen which world-series
+   each of their chains should read (bank: rates, credit cycle; CSL: plasma demand /
+   healthcare inflation) and declare them.
+2. **Terminal form in all three engines.** `terminal_form` / `convergence_years` exist
+   only on `FcfEngineInputs`. Add the same two fields to `BankInputs` (ROE converging
+   to Ke on book equity — same two-stage algebra, D-62 already states it in bank terms)
+   and `SegmentInputs` (CSL's capital base exists, D-67). The assembler rule is the one
+   D-71 already states: convergence where a decay horizon is declared, Gordon fallback
+   otherwise, ratcheted in `tests/terminal_form_baseline.json` — extend that baseline to
+   all eighteen pairs so the gap is visible.
+3. **Decay horizons as a process, not a per-scenario favour.** The Five Forces question
+   bank (`design/frameworks/five_forces_questions.md`) already defines the interview.
+   Write the SHORT version that produces exactly the four `excess_return_defence` fields
+   (moat_sources — barrier-bearing only, D-43a; decay_horizon band + basis;
+   named_threat; sensitivity) for one company x scenario, as a checklist in
+   `design/frameworks/`. Then run it: DNL Fragmentation and Stagflation (nothing exists
+   for either), then WBC x6, CSL x6. Each one that lands shrinks two baselines.
+4. **Terminal g for any company** — `terminal_growth_from_data` is generic in shape (chain
+   in equilibrium, capped at scenario nominal GDP) but the "equilibrium = extras off"
+   rule names explosives-chain coefficients. Make the archetype declare which of its
+   chain terms are current-cycle (switched off at equilibrium) and which persist. WBC and
+   CSL need the same declaration once their chains are declared (step 1).
+5. **Write the process down as one page**: `design/methodology/adding_a_company.md` —
+   the steps, in order, from "declare the archetype's required drivers and their
+   derivations" to "every company x scenario has a decay horizon or a baselined reason".
+   The seven §8 disclosures (build order item 6) belong at the end of that page.
 
-Then: rerun `scripts/derive_macro_driver_paths.py --write` if any anchor moved, regenerate
-the sizing sets (`scripts/size_terminal_options.py`, `size_terminal_returns.py`,
-`size_two_stage_disclosure.py`), re-pin, land once.
+**Done-when:** WBC and CSL run through the same four steps as DNL with no company-specific
+code; both terminal-form baselines list only pairs that genuinely lack a Five Forces
+answer; `adding_a_company.md` is the only document a new company needs.
 
-**Not this chat:** WBC and CSL decay horizons and routing their engines through the
-convergence form; build order item 6 (the seven §8 disclosures in each write-up);
-retiring D-36's fade; `margin_delta_pp` as a company-level path with its own check (it is
-company-specific, so it does NOT belong in `required_macro_drivers`, which reads scenario
-files).
+**DNL loose ends, folded into the above:** Fragmentation and Stagflation decay horizons
+(step 3); AI Lag gas assessed rather than baseline-by-absence (step 3, same interview);
+`margin_delta_pp` as a company-level shaped path with its own check (step 1 — it is
+company-specific, so it does NOT go in `required_macro_drivers`, which reads scenario
+files); retiring D-36's fade once the chain extras have expiry years (step 4).
 
 ## TRAPS
 

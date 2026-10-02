@@ -119,9 +119,12 @@ unchanged by it.
 
 ### Next (in order)
 
-1. **Five-forces pass for the genuine gaps** (now the top item): Fragmentation and
-   Stagflation decay horizons; AI Lag gas; WBC and CSL decay horizons. Each one that
-   lands shrinks two baselines. (The translation rulings are done -- see above.) Then via a translation table Stephen
+1. **Make the process repeatable — Stephen's instruction, 2 Oct 15:55: "the focus is a
+   repeatable process, not a solution for DNL."** Five steps in the bridge note
+   (`notes/bridge/bridge_note_2026-10-02.md`): archetype-declared driver derivations;
+   terminal form in all three engines; the decay-horizon interview as a checklist, run
+   for DNL's two gaps then WBC x6 and CSL x6; equilibrium-chain terms declared per
+   archetype; one page `adding_a_company.md`. DNL is instance one. Then via a translation table Stephen
    approves (gap audit §2–4): `dm_inflation` → wire to the scenario file's own
    `cpi_inflation_advanced` series (already agreed); `global_mining_real_growth` → shape
    from `real_gdp_growth_world` with a spread/multiple calibrated to the existing flat
