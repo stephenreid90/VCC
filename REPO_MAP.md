@@ -1,12 +1,12 @@
 # REPO_MAP — what exists, and where
 
-_Generated 2026-09-25 by `scripts/repo_inventory.py`. **Regenerate at the start of
+_Generated 2026-10-02 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `17a4887 D-35/D-36/D-69/D-70: per-year revenue-growth fade and horizon extension (build order item 4); fixes D-49 terminal-capex roll-forward` on `main`
+- HEAD: `4383027 Relabel the exploratory horizon-sizing harness's status away from "current"` on `main`
 - Unpushed commits: **0**
 - Tracked files: 341
-- Untracked files: 0
+- Untracked files: 3
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -19,7 +19,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
 | Path | Present | What it is |
 |---|---|---|
-| `data/companies/dnl.yaml` | yes (43.9KB) | company position + layer-2 method (judgement) |
+| `data/companies/dnl.yaml` | yes (44.1KB) | company position + layer-2 method (judgement) |
 | `data/companies/dnl.md` | yes (13.7KB) | company narrative |
 | `data/companies/dnl_documents.yaml` | yes (8.7KB) | document register |
 | `data/financials/dnl.yaml` | yes (12.6KB) | curated layer-1 financials (a SUMMARY — check for raw sources too) |
@@ -57,7 +57,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `csl.yaml` (34.1KB)
     - `csl_documents.yaml` (8.5KB)
     - `dnl.md` (13.7KB)
-    - `dnl.yaml` (43.9KB)
+    - `dnl.yaml` (44.1KB)
     - `dnl_documents.yaml` (8.7KB)
     - `wbc.md` (7.7KB)
     - `wbc.yaml` (36.8KB)
@@ -76,7 +76,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **impact_matrix/**
     - **by_industry/**
       - `australian_major_banks.yaml` (19.1KB)
-      - `industrial_explosives.yaml` (34.8KB)
+      - `industrial_explosives.yaml` (36.8KB)
       - `plasma_derived_therapies.yaml` (11.2KB)
       - `specialty_pharmaceuticals.yaml` (5.1KB)
       - `vaccines.yaml` (4.3KB)
@@ -125,7 +125,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `equity_bridge_and_valuation_mechanics.md` (71.8KB)
     - `horizon_and_terminal_convergence.md` (47.1KB)
     - `horizon_variant_sets.yaml` (10.3KB)
-    - `terminal_disclosure_set.yaml` (10.2KB)
+    - `terminal_disclosure_set.yaml` (10.6KB)
     - `terminal_moat_fade_evidence.md` (6.9KB)
     - `terminal_option_sets.yaml` (75.4KB)
     - `terminal_return_sets.yaml` (11.8KB)
@@ -159,7 +159,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **vcc_valuations/**
     - `__init__.py` (667B)
     - `derivation.py` (4.4KB)
-    - `translator.py` (67.7KB)
+    - `translator.py` (70.6KB)
     - **assumptions/**
       - `__init__.py` (775B)
       - `trade_working_capital.py` (5.8KB)
@@ -168,7 +168,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `__init__.py` (51B)
       - `bank_capital.py` (9.8KB)
       - `bank_engine.py` (18.1KB)
-      - `fcf_engine.py` (27.6KB)
+      - `fcf_engine.py` (30.9KB)
       - `fcf_stub.py` (10.1KB)
       - `segment_engine.py` (10.2KB)
       - `terminal_return.py` (14.9KB)
@@ -197,7 +197,8 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `ssot_intra_file_baseline.json` (593B)
   - `ssot_lint_baseline.json` (6.2KB)
   - `ssot_macro_driver_baseline.json` (1.2KB)
-  - `terminal_defence_baseline.json` (3.7KB)
+  - `terminal_defence_baseline.json` (4.3KB)
+  - `terminal_form_baseline.json` (1.3KB)
   - `test_adjustments.py` (1.6KB)
   - `test_archetypes_validate.py` (10.2KB)
   - `test_bank_capital.py` (15.2KB)
@@ -220,32 +221,33 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `__init__.py` (0B)
     - `test_csl_segment.py` (3.0KB)
     - `test_csl_workbook_tie.py` (3.8KB)
-    - `test_dnl_all_scenarios.py` (5.9KB)
-    - `test_dnl_mt_from_data.py` (12.1KB)
-    - `test_dnl_mt_ratified.py` (6.9KB)
+    - `test_dnl_all_scenarios.py` (6.3KB)
+    - `test_dnl_mt_from_data.py` (12.3KB)
+    - `test_dnl_mt_ratified.py` (7.3KB)
     - `test_dnl_workbook_tie.py` (4.5KB)
     - `test_e2e_dnl_mt.py` (4.3KB)
     - `test_engine_input_validation.py` (3.5KB)
     - `test_horizon_variant_sets.py` (5.1KB)
     - `test_per_year_derivations.py` (3.9KB)
-    - `test_replica_ties_engine.py` (6.3KB)
-    - `test_scenario_goldens.py` (12.2KB)
+    - `test_replica_ties_engine.py` (6.6KB)
+    - `test_scenario_goldens.py` (13.8KB)
     - `test_terminal_defence.py` (7.0KB)
-    - `test_terminal_option_sets.py` (10.2KB)
-    - `test_terminal_return_sets.py` (8.9KB)
-    - `test_two_stage_disclosure.py` (5.7KB)
+    - `test_terminal_form.py` (6.6KB)
+    - `test_terminal_option_sets.py` (10.5KB)
+    - `test_terminal_return_sets.py` (9.8KB)
+    - `test_two_stage_disclosure.py` (7.3KB)
     - `test_wbc_bank.py` (4.9KB)
     - **golden/**
       - `__init__.py` (0B)
       - `_recalc.py` (4.2KB)
-      - `_recalc_generated_workbooks.py` (6.5KB)
+      - `_recalc_generated_workbooks.py` (6.6KB)
       - `csl_workbook_all_scenarios.json` (6.6KB)
       - `dnl_mt_inputs.py` (5.5KB)
       - `dnl_mt_v6.json` (2.6KB)
-      - `dnl_workbook_all_scenarios.json` (11.8KB)
+      - `dnl_workbook_all_scenarios.json` (16.7KB)
     - **harness/**
       - `__init__.py` (0B)
-      - `replica.py` (21.4KB)
+      - `replica.py` (22.5KB)
   - **schemas/**
     - `__init__.py` (0B)
     - `test_models.py` (5.1KB)
@@ -260,8 +262,8 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `README.md` (893B)
     - `beta_data.py` (10.0KB)
     - `build_cfgs.py` (94.6KB)
-    - `cfgs_gen.json` (215.2KB)
-    - `engine_workbook.py` (93.4KB)
+    - `cfgs_gen.json` (220.9KB)
+    - `engine_workbook.py` (95.4KB)
     - `gen_ui.py` (89.4KB)
 
 ## Analyses (workbooks)
@@ -301,6 +303,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `dnl_discussion_v5_2026-06-09.pdf` (200.1KB)
     - `dnl_discussion_v6_2026-06-09.docx` (22.5KB)
     - `dnl_discussion_v6_2026-06-09.pdf` (215.2KB)
+    - `five_forces_driver_gap_audit_2026-09-25.md` (6.5KB)
     - `thesis.md` (22.6KB)
     - **scenarios/**
       - `ai_productivity_lag.md` (7.3KB)
@@ -339,4 +342,13 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `wbc_muddle_through_valuation_v4_formulas.xlsx` (12.5KB)
       - `wbc_scenarios_comparison_v1.xlsx` (11.6KB)
       - `wbc_scenarios_comparison_v2.xlsx` (11.6KB)
+
+## Untracked files
+
+Not in git. Either commit them or clear them — an untracked file is invisible
+to anyone who clones the repo, and is the most common way work gets lost.
+
+- `analyses/dnl/five_forces_driver_gap_audit_2026-09-25.md`
+- `tests/dcf/test_terminal_form.py`
+- `tests/terminal_form_baseline.json`
 

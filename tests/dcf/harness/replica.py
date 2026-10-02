@@ -73,6 +73,17 @@ class Plan:
     # only the return diagnostics do.
     invested_capital_opening: Optional[float] = None
 
+    # D-71: the headline terminal form. "gordon" capitalises the normalised
+    # terminal FCFF; "excess_return_convergence" holds the closing capital base
+    # and converges the return it earns to the WACC over convergence_years
+    # (the two-stage form, dcf/terminal_value.two_stage). The replica reads the
+    # capital base as the engine does -- as a declared input, not a re-derived
+    # one -- so a variant that changes the explicit period must say what it
+    # does to the base.
+    terminal_form: str = "gordon"
+    convergence_years: Optional[float] = None
+    terminal_invested_capital: Optional[float] = None
+
     label: str = ""
 
     def __post_init__(self) -> None:
@@ -175,7 +186,13 @@ def run(plan: Plan) -> PlanResult:
         - plan.terminal_capex_pct_revenue
         - g * wc
     )
-    terminal_value = terminal_fcff / (wacc - g)
+    if plan.terminal_form == "excess_return_convergence":
+        from vcc_valuations.dcf.terminal_value import two_stage
+        earned = nopat[-1] * (1.0 + g) / plan.terminal_invested_capital
+        terminal_value = two_stage(plan.terminal_invested_capital, earned, wacc, g,
+                                   plan.convergence_years)
+    else:
+        terminal_value = terminal_fcff / (wacc - g)
     terminal_end_time = plan.stub_years + H
     pv_terminal = terminal_value / (1.0 + wacc) ** terminal_end_time
 
@@ -308,6 +325,9 @@ def plan_from_engine_inputs(inp, *, invested_capital_opening: Optional[float] = 
         fx_rate=inp.equity_bridge.fx_rate,
         market_reference_price=inp.equity_bridge.market_reference_price,
         invested_capital_opening=invested_capital_opening,
+        terminal_form=inp.terminal_form,
+        convergence_years=inp.convergence_years,
+        terminal_invested_capital=inp.terminal_invested_capital,
         label=label,
     )
 

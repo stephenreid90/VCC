@@ -728,9 +728,44 @@ matrix:
           (faster than non-climate scenarios); named threat = carbon
           pricing flow-through plus coal-customer attrition; sensitivity
           test = halving decay horizon to 5-7 years shows additional
-          15-20% terminal-value impact.
+          15-20% terminal-value impact. The defended exception is now
+          declared structurally in excess_return_defence below (D-42,
+          D-58), transcribed from this rationale on 25 Sep 2026.
         not_applicable: false
         evidence_refs: []
+        excess_return_defence:
+          # The resource leg is deliberately NOT listed, though this
+          # scenario's own prose (analyses/dnl/scenarios/
+          # disorderly_climate_crystallisation.md) names it. Per D-43a the
+          # gas contracts are a RENT (a cash advantage with an end date,
+          # already dated in the margin path under D-40), not a BARRIER --
+          # the same correction already applied to Muddle Through and
+          # Orderly Convergence above. A terminal excess return cannot be
+          # defended on something that expires inside the explicit period.
+          moat_sources:
+            - scale
+          decay_horizon:
+            years_low: 10
+            years_high: 15
+            basis: >
+              Same Five Forces read as Muddle Through / Orderly Convergence
+              (new entrants low, rivalry high, substitutes low -- archetype-
+              level, not scenario-conditional) puts the nominal band at ten
+              to fifteen years. This scenario's own rationale flags that
+              band as optimistic ("faster than non-climate scenarios") given
+              stranded-asset and carbon-pricing dynamics, which is why the
+              sensitivity below -- not a shortened central band -- carries
+              that risk.
+          named_threat: >
+            Carbon pricing flow-through plus coal-customer attrition. Unlike
+            Orica competitive response (the threat named for Muddle Through
+            / Orderly Convergence), this is a regime-level threat rather
+            than a rival-specific one.
+          sensitivity: >
+            Halving the decay horizon to five to seven years shows an
+            additional 15-20% terminal-value impact (§12), sized directly
+            in this scenario's own rationale above rather than inferred by
+            analogy to another scenario.
         governance:
           created_by: tara@reidadvisory.net
           created_at: 2026-05-17T10:00:00Z

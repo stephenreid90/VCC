@@ -9,9 +9,11 @@
     "Recorded 16 September 2026, when the D-42 diagnostic was first run. One of the fifteen",
     "valuations asserting an excess return carried a defence at that moment, and it was prose.",
     "Updated 17 Sep 2026. The obligation now triggers on the GOVERNING reading -- the return on the whole capital base where D-49's roll-forward gives one -- which is why dnl:fragmentation appears: it sits below its WACC on new capital and above it on the whole base. dnl:muddle_through and dnl:ai_productivity_lag have LEFT this list, which is the ratchet tightening as intended.",
-    "Updated 25 Sep 2026 (D-35/D-36, build order item 4). dnl:fragmentation has LEFT this list: the longer horizon and the revenue-growth fade both narrow the gap between the return-on-new-capital and return-on-whole-capital readings, and Fragmentation now sits (slightly) below WACC on both -- the four-basis-point excess the dnl reason below describes no longer exists. The ratchet tightening as intended."
+    "Updated 25 Sep 2026 (D-35/D-36, build order item 4). dnl:fragmentation has LEFT this list: the longer horizon and the revenue-growth fade both narrow the gap between the return-on-new-capital and return-on-whole-capital readings, and Fragmentation now sits (slightly) below WACC on both -- the four-basis-point excess the dnl reason below describes no longer exists. The ratchet tightening as intended.",
+    "Updated 2 Oct 2026 (D-71). dnl:fragmentation is BACK on this list: the fixed ten-year horizon holds the flat chain growth four more years, and the whole-base terminal return rises to 9.83% against an 8.88% WACC -- 95bp, no longer the four-basis-point rounding of 25 Sep. Fragmentation has no declared decay horizon (analyses/dnl/five_forces_driver_gap_audit_2026-09-25.md, a genuine gap, not a transcription), so under D-71 it falls back to Gordon on that excess until the five-forces pass assigns one. Baselined on that ground; the gap audit owns the fix."
   ],
   "undeclared": [
+    "dnl:fragmentation",
     "wbc:muddle_through",
     "wbc:orderly_convergence",
     "wbc:ai_productivity_lag",
@@ -27,14 +29,14 @@
   ],
   "reasons": {
     "dnl": [
-      "dnl:fragmentation only, and it raises a question about the rule rather than about the",
-      "scenario. Its terminal return on the whole capital base is 8.92% against a WACC of",
-      "8.88% -- an excess of FOUR basis points. That is not an economic claim about a moat;",
-      "it is the convergence target reached to within rounding, and requiring a full section",
-      "10.6 defended exception for it would be disproportionate. Baselined on that ground,",
-      "with the open question: should D-42's obligation carry a materiality floor rather than",
-      "triggering at any excess above zero? Left as ruled (above zero) rather than softened",
-      "by a session. Muddle Through and AI Lag were baselined here and are now declared."
+      "dnl:fragmentation, under D-71's ten-year horizon: 9.83% on the whole capital base against",
+      "an 8.88% WACC. Not the four-basis-point rounding case of 25 Sep 2026 -- a real 95bp excess",
+      "that D-42 says must be defended or baselined. No decay horizon is declared for Fragmentation",
+      "(the scenario write-up never assessed terminal ROIC; see the 25 Sep 2026 five-forces gap",
+      "audit), so the D-71 headline falls back to Gordon on the earned return, which is the MORE",
+      "generous reading. Baselined pending the five-forces pass that assigns the horizon; the",
+      "earlier open question (should D-42 carry a materiality floor?) is left as ruled.",
+      "Muddle Through, AI Lag, Orderly Convergence and now Disorderly Climate are declared."
     ],
     "wbc": [
       "The bank matrix carries no terminal_roic driver for any scenario. In the section 15",

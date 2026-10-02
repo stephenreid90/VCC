@@ -130,6 +130,17 @@ def _load_central():
     return load_inputs(_ROOT, CENTRAL, "industrial_explosives", "dnl")
 
 
+def _convergence_years_for(scenario_id):
+    """D-71: the convergence horizon the translator applies, or None (Gordon)."""
+    from vcc_valuations.translator import terminal_form_from_data
+    inp = load_inputs(_ROOT, scenario_id, "industrial_explosives", "dnl")
+    horizon = inp["company_raw"]["normalised_baseline"]["horizon_years"]
+    form, years, _ = terminal_form_from_data(inp, scenario_id, horizon)
+    if form != "excess_return_convergence":
+        return None
+    return years
+
+
 def _col(i):  # 1-based -> letter
     return get_column_letter(i)
 
@@ -207,6 +218,10 @@ class Book:
             ("capex_delta_pp", "Capex delta (parallel shift, pp)", PCT2, lambda s: ov["by_scenario"][s].get("capex_delta_pp", 0.0)),
             # D-70: the fade length behind D-36's revenue-growth fade, below.
             ("fade_period_length_years", "Fade period length (years, D-70)", "0", lambda s: ov["by_scenario"][s]["fade_period_length_years"]),
+            # D-71: the excess-return convergence horizon (five-forces decay
+            # horizon midpoint). Blank where none is declared -> the DCF sheet
+            # falls back to Gordon, exactly as the translator does.
+            ("convergence_years", "Convergence years N (D-71; blank = Gordon fallback)", "0.0", lambda s: _convergence_years_for(s)),
         ]
         for key, label, fmt, fn in drivers:
             ws.cell(r[0], 1, label)
@@ -622,8 +637,26 @@ class Book:
         else:
             prow("tfcff", f"Terminal FCFF = Y{H} FCFF x (1+g)", MONEY,
                  lambda s, c, j: f"={c}{rmap[f'fcff{H}']}*(1+{R[f'macro:terminal_growth:{s}']})")
-        prow("tv", "Terminal value = TFCFF/(WACC-g)", MONEY,
-             lambda s, c, j: f"={c}{rmap['tfcff']}/({R['wacc']}-{R[f'macro:terminal_growth:{s}']})")
+        # D-71: excess-return convergence where a decay horizon is declared,
+        # Gordon otherwise. R is the return the explicit period leaves the
+        # closing capital base earning; the two-stage form converges it to
+        # the WACC over N years (D-62 to D-66), then Gordon. Symmetric in R-r.
+        has_ic = getattr(self, "terminal_capex_rule", None) == "grows_capital_base_at_g"
+        if has_ic:
+            prow("t_ret", f"Earned return R = Y{H} NOPAT x (1+g) / Y{H} invested capital", PCT3,
+                 lambda s, c, j: (f"={c}{rmap[f'nop{H}']}*(1+{R[f'macro:terminal_growth:{s}']})"
+                                  f"/{c}{rmap[f'ic{H}']}"))
+            def f_tv(s, c, j):
+                g = R[f'macro:terminal_growth:{s}']; r = R['wacc']; n = R[f'macro:convergence_years:{s}']
+                gordon = f"{c}{rmap['tfcff']}/({r}-{g})"
+                k = f"((1+{g})/(1+{r}))"
+                m = f"(({c}{rmap['t_ret']}-{g})/({r}-{g}))"
+                two = f"{c}{rmap[f'ic{H}']}*({m}*(1-{k}^{n})+{k}^{n})"
+                return f"=IF({n}=\"\",{gordon},{two})"
+            prow("tv", "Terminal value (D-71: convergence over N if declared, else TFCFF/(WACC-g))", MONEY, f_tv)
+        else:
+            prow("tv", "Terminal value = TFCFF/(WACC-g)", MONEY,
+                 lambda s, c, j: f"={c}{rmap['tfcff']}/({R['wacc']}-{R[f'macro:terminal_growth:{s}']})")
         prow("tend", "Terminal end time (stub+H)", NUM1 + "00",
              lambda s, c, j: f"={R['stub_years']}+{R['horizon']}")
         prow("tdf", "Terminal discount factor", NUM1 + "0000",

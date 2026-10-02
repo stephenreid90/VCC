@@ -119,13 +119,19 @@ def test_engine_overlays_data_driven_reproduce_headline():
     ov = engine_overlays_from_data(raw, "muddle_through", _load()["financials"])
     # Applied tax now comes from the derived Tax Bridge, not stored overlays.
     tax = tax_bridge_from_data(_load())
-    glide = [tax[f"B{11 + i}"].value for i in range(1, 7)]
+    # D-71 (2 Oct 2026): the live horizon is a fixed ten years, so the live
+    # overlays are ten-year paths; the frozen five-year golden is extended to
+    # ten by the same hold-the-last-value convention. Terminal form stays the
+    # frozen golden's Gordon (hand-built inputs default to it), by design.
+    H = 10
+    glide = [tax[f"B{11 + i}"].value for i in range(1, H + 1)]
     frozen = dnl_muddle_through_inputs()
-    frozen_growth = list(frozen.revenue_growth) + [frozen.revenue_growth[-1]]
-    frozen_delta_wc = list(frozen.delta_wc) + [frozen.delta_wc[-1]]
+    pad = H - len(frozen.revenue_growth)
+    frozen_growth = list(frozen.revenue_growth) + [frozen.revenue_growth[-1]] * pad
+    frozen_delta_wc = list(frozen.delta_wc) + [frozen.delta_wc[-1]] * pad
     inp = dataclasses.replace(
         frozen,
-        horizon_years=6,
+        horizon_years=H,
         revenue_growth=frozen_growth,
         delta_wc=frozen_delta_wc,
         wacc=build_wacc_from_inputs(_load()),
@@ -140,4 +146,4 @@ def test_engine_overlays_data_driven_reproduce_headline():
         terminal_growth=ov["terminal_growth"],
     )
     r = FcfEngine().run(inp)
-    assert round(r.value_per_share, 3) == 2.354     # data overlays + data WACC, frozen terminal
+    assert round(r.value_per_share, 3) == 2.678     # data overlays + data WACC, frozen terminal (D-71 ten-year horizon; was 2.354 at six)

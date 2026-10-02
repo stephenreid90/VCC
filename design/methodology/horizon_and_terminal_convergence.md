@@ -1,5 +1,16 @@
 # Forecast horizon, growth fade and terminal convergence
 
+> **Status, 2 Oct 2026 — superseded in part by D-71.** The framework is now stated in
+> one decision: the explicit period is a fixed ten years; cash flows need not be static
+> at year ten (the scenario may still be in transition, or the moat finite and
+> unexpired); where they are not, the headline terminal is excess-return convergence
+> over the declared decay horizon, then Gordon, with simpler forms selectable; and
+> scenario development and the five-forces / company analysis must capture the data
+> this needs. D-35's computed horizon (§3–§5 below) is superseded; D-36's fade stands
+> as the interim path until D-37's year-anchored paths land; D-62 to D-66's two-stage
+> form is the headline, not a disclosure; D-65 is folded into D-71's first static-state
+> condition. The sizings below are kept as the record of how the rule was reached.
+
 **Status, 25 Aug 2026: seven rulings made, six decisions still open.** D-40, D-41 and
 D-44 to D-47 were ruled on by Stephen on 25 August and are recorded in `DECISIONS.md`.
 D-35 to D-39, D-42 and D-43 remain PROPOSED. No code has moved. The numbers throughout are

@@ -1000,6 +1000,54 @@ def decay_horizon_from_matrix(inputs: dict, scenario_id: str):
     return None
 
 
+def scenario_equilibrium_year(inputs: dict) -> int:
+    """The year the scenario's own ``time_profile`` reaches its final phase.
+
+    D-71's first static-state condition: the explicit period must reach the
+    scenario's own declared equilibrium, otherwise the terminal would be
+    capitalising a world still in transition. Read off the scenario file, never
+    assumed.
+    """
+    scenario = inputs["scenario"]
+    return max(phase.year_start for phase in scenario.time_profile)
+
+
+def terminal_form_from_data(inputs: dict, scenario_id: str, horizon_years: int):
+    """D-71: the headline terminal form and its inputs, from data.
+
+    Returns ``(terminal_form, convergence_years, note)``. The framework default
+    is excess-return convergence over the five-forces decay horizon (the
+    midpoint of the declared band, D-63; infinite where declared indefinite).
+    Where no decay horizon has been declared for this company x scenario, the
+    assembler falls back to Gordon and says so -- that fallback is a gap the
+    five-forces work owes, ratcheted in ``tests/dcf/test_terminal_form.py``, not
+    a choice.
+
+    D-71's other static-state condition -- the scenario's own equilibrium year
+    must sit inside the explicit period -- is checked here too. A scenario that
+    needed a longer transition would need the three-phase form D-71 describes
+    but no scenario yet requires, so it raises rather than silently capitalising
+    a world mid-transition.
+    """
+    eq_year = scenario_equilibrium_year(inputs)
+    if eq_year > horizon_years:
+        raise NotImplementedError(
+            f"{scenario_id}: time_profile reaches equilibrium in year {eq_year}, "
+            f"beyond the {horizon_years}-year explicit period. D-71's three-phase "
+            "terminal (scenario transition, then excess-return convergence, then "
+            "Gordon) is not built -- no scenario has needed it yet."
+        )
+    from vcc_valuations.dcf.terminal_value import moat_years_from_decay_horizon
+    horizon = decay_horizon_from_matrix(inputs, scenario_id)
+    years = moat_years_from_decay_horizon(horizon)
+    if years is None:
+        return "gordon", None, (
+            "no decay_horizon declared for this company x scenario; D-71 "
+            "fallback to Gordon until the five-forces work assigns one"
+        )
+    return "excess_return_convergence", years, None
+
+
 def build_engine_inputs_from_data(inputs: dict, scenario_id: str):
     """Assemble the whole ``FcfEngineInputs`` for one company x scenario from data.
 
@@ -1157,6 +1205,16 @@ def build_engine_inputs_from_data(inputs: dict, scenario_id: str):
         market_reference_price=rr["market_reference_price"],
     )
 
+    # D-71: the headline terminal form, from the declared decay horizon.
+    terminal_form, convergence_years, _form_note = terminal_form_from_data(
+        inputs, scenario_id, nb["horizon_years"]
+    )
+    if terminal_form == "excess_return_convergence" and terminal_invested_capital is None:
+        raise ValueError(
+            f"{company.id}/{scenario_id}: excess-return convergence needs D-44's "
+            "closing capital base (capex_rule grows_capital_base_at_g)."
+        )
+
     return FcfEngineInputs(
         company_id=company.id,
         scenario_id=scenario_id,
@@ -1182,6 +1240,8 @@ def build_engine_inputs_from_data(inputs: dict, scenario_id: str):
         working_capital_intensity=terminal_wc_intensity,
         wacc=wacc,
         terminal_growth=overlays["terminal_growth"],
+        terminal_form=terminal_form,
+        convergence_years=convergence_years,
         equity_bridge=bridge,
     )
 

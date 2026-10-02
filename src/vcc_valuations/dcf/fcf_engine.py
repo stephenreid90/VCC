@@ -49,6 +49,8 @@ TERMINAL_SHARE_THRESHOLD = 0.70
 # How the terminal FCFF is struck. Declared per valuation, never defaulted —
 # see FcfEngineInputs.terminal_reinvestment.
 TERMINAL_REINVESTMENT_MODES = ("capitalise_last_fcff", "normalised")
+# D-71: the terminal forms. See FcfEngineInputs.terminal_form.
+TERMINAL_FORMS = ("excess_return_convergence", "gordon")
 
 
 def terminal_share_warning(terminal_share: float, denominator: str = "EV") -> Optional[str]:
@@ -287,12 +289,41 @@ class FcfEngineInputs:
 
     # Terminal
     terminal_growth: float = 0.025
+    # D-71 (2 Oct 2026): how the terminal is struck once the explicit period
+    # ends. The framework default is "excess_return_convergence" -- the
+    # two-stage form of D-62 to D-66 promoted from a disclosure to the headline:
+    # the return earned on the closing capital base converges to the cost of
+    # capital over ``convergence_years`` (the five-forces decay horizon), then
+    # Gordon. It is symmetric: a return BELOW the cost of capital converges up
+    # just as one above converges down. "gordon" is the simpler option a user
+    # may select, and the fallback the data assembler applies where no decay
+    # horizon has been declared for a company x scenario yet (ratcheted in
+    # tests/dcf/test_terminal_form.py). Hand-built inputs default to "gordon"
+    # so the engine's own unit tests keep meaning what they meant.
+    terminal_form: str = "gordon"
+    convergence_years: Optional[float] = None
 
     # Equity bridge
     equity_bridge: Optional[EquityBridge] = None
 
     def __post_init__(self) -> None:
         H = self.horizon_years
+        if self.terminal_form not in TERMINAL_FORMS:
+            raise ValueError(
+                f"terminal_form must be one of {TERMINAL_FORMS}, got {self.terminal_form!r}"
+            )
+        if self.terminal_form == "excess_return_convergence":
+            if self.convergence_years is None or self.terminal_invested_capital is None:
+                raise ValueError(
+                    "terminal_form='excess_return_convergence' requires both "
+                    "convergence_years (the declared decay horizon) and "
+                    "terminal_invested_capital (D-44's closing capital base)."
+                )
+        elif self.convergence_years is not None:
+            raise ValueError(
+                "convergence_years is only read when "
+                "terminal_form='excess_return_convergence'."
+            )
         for name, vec in (
             ("revenue_growth", self.revenue_growth),
             ("margin_transformation", self.margin_transformation),
@@ -393,6 +424,11 @@ class FcfDcfResult:
     # fields; no cash flow reads either, so neither can move a level.
     terminal_invested_capital: Optional[float] = None
     terminal_return_on_whole_capital: Optional[float] = None
+    # D-71: how the headline terminal was struck, and the inputs the
+    # convergence form read (None under "gordon").
+    terminal_form: str = "gordon"
+    convergence_years: Optional[float] = None
+    terminal_earned_return: Optional[float] = None
 
 
 class FcfEngine:
@@ -476,7 +512,23 @@ class FcfEngine:
             )
         else:
             terminal_fcff = fcff[-1] * (1.0 + g)
-        terminal_value = terminal_fcff / (wacc - g)
+        # D-71: the headline terminal form. Gordon capitalises the normalised
+        # terminal FCFF. Excess-return convergence (the D-62 to D-66 two-stage
+        # form) holds the closing capital base C, sets next-year earnings to
+        # C x R with R the return the explicit period leaves it earning, and
+        # converges R to the WACC over N years before Gordon takes over:
+        #     TV = C * [ (R-g)/(r-g) * (1-k^N) + k^N ],  k = (1+g)/(1+r)
+        # N = 0 is convergence at the end of the forecast (TV = C); N -> inf
+        # is Gordon on the earned return. Symmetric in R - r.
+        terminal_earned_return: Optional[float] = None
+        if inp.terminal_form == "excess_return_convergence":
+            from vcc_valuations.dcf.terminal_value import two_stage
+            capital_T = inp.terminal_invested_capital
+            terminal_earned_return = nopat[-1] * (1.0 + g) / capital_T
+            terminal_value = two_stage(capital_T, terminal_earned_return, wacc, g,
+                                       inp.convergence_years)
+        else:
+            terminal_value = terminal_fcff / (wacc - g)
         terminal_end_time = inp.stub_years + H
         terminal_discount_factor = 1.0 / (1.0 + wacc) ** terminal_end_time
         pv_terminal = terminal_value * terminal_discount_factor
@@ -582,6 +634,9 @@ class FcfEngine:
             value_per_share_reported=value_per_share_reported,
             terminal_share_of_ev=terminal_share,
             terminal_invested_capital=inp.terminal_invested_capital,
+            terminal_form=inp.terminal_form,
+            convergence_years=inp.convergence_years,
+            terminal_earned_return=terminal_earned_return,
             terminal_return_on_whole_capital=terminal_return_on_whole_capital,
             market_reference_price=eb.market_reference_price,
             discount_to_market=discount_to_market,

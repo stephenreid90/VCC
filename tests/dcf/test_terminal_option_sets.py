@@ -78,20 +78,20 @@ def test_the_return_lever_moves_value_the_way_a_user_expects():
 
 def test_the_other_lever_convention_runs_backwards(by_key):
     """Paper section 6. Holding earnings and solving for capital makes a higher return
-    LOWER the value: DNL Muddle Through, ten-year moat, 16% gives about 3,473.
+    LOWER the value. DNL Muddle Through, a ten-year moat beyond the forecast, 16%.
 
-    Re-pinned 25 Sep 2026 (D-35): the horizon is now 6 years, so ten years from
-    the valuation date is 4 years beyond the forecast, not 5. Re-pinned again the
-    same day once the D-49 terminal-capex roll-forward was fixed to compound on
-    D-36's actual per-year revenue path rather than a re-flattened rate (4381 ->
-    4379; the fix moves the earned return, not this test's shape)."""
+    Re-pinned 2 Oct 2026 (D-71): the explicit period is a fixed ten years, so
+    "ten years from the valuation date" would now be a zero-length moat (TV =
+    capital, nothing to compare). The test keeps its shape by sizing the paper's
+    ten-year moat BEYOND the forecast instead; the direction is what it asserts.
+    Earlier pins: 4379 / 3473 at a 6-year horizon with n = 4."""
     v = by_key[("dnl", "muddle_through")]
     e1 = v.capital * v.earned_return
-    n = 10 - v.horizon_years  # ten years from valuation, the rest beyond the forecast
+    n = 10
     measured = two_stage(v.capital, v.earned_return, v.cost_of_capital, v.terminal_growth, n)
     backwards = two_stage(e1 / 0.16, 0.16, v.cost_of_capital, v.terminal_growth, n)
-    assert measured == pytest.approx(4379, abs=1)
-    assert backwards == pytest.approx(3473, abs=1)
+    assert measured == pytest.approx(5698, abs=1)
+    assert backwards == pytest.approx(5359, abs=1)
     assert backwards < measured
 
 
@@ -115,7 +115,9 @@ def test_engine_current_reproduces_every_engine_value_per_share(rows):
     # that roll-forward was still compounding revenue at a flat re-derived rate
     # instead of D-36's actual per-year fade path, which had been overstating the
     # earned return the component terminal capitalises.
-    pinned = {("dnl", "muddle_through"): 1.8461, ("wbc", "muddle_through"): 30.0304,
+    # DNL re-pinned 2 Oct 2026 for D-71 (1.8461 -> 1.9422): fixed ten-year
+    # horizon, excess-return convergence headline.
+    pinned = {("dnl", "muddle_through"): 1.9422, ("wbc", "muddle_through"): 30.0304,
               ("csl", "muddle_through"): 195.7835}
     for key, vps in pinned.items():
         v = next(x for x in rows if (x.company_id, x.scenario_id) == key)
@@ -123,18 +125,21 @@ def test_engine_current_reproduces_every_engine_value_per_share(rows):
 
 
 # ------------------------------------------------------------ findings
-def test_the_current_terminal_already_assumes_a_moat_nobody_chose(by_key):
-    """Finding 1. DNL's component-built terminal implies a finite but very long
-    moat on its three above-WACC scenarios -- 58 to 64 years, close to the
-    pre-D-35/D-36 finding of 66-72 years (the D-49 roll-forward fix below pulled
-    this back from an intermediate, overstated "perpetual_or_more" reading: that
-    reading came from the roll-forward still compounding revenue at a flat
-    re-derived rate rather than D-36's actual per-year fade to g, which
-    overstated the earned return R). WBC's declared terminal ROEs imply 17 to
-    37 years."""
+def test_the_current_terminal_carries_the_moat_the_five_forces_work_chose(by_key):
+    """Finding 1, resolved by D-71 (2 Oct 2026).
+
+    Until D-71 this test recorded that DNL's component-built Gordon terminal
+    IMPLIED a moat nobody had chosen -- 58 to 64 years on the three above-WACC
+    scenarios. The headline terminal is now excess-return convergence over the
+    declared decay horizon, so inverting the headline gives back exactly the
+    moat the five-forces work declared: 12.5 years, the 10-15 band's midpoint.
+    The finding is kept as its own resolution. WBC's declared terminal ROEs
+    still imply 17 to 37 years and are untouched by D-71 (no decay horizon has
+    been declared for the bank; see tests/dcf/test_terminal_form.py)."""
     for s in ("muddle_through", "ai_productivity_lag", "orderly_convergence"):
         m = _basis(by_key[("dnl", s)], "engine_current").implied_moat
-        assert m.status == "finite" and 55 < m.extension_years < 68, (s, m)
+        assert m.status == "finite", (s, m)
+        assert m.extension_years == pytest.approx(12.5, abs=1e-6), (s, m)
     for s in ("muddle_through", "ai_productivity_lag", "orderly_convergence",
               "fragmentation", "disorderly_climate_crystallisation"):
         m = _basis(by_key[("wbc", s)], "engine_current").implied_moat
@@ -187,11 +192,13 @@ def test_exit_multiples_assert_returns_far_above_what_is_earned(by_key):
 
 def test_the_market_price_needs_a_return_the_forecast_does_not_show(by_key):
     """Finding 7. At the reference price, DNL's terminal must carry a perpetual return
-    on all capital near 18.5 per cent against 11.4 earned -- or the forecast is light."""
+    on all capital near 21 per cent against 12.7 earned -- or the forecast is light.
+    (18.5 against 11.4 before D-71's ten-year horizon moved the capital base and
+    the earned return; the gap to the market is the finding, and it widened.)"""
     v = by_key[("dnl", "muddle_through")]
     b = _basis(v, "market_implied")
     assert b.value_per_share == pytest.approx(3.61, abs=1e-9)
-    assert 0.17 < b.implied_perpetual_return < 0.20
+    assert 0.20 < b.implied_perpetual_return < 0.22
 
 
 def test_csl_capital_base_is_built_and_on_the_axis(rows):

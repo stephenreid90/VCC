@@ -49,7 +49,7 @@ SCENARIOS = [
 # Per-period rows are matched by their "  <period> <label>" prefix. D-35
 # (25 Sept 2026) extended DNL's horizon from five years to six -- bump this
 # alongside horizon_years in data/companies/dnl.yaml if it moves again.
-PERIODS = ["Stub", "Y1", "Y2", "Y3", "Y4", "Y5", "Y6"]
+PERIODS = ["Stub"] + [f"Y{i}" for i in range(1, 11)]  # D-71: ten explicit years
 VECTORS = {
     "revenue": "revenue",
     "EBIT": "ebit",
@@ -62,7 +62,7 @@ VECTORS = {
 }
 SCALARS = {
     "PV of explicit FCFF": "pv_explicit",
-    "Terminal value = TFCFF/(WACC-g)": "terminal_value",
+    "Terminal value (D-71: convergence over N if declared, else TFCFF/(WACC-g))": "terminal_value",
     "PV of terminal value": "pv_terminal",
     "Enterprise value (EV)": "enterprise_value",
     "Equity value": "equity_value",
@@ -70,7 +70,7 @@ SCALARS = {
 }
 TERMINAL_FCFF_LABELS = (
     "Terminal FCFF (normalised reinvestment)",
-    "Terminal FCFF = Y6 FCFF x (1+g)",  # not DNL's live mode; kept for the other branch
+    "Terminal FCFF = Y10 FCFF x (1+g)",  # not DNL's live mode; kept for the other branch
 )
 
 

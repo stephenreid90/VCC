@@ -102,20 +102,25 @@ def test_wbc_stagflation_terminal_roe_is_a_recovery_assumption(rows):
 
 # ------------------------------------------------------- finding 3: DNL / D-42
 def test_dnl_splits_on_the_cost_of_capital_which_is_what_d42_is_for(rows):
-    """Three DNL scenarios assert an excess return and three do not.
+    """Four DNL scenarios assert an excess return and two do not.
 
     This is the diagnostic behaving as D-42 intends: the terminal return is not
     uniformly above or below the discount rate, so the warning discriminates
-    rather than firing on everything. The three that exceed it are the ones that
-    owe a §10.6-compliant defended exception.
+    rather than firing on everything. The ones that exceed it are the ones that
+    owe a §10.6-compliant defended exception. Fragmentation joined the "above"
+    set on 2 Oct 2026 (D-71): the fixed ten-year horizon holds the flat chain
+    growth four more years and lifts its whole-base return to 9.83% against an
+    8.88% WACC -- 74bp on the return-on-new-capital reading, 95bp on the whole
+    base. It has no declared decay horizon, so it is baselined in
+    tests/terminal_defence_baseline.json pending the five-forces pass.
     """
     dnl = {r.scenario_id: r for r in rows if r.company_id == "dnl"}
     above = {s for s, r in dnl.items() if r.excess_over_cost_of_capital > 0}
     below = set(dnl) - above
 
-    assert above == {"muddle_through", "ai_productivity_lag", "orderly_convergence"}, above
-    assert below == {"fragmentation", "disorderly_climate_crystallisation",
-                     "stagflation_persists"}, below
+    assert above == {"muddle_through", "ai_productivity_lag", "orderly_convergence",
+                     "fragmentation"}, above
+    assert below == {"disorderly_climate_crystallisation", "stagflation_persists"}, below
     for s in above:
         assert any("D-42" in w for w in dnl[s].warnings)
     for s in below:
@@ -139,8 +144,11 @@ def test_the_two_readings_no_longer_disagree_about_fragmentation(rows):
     """
     frag = next(r for r in rows if r.company_id == "dnl"
                 and r.scenario_id == "fragmentation")
-    assert frag.excess_over_cost_of_capital < 0, frag.excess_over_cost_of_capital
-    assert frag.excess_on_governing_return < 0, frag.excess_on_governing_return
+    # D-71 (2 Oct 2026): Fragmentation now sits ABOVE its WACC on both readings
+    # (the ten-year horizon's extra chain growth); the two readings still agree
+    # in sign, which is the point this test holds.
+    assert frag.excess_over_cost_of_capital > 0, frag.excess_over_cost_of_capital
+    assert frag.excess_on_governing_return > 0, frag.excess_on_governing_return
     assert frag.governing_return == frag.return_on_whole_capital
     # No DNL scenario disagrees between the two readings any more (all six agree
     # in sign); revisit this test the day one does.
@@ -166,8 +174,12 @@ def test_the_declared_rate_does_not_reconcile_with_the_capital_build(rows):
     # Re-pinned 25 Sep 2026 for D-35/D-36 (was 0.1246 / -0.0333): the longer
     # horizon and the growth fade both lower the return the capital build
     # produces, narrowing but not closing the gap against the declared rate.
-    assert oc.return_on_whole_capital == pytest.approx(0.1193, abs=5e-4)
-    assert oc.declared_versus_whole_capital == pytest.approx(-0.0280, abs=5e-4)
+    # Re-pinned 2 Oct 2026 for D-71 (0.1193 / -0.0280): the ten-year horizon's
+    # extra years of chain growth RAISE the return the capital build produces,
+    # widening the gap against the declared rate. The disagreement is the
+    # finding; it is now larger, not smaller.
+    assert oc.return_on_whole_capital == pytest.approx(0.1432, abs=5e-4)
+    assert oc.declared_versus_whole_capital == pytest.approx(-0.0519, abs=5e-4)
     assert any("declares a terminal return" in w for w in oc.warnings)
 
 

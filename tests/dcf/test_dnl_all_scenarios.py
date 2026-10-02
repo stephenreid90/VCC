@@ -85,7 +85,8 @@ def test_muddle_through_is_the_ratified_headline():
     on D-36's actual per-year fade path instead of a re-flattened rate -- see
     test_dnl_mt_from_data.py for the full derivation."""
     _, _, r = _run("muddle_through")
-    assert round(r.value_per_share, 3) == 1.846
+    # 1.942 under D-71 (2 Oct 2026): fixed ten-year horizon, convergence terminal.
+    assert round(r.value_per_share, 3) == 1.942
 
 
 def test_scenario_asymmetry_is_downside_skewed():
@@ -120,8 +121,12 @@ def test_scenario_asymmetry_is_downside_skewed():
     # bug -- so every OTHER scenario still yields positive equity, and only
     # Stagflation (already the worst case, and already the closest to zero
     # before this change) is allowed through it.
-    assert all(v > 0 for s, v in vps.items() if s != "stagflation_persists")
-    assert vps["stagflation_persists"] < 0
+    # D-71 (2 Oct 2026): the ten-year horizon's extra years of chain growth put
+    # Stagflation back slightly above zero (0.072). Every scenario positive,
+    # Stagflation still the floor and still the one sitting at the margin.
+    assert all(v > 0 for v in vps.values())
+    assert vps["stagflation_persists"] == min(vps.values())
+    assert vps["stagflation_persists"] < 0.1
 
 
 def test_single_wacc_held_across_scenarios():

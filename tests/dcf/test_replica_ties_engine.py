@@ -13,6 +13,7 @@ arithmetic drifting from the first.
 
 from __future__ import annotations
 
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -72,6 +73,12 @@ def _steady_state_plan(scenario_id: str):
     meant to produce.
     """
     base = replica.plan_from_engine_inputs(_engine_inputs(scenario_id))
+    # D-71: the steady-state identities below are properties of the Gordon
+    # terminal (a surplus steady year reproduces the perpetuity it replaces).
+    # Under excess-return convergence the closing capital base is a declared
+    # input that an extension does not roll forward, so the identity is not
+    # expected to hold there; the variants are therefore sized on Gordon.
+    base = replace(base, terminal_form="gordon", convergence_years=None)
     return replica.terminal_capex_from_final_year(
         replica.converge_capex(
             replica.fade_growth(base, fade_period_length=base.horizon_years),

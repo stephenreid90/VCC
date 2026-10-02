@@ -32,7 +32,16 @@ from vcc_valuations.schemas.linkage import DecayHorizon  # noqa: E402
 
 SET_PATH = ROOT / "design" / "methodology" / "terminal_disclosure_set.yaml"
 
-DNL_DECLARED = {"muddle_through", "orderly_convergence", "ai_productivity_lag"}
+# Disorderly Climate joined on 25 Sep 2026: its defence was fully specified in
+# the scenario write-up and never transcribed into the structured block (see
+# analyses/dnl/five_forces_driver_gap_audit_2026-09-25.md).
+DNL_DECLARED = {"muddle_through", "orderly_convergence", "ai_productivity_lag",
+                "disorderly_climate_crystallisation"}
+# D-71 (2 Oct 2026): where a decay horizon is declared the two-stage form IS the
+# headline, so the "disclosure" reproduces the engine's own terminal exactly.
+# The disclosure module is kept as the cross-check that the headline is the
+# two-stage form on the declared midpoint, and as the honest "not available"
+# for the fourteen pairs still awaiting a moat length.
 
 
 @pytest.fixture(scope="module")
@@ -53,8 +62,8 @@ def test_the_committed_set_regenerates(rows):
     )
 
 
-def test_exactly_three_of_eighteen_valuations_have_a_declared_moat_length(rows):
-    """The September 2026 build order item 3 state: DNL only, three of six scenarios.
+def test_exactly_four_of_eighteen_valuations_have_a_declared_moat_length(rows):
+    """The October 2026 state: DNL only, four of six scenarios.
 
     This is expected to grow as moat lengths are assigned in a later pass --
     the number here is a snapshot of today's data, not a rule the code enforces.
@@ -85,25 +94,43 @@ def test_available_rows_use_the_declared_bands_midpoint(by_key):
         assert v.moat_years == pytest.approx(12.5)
 
 
-def test_available_rows_sit_between_convergence_and_the_engines_own_terminal(by_key):
-    """A finite moat gives less than the engine's perpetual-growth terminal, more than capital.
+def test_available_rows_sit_between_capital_and_gordon_on_the_earned_return(by_key):
+    """A finite horizon sits between convergence-at-T and the earned return held forever.
 
-    DNL's engine terminal already assumes the earned return holds forever (Gordon
-    growth on the earned return); a 12.5-year moat is strictly less generous than
-    that, and strictly more than immediate convergence to plain capital.
+    Symmetric in R - WACC (D-71): above the WACC the two-stage value sits below
+    Gordon-on-the-earned-return and above capital (Muddle Through, Orderly
+    Convergence, AI Lag); below it -- Disorderly Climate, 8.0% against 8.9% --
+    the ordering flips, the value sits ABOVE Gordon-on-the-earned-return and
+    BELOW capital, because converging UP to the WACC is worth more than earning
+    below it forever. Both are the same mechanism; a test that assumed only the
+    first would have called the second a bug.
     """
+    from vcc_valuations.dcf.terminal_value import perpetual_multiple
     for scenario in DNL_DECLARED:
         v = by_key[("dnl", scenario)]
-        assert v.capital < v.terminal_value < v.engine_terminal_value
-        assert v.value_per_share < v.engine_value_per_share
+        gordon_on_earned = v.capital * perpetual_multiple(
+            v.earned_return, v.cost_of_capital, v.terminal_growth)
+        lo, hi = sorted((v.capital, gordon_on_earned))
+        assert lo < v.terminal_value < hi, (scenario, lo, v.terminal_value, hi)
+        if v.earned_return > v.cost_of_capital:
+            assert v.capital < v.terminal_value < gordon_on_earned
+        else:
+            assert gordon_on_earned < v.terminal_value < v.capital
 
 
-def test_the_disclosure_never_moves_the_engines_own_headline_figures(by_key):
-    """No golden moves: engine_terminal_value / engine_value_per_share are read-only echoes."""
+def test_where_declared_the_disclosure_is_the_headline(by_key):
+    """D-71: the two-stage form on the declared midpoint IS the engine's terminal."""
     for scenario in DNL_DECLARED:
         v = by_key[("dnl", scenario)]
-        recomputed_engine_tv = v.engine_terminal_value
-        assert recomputed_engine_tv == v.engine_terminal_value  # tautological guard
+        assert v.terminal_value == pytest.approx(v.engine_terminal_value, rel=1e-12)
+        assert v.value_per_share == pytest.approx(v.engine_value_per_share, rel=1e-12)
+
+
+def test_the_disclosure_reads_the_engine_rather_than_recomputing_it(by_key):
+    """engine_terminal_value / engine_value_per_share are read-only echoes of the engine."""
+    for scenario in DNL_DECLARED:
+        v = by_key[("dnl", scenario)]
+        assert v.engine_terminal_value > 0
         assert v.engine_value_per_share > 0
 
 

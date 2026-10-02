@@ -339,8 +339,17 @@ normalised_baseline:
     3,905.4 (data/financials/dnl.yaml) — that basis question was ruled on: 3,400
     is the clean forward base for the surviving explosives business; 3,905 mixes
     in separated activity and 4,139 is an FY27 figure, not a base.
-  horizon_years: 6
+  horizon_years: 10
   horizon_years_rationale: >
+    D-71, 2 Oct 2026: the explicit period is a FIXED ten years, declared, not
+    computed. It covers every scenario's own declared equilibrium year (the
+    latest is Fragmentation at year 10) and every company driver's convergence.
+    Cash flows need not be static at year 10: where the return on the closing
+    capital base still differs from the WACC, the headline terminal converges
+    it over the declared decay horizon (excess-return convergence) before
+    Gordon. Per-year paths shorter than ten years hold their last value (the
+    same convention D-35 used to reach six). Was six years under D-35, whose
+    rationale follows for the record -- D-35's horizon rule is superseded.
     D-35, implemented 25 Sep 2026: the explicit period runs until the drivers
     straight-line. Margin transformation converges by year 3 and the tax glide
     by year 5; the gas roll-off (D-69, superseding D-40's magnitude) is the
@@ -773,7 +782,7 @@ normalised_baseline:
           income whose persistence is not established. Revisit when the FY2026
           result lands and the Phosphate Hill sale has completed.
 
-      margin_transformation: [0.006, 0.018, 0.02, 0.02, 0.02, 0.02]  # B45..B49 (cum pp), Y6 holds flat (D-35)
+      margin_transformation: [0.006, 0.018, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02]  # B45..B49 (cum pp); Y6-Y10 hold flat (D-35 to Y6, D-71 to Y10)
       # D-69, 25 Sep 2026: supersedes D-40's -1.5pp magnitude. Total -2.0pp by
       # FY2032 -- continuing the declared -0.5pp/year pace one more year, since
       # the archetype's own maturity profile (us_gas_contract_maturity_profile)
@@ -785,7 +794,7 @@ normalised_baseline:
       # window. Ratified with the rider that the World Scenarios / Five Forces
       # work should land a properly derived number while that work is under
       # way; this is not asserted as more than a reasoned placeholder.
-      margin_gas_rolloff: [-0.001, -0.006, -0.012, -0.017, -0.019, -0.02]
+      margin_gas_rolloff: [-0.001, -0.006, -0.012, -0.017, -0.019, -0.02, -0.02, -0.02, -0.02, -0.02]  # D-69 phasing to FY2032 (Y6); Y7-Y10 hold the completed roll-off (D-71)
     by_scenario:
       # margin_delta_pp / capex_delta_pp are parallel shifts vs the baseline path;
       # terminal_growth is absolute (B77 base 0.025 + the comparison's delta).
@@ -818,4 +827,4 @@ normalised_baseline:
       United States: 0.26                # Dyno Nobel Americas (US federal + state blended)
       Australia: 0.30                    # Dyno Nobel Asia Pacific (AU statutory)
       Rest of World: 0.27                # Dyno Nobel EMEA & LATAM (blended)
-    glide_fractions: [0.0, 0.25, 0.5, 0.75, 1.0, 1.0]   # E12-E16: fraction of the effective->statutory gap closed; Y6 holds flat (D-35)
+    glide_fractions: [0.0, 0.25, 0.5, 0.75, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]   # E12-E16: fraction of the effective->statutory gap closed; Y6-Y10 hold flat (D-35 to Y6, D-71 to Y10)

@@ -21,7 +21,83 @@ kept getting reopened.
 It regenerates the two maps, runs the suite and the ratchet, checks the base ties and
 prints git state.
 
-## 🔴 HANDOVER — sitting of 24 September 2026 (read this first)
+## 🔴 HANDOVER — sitting of 2 October 2026 (read this first)
+
+**State:** suite 465 passed / 2 deselected; SSOT lint 14/14; base ties DNL 1.942 / WBC
+30.03 / CSL 195.78 (`scripts/session_start.py` updated). One commit, pushed.
+
+### D-71 — the framework decision, landed
+
+Stephen's own four sentences, ratified and implemented in one sitting (see `DECISIONS.md`
+D-71 for the full text and the supersessions):
+
+1. **Explicit period is a fixed ten years.** `dnl.yaml` `horizon_years: 10`; the three
+   per-year data lists hold their last value to Y10. D-35's computed horizon is
+   superseded; the horizon harness, the "6 vs 10" confusion and the 25 Sep
+   max-of-scenario-vs-Porter proposal are all moot.
+2. **Cash flows need not be static at year ten.** Two static-state conditions:
+   (a) the scenario's own `time_profile` reaches equilibrium inside the explicit period —
+   `scenario_equilibrium_year`, all six do, Fragmentation exactly at 10; a scenario that
+   did not would need the three-phase form, which raises `NotImplementedError` rather than
+   silently capitalising mid-transition; (b) the return on the closing capital base vs
+   the WACC — handled by the terminal form.
+3. **Headline terminal = excess-return convergence over the declared decay horizon, then
+   Gordon.** `FcfEngineInputs.terminal_form` ("excess_return_convergence" | "gordon"),
+   `convergence_years` (12.5 = the 10-15 band's midpoint). Symmetric in the excess:
+   Disorderly Climate (8.0% vs 8.9% WACC) converges UP and its value rises; the three
+   above-WACC scenarios converge DOWN. Gordon is the selectable simpler option
+   (`test_the_simpler_option_is_selectable`). The standalone workbook carries the same
+   formula (`Convergence years N` driver row; TV = IF(N blank, Gordon, two-stage)) and
+   ties on all six scenarios.
+4. **Data capture.** D-37's year-anchored paths (still 18/18 unpopulated) and the
+   five-forces decay horizons are the data this needs. The gap audit from 25 Sep
+   (`analyses/dnl/five_forces_driver_gap_audit_2026-09-25.md`) is the worklist.
+
+**Where no decay horizon is declared the assembler falls back to Gordon and says so** —
+ratcheted in `tests/terminal_form_baseline.json`: DNL Fragmentation and Stagflation today.
+WBC and CSL do not route through the form yet (their engines strike their terminals as
+before); declaring their decay horizons and routing them is the next pass.
+
+### Disclosed consequence — read before quoting a level
+
+Every DNL level moved, and **most of the movement is the horizon, not the terminal form**:
+with the flat per-scenario chain rate held for eight years before D-36's fade, four more
+years of ~6% nominal growth lift every scenario (Muddle Through 1.846 → 2.229 on the
+horizon alone, → 1.942 once convergence applies). That is a data artefact of the flat
+scalars D-37's paths exist to replace. Two knock-ons: Fragmentation is back above its
+WACC (95bp on the whole base) and so back on `tests/terminal_defence_baseline.json` with
+a reason; Stagflation is back slightly positive (0.072). The levels are honest about
+today's data; they are not an endorsement of it.
+
+### Also landed this sitting (from 25 Sep, uncommitted until now)
+
+1. Disorderly Climate's `excess_return_defence` transcribed into the impact matrix from
+   its own scenario write-up — with the resource leg dropped per D-43a (gas contracts are
+   a rent, not a barrier), the same correction already applied to Muddle Through and
+   Orderly Convergence. Four of six DNL scenarios now carry a declared decay horizon.
+2. The five-forces gap audit (free transcription wins vs genuine gaps).
+
+### Next (in order)
+
+1. **Populate D-37's paths from the prose that exists** via a translation table Stephen
+   approves (gap audit §2–4): `dm_inflation` → wire to the scenario file's own
+   `cpi_inflation_advanced` series (already agreed); `global_mining_real_growth` → shape
+   from `real_gdp_growth_world` with a spread/multiple calibrated to the existing flat
+   value (Stephen to pick spread vs multiple); `gas_price_growth` and `margin_delta_pp` →
+   from the per-scenario ratings and stated pp ranges.
+2. **Five-forces pass for the genuine gaps only**: Fragmentation and Stagflation decay
+   horizons; AI Lag gas/supplier power; WBC and CSL decay horizons if routed in the same
+   pass. Each one that lands shrinks `terminal_form_baseline.json`.
+3. Route the bank and segment engines through `terminal_form` once they have horizons.
+4. Build order item 6 (the seven §8 disclosures in each terminal write-up) is still open.
+
+**Superseded in this block:** D-65 as a standalone mechanism (folded into D-71 condition
+(a)); the 25 Sep proposal to widen D-35 to max(Porter, scenario timeline); the plan to add
+`margin_delta_pp` to `required_macro_drivers` (it is company-specific, not a scenario
+macro variable — SSOT check 14 reads scenario files; it belongs in the company overlay as a
+path, not in that check).
+
+## HANDOVER — sitting of 24 September 2026 (superseded by the block above)
 
 **Standing rule 5 is still in force until 16 October 2026.** Plumbing gets no airtime;
 one exception below because it affects whether anything in this block survives.

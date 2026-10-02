@@ -72,19 +72,37 @@ DNL_GOLDEN = {
     # Levels before D-35/D-36: 2.3316 / 1.9895 / 2.0127 / 1.2241 / 0.9924 /
     # 0.0491. Levels after D-35/D-36 but before the D-49 fix: 2.2026 / 1.8734 /
     # 1.8981 / 1.1121 / 0.8391 / -0.0452.
-    "orderly_convergence": 2.1626,
-    "muddle_through": 1.8461,                      # independently audited (generated workbook, all six)
-    "ai_productivity_lag": 1.8768,
-    "fragmentation": 1.0860,
-    "disorderly_climate_crystallisation": 0.8180,
+    #
+    # Re-pinned 2 Oct 2026 for D-71. Two things move every level. (1) The
+    # explicit period is a FIXED ten years, no longer D-35's computed six: with
+    # the interim flat chain rate held for eight years before D-36's fade, four
+    # more years of ~6% nominal growth lift every scenario -- a data artefact
+    # of the flat per-scenario scalars that D-37's year-anchored paths exist to
+    # replace, disclosed as such rather than hidden. (2) The headline terminal
+    # is excess-return convergence (D-62 to D-66 promoted from disclosure to
+    # headline) over the declared decay horizon (12.5 years, the 10-15 band's
+    # midpoint) for the four scenarios that have one, symmetric in R - WACC:
+    # Muddle Through, Orderly Convergence and AI Lag converge DOWN from
+    # 12.7-14.3% (a haircut against Gordon on the earned return); Disorderly
+    # Climate converges UP from 8.0% against an 8.9% WACC (a lift). Fragmentation
+    # and Stagflation have no declared decay horizon and fall back to Gordon,
+    # ratcheted in tests/dcf/test_terminal_form.py. Levels under the ten-year
+    # horizon with Gordon everywhere, for the record: 2.6050 / 2.2288 / 2.2495 /
+    # 1.3844 / 0.9494 / 0.0717.
+    "orderly_convergence": 2.2582,
+    "muddle_through": 1.9422,                      # independently audited (generated workbook, all six)
+    "ai_productivity_lag": 1.9481,
+    "fragmentation": 1.3844,
+    "disorderly_climate_crystallisation": 1.0302,
     # Stagflation Persists crosses to slightly NEGATIVE. It was already earning
     # barely above its own cost of capital on new capital under the old 5-year
     # build (4.96% earned vs 8.877% WACC -- see terminal_return_sets.yaml); a
     # sixth year of margin compression, a fading growth rate and the corrected
     # terminal capex rate tip it under. Not a broken run: it is the honest
     # consequence of a scenario the model already had sitting right at the
-    # margin.
-    "stagflation_persists": -0.0661,
+    # margin. Back to slightly POSITIVE under D-71's ten-year horizon (the extra
+    # years of chain growth), still Gordon pending a declared decay horizon.
+    "stagflation_persists": 0.0717,
 }
 
 # --- WBC: bank DDM / Ke (§15), AUD per share -----------------------------------
@@ -169,7 +187,8 @@ TERMINAL_BREACH = {
     # exactly the finding horizon_and_terminal_convergence.md §10 anticipated.
     # Re-pinned again the same day for the D-49 terminal-capex roll-forward fix
     # (0.766 -> 0.7631).
-    ("dnl", "disorderly_climate_crystallisation"): 0.7631,
+    # Re-pinned 2 Oct 2026 (D-71): 0.7631 -> 0.7021. Still the one DNL breach.
+    ("dnl", "disorderly_climate_crystallisation"): 0.7021,
     ("wbc", "muddle_through"): 0.7631,     # back to the pre-D-60 figure (M13)
     ("wbc", "stagflation_persists"): 0.8445,       # worst in the project; D-60 never binds here
     ("csl", "muddle_through"): 0.7538,
@@ -229,13 +248,17 @@ def test_terminal_shares_are_measured_case_by_case():
     # and revenue growth fades rather than holding at the chain rate. Only
     # Disorderly Climate still breaches 70% (see TERMINAL_BREACH above).
     dnl_shares = {
-        # Re-pinned 25 Sep 2026 (D-35/D-36, then the D-49 roll-forward fix).
-        "orderly_convergence": 0.6649,
-        "muddle_through": 0.6485,
-        "ai_productivity_lag": 0.6418,
-        "fragmentation": 0.6324,
-        "disorderly_climate_crystallisation": 0.7631,
-        "stagflation_persists": 0.5498,
+        # Re-pinned 25 Sep 2026 (D-35/D-36, then the D-49 roll-forward fix),
+        # and again 2 Oct 2026 for D-71 (ten-year horizon, convergence terminal):
+        # four more explicit years and a finite convergence both pull the
+        # terminal's share down everywhere but Disorderly Climate, whose
+        # upward convergence lifts its terminal.
+        "orderly_convergence": 0.4995,
+        "muddle_through": 0.4889,
+        "ai_productivity_lag": 0.4785,
+        "fragmentation": 0.5259,
+        "disorderly_climate_crystallisation": 0.7021,
+        "stagflation_persists": 0.4676,
     }
     for scenario in SCENARIOS:
         assert _dnl(scenario).terminal_share_of_ev == pytest.approx(

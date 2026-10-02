@@ -1,0 +1,19 @@
+{
+  "_comment": [
+    "D-71 ratchet baseline (2 Oct 2026). The headline terminal is excess-return convergence over",
+    "the declared decay horizon. The pairs below have NO declared decay horizon and so fall back",
+    "to Gordon -- a gap the five-forces work owes (analyses/dnl/five_forces_driver_gap_audit_2026-09-25.md),",
+    "not a choice. The list may only SHRINK: a pair that gains a decay horizon must be removed,",
+    "and a new fallback fails tests/dcf/test_terminal_form.py.",
+    "Only the industrial FCFF engine (DNL) carries the form today. WBC and CSL are not listed",
+    "because their engines do not yet route through it -- that is the next pass, not a fallback."
+  ],
+  "gordon_fallback": [
+    "dnl:fragmentation",
+    "dnl:stagflation_persists"
+  ],
+  "reasons": {
+    "dnl:fragmentation": "The scenario write-up never assessed terminal ROIC or a moat length; it now sits 95bp above its WACC on the whole capital base under the ten-year horizon, so Gordon is the MORE generous reading and is baselined in tests/terminal_defence_baseline.json as well.",
+    "dnl:stagflation_persists": "The scenario write-up never assessed terminal ROIC or a moat length; it sits 3.8pp below its WACC, so Gordon on the earned return is the LESS generous reading (convergence up would lift it, as it lifts Disorderly Climate)."
+  }
+}

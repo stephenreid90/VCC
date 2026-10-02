@@ -66,6 +66,13 @@ def build_plan(cfg: dict, spec: dict, scenario_id: str) -> replica.Plan:
     # live one -- so it needs the pre-fade flat chain rate to extend and fade
     # from, not the live per-year path, whose tail is already partway to g.
     plan = replace(plan, growth_path=[plan.growth_path[0]] * plan.horizon_years)
+    # D-71 (2 Oct 2026) made excess-return convergence the live headline
+    # terminal. Every set in this file was published on a Gordon terminal and
+    # declares its own terminal treatment (``terminal_capex``), so the live
+    # form is lifted off here: these tables reproduce what was published, they
+    # do not track the live build (see the header of the YAML).
+    plan = replace(plan, terminal_form="gordon", convergence_years=None,
+                   terminal_invested_capital=None)
     # A published table is only reproducible if the operating rates it was struck
     # on travel with it. When the data files are restated -- as they were on
     # 14 September 2026 -- a set that carries no `operating_base` silently starts
