@@ -77,9 +77,24 @@ today's data; they are not an endorsement of it.
    Orderly Convergence. Four of six DNL scenarios now carry a declared decay horizon.
 2. The five-forces gap audit (free transcription wins vs genuine gaps).
 
+### D-72 — growth inside the period, and where terminal g comes from (ratified in principle)
+
+Stephen's two follow-up questions, answered as one principle (DECISIONS D-72): explicit
+growth = the chain evaluated per year on the scenario paths + time-limited company
+offsets; terminal g = the same chain at the scenario's equilibrium anchors (scenario-
+conditional, derived, not typed). **Sizing it found the real inconsistency:** the chain
+runs 5.6–7.6% nominal through-cycle, the typed g is 1.75–2.75%, world nominal GDP at
+year 10 is ~5% — D-36's fade has been bridging ~4pp with no economics. The chain's
+above-GDP coefficients are current-cycle, not equilibrium. **Four rulings needed**, set
+out with the per-driver translation tables in
+`design/methodology/driver_path_translation_proposal.md` §6. Nothing wired; goldens
+unchanged by it.
+
 ### Next (in order)
 
-1. **Populate D-37's paths from the prose that exists** via a translation table Stephen
+1. **Stephen rules on the four questions in the translation proposal** (§0 equilibrium
+   chain vs typed g — this one moves every level materially; §2 spread vs multiple; §3
+   gas shape; §4 margin persist/revert). Then wire D-37's paths and the per-year chain via a translation table Stephen
    approves (gap audit §2–4): `dm_inflation` → wire to the scenario file's own
    `cpi_inflation_advanced` series (already agreed); `global_mining_real_growth` → shape
    from `real_gdp_growth_world` with a spread/multiple calibrated to the existing flat
