@@ -23,6 +23,9 @@ prints git state.
 
 ## 🔴 HANDOVER — sitting of 2 October 2026 (read this first)
 
+**Bridge note for the next chat: `notes/bridge/bridge_note_2026-10-02.md`.** It carries the
+plan (Five Forces pass, DNL gaps only), the traps and the expected base ties.
+
 **State:** suite 465 passed / 2 deselected; SSOT lint 14/14; base ties DNL 1.942 / WBC
 30.03 / CSL 195.78 (`scripts/session_start.py` updated). One commit, pushed.
 
