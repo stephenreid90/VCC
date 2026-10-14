@@ -221,9 +221,12 @@ def test_the_cited_drift_figures_come_from_here():
     # the 11.25% target (M13), which is why D-60 did not bite then. Over ten years
     # (D-71) it drifts on to 10.68% and crosses the target at Y7, so D-60 bites in
     # Muddle Through as well -- the drift was always there; the horizon now shows it.
-    assert central.closing_ratio == pytest.approx(0.1068, abs=5e-4)
+    # D-80 (14 Oct 2026): the sloping bank path (4.49% early, 3.99% at Y10, mean 4.5%)
+    # leaves the drift and the close where they were (-173bp, 10.69%) but tips the
+    # knife-edge crossing one year earlier, to Y6.
+    assert central.closing_ratio == pytest.approx(0.1069, abs=5e-4)
     assert central.operating_target == pytest.approx(0.1125, abs=1e-9)
-    assert central.first_below_target == "Y7"
+    assert central.first_below_target == "Y6"
     assert central.closing_ratio < central.operating_target
 
 
@@ -280,8 +283,9 @@ def test_the_constraint_is_on_by_default_and_gives_the_ratified_level():
     # 30.0304 with no bite at five years; at ten years (D-71, 14 Oct 2026) the ratio
     # reaches 11.25% at Y7 and the payout is cut from there. D-79 (same day):
     # 31.0502 -> 33.0779 on the derived terminal growth (4.5%, was typed 3.5%).
-    assert r.value_per_share == pytest.approx(33.0779, abs=1e-3)
-    assert r.capital_constraint_binds_from == "Y7"
+    # D-80 (same day): 33.0779 -> 32.2655 on the lower year-10 CPI; binds at Y6 now.
+    assert r.value_per_share == pytest.approx(32.2655, abs=1e-3)
+    assert r.capital_constraint_binds_from == "Y6"
     assert r.dividends_forgone > 0
 
 
@@ -329,8 +333,10 @@ def test_a_scenario_that_never_reaches_the_target_is_untouched():
         on = BankEngine().run(replace(_on(s), **short))
         assert on.capital_constraint_binds_from is None, s
         assert on.value_per_share == pytest.approx(off.value_per_share, abs=1e-12), s
-    # and at the full ten years the rule does bite, last of all in Stagflation
-    assert BankEngine().run(_on("stagflation_persists")).capital_constraint_binds_from == "Y10"
+    # and at the full ten years the rule does bite, last of all in Stagflation (with
+    # Fragmentation): Y10 until D-80 (14 Oct 2026); the sloping path crosses at Y8
+    # with the drift unchanged (-121bp), a knife-edge on a ratio that closes at 11.21%.
+    assert BankEngine().run(_on("stagflation_persists")).capital_constraint_binds_from == "Y8"
 
 
 def test_the_constraint_raises_value_which_is_the_retention_trade():

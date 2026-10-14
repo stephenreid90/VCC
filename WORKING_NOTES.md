@@ -25,12 +25,42 @@ prints git state.
 
 **Bridge note: `notes/bridge/bridge_note_2026-10-14.md`.** The five-step repeatable-process
 plan of 2 October is COMPLETE (steps 1-5, D-73 to D-78). The fourth sitting of 14 October
-took the first follow-up item, (a), and closed it as **D-79**. This block records both.
+took the first follow-up item, (a), and closed it as **D-79**. The fifth sitting took the
+question D-79 left open (year-10 CPI) and closed it as **D-80**. This block records all three.
 
 **State:** suite 642 passed / 1 skipped / 2 deselected; SSOT lint 14/14; base ties **DNL
-2.138 / WBC 33.08 / CSL 208.89** (`session_start.py` re-pinned for D-79; were 31.05 and
-186.5 on the typed terminal growth). Commits on `main` on Stephen's checkout, pushed at the
-end of each sitting.
+2.106 / WBC 32.27 / CSL 203.46** (`session_start.py` re-pinned for D-80; were 2.138 / 33.08 /
+208.89 under D-79). Commits on `main` on Stephen's checkout, pushed at the end of each sitting.
+
+### D-80 DONE -- year-10 CPI lowered in every scenario (the D-79 open item)
+
+Plain terms: since D-79 the ceiling on every company's terminal growth is the scenario's
+nominal GDP at year 10, and half of that is a typed inflation number. Muddle Through had
+3.0%, above every advanced central-bank target, and the narrative said central banks
+accept the overshoot. Stephen ruled that over ten years the Fed and the RBA do their
+jobs, in every scenario. The principle is his; the six numbers are the implementation
+(OC 2.0, MT 2.5, AI Lag 2.5, Frag 2.8, DCC 2.5, Stag 3.0; were 2.3 / 3.0 / 2.8 / 3.3 /
+3.0 / 3.5) and were sized before landing. The narratives say the same thing in words.
+
+It moved more than the cap. The bank and segment series are world real GDP plus CPI plus
+a fixed gap (D-72), and the gap is set so the path's mean over the anchor years equals the
+typed level. Muddle Through's base now slopes down from year 5, so those paths slope too:
+a little above the typed rate early, below it at year 10. Levels: DNL MT 2.138 -> 2.106
+(-1.5%), WBC MT 33.08 -> 32.27 (-2.5%), CSL MT 208.89 -> 203.46 (-2.6%); the largest
+single move is WBC Orderly Convergence -3.9%. Full table in `DECISIONS.md` D-80. Two
+side-effects, both disclosed there: WBC's CET1 crossing moves a year or two earlier in
+Muddle Through and Stagflation on an unchanged drift (knife-edge), and the 3-6% range on
+DNL's derived g is widened to 2.5-6% because Stagflation's chain now gives 2.84%.
+
+Done against standing rule 4: 47 pins across 13 test files, the four sizing sets, both
+generated workbook oracles (LibreOffice), `session_start.py` bases. The hand-built v4 WBC
+and CSL ties now run on the workbook's own typed growth paths as well as its typed g
+(D-79's treatment extended), so they stay an audit of the mechanics rather than a golden.
+
+Loose end noticed, not chased: `scripts/size_terminal_growth.py` prints DNL Fragmentation
+and Stagflation as 1.42 / 1.12 while the goldens are 1.4179 / 1.1204 -- those agree; but
+the bridge note's results table had 1.58 / 1.39 for the same pair before D-80, which was
+the pre-step-3 Gordon level. The table in the bridge note is corrected this sitting.
 
 ### D-79 DONE -- WBC's and CSL's terminal growth is derived, not typed
 

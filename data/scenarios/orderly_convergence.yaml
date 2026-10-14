@@ -66,13 +66,13 @@ scenario:
     - variable: seasonal_vaccines_nominal_growth
       units: percent_yoy
       type: time_series
-      # real_gdp_growth_world + cpi_inflation_advanced plus a fixed gap of -2.96pp (spread, not multiple)
+      # real_gdp_growth_world + cpi_inflation_advanced plus a fixed gap of -2.88pp (spread, not multiple)
       time_series:
-        - {year: 1, value: 2.64}
-        - {year: 3, value: 2.54}
-        - {year: 5, value: 2.54}
-        - {year: 7, value: 2.46}
-        - {year: 10, value: 2.34}
+        - {year: 1, value: 2.72}
+        - {year: 3, value: 2.62}
+        - {year: 5, value: 2.62}
+        - {year: 7, value: 2.42}
+        - {year: 10, value: 2.12}
     # END derived paths
     # BEGIN derived paths (specialty_pharmaceuticals)
     # Written by scripts/derive_macro_driver_paths.py from the derivations declared in
@@ -81,13 +81,13 @@ scenario:
     - variable: specialty_pharma_nominal_growth
       units: percent_yoy
       type: time_series
-      # real_gdp_growth_world + cpi_inflation_advanced plus a fixed gap of +3.04pp (spread, not multiple)
+      # real_gdp_growth_world + cpi_inflation_advanced plus a fixed gap of +3.12pp (spread, not multiple)
       time_series:
-        - {year: 1, value: 8.64}
-        - {year: 3, value: 8.54}
-        - {year: 5, value: 8.54}
-        - {year: 7, value: 8.46}
-        - {year: 10, value: 8.34}
+        - {year: 1, value: 8.72}
+        - {year: 3, value: 8.62}
+        - {year: 5, value: 8.62}
+        - {year: 7, value: 8.42}
+        - {year: 10, value: 8.12}
     # END derived paths
     # BEGIN derived paths (plasma_derived_therapies)
     # Written by scripts/derive_macro_driver_paths.py from the derivations declared in
@@ -96,13 +96,13 @@ scenario:
     - variable: plasma_therapies_nominal_growth
       units: percent_yoy
       type: time_series
-      # real_gdp_growth_world + cpi_inflation_advanced plus a fixed gap of +1.04pp (spread, not multiple)
+      # real_gdp_growth_world + cpi_inflation_advanced plus a fixed gap of +1.12pp (spread, not multiple)
       time_series:
-        - {year: 1, value: 6.64}
-        - {year: 3, value: 6.54}
-        - {year: 5, value: 6.54}
-        - {year: 7, value: 6.46}
-        - {year: 10, value: 6.34}
+        - {year: 1, value: 6.72}
+        - {year: 3, value: 6.62}
+        - {year: 5, value: 6.62}
+        - {year: 7, value: 6.42}
+        - {year: 10, value: 6.12}
     # END derived paths
     # BEGIN derived paths (industrial_explosives)
     # Written by scripts/derive_macro_driver_paths.py from the derivations declared in
@@ -136,13 +136,13 @@ scenario:
     - variable: bank_system_aiea_growth
       units: percent_yoy
       type: time_series
-      # real_gdp_growth_world + cpi_inflation_advanced plus a fixed gap of +1.04pp (spread, not multiple)
+      # real_gdp_growth_world + cpi_inflation_advanced plus a fixed gap of +1.12pp (spread, not multiple)
       time_series:
-        - {year: 1, value: 6.64}
-        - {year: 3, value: 6.54}
-        - {year: 5, value: 6.54}
-        - {year: 7, value: 6.46}
-        - {year: 10, value: 6.34}
+        - {year: 1, value: 6.72}
+        - {year: 3, value: 6.62}
+        - {year: 5, value: 6.62}
+        - {year: 7, value: 6.42}
+        - {year: 10, value: 6.12}
     # END derived paths
     - variable: real_gdp_growth_world
       units: percent_yoy
@@ -168,7 +168,7 @@ scenario:
         - {year: 1, value: 2.8, confidence_low: 2.5, confidence_high: 3.1}
         - {year: 3, value: 2.4, confidence_low: 2.0, confidence_high: 2.7}
         - {year: 5, value: 2.3, confidence_low: 2.0, confidence_high: 2.5}
-        - {year: 10, value: 2.3, confidence_low: 2.0, confidence_high: 2.5}
+        - {year: 10, value: 2.0, confidence_low: 1.7, confidence_high: 2.3}
 
     - variable: policy_rate_real_advanced
       units: percent

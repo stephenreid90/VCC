@@ -21,11 +21,11 @@ terminal_disclosure_set:
     available: true
     reason: null
     cost_of_capital: 0.088772
-    terminal_growth: 0.046727
-    capital: 4479.676
-    earned_return: 0.135887
+    terminal_growth: 0.044584
+    capital: 4473.665
+    earned_return: 0.13492
     declared_return: null
-    convergence_return: 0.135887
+    convergence_return: 0.13492
     moat_years: 12.5
     moat_band: 10-15
     moat_basis: 'Five Forces ratings for industrial explosives -- threat of new entrants
@@ -36,20 +36,20 @@ terminal_disclosure_set:
       the horizon should say so and why, as the Disorderly Climate block does.
 
       '
-    terminal_value: 6431.241
-    value_per_share: 2.1071
-    engine_terminal_value: 6431.241
-    engine_value_per_share: 2.1071
+    terminal_value: 6362.264
+    value_per_share: 2.0903
+    engine_terminal_value: 6362.264
+    engine_value_per_share: 2.0903
   - company: dnl
     scenario: disorderly_climate_crystallisation
     available: true
     reason: null
     cost_of_capital: 0.088772
-    terminal_growth: 0.049389
-    capital: 6174.5
-    earned_return: 0.083151
+    terminal_growth: 0.045812
+    capital: 6158.893
+    earned_return: 0.082219
     declared_return: null
-    convergence_return: 0.083151
+    convergence_return: 0.082219
     moat_years: 12.5
     moat_band: 10-15
     moat_basis: 'Same Five Forces read as Muddle Through / Orderly Convergence (new
@@ -60,20 +60,20 @@ terminal_disclosure_set:
       central band -- carries that risk.
 
       '
-    terminal_value: 5849.293
-    value_per_share: 1.0762
-    engine_terminal_value: 5849.293
-    engine_value_per_share: 1.0762
+    terminal_value: 5787.443
+    value_per_share: 1.0629
+    engine_terminal_value: 5787.443
+    engine_value_per_share: 1.0629
   - company: dnl
     scenario: fragmentation
     available: true
     reason: null
     cost_of_capital: 0.088772
-    terminal_growth: 0.044536
-    capital: 4504.337
-    earned_return: 0.102203
+    terminal_growth: 0.040984
+    capital: 4494.177
+    earned_return: 0.101002
     declared_return: null
-    convergence_return: 0.102203
+    convergence_return: 0.101002
     moat_years: 12.5
     moat_band: 10-15
     moat_basis: 'Archetype ratings (new entrants low, rivalry high, substitutes low)
@@ -81,20 +81,20 @@ terminal_disclosure_set:
       says the inferior equilibrium "persists through the longer 10-15 year horizon".
 
       '
-    terminal_value: 5057.636
-    value_per_share: 1.4342
-    engine_terminal_value: 5057.636
-    engine_value_per_share: 1.4342
+    terminal_value: 4988.06
+    value_per_share: 1.4179
+    engine_terminal_value: 4988.06
+    engine_value_per_share: 1.4179
   - company: dnl
     scenario: muddle_through
     available: true
     reason: null
     cost_of_capital: 0.088772
-    terminal_growth: 0.052675
-    capital: 4547.095
-    earned_return: 0.137836
+    terminal_growth: 0.048575
+    capital: 4535.8
+    earned_return: 0.136075
     declared_return: null
-    convergence_return: 0.137836
+    convergence_return: 0.136075
     moat_years: 12.5
     moat_band: 10-15
     moat_basis: 'Five Forces ratings for industrial explosives -- threat of new entrants
@@ -105,20 +105,20 @@ terminal_disclosure_set:
       the horizon should say so and why, as the Disorderly Climate block does.
 
       '
-    terminal_value: 6672.643
-    value_per_share: 2.1382
-    engine_terminal_value: 6672.643
-    engine_value_per_share: 2.1382
+    terminal_value: 6538.175
+    value_per_share: 2.1059
+    engine_terminal_value: 6538.175
+    engine_value_per_share: 2.1059
   - company: dnl
     scenario: orderly_convergence
     available: true
     reason: null
     cost_of_capital: 0.088772
-    terminal_growth: 0.05369
-    capital: 4681.251
-    earned_return: 0.155166
+    terminal_growth: 0.0506
+    capital: 4672.739
+    earned_return: 0.153793
     declared_return: null
-    convergence_return: 0.155166
+    convergence_return: 0.153793
     moat_years: 12.5
     moat_band: 10-15
     moat_basis: 'Five Forces ratings for industrial explosives — threat of new entrants
@@ -128,20 +128,20 @@ terminal_disclosure_set:
       beyond it.
 
       '
-    terminal_value: 7657.63
-    value_per_share: 2.4908
-    engine_terminal_value: 7657.63
-    engine_value_per_share: 2.4908
+    terminal_value: 7537.268
+    value_per_share: 2.4619
+    engine_terminal_value: 7537.268
+    engine_value_per_share: 2.4619
   - company: dnl
     scenario: stagflation_persists
     available: true
     reason: null
     cost_of_capital: 0.088772
-    terminal_growth: 0.031943
-    capital: 4372.516
-    earned_return: 0.118271
+    terminal_growth: 0.028438
+    capital: 4366.515
+    earned_return: 0.117158
     declared_return: null
-    convergence_return: 0.118271
+    convergence_return: 0.117158
     moat_years: 12.5
     moat_band: 10-15
     moat_basis: 'Archetype ratings (new entrants low, rivalry high, substitutes low)
@@ -150,18 +150,18 @@ terminal_disclosure_set:
       barriers that carry the post-resolution excess through the band.
 
       '
-    terminal_value: 5480.917
-    value_per_share: 1.1361
-    engine_terminal_value: 5480.917
-    engine_value_per_share: 1.1361
+    terminal_value: 5413.522
+    value_per_share: 1.1204
+    engine_terminal_value: 5413.522
+    engine_value_per_share: 1.1204
   - company: wbc
     scenario: ai_productivity_lag
     available: true
     reason: null
     cost_of_capital: 0.0805
-    terminal_growth: 0.0442
-    capital: 101708.922
-    earned_return: 0.115626
+    terminal_growth: 0.042
+    capital: 101623.701
+    earned_return: 0.115395
     declared_return: 0.105
     convergence_return: 0.105
     moat_years: .inf
@@ -173,18 +173,18 @@ terminal_disclosure_set:
       table).
 
       '
-    terminal_value: 170355.44
-    value_per_share: 33.0905
-    engine_terminal_value: 170355.44
-    engine_value_per_share: 33.0905
+    terminal_value: 166293.329
+    value_per_share: 32.5936
+    engine_terminal_value: 166293.329
+    engine_value_per_share: 32.5936
   - company: wbc
     scenario: disorderly_climate_crystallisation
     available: true
     reason: null
     cost_of_capital: 0.0805
-    terminal_growth: 0.0346
-    capital: 96889.783
-    earned_return: 0.09404
+    terminal_growth: 0.031
+    capital: 96813.141
+    earned_return: 0.093725
     declared_return: 0.09
     convergence_return: 0.09
     moat_years: .inf
@@ -196,18 +196,18 @@ terminal_disclosure_set:
       table).
 
       '
-    terminal_value: 116943.223
-    value_per_share: 23.2017
-    engine_terminal_value: 116943.223
-    engine_value_per_share: 23.2017
+    terminal_value: 115393.441
+    value_per_share: 23.0347
+    engine_terminal_value: 115393.441
+    engine_value_per_share: 23.0347
   - company: wbc
     scenario: fragmentation
     available: true
     reason: null
     cost_of_capital: 0.0805
-    terminal_growth: 0.0392
-    capital: 96936.561
-    earned_return: 0.107637
+    terminal_growth: 0.0356
+    capital: 96863.813
+    earned_return: 0.107275
     declared_return: 0.1
     convergence_return: 0.1
     moat_years: .inf
@@ -219,18 +219,18 @@ terminal_disclosure_set:
       table).
 
       '
-    terminal_value: 142705.639
-    value_per_share: 28.5658
-    engine_terminal_value: 142705.639
-    engine_value_per_share: 28.5658
+    terminal_value: 138931.616
+    value_per_share: 28.1291
+    engine_terminal_value: 138931.616
+    engine_value_per_share: 28.1291
   - company: wbc
     scenario: muddle_through
     available: true
     reason: null
     cost_of_capital: 0.0805
-    terminal_growth: 0.045
-    capital: 101737.851
-    earned_return: 0.114457
+    terminal_growth: 0.0414
+    capital: 101662.193
+    earned_return: 0.114074
     declared_return: 0.105
     convergence_return: 0.105
     moat_years: .inf
@@ -242,18 +242,18 @@ terminal_disclosure_set:
       table).
 
       '
-    terminal_value: 171951.297
-    value_per_share: 33.0779
-    engine_terminal_value: 171951.297
-    engine_value_per_share: 33.0779
+    terminal_value: 165363.567
+    value_per_share: 32.2655
+    engine_terminal_value: 165363.567
+    engine_value_per_share: 32.2655
   - company: wbc
     scenario: orderly_convergence
     available: true
     reason: null
     cost_of_capital: 0.0805
-    terminal_growth: 0.05369
-    capital: 123372.658
-    earned_return: 0.138743
+    terminal_growth: 0.0506
+    capital: 123270.529
+    earned_return: 0.138346
     declared_return: 0.11
     convergence_return: 0.11
     moat_years: .inf
@@ -265,18 +265,18 @@ terminal_disclosure_set:
       table).
 
       '
-    terminal_value: 259123.998
-    value_per_share: 46.9911
-    engine_terminal_value: 259123.998
-    engine_value_per_share: 46.9911
+    terminal_value: 244891.953
+    value_per_share: 45.159
+    engine_terminal_value: 244891.953
+    engine_value_per_share: 45.159
   - company: wbc
     scenario: stagflation_persists
     available: true
     reason: null
     cost_of_capital: 0.0805
-    terminal_growth: 0.0194
-    capital: 83066.734
-    earned_return: 0.053235
+    terminal_growth: 0.0154
+    capital: 83075.652
+    earned_return: 0.053024
     declared_return: 0.09
     convergence_return: 0.09
     moat_years: .inf
@@ -288,20 +288,20 @@ terminal_disclosure_set:
       table).
 
       '
-    terminal_value: 95982.184
-    value_per_share: 15.7985
-    engine_terminal_value: 95982.184
-    engine_value_per_share: 15.7985
+    terminal_value: 95198.827
+    value_per_share: 15.7094
+    engine_terminal_value: 95198.827
+    engine_value_per_share: 15.7094
   - company: csl
     scenario: ai_productivity_lag
     available: true
     reason: null
     cost_of_capital: 0.0875
-    terminal_growth: 0.04856
-    capital: 23283.093
-    earned_return: 0.310341
+    terminal_growth: 0.0455
+    capital: 23251.956
+    earned_return: 0.30862
     declared_return: null
-    convergence_return: 0.310341
+    convergence_return: 0.30862
     moat_years: 25.0
     moat_band: 20-30
     moat_basis: 'Threat of new entrants LOW (a collection network takes 5+ years of
@@ -313,20 +313,20 @@ terminal_disclosure_set:
       six scenarios; the named threat is what changes.
 
       '
-    terminal_value: 102977.17
-    value_per_share: 217.2156
-    engine_terminal_value: 89116.182
-    engine_value_per_share: 198.2605
+    terminal_value: 99937.288
+    value_per_share: 213.3984
+    engine_terminal_value: 86660.493
+    engine_value_per_share: 195.2421
   - company: csl
     scenario: disorderly_climate_crystallisation
     available: true
     reason: null
     cost_of_capital: 0.0875
-    terminal_growth: 0.038495
-    capital: 22900.792
-    earned_return: 0.274592
+    terminal_growth: 0.034895
+    capital: 22855.056
+    earned_return: 0.272545
     declared_return: null
-    convergence_return: 0.274592
+    convergence_return: 0.272545
     moat_years: 25.0
     moat_band: 20-30
     moat_basis: 'Threat of new entrants LOW (a collection network takes 5+ years of
@@ -338,20 +338,20 @@ terminal_disclosure_set:
       six scenarios; the named threat is what changes.
 
       '
-    terminal_value: 82723.026
-    value_per_share: 181.8293
-    engine_terminal_value: 71518.137
-    engine_value_per_share: 166.5064
+    terminal_value: 79974.619
+    value_per_share: 178.663
+    engine_terminal_value: 69356.048
+    engine_value_per_share: 164.1419
   - company: csl
     scenario: fragmentation
     available: true
     reason: null
     cost_of_capital: 0.0875
-    terminal_growth: 0.039048
-    capital: 22656.089
-    earned_return: 0.261077
+    terminal_growth: 0.035448
+    capital: 22612.396
+    earned_return: 0.259107
     declared_return: null
-    convergence_return: 0.261077
+    convergence_return: 0.259107
     moat_years: 25.0
     moat_band: 20-30
     moat_basis: 'Threat of new entrants LOW (a collection network takes 5+ years of
@@ -363,20 +363,20 @@ terminal_disclosure_set:
       six scenarios; the named threat is what changes.
 
       '
-    terminal_value: 77847.146
-    value_per_share: 170.669
-    engine_terminal_value: 68182.648
-    engine_value_per_share: 157.4527
+    terminal_value: 75288.209
+    value_per_share: 167.7442
+    engine_terminal_value: 66146.008
+    engine_value_per_share: 155.2421
   - company: csl
     scenario: muddle_through
     available: true
     reason: null
     cost_of_capital: 0.0875
-    terminal_growth: 0.05369
-    capital: 23558.368
-    earned_return: 0.322119
+    terminal_growth: 0.048575
+    capital: 23510.004
+    earned_return: 0.319422
     declared_return: null
-    convergence_return: 0.322119
+    convergence_return: 0.319422
     moat_years: 25.0
     moat_band: 20-30
     moat_basis: 'Threat of new entrants LOW (a collection network takes 5+ years of
@@ -388,20 +388,20 @@ terminal_disclosure_set:
       six scenarios; the named threat is what changes.
 
       '
-    terminal_value: 112812.516
-    value_per_share: 231.9759
-    engine_terminal_value: 95928.066
-    engine_value_per_share: 208.8861
+    terminal_value: 107271.997
+    value_per_share: 225.0222
+    engine_terminal_value: 91506.999
+    engine_value_per_share: 203.4633
   - company: csl
     scenario: orderly_convergence
     available: true
     reason: null
     cost_of_capital: 0.0875
-    terminal_growth: 0.05369
-    capital: 24340.595
-    earned_return: 0.366285
+    terminal_growth: 0.0506
+    capital: 24305.695
+    earned_return: 0.36437
     declared_return: null
-    convergence_return: 0.366285
+    convergence_return: 0.36437
     moat_years: 25.0
     moat_band: 20-30
     moat_basis: 'Threat of new entrants LOW (a collection network takes 5+ years of
@@ -413,20 +413,20 @@ terminal_disclosure_set:
       six scenarios; the named threat is what changes.
 
       '
-    terminal_value: 133917.71
-    value_per_share: 272.012
-    engine_terminal_value: 113367.421
-    engine_value_per_share: 243.9092
+    terminal_value: 129735.764
+    value_per_share: 266.6542
+    engine_terminal_value: 110022.374
+    engine_value_per_share: 239.6958
   - company: csl
     scenario: stagflation_persists
     available: true
     reason: null
     cost_of_capital: 0.0875
-    terminal_growth: 0.027328
-    capital: 22147.656
-    earned_return: 0.228807
+    terminal_growth: 0.023328
+    capital: 22110.691
+    earned_return: 0.227013
     declared_return: null
-    convergence_return: 0.228807
+    convergence_return: 0.227013
     moat_years: 25.0
     moat_band: 20-30
     moat_basis: 'Threat of new entrants LOW (a collection network takes 5+ years of
@@ -438,7 +438,7 @@ terminal_disclosure_set:
       six scenarios; the named threat is what changes.
 
       '
-    terminal_value: 61624.827
-    value_per_share: 143.8625
-    engine_terminal_value: 54954.334
-    engine_value_per_share: 134.7404
+    terminal_value: 59672.6
+    value_per_share: 141.6865
+    engine_terminal_value: 53389.959
+    engine_value_per_share: 133.0949

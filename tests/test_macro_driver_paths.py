@@ -236,9 +236,21 @@ def test_each_csl_segment_archetype_declares_one_nominal_growth_path():
         assert a.required_macro_drivers[0].derivation.series == ["real_gdp_growth_world", "cpi_inflation_advanced"]
 
 
-def test_muddle_through_paths_reproduce_the_typed_steady_states_exactly():
-    """The baseline scenario's world series are flat, so the derived path IS the typed anchor."""
-    assert {v for _, v in _committed("muddle_through", "bank_system_aiea_growth")} == {4.5}
-    assert {v for _, v in _committed("muddle_through", "plasma_therapies_nominal_growth")} == {5.5}
-    assert {v for _, v in _committed("muddle_through", "seasonal_vaccines_nominal_growth")} == {2.0}
-    assert {v for _, v in _committed("muddle_through", "specialty_pharma_nominal_growth")} == {7.0}
+def test_muddle_through_paths_average_to_the_typed_steady_states():
+    """The fixed gap is set so the path's mean over the anchor years IS the typed anchor.
+
+    Until D-80 (14 Oct 2026) Muddle Through's world series were flat, so the path
+    was flat at the anchor. D-80 lowered year-10 CPI to 2.5%, so the base slopes
+    down from year 5 and the path with it (bank: 4.64 early, 4.14 at year 10,
+    mean 4.5). The explicit years run a little above the anchor and the terminal a
+    little below -- higher inflation early means faster nominal growth early."""
+    def mean(var):
+        vals = [v for _, v in _committed("muddle_through", var)]
+        return sum(vals) / len(vals)
+    assert mean("bank_system_aiea_growth") == pytest.approx(4.5, abs=0.01)
+    assert mean("plasma_therapies_nominal_growth") == pytest.approx(5.5, abs=0.01)
+    assert mean("seasonal_vaccines_nominal_growth") == pytest.approx(2.0, abs=0.01)
+    assert mean("specialty_pharma_nominal_growth") == pytest.approx(7.0, abs=0.01)
+    # and it is no longer flat: the year-10 point sits below the year-1 point
+    pts = dict(_committed("muddle_through", "bank_system_aiea_growth"))
+    assert pts[10] < pts[1]

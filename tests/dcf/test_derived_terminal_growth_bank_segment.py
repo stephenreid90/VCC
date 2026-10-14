@@ -104,18 +104,25 @@ def test_segment_terminal_growth_is_final_year_revenue_weighted_series_capped(sc
 
 # ------------------------------------------------- the rates, to the basis point
 def test_wbc_derived_rates():
-    """Orderly is capped at nominal GDP; Stagflation's shrinking system is the floor."""
+    """Orderly is capped at nominal GDP; Stagflation's shrinking system is the floor.
+
+    D-80 (14 Oct 2026): year-10 CPI lowered in every scenario; the bank series is
+    real GDP + CPI plus a fixed gap, so every rate falls. Were 5.37 (capped) / 4.50 /
+    4.42 / 3.92 / 3.46 / 1.94."""
     got = {s: round(bank_terminal_growth_from_data(_wbc(s), s, H).result * 100, 2) for s in SCENARIOS}
     assert got == {
-        "orderly_convergence": 5.37, "muddle_through": 4.50, "ai_productivity_lag": 4.42,
-        "fragmentation": 3.92, "disorderly_climate_crystallisation": 3.46, "stagflation_persists": 1.94,
+        "orderly_convergence": 5.06, "muddle_through": 4.14, "ai_productivity_lag": 4.20,
+        "fragmentation": 3.56, "disorderly_climate_crystallisation": 3.10, "stagflation_persists": 1.54,
     }
 
 
 def test_csl_derived_rates():
-    """Orderly and Muddle Through are capped at nominal GDP (Vifor's share has grown by Y10)."""
+    """Orderly, Muddle Through and AI Lag are capped at nominal GDP (Vifor's share has grown by Y10).
+
+    D-80 (14 Oct 2026): year-10 CPI lowered in every scenario. Were 5.37c / 5.37c /
+    4.86c / 3.90 / 3.85 / 2.73."""
     got = {s: round(segment_terminal_growth_from_data(_csl(s), s, H).result * 100, 2) for s in SCENARIOS}
     assert got == {
-        "orderly_convergence": 5.37, "muddle_through": 5.37, "ai_productivity_lag": 4.86,
-        "fragmentation": 3.90, "disorderly_climate_crystallisation": 3.85, "stagflation_persists": 2.73,
+        "orderly_convergence": 5.06, "muddle_through": 4.86, "ai_productivity_lag": 4.55,
+        "fragmentation": 3.54, "disorderly_climate_crystallisation": 3.49, "stagflation_persists": 2.33,
     }

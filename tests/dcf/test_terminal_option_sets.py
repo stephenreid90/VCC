@@ -91,8 +91,9 @@ def test_the_other_lever_convention_runs_backwards(by_key):
     measured = two_stage(v.capital, v.earned_return, v.cost_of_capital, v.terminal_growth, n)
     backwards = two_stage(e1 / 0.16, 0.16, v.cost_of_capital, v.terminal_growth, n)
     # Re-pinned D-72 (same day, derived g 5.27%): 5698 / 5359 -> 6316 / 6129.
-    assert measured == pytest.approx(6316, abs=1)
-    assert backwards == pytest.approx(6129, abs=1)
+    # Re-pinned D-80 (14 Oct 2026, year-10 CPI lowered; g 4.86% capped): 6316 / 6129 -> 6209 / 6001.
+    assert measured == pytest.approx(6209, abs=1)
+    assert backwards == pytest.approx(6001, abs=1)
     assert backwards < measured
 
 
@@ -125,8 +126,10 @@ def test_engine_current_reproduces_every_engine_value_per_share(rows):
     # declared 20-30 years, convergence at N = 25 (223.2431 -> 186.4975).
     # D-79 (same day): terminal growth derived for WBC and CSL (31.0502 -> 33.0779;
     # 186.4975 -> 208.8861).
-    pinned = {("dnl", "muddle_through"): 2.1382, ("wbc", "muddle_through"): 33.0779,
-              ("csl", "muddle_through"): 208.8861}
+    # D-80 (same day): year-10 CPI lowered in every scenario (2.1382 -> 2.1059;
+    # 33.0779 -> 32.2655; 208.8861 -> 203.4633).
+    pinned = {("dnl", "muddle_through"): 2.1059, ("wbc", "muddle_through"): 32.2655,
+              ("csl", "muddle_through"): 203.4633}
     for key, vps in pinned.items():
         v = next(x for x in rows if (x.company_id, x.scenario_id) == key)
         assert _basis(v, "engine_current").value_per_share == pytest.approx(vps, abs=1e-4)

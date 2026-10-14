@@ -13,7 +13,7 @@ The IMF's April 2026 severe scenario plays out. The Middle East situation doesn'
 
 ## Macro picture
 
-Global growth slows to 1.5–2.0% through the recession period; advanced economies contract 0.5% in year 2. Headline inflation peaks at 5.5–6% in year 2 then settles around 4–5% through the entrenchment phase, fading toward 3.5% in the resolution phase. Nominal cash rates in advanced economies 5–7%; real rates 2.5%. USD strong on rate-differential and safe-haven flows; commodity currencies bifurcate; some EM currency crises in stressed sovereigns.
+Global growth slows to 1.5–2.0% through the recession period; advanced economies contract 0.5% in year 2. Headline inflation peaks at 5.5–6% in year 2 then settles around 4–5% through the entrenchment phase, fading to 3.0% by year 10 in the resolution phase — still above target, because credibility is rebuilt slowly. Nominal cash rates in advanced economies 5–7%; real rates 2.5%. USD strong on rate-differential and safe-haven flows; commodity currencies bifurcate; some EM currency crises in stressed sovereigns.
 
 ## US powerhouse stance
 

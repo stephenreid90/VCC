@@ -13,7 +13,7 @@ The set of conditions for benign resolution all come together. Cost-of-living pr
 
 ## Macro picture
 
-Global growth recovers to 3.0–3.2% — robust by post-pandemic standards. US growth at 2.5%, Europe pulling out of stagnation to 1.8–2.2%, EM at 4–5%. Headline inflation in advanced economies returns to 2.3% by year 3, near central-bank targets. Real policy rates settle at 0.8% — modestly positive, above the 2010s zero-bound but well below Muddle Through's 1.0%+. The USD softens modestly as the Fed eases; EM currencies recover; capital flows reglobalise.
+Global growth recovers to 3.0–3.2% — robust by post-pandemic standards. US growth at 2.5%, Europe pulling out of stagnation to 1.8–2.2%, EM at 4–5%. Headline inflation in advanced economies returns to 2.3% by year 3 and settles on the 2% target by year 10. Real policy rates settle at 0.8% — modestly positive, above the 2010s zero-bound but well below Muddle Through's 1.0%+. The USD softens modestly as the Fed eases; EM currencies recover; capital flows reglobalise.
 
 ## US powerhouse stance
 

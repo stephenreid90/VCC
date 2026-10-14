@@ -32,6 +32,14 @@ def _run(scenario):
 # carries these; the workbook tie keeps them because they are the WORKBOOK's inputs
 # -- the tie audits the §15 mechanics, not the growth judgement.
 V4_WORKBOOK_G = {"muddle_through": 0.035, "orderly_convergence": 0.0375}
+# The AIEA growth the v4 Muddle Through workbook types: a flat 4.5% industry rate less
+# WBC's 0.15pp share-loss offset. Until D-80 (14 Oct 2026) the live D-72 path was flat
+# at the same number because Muddle Through's world series were flat; D-80 lowered the
+# year-10 CPI, the path now slopes, and the tie runs at the WORKBOOK's input for the
+# same reason it runs at the workbook's g. Orderly Convergence has no such entry: its
+# five-year figure below was re-pinned onto the D-72 path on 14 Oct and is a golden,
+# not a workbook tie.
+V4_WORKBOOK_AIEA_G = {"muddle_through": 0.045 - 0.0015}
 
 
 def _at_five_years(inp):
@@ -40,9 +48,12 @@ def _at_five_years(inp):
     running the same engine at the workbook's own horizon (glides sliced to Y5, the
     growth path to Y1..Y5) and at the workbook's own typed terminal growth (D-79
     derives the live one). Nothing else about the engine differs between the runs."""
+    path = list(BankEngine.aiea_growth_path(inp))[:5]
+    if inp.scenario_id in V4_WORKBOOK_AIEA_G:
+        path = [V4_WORKBOOK_AIEA_G[inp.scenario_id]] * 5
     return replace(
         inp, horizon_years=5,
-        aiea_growth=list(BankEngine.aiea_growth_path(inp))[:5],
+        aiea_growth=path,
         nim_applied=inp.nim_applied[:6], cost_to_income=inp.cost_to_income[:6],
         credit_loss_rate=inp.credit_loss_rate[:6],
         terminal_form="gordon", convergence_years=None,
@@ -101,11 +112,12 @@ def test_at_ten_years_the_constraint_binds_in_muddle_through_too():
     every scenario -- Muddle Through at Y7. The v4 tie above is unchanged because it
     runs at the workbook's own five years; this is the live ten-year level.
     D-79 (14 Oct 2026): 31.0502 -> 33.0779 as terminal growth moves from the typed
-    3.5% to the derived 4.5% (the system path at Y10, capped at nominal GDP)."""
+    3.5% to the derived 4.5% (the system path at Y10, capped at nominal GDP).
+    D-80 (14 Oct 2026): 33.0779 -> 32.2655 as year-10 CPI falls to 2.5% (derived g 4.14%)."""
     r = _run("muddle_through")
     assert len(r.period_labels) == 11   # stub + Y1..Y10
-    assert r.value_per_share == pytest.approx(33.0779, abs=1e-3)
-    assert r.capital_constraint_binds_from == "Y7"
+    assert r.value_per_share == pytest.approx(32.2655, abs=1e-3)
+    assert r.capital_constraint_binds_from == "Y6"   # Y7 before D-80; knife-edge, see test_bank_capital
     assert r.dividends_forgone > 0
 
 
@@ -119,7 +131,8 @@ def test_orderly_convergence_is_the_one_scenario_the_constraint_still_bites():
     """
     r = BankEngine().run(_at_five_years(build_bank_inputs_from_data(
         load_inputs(ROOT, "orderly_convergence", "australian_major_banks", "wbc"), "orderly_convergence")))
-    assert r.value_per_share == pytest.approx(36.2265, abs=1e-3)  # 36.1619 before the D-72 bank path (14 Oct 2026)
+    # 36.1619 before the D-72 bank path; 36.2265 before D-80's lower year-10 CPI (both 14 Oct 2026)
+    assert r.value_per_share == pytest.approx(36.2925, abs=1e-3)
     assert r.capital_constraint_binds_from == "Y4"
     assert r.dividends_forgone > 0
     assert r.cet1_trajectory.operating_target == pytest.approx(0.1125, abs=1e-9)

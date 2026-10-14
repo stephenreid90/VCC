@@ -13,7 +13,7 @@ The disorderly climate path that's already in motion has its crystallisation mom
 
 ## Macro picture
 
-Global growth at 2.0–2.2% — aggregate near Muddle Through, but the sectoral dispersion is much wider. Headline inflation in advanced economies peaks at 4.5–5% in year 3 from carbon-cost pass-through, then settles around 4% before easing to 3% by year 10. Real policy rates 1.5%, but with elevated volatility through the repricing phase. EU ETS carbon price spikes to EUR 200+ in year 2 from triggers; settles around EUR 200–220 in the new equilibrium. Insurance-sector pricing materially repriced upward in physical-risk-exposed regions.
+Global growth at 2.0–2.2% — aggregate near Muddle Through, but the sectoral dispersion is much wider. Headline inflation in advanced economies peaks at 4.5–5% in year 3 from carbon-cost pass-through, then settles around 4% before easing to 2.5% by year 10 once the carbon-cost repricing has passed through. Real policy rates 1.5%, but with elevated volatility through the repricing phase. EU ETS carbon price spikes to EUR 200+ in year 2 from triggers; settles around EUR 200–220 in the new equilibrium. Insurance-sector pricing materially repriced upward in physical-risk-exposed regions.
 
 ## US powerhouse stance
 

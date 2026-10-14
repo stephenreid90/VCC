@@ -13,7 +13,7 @@ The Russia-NATO standoff doesn't resolve and the US-China contest hardens. Trade
 
 ## Macro picture
 
-Global growth at 2.0% — modestly below Muddle Through reflecting supply-chain duplication costs. Bifurcated by bloc: China-aligned economies at 3.5–4.0%, US-aligned at 1.8%. Inflation in advanced economies 3.5%, higher than Muddle Through. Real rates 1.5%. USD share of reserves declines gradually but remains dominant; CNY gains share within China-aligned bloc; gold prominent as cross-bloc settlement medium.
+Global growth at 2.0% — modestly below Muddle Through reflecting supply-chain duplication costs. Bifurcated by bloc: China-aligned economies at 3.5–4.0%, US-aligned at 1.8%. Inflation in advanced economies 3.5% through the duplication phase, easing to 2.8% by year 10 as central banks hold policy tight — a persistent premium over Muddle Through, but under 3%. Real rates 1.5%. USD share of reserves declines gradually but remains dominant; CNY gains share within China-aligned bloc; gold prominent as cross-bloc settlement medium.
 
 ## US powerhouse stance
 

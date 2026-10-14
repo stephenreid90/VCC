@@ -106,9 +106,16 @@ DNL_GOLDEN = {
     # cyclical, so its gas spike ends and its margin hit reverts at its own
     # resolution phase. Levels under D-71 alone: 2.2582 / 1.9422 / 1.9481 /
     # 1.3844 / 1.0302 / 0.0717.
-    "orderly_convergence": 2.4908,
-    "muddle_through": 2.1382,                      # independently audited (generated workbook, all six)
-    "ai_productivity_lag": 2.1071,
+    # Re-pinned 14 Oct 2026 for D-80 (Stephen's ruling): year-10 advanced CPI lowered
+    # in every scenario to where central banks hold it over a decade (OC 2.0, MT 2.5,
+    # AI Lag 2.5, Frag 2.8, DCC 2.5, Stag 3.0; were 2.3 / 3.0 / 2.8 / 3.3 / 3.0 / 3.5).
+    # Two channels: the nominal-GDP cap on terminal g falls (5.37 -> 4.86 in MT) and
+    # the D-72 spread paths recalibrate (a fixed gap on a now-sloping base). MT and OC
+    # are both capped now. OC -1.2%, MT -1.5%, AI Lag -0.8%, Frag -1.1%, DCC -1.2%,
+    # Stag -1.4%. Before: 2.4908 / 2.1382 / 2.1071 / 1.4342 / 1.0762 / 1.1361.
+    "orderly_convergence": 2.4619,
+    "muddle_through": 2.1059,                      # independently audited (generated workbook, all six)
+    "ai_productivity_lag": 2.0903,
     # Fragmentation and Stagflation re-pinned 14 Oct 2026 (bridge note step 3):
     # both now declare a decay horizon (scale + switching_cost, 10-15y, ratified by
     # Stephen via design/frameworks/decay_horizon_checklist.md), so the headline
@@ -116,8 +123,8 @@ DNL_GOLDEN = {
     # excess. Both earn ABOVE the WACC at Y10 (Frag 10.2%, Stag 11.8% vs 8.9%),
     # so competing the excess away cuts them: 1.5776 -> 1.4342, 1.3898 -> 1.1361.
     # Stagflation is again the floor's neighbour, not the floor (DCC 1.08).
-    "fragmentation": 1.4342,
-    "disorderly_climate_crystallisation": 1.0762,
+    "fragmentation": 1.4179,
+    "disorderly_climate_crystallisation": 1.0629,
     # Stagflation Persists crosses to slightly NEGATIVE. It was already earning
     # barely above its own cost of capital on new capital under the old 5-year
     # build (4.96% earned vs 8.877% WACC -- see terminal_return_sets.yaml); a
@@ -127,7 +134,7 @@ DNL_GOLDEN = {
     # margin. Back to slightly POSITIVE under D-71's ten-year horizon (the extra
     # years of chain growth), still Gordon pending a declared decay horizon.
     # D-72: 1.39 -- a cyclical scenario now, see the note above.
-    "stagflation_persists": 1.1361,
+    "stagflation_persists": 1.1204,
 }
 
 # --- WBC: bank DDM / Ke (§15), AUD per share -----------------------------------
@@ -173,12 +180,17 @@ WBC_GOLDEN = {
     # movement is the typed 3.5% giving way to the 4.5-5.4% nominal world the
     # scenario files already assert, not a method change. Before: 40.2748 /
     # 31.0502 / 30.8918 / 27.7263 / 23.0864 / 16.2617.
-    "orderly_convergence": 46.9911,                # binds Y4
-    "muddle_through": 33.0779,                     # binds Y7
-    "ai_productivity_lag": 33.0905,
-    "fragmentation": 28.5658,
-    "disorderly_climate_crystallisation": 23.2017,
-    "stagflation_persists": 15.7985,
+    # Re-pinned 14 Oct 2026 for D-80: year-10 advanced CPI lowered in every scenario
+    # (see DNL_GOLDEN). The bank series is real GDP + CPI plus a fixed gap, so both
+    # the explicit path and the derived g move: g 5.06 (capped) / 4.14 / 4.20 / 3.56 /
+    # 3.10 / 1.54%. OC -3.9%, MT -2.5%, AI Lag -1.5%, Frag -1.5%, DCC -0.7%, Stag -0.6%.
+    # Before: 46.9911 / 33.0779 / 33.0905 / 28.5658 / 23.2017 / 15.7985.
+    "orderly_convergence": 45.1590,                # binds Y4
+    "muddle_through": 32.2655,                     # binds Y7
+    "ai_productivity_lag": 32.5936,
+    "fragmentation": 28.1291,
+    "disorderly_climate_crystallisation": 23.0347,
+    "stagflation_persists": 15.7094,
 }
 
 # --- CSL: multi-segment FCFF / Ke (M3), (USD, AUD) per share -------------------
@@ -222,12 +234,18 @@ CSL_GOLDEN = {
     # giving way to the nominal GDP the scenario files assert at Y10. Before (USD,
     # AUD): 144.5432/219.0118, 123.0844/186.4975, 119.4961/181.0605,
     # 99.1514/150.2342, 105.0520/159.1748, 89.7794/136.0337.
-    "orderly_convergence": (160.9749, 243.9092),
-    "muddle_through": (137.8604, 208.8861),       # generated workbook ties (LibreOffice recalc, all six)
-    "ai_productivity_lag": (130.8477, 198.2605),
-    "fragmentation": (103.9154, 157.4527),
-    "disorderly_climate_crystallisation": (109.8907, 166.5064),
-    "stagflation_persists": (88.9258, 134.7404),
+    # Re-pinned 14 Oct 2026 for D-80: year-10 advanced CPI lowered in every scenario
+    # (see DNL_GOLDEN). Segment series are real GDP + CPI plus a fixed gap, so the
+    # explicit paths and the derived g move: g 5.06c / 4.86c / 4.55c / 3.54 / 3.49 /
+    # 2.33% (c = capped). AUD: OC -1.7%, MT -2.6%, AI Lag -1.5%, Frag -1.4%, DCC -1.4%,
+    # Stag -1.2%. Before (USD, AUD): 160.9749/243.9092, 137.8604/208.8861,
+    # 130.8477/198.2605, 103.9154/157.4527, 109.8907/166.5064, 88.9258/134.7404.
+    "orderly_convergence": (158.1942, 239.6958),
+    "muddle_through": (134.2815, 203.4633),       # generated workbook ties (LibreOffice recalc, all six)
+    "ai_productivity_lag": (128.8557, 195.2421),
+    "fragmentation": (102.4565, 155.2421),
+    "disorderly_climate_crystallisation": (108.3302, 164.1419),
+    "stagflation_persists": (87.8398, 133.0949),
 }
 
 
@@ -349,12 +367,13 @@ def test_terminal_shares_are_measured_case_by_case():
         # Stagflation's rises most as its explicit years recover.
         # 14 Oct 2026: Fragmentation and Stagflation converge (decay horizons
         # declared), so their terminals shrink: 0.5389 -> 0.5104, 0.6754 -> 0.6346.
-        "orderly_convergence": 0.5311,
-        "muddle_through": 0.5167,
-        "ai_productivity_lag": 0.5032,
-        "fragmentation": 0.5104,
-        "disorderly_climate_crystallisation": 0.6980,
-        "stagflation_persists": 0.6346,
+        # D-80 (14 Oct 2026): lower year-10 CPI, lower g, every share down 0.3-0.6pt.
+        "orderly_convergence": 0.5272,
+        "muddle_through": 0.5118,
+        "ai_productivity_lag": 0.5006,
+        "fragmentation": 0.5070,
+        "disorderly_climate_crystallisation": 0.6953,
+        "stagflation_persists": 0.6318,
     }
     # 14 Oct 2026: WBC and CSL moved to the ten-year explicit period (D-71) and every
     # one of their terminal shares fell below 70% -- the same mechanism as DNL on
@@ -363,18 +382,20 @@ def test_terminal_shares_are_measured_case_by_case():
     # D-79 (14 Oct 2026): a higher derived g lifts every WBC terminal share (OC
     # 0.6373 -> 0.6864, Stag 0.6926 -> 0.6849 the other way); none crosses 70%.
     wbc_shares = {
-        "orderly_convergence": 0.6864, "muddle_through": 0.6330, "ai_productivity_lag": 0.6269,
-        "fragmentation": 0.6014, "disorderly_climate_crystallisation": 0.5952,
-        "stagflation_persists": 0.6849,
+        # D-80 (14 Oct 2026): lower g takes every share down 0.2-1.3pt (OC 0.6864 -> 0.6736).
+        "orderly_convergence": 0.6736, "muddle_through": 0.6229, "ai_productivity_lag": 0.6206,
+        "fragmentation": 0.5938, "disorderly_climate_crystallisation": 0.5911,
+        "stagflation_persists": 0.6826,
     }
     # CSL re-pinned 14 Oct 2026 (step 3): the 20-30 year decay horizon takes every
     # terminal share down 7-8 points. Gordon shares before: 0.5987, 0.5738, 0.5648,
     # 0.5438, 0.5445, 0.5336.
     # D-79 (14 Oct 2026): derived g lifts every CSL share 2-5 points; Stag -0.4.
     csl_shares = {
-        "orderly_convergence": 0.5652, "muddle_through": 0.5482, "ai_productivity_lag": 0.5330,
-        "fragmentation": 0.4964, "disorderly_climate_crystallisation": 0.4967,
-        "stagflation_persists": 0.4551,
+        # D-80 (14 Oct 2026): lower g takes every share down 0.8-1.3pt.
+        "orderly_convergence": 0.5571, "muddle_through": 0.5351, "ai_productivity_lag": 0.5252,
+        "fragmentation": 0.4873, "disorderly_climate_crystallisation": 0.4875,
+        "stagflation_persists": 0.4466,
     }
     for scenario in SCENARIOS:
         assert _dnl(scenario).terminal_share_of_ev == pytest.approx(

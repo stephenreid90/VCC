@@ -67,8 +67,10 @@ def test_engine_inputs_assembled_from_data_reproduce_ratified_per_share():
     # D-72 (same day): EV 5,354.6, 2.138/share -- the chain reads the scenario's
     # own series (CPI 3.0% replaces the 2.5% DM-inflation anchor) and terminal g
     # is derived (5.27%, the equilibrium chain, under the 5.37% nominal-GDP cap).
-    assert round(r.enterprise_value, 1) == 5354.6
-    assert round(r.value_per_share, 3) == 2.138
+    # D-80 (14 Oct 2026): EV 5,297.4, 2.106/share -- year-10 CPI lowered to 2.5% in
+    # Muddle Through; the chain's paths recalibrate and terminal g is the 4.86% cap.
+    assert round(r.enterprise_value, 1) == 5297.4
+    assert round(r.value_per_share, 3) == 2.106
     assert r.value_per_share < r.market_reference_price
 
 
@@ -156,7 +158,8 @@ def test_assembled_inputs_match_the_golden_field_by_field():
     # D-72: terminal g is DERIVED (equilibrium chain at Y10, capped at scenario
     # nominal GDP) -- 5.27% against the frozen golden's typed 2.5%. Excepted here
     # the same way the restated operating rates are.
-    assert abs(data.terminal_growth - 0.05267) < 5e-5
+    # D-80 (14 Oct 2026): 4.86%, the nominal-GDP cap on the lowered year-10 CPI.
+    assert abs(data.terminal_growth - 0.048575) < 5e-5
     assert gold.terminal_growth == 0.025
 
     db, gb = data.equity_bridge, gold.equity_bridge
@@ -226,7 +229,7 @@ def test_equity_bridge_derivation_traces_walk_and_per_share():
         ["B6", "B7", "B8", "B10", "B11", "B27", "B28", "B29", "B30", "B31", "B33", "B37"]
     assert abs(d["B11"].value - 1224.0329) < 1e-3   # net debt at valuation (golden)
     assert abs(d["B29"].value - (-151.65)) < 1e-2   # adjustments net (§4.2)
-    assert round(d.result, 3) == 2.138              # B33 value per share (D-71 + D-72, 2 Oct 2026)
+    assert round(d.result, 3) == 2.106              # B33 value per share (D-80, 14 Oct 2026; 2.138 under D-72)
     # B33 must equal the engine's own value_per_share, not a re-derivation drift.
     inp = build_engine_inputs_from_data(_load(), "muddle_through")
     from vcc_valuations.dcf.fcf_engine import FcfEngine

@@ -87,7 +87,10 @@ def test_scenario_drivers_are_derived_from_the_scenario_not_the_v4_workbook(scen
     assert built.terminal_growth == pytest.approx(tg.result)
     assert built.terminal_growth <= tg["g_cap"].value + 1e-12
     assert built.terminal_growth != pytest.approx(wb_terminal, abs=1e-4)
-    assert 0.03 <= built.terminal_growth <= 0.06        # the range Stephen set, 2 Oct 2026
+    # The range Stephen set, 2 Oct 2026 (3-6%); floor widened to 2.5% under D-80
+    # (14 Oct 2026, Stephen's call): Stagflation's chain gives 2.84% once year-10
+    # CPI is 3.0% -- the shrinking system, not the cap, puts it there.
+    assert 0.025 <= built.terminal_growth <= 0.06
     # The year-1 chain moved off the v4 growth by the DM-inflation basis change only
     # where the scenario series differ from the old anchors; it is not pinned to v4.
     assert abs(revenue_growth_from_data(inp, scenario) - wb_growth) < 0.02
@@ -103,7 +106,8 @@ def test_muddle_through_is_the_ratified_headline():
     # 1.942 under D-71 (2 Oct 2026): fixed ten-year horizon, convergence terminal.
     # 2.138 under D-72 (same day): the chain on the scenario's own paths (CPI
     # 3.0% vs the old 2.5% DM-inflation anchor) and a derived 5.27% terminal g.
-    assert round(r.value_per_share, 3) == 2.138
+    # 2.106 under D-80 (14 Oct 2026): year-10 CPI lowered to 2.5%; g is the 4.86% cap.
+    assert round(r.value_per_share, 3) == 2.106
 
 
 def test_scenario_asymmetry_is_downside_skewed():

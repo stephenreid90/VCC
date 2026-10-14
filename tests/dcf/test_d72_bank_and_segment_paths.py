@@ -38,11 +38,17 @@ def _csl(s):
 
 
 # ------------------------------------------------------------------ bank
-def test_bank_muddle_through_path_is_the_old_flat_rate():
+def test_bank_muddle_through_path_averages_to_the_old_flat_rate():
+    """D-80 (14 Oct 2026): Muddle Through's CPI slopes down to year 10, so the path is
+    no longer flat; the D-72 gap keeps its mean over the anchor years (1, 3, 5, 7, 10)
+    at the typed industry rate plus the company offset."""
     inp = _wbc("muddle_through")
     shared = inp["company_raw"]["normalised_baseline"]["bank_build"]["aiea_nim_chain"]["shared"]
     flat = shared["industry"]["aiea_growth"] + shared["company_offset"]["aiea_growth_offset"]
-    assert bank_aiea_growth_path_from_data(inp, 10) == pytest.approx([flat] * 10)
+    path = bank_aiea_growth_path_from_data(inp, 10)
+    at_anchors = [path[y - 1] for y in (1, 3, 5, 7, 10)]
+    assert sum(at_anchors) / len(at_anchors) == pytest.approx(flat, abs=1e-4)
+    assert path[9] < path[0]
 
 
 @pytest.mark.parametrize("s", SCENARIOS)
@@ -59,7 +65,8 @@ def test_bank_engine_still_accepts_a_scalar_and_holds_it_flat():
     bi = build_bank_inputs_from_data(_wbc("muddle_through"), "muddle_through")
     flat = BankEngine.aiea_growth_path(bi)[0]
     scalar = BankInputs(**{**bi.__dict__, "aiea_growth": flat})
-    assert BankEngine().run(scalar).value_per_share == pytest.approx(BankEngine().run(bi).value_per_share, abs=1e-9)
+    as_list = BankInputs(**{**bi.__dict__, "aiea_growth": [flat] * 10})
+    assert BankEngine().run(scalar).value_per_share == pytest.approx(BankEngine().run(as_list).value_per_share, abs=1e-9)
 
 
 def test_bank_path_of_the_wrong_length_is_rejected():
@@ -80,14 +87,23 @@ def test_each_segment_reads_its_own_archetypes_single_declared_series(seg, var):
     assert segment_archetype_growth_variable(_csl("muddle_through"), seg) == var
 
 
-def test_muddle_through_segment_paths_are_the_typed_paths():
+def test_muddle_through_segment_paths_average_to_the_typed_paths():
+    """D-80 (14 Oct 2026): Muddle Through's CPI slopes down to year 10, so the segment
+    series are no longer flat at the typed rate; the D-72 gap keeps each series' mean
+    over the anchor years (1, 3, 5, 7, 10) at the typed steady state, and the Behring
+    J-curve offset rides on top unchanged."""
     inp = _csl("muddle_through")
     scen = inp["company_raw"]["normalised_baseline"]["segment_fcff"]["by_scenario"]["muddle_through"]
+    def anchor_mean(path):  # path[0] is year 1
+        pts = [path[y - 1] for y in (1, 3, 5, 7, 10)]
+        return sum(pts) / len(pts)
     # D-71: ten years; the typed Behring path (FY26..FY31) holds its steady state to FY36
     typed = scen["behring_growth"]
-    assert segment_growth_path_from_data(inp, "muddle_through", "csl_behring", 10) == pytest.approx(typed + [typed[-1]] * 5, abs=1e-9)
-    assert segment_growth_path_from_data(inp, "muddle_through", "csl_seqirus", 10) == pytest.approx([scen["seqirus_cagr"]] * 11, abs=1e-9)
-    assert segment_growth_path_from_data(inp, "muddle_through", "csl_vifor", 10) == pytest.approx([scen["vifor_cagr"]] * 11, abs=1e-9)
+    behring = segment_growth_path_from_data(inp, "muddle_through", "csl_behring", 10)
+    series_only = [b - (t - typed[-1]) for b, t in zip(behring, typed + [typed[-1]] * 5)]
+    assert anchor_mean(series_only) == pytest.approx(typed[-1], abs=1e-4)
+    assert anchor_mean(segment_growth_path_from_data(inp, "muddle_through", "csl_seqirus", 10)) == pytest.approx(scen["seqirus_cagr"], abs=1e-4)
+    assert anchor_mean(segment_growth_path_from_data(inp, "muddle_through", "csl_vifor", 10)) == pytest.approx(scen["vifor_cagr"], abs=1e-4)
 
 
 @pytest.mark.parametrize("s", SCENARIOS)

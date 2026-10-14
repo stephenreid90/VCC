@@ -13,7 +13,7 @@ The Solow productivity paradox plays out at AI scale. AI capability advances gen
 
 ## Macro picture
 
-Global growth at 1.9–2.0% — modestly below Muddle Through reflecting the productivity surprise failing to materialise. Headline inflation in advanced economies around 3.0% — similar to Muddle Through. Real policy rates 1.0%, similar to Muddle Through. Aggregate TFP growth in advanced economies around 0.5% — modestly above pre-pandemic but well below bull-case expectations. The key macro point: the scenario looks like Muddle Through on headline numbers but the *story* underneath is fundamentally different.
+Global growth at 1.9–2.0% — modestly below Muddle Through reflecting the productivity surprise failing to materialise. Headline inflation in advanced economies around 3.0% through the middle of the decade, easing to 2.5% by year 10 — similar to Muddle Through. Real policy rates 1.0%, similar to Muddle Through. Aggregate TFP growth in advanced economies around 0.5% — modestly above pre-pandemic but well below bull-case expectations. The key macro point: the scenario looks like Muddle Through on headline numbers but the *story* underneath is fundamentally different.
 
 ## US powerhouse stance
 

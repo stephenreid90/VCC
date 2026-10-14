@@ -1,9 +1,11 @@
 # VCC VALUATIONS — bridge note for a new chat, 14 October 2026
 
 Supersedes the note of 2 October 2026. **Its five-step plan is COMPLETE** (steps 1-5, D-73 to
-D-78). Updated four times on 14 October: after step 3, after D-76, after steps 4 and 5
-(D-78, `adding_a_company.md`), and at the end of the fourth sitting, which closed follow-up
-(a) as **D-79** (WBC and CSL terminal growth derived, not typed).
+D-78). Updated five times on 14 October: after step 3, after D-76, after steps 4 and 5
+(D-78, `adding_a_company.md`), at the end of the fourth sitting, which closed follow-up
+(a) as **D-79** (WBC and CSL terminal growth derived, not typed), and at the end of the
+fifth sitting, which closed D-79's open question as **D-80** (year-10 CPI lowered in every
+scenario; central banks do their jobs over ten years).
 
 **WHAT THIS IS.** A travelling snapshot. `WORKING_NOTES.md` is the live layer; **where the
 two disagree, `WORKING_NOTES.md` wins.**
@@ -19,7 +21,7 @@ each one means. Copy widgets don't work for him: give copyable text as a plain c
 1. `session_start.cmd` (or `python scripts/session_start.py` in the device shell after
    `pip install pydantic pandas numpy openpyxl scipy pytest pyyaml`; add `$HOME/.local/bin`
    to PATH so pytest is found). Expected: suite **642 passed, 1 skipped, 2 deselected**;
-   SSOT lint 14/14; base ties **DNL 2.138, WBC 33.08, CSL 208.89**.
+   SSOT lint 14/14; base ties **DNL 2.106, WBC 32.27, CSL 203.46** (D-80).
 2. `CLAUDE.md`. Standing rule 4 (every number from committed code, asserted by a test) and
    standing rule 5 (land once per sitting, at the end; plumbing gets no airtime).
 3. `WORKING_NOTES.md`, the HANDOVER block at the top (sittings of 14 October).
@@ -30,7 +32,10 @@ each one means. Copy widgets don't work for him: give copyable text as a plain c
    terminal return as the rate the convergence starts from (D-76: WBC declares six, lifted
    off `wbc.yaml`; DNL's mechanical 9.13% removed; CSL absent); D-77 (D-43a roles on WBC's segment moats); D-78 (equilibrium-chain terms
    declared per archetype); **D-79** (WBC and CSL terminal growth DERIVED from their
-   chains, capped at scenario nominal GDP; bank chain terms classified; levels moved).
+   chains, capped at scenario nominal GDP; bank chain terms classified; levels moved);
+   **D-80** (year-10 advanced CPI lowered in every scenario, OC 2.0 / MT 2.5 / AI Lag 2.5 /
+   Frag 2.8 / DCC 2.5 / Stag 3.0; the D-72 spread paths now slope in Muddle Through; the
+   DNL g floor widened to 2.5%; every level down 0.6-3.9%).
 5. `design/frameworks/decay_horizon_checklist.md` — the short Five Forces interview and the
    after-the-answer list. `tests/terminal_form_baseline.json` and
    `terminal_defence_baseline.json` are EMPTY; `tests/moat_role_baseline.json` is EMPTY too
@@ -55,6 +60,10 @@ each one means. Copy widgets don't work for him: give copyable text as a plain c
 5. **D-79:** terminal growth is derived for ALL THREE companies, the same way: the
    archetype's growth series at year 10, company offsets at their D-78 equilibrium
    reading, capped at scenario nominal GDP ((1 + world real GDP)(1 + advanced CPI) - 1).
+   **D-80:** that cap is now 4.55-5.06% (year-10 CPI 2.0-3.0%, was 2.3-3.5%). Six pairs
+   are capped (all three in OC; DNL and CSL in MT; CSL in AI Lag). Because the D-72
+   spread gap is set on the path's MEAN over the anchor years, Muddle Through's bank and
+   segment paths are no longer flat at the typed rate: above it early, below it at Y10.
    Bank: `bank_terminal_growth_from_data` (WBC's share-loss offset is current-cycle, off).
    Segments: `segment_terminal_growth_from_data` (series weighted by FINAL-year segment
    revenue; the offset is zero at year 10 by construction). No `terminal_growth` is typed
@@ -69,16 +78,19 @@ each one means. Copy widgets don't work for him: give copyable text as a plain c
 
 ## RESULTS — read before quoting a level
 
-| Scenario | DNL | WBC (was, typed g) | CSL AUD (was, typed g) |
+| Scenario | DNL (was, D-79) | WBC (was, D-79) | CSL AUD (was, D-79) |
 |---|---:|---:|---:|
-| Orderly Convergence | 2.49 | 46.99 (40.27) | 243.91 (219.01) |
-| Muddle Through | 2.14 | 33.08 (31.05) | 208.89 (186.50) |
-| AI Productivity Lag | 2.11 | 33.09 (30.89) | 198.26 (181.06) |
-| Fragmentation | 1.58 | 28.57 (27.73) | 157.45 (150.23) |
-| Disorderly Climate | 1.08 | 23.20 (23.09) | 166.51 (159.17) |
-| Stagflation Persists | 1.39 | 15.80 (16.26) | 134.74 (136.03) |
+| Orderly Convergence | 2.46 (2.49) | 45.16 (46.99) | 239.70 (243.91) |
+| Muddle Through | 2.11 (2.14) | 32.27 (33.08) | 203.46 (208.89) |
+| AI Productivity Lag | 2.09 (2.11) | 32.59 (33.09) | 195.24 (198.26) |
+| Fragmentation | 1.42 (1.43) | 28.13 (28.57) | 155.24 (157.45) |
+| Disorderly Climate | 1.06 (1.08) | 23.03 (23.20) | 164.14 (166.51) |
+| Stagflation Persists | 1.12 (1.14) | 15.71 (15.80) | 133.09 (134.74) |
 
-D-79 moved WBC and CSL (fourth sitting): the typed terminal growth of 3-3.75% gave way to the
+D-80 (fifth sitting) took every level down 0.6-3.9%: lower year-10 CPI lowers the cap and
+recalibrates the D-72 paths. (The earlier version of this table had DNL Fragmentation and
+Stagflation at 1.58 / 1.39, which were the pre-step-3 Gordon levels; the D-79 levels were
+1.43 / 1.14.) Before D-80, D-79 moved WBC and CSL (fourth sitting): the typed terminal growth of 3-3.75% gave way to the
 derived 2-5.4% (WBC 5.37c / 4.50 / 4.42 / 3.92 / 3.46 / 1.94; CSL 5.37c / 5.37c / 4.86c /
 3.90 / 3.85 / 2.73; c = capped at nominal GDP). Most of the movement is the scenario files'
 year-10 nominal GDP of 4.9-5.6% replacing a typed 3%, not a method change. Earlier the same
@@ -95,12 +107,12 @@ WBC scenario; no terminal share crosses 70% (WBC OC 0.686 the highest).
 2. **Step 5 DONE.** `design/methodology/adding_a_company.md`: nine steps + the seven
    disclosures. Read it before touching a fourth company.
 3. **(a) DONE (D-79, fourth sitting).** WBC and CSL terminal growth derived; bank chain
-   terms classified; levels moved and disclosed. **New open item from it, Stephen's
-   call:** is 3% advanced CPI at year 10 in Muddle Through (3.3-3.5% in Fragmentation
-   and Stagflation) the view? It now sets the cap for all three companies. If it moves,
-   every level moves; `tests/dcf/test_terminal_growth_sets.py` pins the 4.8-5.7% band so
-   the change is read, not absorbed. That is scenario-development work, not model work.
-4. **Next, Stephen to choose.** Candidates, none blocking: (b) bank NIM
+   terms classified; levels moved and disclosed. **Its open item DONE (D-80, fifth
+   sitting):** year-10 advanced CPI lowered in every scenario to where central banks hold
+   it over a decade. `tests/dcf/test_terminal_growth_sets.py` now pins the 4.5-5.1% cap
+   band and the six caps to the basis point, so the next move is read, not absorbed.
+4. **Next, Stephen to choose.** Candidates, none blocking (Claude's ranking at the end
+   of the fifth sitting: f, then c, then g; b, d, e can wait): (b) bank NIM
    pass-through rule; (c) CSL volume/price split + US GDP series; (d) lift level anchors
    from company files to archetypes; (e) bank engine: retained equity earns nothing until
    the terminal; (f) retire D-36's fade now the chain terms have an equilibrium reading
@@ -140,6 +152,9 @@ archetypes; bank engine lets retained equity earn nothing until the terminal.
    permission on the repo folder is granted at the start (the desktop app prompts). No
    container clone, no bundle. Push with the PAT:
    `git push https://stephenreid90:$(cat .github-token)@github.com/stephenreid90/VCC main`.
+   **At the end of the fifth sitting GitHub returned "Bad credentials" for that token**, so
+   D-80 (`2846331`) was left committed on `main` for Stephen to push himself, or for the
+   next chat to push once `.github-token` holds a fresh PAT. Check `git status -sb` first.
    `CLAUDE.md` "Operational quirks" is partly stale; rewrite it in a quiet sitting, not mid-task.
 2. **Standing rule 4 bites on every number.** Goldens: `tests/dcf/test_scenario_goldens.py`
    (DNL/WBC/CSL goldens, `dnl_shares`/`wbc_shares`/`csl_shares`), `test_wbc_bank.py`,
@@ -161,5 +176,6 @@ archetypes; bank engine lets retained equity earn nothing until the terminal.
 (WBC indefinite) · `0787cfa` part 3 (CSL 20-30y, biopharmaceuticals matrix, workbook two-stage)
 · D-75 + notes + this bridge note · `aa7e2d3` D-76 (declared rate live; WBC six lifted to the
 matrix; DNL 9.13% removed; notes) · `62ea1ee` D-77 (D-43a roles on WBC's segment moats) · `a718d0e` D-78 (step 4) · `e146c12` step 5
-(`adding_a_company.md`) + this note · D-79 (fourth sitting: derived terminal growth for WBC
-and CSL) + this note.
+(`adding_a_company.md`) + this note · `2ba3e3c` D-79 (fourth sitting: derived terminal growth
+for WBC and CSL) + this note · D-80 (fifth sitting: year-10 CPI lowered in every scenario) +
+this note.

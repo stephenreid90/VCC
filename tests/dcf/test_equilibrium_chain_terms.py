@@ -124,9 +124,13 @@ def test_equilibrium_reading_is_mining_plus_weighted_pricing_at_year_ten(scenari
 
 
 def test_terminal_growth_levels_unchanged_by_d78():
-    """D-72's six derived rates, to the basis point (5.27 / 5.37 capped / 4.67 / 4.45 / 4.94 / 3.19)."""
+    """D-72's six derived rates, to the basis point. D-78 moved none of them.
+
+    D-80 (14 Oct 2026) did, through the data: year-10 CPI lowered in every scenario
+    moves the explosives series and the cap. Were 5.37c / 5.27 / 4.67 / 4.45 / 4.94 /
+    3.19; MT is now capped too (chain 4.91 vs cap 4.86)."""
     got = {s: round(terminal_growth_from_data(_inputs(s), s, 10).result * 100, 2) for s in SCENARIOS}
     assert got == {
-        "orderly_convergence": 5.37, "muddle_through": 5.27, "ai_productivity_lag": 4.67,
-        "fragmentation": 4.45, "disorderly_climate_crystallisation": 4.94, "stagflation_persists": 3.19,
+        "orderly_convergence": 5.06, "muddle_through": 4.86, "ai_productivity_lag": 4.46,
+        "fragmentation": 4.10, "disorderly_climate_crystallisation": 4.58, "stagflation_persists": 2.84,
     }

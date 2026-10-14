@@ -3,10 +3,10 @@
 _Generated 2026-10-14 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `e146c12 Step 5: design/methodology/adding_a_company.md (the process on one page); bridge note and handover updated -- the 2 Oct five-step plan is complete` on `main`
+- HEAD: `2ba3e3c D-79: WBC and CSL terminal growth derived from their chains, capped at scenario nominal GDP; bank chain terms classified (D-78 follow-up (a))` on `main`
 - Unpushed commits: **0**
-- Tracked files: 357
-- Untracked files: 5
+- Tracked files: 361
+- Untracked files: 1
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -96,7 +96,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `disorderly_climate_crystallisation.yaml` (13.8KB)
     - `fragmentation.md` (7.9KB)
     - `fragmentation.yaml` (13.7KB)
-    - `muddle_through.md` (8.1KB)
+    - `muddle_through.md` (8.2KB)
     - `muddle_through.yaml` (12.3KB)
     - `orderly_convergence.md` (7.0KB)
     - `orderly_convergence.yaml` (12.7KB)
@@ -206,7 +206,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `terminal_form_baseline.json` (2.1KB)
   - `test_adjustments.py` (1.6KB)
   - `test_archetypes_validate.py` (10.2KB)
-  - `test_bank_capital.py` (18.4KB)
+  - `test_bank_capital.py` (18.8KB)
   - `test_comps.py` (670B)
   - `test_csl_loads.py` (2.3KB)
   - `test_dcf.py` (1.4KB)
@@ -215,7 +215,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `test_engine_workbook.py` (4.7KB)
   - `test_generator_scripts_parse.py` (4.6KB)
   - `test_implied_emrp.py` (2.2KB)
-  - `test_macro_driver_paths.py` (11.9KB)
+  - `test_macro_driver_paths.py` (12.5KB)
   - `test_moat_source_roles.py` (4.2KB)
   - `test_ssot_lint.py` (31.3KB)
   - `test_three_statement.py` (717B)
@@ -225,35 +225,35 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `test_working_capital.py` (2.8KB)
   - **dcf/**
     - `__init__.py` (0B)
-    - `test_csl_segment.py` (4.7KB)
+    - `test_csl_segment.py` (5.3KB)
     - `test_csl_workbook_tie.py` (3.8KB)
-    - `test_d72_bank_and_segment_paths.py` (5.3KB)
+    - `test_d72_bank_and_segment_paths.py` (6.3KB)
     - `test_declared_terminal_return.py` (5.7KB)
-    - `test_derived_terminal_growth_bank_segment.py` (5.7KB)
-    - `test_dnl_all_scenarios.py` (7.2KB)
-    - `test_dnl_mt_from_data.py` (13.4KB)
+    - `test_derived_terminal_growth_bank_segment.py` (6.0KB)
+    - `test_dnl_all_scenarios.py` (7.5KB)
+    - `test_dnl_mt_from_data.py` (13.6KB)
     - `test_dnl_mt_ratified.py` (7.5KB)
     - `test_dnl_workbook_tie.py` (4.5KB)
     - `test_e2e_dnl_mt.py` (4.3KB)
     - `test_engine_input_validation.py` (3.5KB)
-    - `test_equilibrium_chain_terms.py` (6.1KB)
+    - `test_equilibrium_chain_terms.py` (6.3KB)
     - `test_horizon_variant_sets.py` (5.1KB)
     - `test_per_year_derivations.py` (3.8KB)
     - `test_replica_ties_engine.py` (6.6KB)
-    - `test_scenario_goldens.py` (22.3KB)
+    - `test_scenario_goldens.py` (24.0KB)
     - `test_terminal_defence.py` (7.0KB)
-    - `test_terminal_form.py` (8.6KB)
+    - `test_terminal_form.py` (8.7KB)
     - `test_terminal_form_bank_segment.py` (6.8KB)
-    - `test_terminal_growth_sets.py` (3.6KB)
-    - `test_terminal_option_sets.py` (11.7KB)
-    - `test_terminal_return_sets.py` (11.2KB)
+    - `test_terminal_growth_sets.py` (4.6KB)
+    - `test_terminal_option_sets.py` (12.0KB)
+    - `test_terminal_return_sets.py` (11.3KB)
     - `test_two_stage_disclosure.py` (7.5KB)
-    - `test_wbc_bank.py` (7.3KB)
+    - `test_wbc_bank.py` (8.2KB)
     - **golden/**
       - `__init__.py` (0B)
       - `_recalc.py` (4.2KB)
       - `_recalc_generated_workbooks.py` (6.7KB)
-      - `csl_workbook_all_scenarios.json` (9.8KB)
+      - `csl_workbook_all_scenarios.json` (9.7KB)
       - `dnl_mt_inputs.py` (5.5KB)
       - `dnl_mt_v6.json` (2.6KB)
       - `dnl_workbook_all_scenarios.json` (16.7KB)
@@ -274,7 +274,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `README.md` (893B)
     - `beta_data.py` (10.0KB)
     - `build_cfgs.py` (94.6KB)
-    - `cfgs_gen.json` (246.1KB)
+    - `cfgs_gen.json` (246.2KB)
     - `engine_workbook.py` (113.1KB)
     - `gen_ui.py` (89.4KB)
 
@@ -361,8 +361,4 @@ Not in git. Either commit them or clear them — an untracked file is invisible
 to anyone who clones the repo, and is the most common way work gets lost.
 
 - `"Claude outputs/"`
-- `design/methodology/terminal_growth_sets.yaml`
-- `scripts/size_terminal_growth.py`
-- `tests/dcf/test_derived_terminal_growth_bank_segment.py`
-- `tests/dcf/test_terminal_growth_sets.py`
 
