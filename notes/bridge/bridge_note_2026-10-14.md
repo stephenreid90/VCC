@@ -1,6 +1,7 @@
 # VCC VALUATIONS — bridge note for a new chat, 14 October 2026
 
-Supersedes the note of 2 October 2026 (its five-step plan still stands; steps 1 and 2 are done).
+Supersedes the note of 2 October 2026 (its five-step plan still stands; steps 1, 2 and 3 are
+done). Updated at the end of the 14 October sitting after step 3 landed.
 
 **WHAT THIS IS.** A travelling snapshot. `WORKING_NOTES.md` is the live layer; **where the
 two disagree, `WORKING_NOTES.md` wins.**
@@ -16,15 +17,18 @@ each one means. Copy widgets don't work for him: give copyable text as a plain c
 1. `session_start.cmd` (or `python scripts/session_start.py` in the device shell after
    `pip install pydantic pandas numpy openpyxl scipy pytest pyyaml`). Expected: suite
    **593 passed, 1 skipped, 2 deselected**; SSOT lint 14/14; base ties **DNL 2.138, WBC 31.05,
-   CSL 223.24**.
+   CSL 186.5**.
 2. `CLAUDE.md`. Standing rule 4 (every number from committed code, asserted by a test) and
    standing rule 5 (land once per sitting, at the end; plumbing gets no airtime).
 3. `WORKING_NOTES.md`, the HANDOVER block at the top (sitting of 14 October).
-4. `DECISIONS.md` rows **D-71 to D-74**: ten-year period + convergence terminal (D-71);
+4. `DECISIONS.md` rows **D-71 to D-75**: ten-year period + convergence terminal (D-71);
    growth from scenario paths, derived g (D-72); archetype-declared derivations for every
-   company (D-73); ten years and the terminal form for WBC and CSL (D-74).
-5. `tests/terminal_form_baseline.json` — the 14 company x scenario pairs with no decay
-   horizon. That list is the worklist for this chat.
+   company (D-73); ten years and the terminal form for WBC and CSL (D-74); decay horizons
+   for all eighteen pairs (D-75: DNL 10-15y, WBC indefinite, CSL 20-30y).
+5. `design/frameworks/decay_horizon_checklist.md` — the short Five Forces interview and the
+   after-the-answer list. `tests/terminal_form_baseline.json` and
+   `terminal_defence_baseline.json` are EMPTY; `tests/moat_role_baseline.json` still lists
+   WBC's four segment moats (no D-43a roles declared there yet).
 
 ## STATE — what the model does now
 
@@ -36,28 +40,40 @@ each one means. Copy widgets don't work for him: give copyable text as a plain c
 2. All three companies run a fixed ten-year explicit period with growth read per year from
    those paths plus a company offset. WBC's typed Y1-Y5 glides and CSL's margin uplifts hold
    their last typed value to Y10.
-3. All three engines carry `terminal_form`: convergence over the declared decay horizon
-   where one exists, Gordon fallback otherwise. DNL: four of six converge. WBC and CSL:
-   Gordon everywhere (no decay horizon declared; CSL has no impact-matrix file at all).
+3. All three engines carry `terminal_form`: convergence over the declared decay horizon.
+   Every pair declares one (D-75). DNL converges over 12.5 years; WBC over an infinite
+   horizon (which is the justified price-to-book, so the Gordon level stands); CSL over 25
+   years on the group capital base (`data/impact_matrix/by_industry/biopharmaceuticals.yaml`,
+   which exists only to carry that defence).
 4. No valuation breaches the 70% terminal-share line; all eighteen shares are pinned.
+   What no matrix declares yet is the terminal RATE (`declared_terminal_return`).
 
 ## RESULTS — read before quoting a level
 
-| Scenario | DNL | WBC (was, 5y) | CSL AUD (was, 5y) |
+| Scenario | DNL | WBC | CSL AUD (was, Gordon) |
 |---|---:|---:|---:|
-| Orderly Convergence | 2.49 | 40.27 (36.23) | 266.79 (228.32) |
-| Muddle Through | 2.14 | 31.05 (30.03) | 223.24 (195.78) |
-| AI Productivity Lag | 2.11 | 30.89 (29.72) | 214.98 (191.75) |
-| Fragmentation | 1.58 | 27.73 (27.11) | 176.98 (162.11) |
-| Disorderly Climate | 1.08 | 23.09 (22.61) | 187.16 (170.18) |
-| Stagflation Persists | 1.39 | 16.26 (18.70) | 162.52 (156.87) |
+| Orderly Convergence | 2.49 | 40.27 | 219.01 (266.79) |
+| Muddle Through | 2.14 | 31.05 | 186.50 (223.24) |
+| AI Productivity Lag | 2.11 | 30.89 | 181.06 (214.98) |
+| Fragmentation | 1.58 | 27.73 | 150.23 (176.98) |
+| Disorderly Climate | 1.08 | 23.09 | 159.17 (187.16) |
+| Stagflation Persists | 1.39 | 16.26 | 136.03 (162.52) |
 
-Every WBC and CSL move is the horizon, not the terminal form. WBC Stagflation FALLS 13%
-(five more years earning 5.2% on equity against an 8.05% Ke). CSL rises 4-17% (five more
-years of 5-7% nominal growth at a held margin before a Gordon terminal — the DNL artefact of
-2 Oct, now on CSL). D-60 (payout cut to hold CET1 at target) binds in every WBC scenario.
+CSL fell 15-18% on step 3: a 25-year convergence of a 20-31% return to an 8.75% Ke replaces
+a Gordon terminal that held the excess forever. The medium band (15y) would give MT 167.37,
+indefinite 213.01 (`design/methodology/terminal_option_sets.yaml`). WBC did not move: an
+indefinite horizon is the Gordon form. D-60 (payout cut to hold CET1) binds in every WBC scenario.
 
-## THE PLAN FOR THIS CHAT — step 3: decay horizons as a process
+## STEP 3 IS DONE (D-75) — what the next chat picks up
+
+1. **The declared terminal RATE** (`declared_terminal_return` + basis) on every matrix, D-42
+   step 2. The horizon is ruled; the rate the moat work would pin is absent everywhere, so
+   the D-42 reconciliation diagnostic is vacuous. For WBC this IS the live lever (declared
+   ROE against Ke); for CSL and DNL it is the second lever the indefinite band would have needed.
+2. D-43a roles on WBC's four segment moats (`tests/moat_role_baseline.json`).
+3. Step 4 (equilibrium-chain terms per archetype), then step 5 (`adding_a_company.md`).
+
+## THE PLAN THAT WAS RUN THIS CHAT — step 3 (kept for the record)
 
 1. Write the SHORT Five Forces interview as a checklist in `design/frameworks/` that produces
    exactly the four `excess_return_defence` fields for one company x scenario: `moat_sources`
@@ -102,4 +118,6 @@ archetypes; bank engine lets retained equity earn nothing until the terminal.
 
 `3f470e6` step 1 generic derivation · `cb01594` WBC/CSL declarations · `1dac19b` WBC path wired ·
 `26f5152` CSL paths wired · `bbbcd53` D-73 + notes · `6cc6e5c` step 2 (ten years, terminal form) ·
-`3920a3e` D-74 + notes · plus this bridge note.
+`3920a3e` D-74 + notes · `19c9b14` step 3 part 1 (checklist, DNL Frag + Stag) · `37f0b50` part 2
+(WBC indefinite) · `0787cfa` part 3 (CSL 20-30y, biopharmaceuticals matrix, workbook two-stage)
+· D-75 + notes + this bridge note.

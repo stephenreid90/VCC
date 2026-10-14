@@ -27,8 +27,25 @@ prints git state.
 repeatable-process plan). This block records what the 14 October sitting did against it.
 
 **State:** suite 593 passed / 1 skipped / 2 deselected; SSOT lint 14/14; base ties **DNL
-2.138 / WBC 31.05 / CSL 223.24** (`session_start.py` updated; WBC and CSL moved with the
-ten-year period, D-74). Commits on `main` on Stephen's checkout, pushed at the end of the sitting.
+2.138 / WBC 31.05 / CSL 186.5** (`session_start.py` updated; CSL moved with the step 3
+decay horizon, D-75). Commits on `main` on Stephen's checkout, pushed at the end of the sitting.
+
+### Step 3 DONE -- D-75 (decay horizons for all eighteen pairs)
+
+Plain terms: every company x scenario now says how long its excess return lasts, from the
+short Five Forces checklist (`design/frameworks/decay_horizon_checklist.md`). DNL: 10-15
+years everywhere. WBC: indefinite, on the APRA licence; the level does not move because an
+infinite horizon is the Gordon form the model already used. CSL: 20-30 years on the
+plasma-collection network; the terminal is now the two-stage convergence on the group
+capital base and every CSL level falls 15-18% (Muddle Through 223.24 -> 186.50). The two
+ratchet baselines for the terminal form and the defence are empty. What is still absent
+everywhere is the declared terminal RATE (`declared_terminal_return`): the horizon is
+ruled, the rate the moat work would pin is not. Full text in `DECISIONS.md` D-75.
+
+Done against the checklist's after-the-answer list: matrix declared; baselines shrunk;
+goldens, shares and `test_terminal_option_sets` re-pinned; three sizing sets regenerated;
+both workbook oracles regenerated in LibreOffice (DNL unchanged, CSL ties with the new
+two-stage rows); `cfgs_gen.json` rebuilt.
 
 ### Step 2 DONE -- D-74 (ten years for WBC and CSL; terminal form in all three engines)
 
@@ -80,12 +97,8 @@ sitting (standing rule 5: not mid-task).
 
 ### Next (bridge note order)
 
-1. **Step 3 -- the decay-horizon interview as a SHORT checklist** in `design/frameworks/`
-   producing exactly the four `excess_return_defence` fields (moat_sources, barrier-bearing
-   only per D-43a; decay_horizon band + basis; named_threat; sensitivity) for one company x
-   scenario. Then run it: DNL Fragmentation and Stagflation, WBC x6, CSL x6 (CSL needs an
-   impact-matrix file first -- none exists). Each landing shrinks
-   `tests/terminal_form_baseline.json` (14 entries today) and `terminal_defence_baseline.json`.
+1. Step 3 is DONE (D-75). Its one leftover: `declared_terminal_return` on every matrix
+   (the rate the moat work pins, D-42 step 2); the D-42 diagnostic is vacuous until then.
 2. Step 4 -- equilibrium-chain terms declared per archetype (which chain terms are
    current-cycle and switch off at Y10); WBC and CSL need it once their chains have terms.
 3. Step 5 -- `design/methodology/adding_a_company.md`, one page, with the seven §8 disclosures.
