@@ -653,7 +653,9 @@ def _macro_driver_gaps() -> list[str]:
     for archetype_path in _archetype_files():
         doc = _load(archetype_path).get("industry_archetype", {}) or {}
         archetype_id = doc.get("id", archetype_path.stem)
-        drivers = doc.get("required_macro_drivers") or []
+        # D-72 (14 Oct 2026): an entry is a bare name or a {variable, derivation} block.
+        drivers = [d["variable"] if isinstance(d, dict) else d
+                   for d in (doc.get("required_macro_drivers") or [])]
         if not drivers:
             continue
         for scenario_path in _scenario_files():

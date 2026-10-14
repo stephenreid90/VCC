@@ -1,24 +1,27 @@
-"""D-72: derive the two industry macro-driver paths each scenario carries, and write them.
+"""D-72: derive every archetype's declared macro-driver paths and write them to the scenario files.
 
-Decisions 2 and 3 of ``design/methodology/driver_path_translation_proposal.md``
-(Stephen, 2 Oct 2026):
+Each industry archetype (``data/industries/<id>.yaml``) lists the macro drivers its
+revenue chain reads in ``required_macro_drivers``, and for each one HOW every world
+scenario gets its year-anchored path (``derivation``; the methods are the
+``DerivationMethod`` enum in ``schemas/industry.py``). This script is the only
+place those methods are executed:
 
-* ``global_mining_real_growth`` = the scenario's ``real_gdp_growth_world`` path
-  plus a FIXED GAP, the gap calibrated so the path's average over the anchor
-  years reproduces the level anchor DNL already carries
-  (``revenue_growth_chain.by_scenario.<s>.macro.global_mining_real_growth``).
-* ``gas_price_growth`` = DNL's level anchor while the scenario is in transition,
-  reverting to the baseline scenario's value from the scenario's own
-  equilibrium year (``time_profile``). Elevated price GROWTH through a transition
-  leaves a higher price LEVEL in equilibrium with normal growth thereafter.
+* ``scenario_series`` -- the scenario file already carries the series; nothing to do.
+* ``spread`` -- a base scenario series plus a FIXED GAP, calibrated so the path's
+  mean over the anchor years reproduces the level anchor the declaration points at
+  (D-72 decision 2: spread, not multiple).
+* ``transition_then_baseline`` -- the scenario's level anchor while the scenario is
+  in transition, reverting to the baseline scenario's anchor from the scenario's
+  own equilibrium year (``time_profile``) -- D-72 decision 3.
 
 Anchor years are D-37's 1 / 3 / 5 / 7 / 10, linearly interpolated between.
 
 Standing rule 4: the series live in ``data/scenarios/<id>.yaml`` as ordinary
-``macro_variables`` (so SSOT check 14 reads them), this script writes them, and
-``tests/test_macro_driver_paths.py`` asserts the committed series equal what
-this derivation produces. Run with ``--write`` to (re)insert them; the insertion
-is textual so the scenario files keep their comments.
+``macro_variables`` (so SSOT check 14 reads them), this script writes them between
+``BEGIN/END derived paths`` markers (one block per archetype), and
+``tests/test_macro_driver_paths.py`` asserts the committed series equal what the
+declarations produce. The insertion is textual so the scenario files keep their
+comments. Nothing in here names a company or a driver.
 
     PYTHONPATH=src python scripts/derive_macro_driver_paths.py --write
 """
@@ -32,14 +35,19 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
+
+from vcc_valuations.schemas.industry import (  # noqa: E402
+    DerivationMethod, IndustryArchetypeFile, RequiredMacroDriver,
+)
+
 ANCHOR_YEARS = (1, 3, 5, 7, 10)
 PERCENT = 100.0  # ssot-allow
-BASELINE_SCENARIO = "muddle_through"
 SCENARIOS = ["muddle_through", "orderly_convergence", "ai_productivity_lag",
              "fragmentation", "disorderly_climate_crystallisation", "stagflation_persists"]
-DERIVED = ("global_mining_real_growth", "gas_price_growth")
 
 
+# ----------------------------------------------------------------- data access
 def interpolate(points, year):
     pts = sorted((p["year"], p["value"]) for p in points)
     if year <= pts[0][0]:
@@ -67,79 +75,130 @@ def equilibrium_year(doc):
     return max(p["year_start"] for p in doc["time_profile"])
 
 
-def level_anchors():
-    raw = yaml.safe_load((ROOT / "data" / "companies" / "dnl.yaml").read_text(encoding="utf-8"))
-    by = raw["normalised_baseline"]["revenue_growth_chain"]["by_scenario"]
-    return {s: by[s]["macro"] for s in SCENARIOS}
+_company_cache: dict = {}
 
 
-def derive(scenario_id, anchors=None):
-    """Return ``{variable: [(year, value_pct), ...]}`` for the two derived drivers."""
-    anchors = anchors or level_anchors()
-    doc = _scenario_doc(scenario_id)
-    gdp = _series(doc, "real_gdp_growth_world")
-    gdp_at = [interpolate(gdp, y) for y in ANCHOR_YEARS]
-    mining_level = anchors[scenario_id]["global_mining_real_growth"] * PERCENT
-    gap = mining_level - sum(gdp_at) / len(gdp_at)
-    mining = [(y, round(g + gap, 2)) for y, g in zip(ANCHOR_YEARS, gdp_at)]
-
-    eq = equilibrium_year(doc)
-    transition = anchors[scenario_id]["gas_price_growth"] * PERCENT
-    baseline = anchors[BASELINE_SCENARIO]["gas_price_growth"] * PERCENT
-    gas = [(y, round(transition if y < eq else baseline, 2)) for y in ANCHOR_YEARS]
-    return {"global_mining_real_growth": mining, "gas_price_growth": gas, "_gap": round(gap, 2), "_eq": eq}
+def level_anchor(anchor, scenario_id) -> float:
+    """Resolve a ``LevelAnchor`` for one scenario; returned in PERCENT."""
+    if anchor.company not in _company_cache:
+        _company_cache[anchor.company] = yaml.safe_load(
+            (ROOT / "data" / "companies" / f"{anchor.company}.yaml").read_text(encoding="utf-8"))
+    node = _company_cache[anchor.company]
+    for key in anchor.path.format(scenario=scenario_id).split("."):
+        node = node[key]
+    return float(node) * PERCENT
 
 
-def render(scenario_id, d):
-    gap, eq = d["_gap"], d["_eq"]
+def archetypes():
+    out = []
+    for path in sorted((ROOT / "data" / "industries").glob("*.yaml")):
+        out.append(IndustryArchetypeFile.model_validate(
+            yaml.safe_load(path.read_text(encoding="utf-8"))).industry_archetype)
+    return out
+
+
+# -------------------------------------------------------------------- methods
+def _spread(driver: RequiredMacroDriver, scenario_id: str):
+    d = driver.derivation
+    base = _series(_scenario_doc(scenario_id), d.series)
+    base_at = [interpolate(base, y) for y in ANCHOR_YEARS]
+    gap = level_anchor(d.anchor, scenario_id) - sum(base_at) / len(base_at)
+    return [(y, round(b + gap, 2)) for y, b in zip(ANCHOR_YEARS, base_at)], \
+        f"{d.series} plus a fixed gap of {gap:+.2f}pp (spread, not multiple)"
+
+
+def _transition_then_baseline(driver: RequiredMacroDriver, scenario_id: str):
+    d = driver.derivation
+    eq = equilibrium_year(_scenario_doc(scenario_id))
+    transition = level_anchor(d.anchor, scenario_id)
+    baseline = level_anchor(d.anchor, d.baseline_scenario)
+    return [(y, round(transition if y < eq else baseline, 2)) for y in ANCHOR_YEARS], \
+        f"the scenario's anchor until its equilibrium year ({eq}), then {d.baseline_scenario}'s"
+
+
+METHODS = {
+    DerivationMethod.SPREAD: _spread,
+    DerivationMethod.TRANSITION_THEN_BASELINE: _transition_then_baseline,
+}
+
+
+def derive(archetype, scenario_id):
+    """``{variable: ([(year, value_pct), ...], note)}`` for the archetype's DERIVED drivers."""
+    out = {}
+    for driver in archetype.required_macro_drivers:
+        if not driver.is_derived:
+            continue
+        out[driver.variable] = METHODS[driver.derivation.method](driver, scenario_id)
+    return out
+
+
+def derived_variables(archetype):
+    return [d.variable for d in archetype.required_macro_drivers if d.is_derived]
+
+
+# ---------------------------------------------------------------- writing
+def _begin(archetype_id):
+    return f"    # BEGIN derived paths ({archetype_id})"
+
+
+END = "    # END derived paths"
+
+
+def render(archetype, scenario_id, d):
     out = [
-        "    # D-72 derived paths (2 Oct 2026) -- written by scripts/derive_macro_driver_paths.py,",
-        "    # asserted by tests/test_macro_driver_paths.py. Not hand-typed; edit the level",
-        "    # anchors in data/companies/dnl.yaml or the series they derive from, then rerun.",
-        "    - variable: global_mining_real_growth",
-        "      units: percent_yoy",
-        "      type: time_series",
-        f"      # real_gdp_growth_world plus a fixed gap of {gap:+.2f}pp (decision 2: spread, not multiple)",
-        "      time_series:",
+        _begin(archetype.id),
+        "    # Written by scripts/derive_macro_driver_paths.py from the derivations declared in",
+        f"    # data/industries/{archetype.id}.yaml; asserted by tests/test_macro_driver_paths.py.",
+        "    # Not hand-typed: edit the declaration, the anchors or the base series, then rerun.",
     ]
-    out += [f"        - {{year: {y}, value: {v}}}" for y, v in d["global_mining_real_growth"]]
-    out += [
-        "    - variable: gas_price_growth",
-        "      units: percent_yoy",
-        "      type: time_series",
-        f"      # DNL's transition-phase anchor until the equilibrium year ({eq}), then the baseline (decision 3)",
-        "      time_series:",
-    ]
-    out += [f"        - {{year: {y}, value: {v}}}" for y, v in d["gas_price_growth"]]
+    for variable, (series, note) in d.items():
+        out += [
+            f"    - variable: {variable}",
+            "      units: percent_yoy",
+            "      type: time_series",
+            f"      # {note}",
+            "      time_series:",
+        ]
+        out += [f"        - {{year: {y}, value: {v}}}" for y, v in series]
+    out.append(END)
     return "\n".join(out) + "\n"
 
 
-_BLOCK_RE = re.compile(
+# The pre-14-Oct block had no END marker; its header is matched so a first run
+# replaces it cleanly. Afterwards only the BEGIN..END form exists.
+_LEGACY_RE = re.compile(
     r"    # D-72 derived paths.*?(?=\n    - variable: (?!global_mining_real_growth|gas_price_growth)|\n\n|\Z)",
     re.S,
 )
 
 
-def write(scenario_id, d):
+def write(archetype, scenario_id, d):
     path = ROOT / "data" / "scenarios" / f"{scenario_id}.yaml"
     text = path.read_text(encoding="utf-8")
-    text = _BLOCK_RE.sub("", text, count=1)
+    block_re = re.compile(re.escape(_begin(archetype.id)) + r".*?" + re.escape(END) + r"\n", re.S)
+    text = block_re.sub("", text, count=1)
+    text = _LEGACY_RE.sub("", text, count=1)
+    text = text.replace("  macro_variables:\n\n", "  macro_variables:\n", 1)
+    if not d:
+        path.write_text(text, encoding="utf-8")
+        return
     marker = "  macro_variables:\n"
     assert text.count(marker) == 1, scenario_id
-    text = text.replace(marker, marker + render(scenario_id, d), 1)
+    text = text.replace(marker, marker + render(archetype, scenario_id, d), 1)
     path.write_text(text, encoding="utf-8")
 
 
 def main(argv):
     do_write = "--write" in argv
-    anchors = level_anchors()
-    for s in SCENARIOS:
-        d = derive(s, anchors)
-        print(f"{s:36s} gap={d['_gap']:+.2f} eq={d['_eq']:2d} "
-              f"mining={[v for _, v in d['global_mining_real_growth']]} "
-              f"gas={[v for _, v in d['gas_price_growth']]}")
-        if do_write:
-            write(s, d)
+    for archetype in archetypes():
+        if not derived_variables(archetype):
+            continue
+        print(f"== {archetype.id}: {', '.join(derived_variables(archetype))}")
+        for s in SCENARIOS:
+            d = derive(archetype, s)
+            print(f"  {s:36s} " + "  ".join(f"{v}={[x for _, x in ser]}" for v, (ser, _) in d.items()))
+            if do_write:
+                write(archetype, s, d)
     if do_write:
         print("written")
 

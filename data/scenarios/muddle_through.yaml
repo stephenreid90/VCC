@@ -49,13 +49,14 @@ scenario:
         No phase transition inside the horizon.
 
   macro_variables:
-    # D-72 derived paths (2 Oct 2026) -- written by scripts/derive_macro_driver_paths.py,
-    # asserted by tests/test_macro_driver_paths.py. Not hand-typed; edit the level
-    # anchors in data/companies/dnl.yaml or the series they derive from, then rerun.
+    # BEGIN derived paths (industrial_explosives)
+    # Written by scripts/derive_macro_driver_paths.py from the derivations declared in
+    # data/industries/industrial_explosives.yaml; asserted by tests/test_macro_driver_paths.py.
+    # Not hand-typed: edit the declaration, the anchors or the base series, then rerun.
     - variable: global_mining_real_growth
       units: percent_yoy
       type: time_series
-      # real_gdp_growth_world plus a fixed gap of +0.20pp (decision 2: spread, not multiple)
+      # real_gdp_growth_world plus a fixed gap of +0.20pp (spread, not multiple)
       time_series:
         - {year: 1, value: 2.5}
         - {year: 3, value: 2.5}
@@ -65,13 +66,14 @@ scenario:
     - variable: gas_price_growth
       units: percent_yoy
       type: time_series
-      # DNL's transition-phase anchor until the equilibrium year (1), then the baseline (decision 3)
+      # the scenario's anchor until its equilibrium year (1), then muddle_through's
       time_series:
         - {year: 1, value: 2.0}
         - {year: 3, value: 2.0}
         - {year: 5, value: 2.0}
         - {year: 7, value: 2.0}
         - {year: 10, value: 2.0}
+    # END derived paths
     - variable: real_gdp_growth_world
       units: percent_yoy
       type: time_series

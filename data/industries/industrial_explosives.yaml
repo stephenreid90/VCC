@@ -9,12 +9,32 @@ industry_archetype:
   # drive industry pricing growth (B29). Declared here so a scenario missing a
   # year-anchored path on exactly these can be told apart from one that simply
   # has no macro chain at all (ssot check 14).
+  # D-72 (2 Oct 2026), generalised 14 Oct 2026: each driver declares HOW every
+  # scenario gets its year-anchored path. scripts/derive_macro_driver_paths.py
+  # reads these declarations for every archetype and writes the derived series
+  # into data/scenarios/<id>.yaml; tests/test_macro_driver_paths.py asserts them.
+  # Methods: schemas/industry.py DerivationMethod.
   required_macro_drivers:
-    # D-72 (2 Oct 2026): DM inflation is the scenario's own cpi_inflation_advanced;
-    # the other two are derived into each scenario file by scripts/derive_macro_driver_paths.py.
-    - global_mining_real_growth
+    # Industry volume growth (B25): world real GDP plus a fixed gap, the gap
+    # calibrated so the path's mean reproduces the level anchor (decision 2).
+    - variable: global_mining_real_growth
+      derivation:
+        method: spread
+        series: real_gdp_growth_world
+        anchor:
+          company: dnl
+          path: normalised_baseline.revenue_growth_chain.by_scenario.{scenario}.macro.global_mining_real_growth
+    # Industry pricing growth (B29): DM inflation is the scenario's own CPI series.
     - cpi_inflation_advanced
-    - gas_price_growth
+    # Industry pricing growth (B29): the scenario's anchor while in transition,
+    # then the baseline scenario's from the equilibrium year (decision 3).
+    - variable: gas_price_growth
+      derivation:
+        method: transition_then_baseline
+        baseline_scenario: muddle_through
+        anchor:
+          company: dnl
+          path: normalised_baseline.revenue_growth_chain.by_scenario.{scenario}.macro.gas_price_growth
 
   geography: multi_geographic
 

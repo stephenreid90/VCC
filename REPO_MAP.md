@@ -1,12 +1,12 @@
 # REPO_MAP — what exists, and where
 
-_Generated 2026-10-02 by `scripts/repo_inventory.py`. **Regenerate at the start of
+_Generated 2026-10-14 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `6590be5 Add Stephen's writing-style instruction for Claude (notes)` on `main`
-- Unpushed commits: **3**
-- Tracked files: 346
-- Untracked files: 2
+- HEAD: `d2dc603 Bridge note: refocus the next sitting on a repeatable process (Stephen, 2 Oct); DNL is instance one` on `main`
+- Unpushed commits: **0**
+- Tracked files: 349
+- Untracked files: 1
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -84,19 +84,19 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `australian_major_banks.md` (7.4KB)
     - `australian_major_banks.yaml` (18.3KB)
     - `industrial_explosives.md` (14.6KB)
-    - `industrial_explosives.yaml` (10.3KB)
+    - `industrial_explosives.yaml` (11.4KB)
     - `plasma_derived_therapies.yaml` (7.2KB)
     - `specialty_pharmaceuticals.yaml` (2.2KB)
     - `vaccines.yaml` (2.9KB)
   - **scenarios/**
     - `ai_productivity_lag.md` (8.9KB)
-    - `ai_productivity_lag.yaml` (10.2KB)
+    - `ai_productivity_lag.yaml` (10.3KB)
     - `disorderly_climate_crystallisation.md` (8.6KB)
     - `disorderly_climate_crystallisation.yaml` (10.9KB)
     - `fragmentation.md` (7.9KB)
     - `fragmentation.yaml` (10.8KB)
     - `muddle_through.md` (8.1KB)
-    - `muddle_through.yaml` (9.4KB)
+    - `muddle_through.yaml` (9.5KB)
     - `orderly_convergence.md` (7.0KB)
     - `orderly_convergence.yaml` (9.8KB)
     - `stagflation_persists.md` (6.9KB)
@@ -122,7 +122,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `csl_cost_of_debt_and_target_structure.md` (13.4KB)
     - `csl_discount_rate_fork.md` (11.0KB)
     - `dnl_working_capital_derivation.md` (12.4KB)
-    - `driver_path_translation_proposal.md` (7.8KB)
+    - `driver_path_translation_proposal.md` (8.0KB)
     - `equity_bridge_and_valuation_mechanics.md` (71.8KB)
     - `horizon_and_terminal_convergence.md` (47.2KB)
     - `horizon_variant_sets.yaml` (11.8KB)
@@ -185,7 +185,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `company.py` (13.4KB)
       - `driver.py` (4.1KB)
       - `frameworks.py` (4.5KB)
-      - `industry.py` (18.5KB)
+      - `industry.py` (22.5KB)
       - `linkage.py` (12.4KB)
       - `scenario.py` (5.0KB)
 
@@ -211,9 +211,9 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `test_engine_workbook.py` (4.7KB)
   - `test_generator_scripts_parse.py` (4.6KB)
   - `test_implied_emrp.py` (2.2KB)
-  - `test_macro_driver_paths.py` (3.6KB)
+  - `test_macro_driver_paths.py` (8.0KB)
   - `test_moat_source_roles.py` (4.2KB)
-  - `test_ssot_lint.py` (31.1KB)
+  - `test_ssot_lint.py` (31.2KB)
   - `test_three_statement.py` (717B)
   - `test_trade_working_capital_intensity.py` (3.3KB)
   - `test_wbc_loads.py` (2.1KB)
@@ -264,7 +264,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `README.md` (893B)
     - `beta_data.py` (10.0KB)
     - `build_cfgs.py` (94.6KB)
-    - `cfgs_gen.json` (220.9KB)
+    - `cfgs_gen.json` (225.3KB)
     - `engine_workbook.py` (99.2KB)
     - `gen_ui.py` (89.4KB)
 
@@ -350,6 +350,5 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 Not in git. Either commit them or clear them — an untracked file is invisible
 to anyone who clones the repo, and is the most common way work gets lost.
 
-- `scripts/derive_macro_driver_paths.py`
-- `tests/test_macro_driver_paths.py`
+- `"Claude outputs/"`
 

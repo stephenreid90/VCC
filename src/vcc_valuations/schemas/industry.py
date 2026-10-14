@@ -9,9 +9,10 @@ complementary framework where Porter does not adequately serve (section 7.5.1).
 
 from __future__ import annotations
 
+from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from vcc_valuations.schemas.common import (
     ArchetypeRating,
@@ -262,6 +263,89 @@ class Submarket(BaseModel):
     notes: Optional[str] = None
 
 
+
+# ------------------------------------------------------- D-37 / D-72 drivers
+class DerivationMethod(str, Enum):
+    """How a required macro driver's year-anchored path is obtained from a world scenario.
+
+    One entry per way the model has so far needed. Adding a method means adding
+    it here, in ``scripts/derive_macro_driver_paths.py`` (``METHODS``) and a test
+    in ``tests/test_macro_driver_paths.py`` -- nowhere else.
+    """
+
+    # The scenario file already carries the series under this variable's own
+    # name (e.g. ``cpi_inflation_advanced``). Nothing is derived or written.
+    SCENARIO_SERIES = "scenario_series"
+    # A base series from the scenario (``series``) plus a FIXED GAP, the gap
+    # calibrated so the path's mean over the anchor years reproduces the level
+    # anchor a company file carries (D-72 decision 2: spread, not multiple).
+    SPREAD = "spread"
+    # The company's level anchor for the scenario while the scenario is in
+    # transition, reverting to the ``baseline_scenario``'s anchor from the
+    # scenario's own equilibrium year (``time_profile``) -- D-72 decision 3.
+    TRANSITION_THEN_BASELINE = "transition_then_baseline"
+
+
+class LevelAnchor(BaseModel):
+    """Where a derivation's level anchor lives: a dotted path into a company file.
+
+    ``{scenario}`` in ``path`` is replaced with the scenario id. Today the anchors
+    sit in the first company's own ``revenue_growth_chain.by_scenario`` block
+    (DNL); lifting them to the archetype is a follow-up, not a prerequisite --
+    this field says where they are rather than pretending they are elsewhere.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    company: str = Field(..., description="Company id; ``data/companies/<company>.yaml``.")
+    path: str = Field(..., description="Dotted path, ``{scenario}`` substituted, to a decimal rate.")
+
+
+class MacroDriverDerivation(BaseModel):
+    """The declared recipe for one required macro driver (D-72)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    method: DerivationMethod
+    series: Optional[str] = Field(None, description="SPREAD: the scenario series the gap is added to.")
+    anchor: Optional[LevelAnchor] = None
+    baseline_scenario: Optional[str] = Field(None, description="TRANSITION_THEN_BASELINE: the scenario whose anchor is 'normal'.")
+
+    @model_validator(mode="after")
+    def _fields_match_method(self):
+        m = self.method
+        need = {
+            DerivationMethod.SCENARIO_SERIES: set(),
+            DerivationMethod.SPREAD: {"series", "anchor"},
+            DerivationMethod.TRANSITION_THEN_BASELINE: {"anchor", "baseline_scenario"},
+        }[m]
+        given = {k for k in ("series", "anchor", "baseline_scenario") if getattr(self, k) is not None}
+        if given != need:
+            raise ValueError(
+                f"derivation method {m.value!r} needs exactly {sorted(need)}, got {sorted(given)}"
+            )
+        return self
+
+
+class RequiredMacroDriver(BaseModel):
+    """A macro variable an archetype's revenue chain reads, and how each scenario gets its path.
+
+    A bare string in the YAML (``- cpi_inflation_advanced``) is accepted and
+    means ``scenario_series`` -- the scenario file carries it natively.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    variable: str
+    derivation: MacroDriverDerivation = Field(
+        default_factory=lambda: MacroDriverDerivation(method=DerivationMethod.SCENARIO_SERIES)
+    )
+
+    @property
+    def is_derived(self) -> bool:
+        return self.derivation.method != DerivationMethod.SCENARIO_SERIES
+
+
 class IndustryArchetype(BaseModel):
     """Industry archetype per section 7.4."""
 
@@ -296,7 +380,17 @@ class IndustryArchetype(BaseModel):
     # rather than the full general macro set section 6.4 already carries.
     # Empty by default: most archetypes read a company's own scenario overlay
     # directly rather than a shared macro chain, so there is nothing to check.
-    required_macro_drivers: List[str] = Field(default_factory=list)
+    required_macro_drivers: List[RequiredMacroDriver] = Field(default_factory=list)
+
+    @field_validator("required_macro_drivers", mode="before")
+    @classmethod
+    def _bare_names_are_scenario_series(cls, v):
+        # D-72: a plain variable name means "the scenario carries it natively".
+        return [{"variable": x} if isinstance(x, str) else x for x in (v or [])]
+
+    @property
+    def required_macro_driver_names(self) -> List[str]:
+        return [d.variable for d in self.required_macro_drivers]
 
 
 # ---------------------------------------------------------------- §7.4-v2 bank
