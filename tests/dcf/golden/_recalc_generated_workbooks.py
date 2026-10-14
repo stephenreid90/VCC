@@ -76,7 +76,7 @@ TERMINAL_FCFF_LABELS = (
 
 # CSL's "Segment FCFF" sheet is laid out one row per line-year rather than one
 # row per line with years across, so it needs its own label map.
-CSL_YEARS = ["FY26", "FY27", "FY28", "FY29", "FY30", "FY31"]
+CSL_YEARS = [f"FY{26 + k}" for k in range(11)]  # D-71 (14 Oct 2026): FY26..FY36
 CSL_VECTORS = {
     "group_revenue": "  Total revenue {y}",
     "group_ebit": "  Group EBIT {y}",
@@ -84,7 +84,7 @@ CSL_VECTORS = {
     "fcff": "  FCFF {y}",
 }
 CSL_SCALARS = {
-    "PV explicit (FY27-FY31)": "pv_explicit",
+    "PV explicit (FY27-FY36)": "pv_explicit",
     "Terminal FCFF": "terminal_fcff",
     "Terminal value": "terminal_value",
     "PV terminal": "pv_terminal",

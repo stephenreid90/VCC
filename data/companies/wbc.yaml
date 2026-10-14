@@ -70,7 +70,11 @@ normalised_baseline:
     # that the engine can derive.
     timing:
       stub_years: 0.35          # 1H26 close (31 Mar 2026) to FY26 end (30 Sep 2026)
-      horizon_years: 5          # FY27-FY31 explicit
+      horizon_years: 10         # FY27-FY36 explicit (D-71: a fixed ten years for every company;
+                                # moved from 5 on 14 Oct 2026, Stephen's ruling). The typed
+                                # glides below run to Y5 (FY31) and HOLD their Y5 value to Y10;
+                                # growth reads the scenario path to Y10 (D-73).
+      glide_years: 5            # the typed per-year glides cover [stub, Y1..Y5]
       aiea_y1_time_factor: 1.18 # FY27 average-balance offset from the 1H26-average anchor
                                 # (stub uses stub_years/2; Y2+ compound at the growth rate)
     income_anchors_1h26:        # AUD m, half-year to 31 Mar 2026, ex Notable items

@@ -1006,7 +1006,9 @@ def csl_terminal_invested_capital(inputs: dict, scenario_id: str) -> float:
     """
     from vcc_valuations.dcf.segment_engine import SegmentEngine
 
-    si = build_segment_inputs_from_data(inputs, scenario_id)
+    # Gordon-form inputs: the capital base is what the terminal form needs, so it
+    # cannot itself depend on the terminal form (no recursion).
+    si = build_segment_inputs_from_data(inputs, scenario_id, route_terminal_form=False)
     res = SegmentEngine().run(si)
     wc_intensity = working_capital_intensity_from_data(inputs).result
     base_revenue = res.group_revenue[0]  # FY25 anchor
@@ -1129,6 +1131,14 @@ def decay_horizon_from_matrix(inputs: dict, scenario_id: str):
             if defence is not None and defence.decay_horizon is not None:
                 return defence.decay_horizon
     return None
+
+
+def hold_glide(glide: List[float], horizon_years: int) -> List[float]:
+    """Extend a per-period glide [stub, Y1..Yk] to [stub, Y1..YH] by holding its last value."""
+    out = list(glide)
+    while len(out) < horizon_years + 1:
+        out.append(out[-1])
+    return out[: horizon_years + 1]
 
 
 def bank_aiea_growth_path_from_data(inputs: dict, horizon_years: int) -> List[float]:
@@ -1448,13 +1458,23 @@ def build_bank_inputs_from_data(inputs: dict, scenario_id: str):
     # that path is calibrated to, not what the engine reads.
     aiea_growth = bank_aiea_growth_path_from_data(inputs, timing["horizon_years"])
 
-    # Per-year glides, parallel-shifted per scenario.
+    # Per-year glides, parallel-shifted per scenario, then HELD at their last typed
+    # value to the end of the explicit period (D-71 ten years; the glides are typed
+    # to ``glide_years`` = 5). Holding is the non-inventive reading: the glide's
+    # endpoint is the company's stated steady state, not a trend to extrapolate.
+    H = timing["horizon_years"]
+    glide_years = timing.get("glide_years", H)
+    for name in ("nim_applied", "cost_to_income", "credit_loss_rate"):
+        if len(base[name]) != glide_years + 1:
+            raise ValueError(f"{company.id}: {name} glide has {len(base[name])} entries; "
+                             f"timing.glide_years={glide_years} needs stub + {glide_years}")
     nim_shift = macro.get("nim_delta_bps", 0) / 10000.0
-    nim_applied = [x + nim_shift for x in base["nim_applied"]]
+    nim_applied = hold_glide([x + nim_shift for x in base["nim_applied"]], H)
     cti_shift = scen["y5_cost_to_income"] - base["cost_to_income"][-1]
-    cost_to_income = [x + cti_shift for x in base["cost_to_income"]]
+    cost_to_income = hold_glide([x + cti_shift for x in base["cost_to_income"]], H)
     cl_shift = scen.get("credit_loss_delta_bps", 0) / 10000.0
-    credit_loss_rate = [x + cl_shift for x in base["credit_loss_rate"]]
+    credit_loss_rate = hold_glide([x + cl_shift for x in base["credit_loss_rate"]], H)
+    terminal_form, convergence_years, _note = terminal_form_from_data(inputs, scenario_id, H)
 
     anchors = bb["balance_sheet_anchors"]
     drivers = bb["forecast_drivers"]
@@ -1516,6 +1536,8 @@ def build_bank_inputs_from_data(inputs: dict, scenario_id: str):
         dividend_payout_ratio=drivers["dividend_payout_ratio"],
         nim_applied=nim_applied,
         cost_to_income=cost_to_income,
+        terminal_form=terminal_form,
+        convergence_years=convergence_years,
         credit_loss_rate=credit_loss_rate,
         cost_of_equity=ke,
         terminal_roe=scen["terminal_roe"],
@@ -1528,7 +1550,7 @@ def build_bank_inputs_from_data(inputs: dict, scenario_id: str):
     )
 
 
-def build_segment_inputs_from_data(inputs: dict, scenario_id: str):
+def build_segment_inputs_from_data(inputs: dict, scenario_id: str, route_terminal_form: bool = True):
     """Assemble ``SegmentInputs`` for one segment-level company x scenario (M3).
 
     Segment FY25 revenue / operating-result margin are the layer-1 observed anchors in
@@ -1562,9 +1584,19 @@ def build_segment_inputs_from_data(inputs: dict, scenario_id: str):
     ke = rf + beta * erp
 
     horizon = sf["timing"]["horizon_years"]
+    uplift_years = sf["timing"].get("margin_uplift_years", horizon + 1)
 
     def growth_path(seg_name):
         return segment_growth_path_from_data(inputs, scenario_id, seg_name, horizon)
+
+    # D-71: the headline terminal form, routed the same way as the industrial and
+    # bank engines. Convergence needs the D-67 capital base, which is rolled forward
+    # on the engine's own Gordon-form run (route_terminal_form=False breaks the loop).
+    terminal_form, convergence_years, terminal_capital = "gordon", None, None
+    if route_terminal_form:
+        terminal_form, convergence_years, _note = terminal_form_from_data(inputs, scenario_id, horizon)
+        if terminal_form == "excess_return_convergence":
+            terminal_capital = csl_terminal_invested_capital(inputs, scenario_id)
 
     segs = []
     for s in financials["segments"]:
@@ -1575,6 +1607,7 @@ def build_segment_inputs_from_data(inputs: dict, scenario_id: str):
             fy25_or_margin=s["fy25_or_margin"],
             growth_path=growth_path(name),
             margin_uplift_cum=scen[f"{_seg_key(name)}_margin_uplift"],
+            margin_uplift_years=uplift_years,
         ))
 
     corp = sf["corporate"]; drv = sf["drivers"]; anch = sf["anchors"]
@@ -1593,6 +1626,8 @@ def build_segment_inputs_from_data(inputs: dict, scenario_id: str):
         tax_rate=scen["tax_rate"], cost_of_equity=ke,
         net_debt=anch["net_debt"], restructuring_cash_to_come=anch["restructuring_cash_to_come"],
         shares_outstanding_m=anch["shares_outstanding_m"], fx_aud_per_usd=sf["fx_aud_per_usd"],
+        terminal_form=terminal_form, convergence_years=convergence_years,
+        terminal_invested_capital=terminal_capital,
     )
 
 
@@ -1619,7 +1654,9 @@ def _typed_segment_growth(scen: dict, seg_name: str, horizon: int) -> List[float
     """The company's typed per-year path for a segment (explicit list, or a flat CAGR), FY26..FY(25+H+1)."""
     key = _seg_key(seg_name)
     if f"{key}_growth" in scen:
-        return list(scen[f"{key}_growth"])
+        typed = list(scen[f"{key}_growth"])
+        # D-71: a path typed to FY31 holds its steady state to the end of the ten years
+        return hold_glide(typed, horizon)
     return [scen[f"{key}_cagr"]] * (horizon + 1)
 
 

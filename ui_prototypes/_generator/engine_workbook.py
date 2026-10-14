@@ -1236,15 +1236,22 @@ def build_wbc_workbook_bytes(cfg=None):
     scen_row("Terminal growth g", "tg", lambda s: ov["by_scenario"][s]["terminal_growth"], PCT2)
     r[0] += 1
     # baseline per-year glides (stub..Y5 as columns C..H)
-    sub("Baseline per-year glides (Muddle Through): [stub, Y1..Y5]")
+    _H = timing["horizon_years"]; _G = timing.get("glide_years", _H)
+    NP = _H + 1                                   # stub + Y1..YH
+    PL = ["Stub"] + [f"Y{k}" for k in range(1, _H + 1)]
+    sub(f"Baseline per-year glides (Muddle Through): [stub, Y1..Y{_G}] typed; Y{_G + 1}..Y{_H} HELD at Y{_G} by formula (D-71)")
     ph = r[0]; ws.cell(ph, 1, "Line").font = BOLD
-    for j, lab in enumerate(["Stub", "Y1", "Y2", "Y3", "Y4", "Y5"]):
+    for j, lab in enumerate(PL):
         ws.cell(ph, 3 + j, lab).font = BOLD
     r[0] += 1
     def glide_row(label, key, vec, fmt):
         ws.cell(r[0], 1, label)
-        for j, v in enumerate(vec):
-            c = ws.cell(r[0], 3 + j, v); c.fill = YELLOW; c.font = BLUEFONT; c.number_format = fmt
+        for j in range(NP):
+            if j < len(vec):
+                c = ws.cell(r[0], 3 + j, vec[j]); c.fill = YELLOW; c.font = BLUEFONT
+            else:
+                c = ws.cell(r[0], 3 + j, f"={_col(2 + j)}{r[0]}")      # = previous period (held)
+            c.number_format = fmt
             R[f"{key}:{j}"] = f"'Assumptions'!${_col(3 + j)}${r[0]}"
         r[0] += 1
     glide_row("NIM applied", "nim", base["nim_applied"], PCT3)
@@ -1255,12 +1262,11 @@ def build_wbc_workbook_bytes(cfg=None):
     # read from the scenario file's bank_system_aiea_growth series (derived by
     # scripts/derive_macro_driver_paths.py from the bank archetype's declaration).
     # The applied WBC rate = path + company offset, derived on the chain sheet.
-    sub("Industry AIEA growth path by scenario (scenario series bank_system_aiea_growth; Y1..Y5)")
+    sub(f"Industry AIEA growth path by scenario (scenario series bank_system_aiea_growth; Y1..Y{_H})")
     ph = r[0]; ws.cell(ph, 1, "Scenario").font = BOLD
-    for j, lab in enumerate(["Y1", "Y2", "Y3", "Y4", "Y5"]):
-        ws.cell(ph, 3 + j, lab).font = BOLD
+    for j in range(_H):
+        ws.cell(ph, 3 + j, f"Y{j + 1}").font = BOLD
     r[0] += 1
-    _H = timing["horizon_years"]
     for sid, nm in SCEN:
         ws.cell(r[0], 1, nm)
         _inp_s = _li(_ROOT, sid, "australian_major_banks", "wbc")
@@ -1269,7 +1275,7 @@ def build_wbc_workbook_bytes(cfg=None):
             R[f"aieapath:{sid}:{y}"] = f"'Assumptions'!${_col(2 + y)}${r[0]}"
         r[0] += 1
     ws.column_dimensions["A"].width = 40
-    for cc in "BCDEFGH": ws.column_dimensions[cc].width = 13
+    for j in range(2, 3 + NP): ws.column_dimensions[_col(j)].width = 13
 
     # ---------------- Ke build ----------------
     ws = wb.create_sheet("Ke build")
@@ -1310,7 +1316,6 @@ def build_wbc_workbook_bytes(cfg=None):
     for j, (sid, nm) in enumerate(SCEN):
         ws.cell(hr, 3 + j, nm).font = BOLD
     rr = [hr + 1]; rmap = {}
-    PL = ["Stub", "Y1", "Y2", "Y3", "Y4", "Y5"]
     def band(t): ws.cell(rr[0], 1, t).font = SUB; rr[0] += 1
     def prow(key, label, fmt, fn, bold=False):
         ws.cell(rr[0], 1, label)
@@ -1323,7 +1328,7 @@ def build_wbc_workbook_bytes(cfg=None):
     prow("plen", "Period length (yrs)", NUM1 + "00",
          lambda s, c, j, : f"={R['stub']}") if False else None
     band("AIEA (average interest-earning assets)")
-    for p in range(6):
+    for p in range(NP):
         def f_aiea(s, c, j, p=p):
             # stub and Y1 grow at the Y1 rate; Yp compounds at the Yp rate (engine order)
             if p == 0: return f"={R['aiea']}*(1+{R[f'aieag:{s}:1']}*{R['stub']}/2)"
@@ -1331,40 +1336,40 @@ def build_wbc_workbook_bytes(cfg=None):
             return f"={c}{rmap[f'aiea{p-1}']}*(1+{R[f'aieag:{s}:{p}']})"
         prow(f"aiea{p}", f"  {PL[p]} AIEA", NUM0, f_aiea)
     band("NIM applied")
-    for p in range(6):
+    for p in range(NP):
         prow(f"nim{p}", f"  {PL[p]} NIM", PCT3,
              lambda s, c, j, p=p: f"={R[f'nim:{p}']}+{R[f'd_nimbps:{s}']}/10000")
     band("Net interest income")
-    for p in range(6):
+    for p in range(NP):
         plen = f"{R['stub']}" if p == 0 else "1"
         prow(f"nii{p}", f"  {PL[p]} NII", NUM1,
              lambda s, c, j, p=p, plen=plen: f"={c}{rmap[f'aiea{p}']}*{c}{rmap[f'nim{p}']}*{plen}")
     band("Non-interest income")
-    for p in range(6):
+    for p in range(NP):
         def f_ni(s, c, j, p=p):
             if p == 0: return f"={R['nonint_1h']}*{R['stub']}*2"
             if p == 1: return f"=2*{R['nonint_1h']}*(1+{R['ni_g']})"
             return f"={c}{rmap[f'ni{p-1}']}*(1+{R['ni_g']})"
         prow(f"ni{p}", f"  {PL[p]} non-interest income", NUM1, f_ni)
     band("Total operating income")
-    for p in range(6):
+    for p in range(NP):
         prow(f"toi{p}", f"  {PL[p]} total op income", NUM1,
              lambda s, c, j, p=p: f"={c}{rmap[f'nii{p}']}+{c}{rmap[f'ni{p}']}")
     band("Operating expenses (cost-to-income, negative)")
-    for p in range(6):
+    for p in range(NP):
         prow(f"opex{p}", f"  {PL[p]} opex", NUM1,
-             lambda s, c, j, p=p: f"=-{c}{rmap[f'toi{p}']}*({R[f'cti:{p}']}+({R[f'y5cti:{s}']}-{R['cti:5']}))")
+             lambda s, c, j, p=p: f"=-{c}{rmap[f'toi{p}']}*({R[f'cti:{p}']}+({R[f'y5cti:{s}']}-{R[f'cti:{_G}']}))")
     band("Credit impairment (loss rate x loans, negative)")
-    for p in range(6):
+    for p in range(NP):
         plen = f"{R['stub']}" if p == 0 else "1"
         prow(f"imp{p}", f"  {PL[p]} impairment", NUM1,
              lambda s, c, j, p=p, plen=plen: f"=-{c}{rmap[f'aiea{p}']}*{R['loans_pct']}*({R[f'clr:{p}']}+{R[f'd_clbps:{s}']}/10000)*{plen}")
     band("Cash NPAT")
-    for p in range(6):
+    for p in range(NP):
         prow(f"npat{p}", f"  {PL[p]} NPAT", NUM1,
-             lambda s, c, j, p=p: f"=({c}{rmap[f'toi{p}']}+{c}{rmap[f'opex{p}']}+{c}{rmap[f'imp{p}']})*(1-{R['tax']})", bold=(p in (1, 5)))
+             lambda s, c, j, p=p: f"=({c}{rmap[f'toi{p}']}+{c}{rmap[f'opex{p}']}+{c}{rmap[f'imp{p}']})*(1-{R['tax']})", bold=(p in (1, _H)))
     for j, sid in enumerate(SIDS):
-        for p in range(6):
+        for p in range(NP):
             R[f"npat:{sid}:{p}"] = f"'P&L Forecast'!{SC[j]}{rmap[f'npat{p}']}"
     ws.column_dimensions["A"].width = 34
     for cc in "CDEFGH": ws.column_dimensions[cc].width = 12
@@ -1384,18 +1389,18 @@ def build_wbc_workbook_bytes(cfg=None):
             if bold: c.font = BOLD
         vmap[key] = vr[0]; vr[0] += 1
     # dividends per period
-    for p in range(6):
+    for p in range(NP):
         vrow(f"div{p}", f"Dividends {PL[p]}", NUM1,
              lambda s, c, j, p=p: f"={R[f'npat:{s}:{p}']}*{R['payout']}")
     # discount factor per period (Ke)
-    for p in range(6):
+    for p in range(NP):
         mt = f"{R['stub']}/2" if p == 0 else f"{R['stub']}+{p}-0.5"
         vrow(f"pv{p}", f"PV dividend {PL[p]}", NUM1,
              lambda s, c, j, p=p, mt=mt: f"={c}{vmap[f'div{p}']}/(1+{R['ke']})^({mt})")
     vrow("pvexp", "PV of explicit dividends", NUM1,
-         lambda s, c, j: "=" + "+".join(f"{c}{vmap[f'pv{p}']}" for p in range(6)), bold=True)
+         lambda s, c, j: "=" + "+".join(f"{c}{vmap[f'pv{p}']}" for p in range(NP)), bold=True)
     vrow("ret", "Retained earnings (sum NPAT - sum div)", NUM1,
-         lambda s, c, j: "=" + "+".join(f"{R[f'npat:{s}:{p}']}" for p in range(6)) + "-(" + "+".join(f"{c}{vmap[f'div{p}']}" for p in range(6)) + ")")
+         lambda s, c, j: "=" + "+".join(f"{R[f'npat:{s}:{p}']}" for p in range(NP)) + "-(" + "+".join(f"{c}{vmap[f'div{p}']}" for p in range(NP)) + ")")
     vrow("ceq", "Closing book equity", NUM0,
          lambda s, c, j: f"={R['book_eq']}+{c}{vmap['ret']}")
     vrow("tv", "Terminal value (equity x (ROE-g)/(Ke-g))", NUM0,
@@ -1521,7 +1526,11 @@ def build_csl_workbook_bytes(cfg=None):
     SC = sf["by_scenario"]
     SIDS = [sid for sid, _ in SCEN]
     SEGS = [(s["segment"], s["segment"].split("_")[-1], s["fy25_revenue"], s["fy25_or_margin"]) for s in fin_segs]
-    YRS = ["FY25", "FY26", "FY27", "FY28", "FY29", "FY30", "FY31"]  # index 0..6
+    _H = sf["timing"]["horizon_years"]                 # 10 under D-71 (14 Oct 2026)
+    _U = sf["timing"].get("margin_uplift_years", _H + 1)
+    NY = _H + 2                                        # FY25 anchor + FY26..FY(26+H)
+    YRS = [f"FY{25 + k}" for k in range(NY)]           # index 0..NY-1
+    _T = len(YRS) - 1                                  # index of the final explicit year
 
     wb = Workbook(); wb.calculation.fullCalcOnLoad = True
     R = {}
@@ -1580,11 +1589,20 @@ def build_csl_workbook_bytes(cfg=None):
             c = ws.cell(r[0], 3 + j, fn(sid)); c.fill = YELLOW; c.font = BLUEFONT; c.number_format = fmt
             R[f"{key}:{sid}"] = f"'Assumptions'!${_col(3 + j)}${r[0]}"
         r[0] += 1
-    sub("Behring revenue growth path by scenario (FY26..FY31)")
+    sub(f"Behring revenue growth path by scenario (typed FY26..FY31; held at FY31 to {YRS[-1]} by formula, D-71)")
     scen_hdr()
-    for y in range(6):
-        scen_row(f"  Behring growth {YRS[y+1]}", f"behring_g{y}",
-                 lambda sid, y=y: SC[sid]["behring_growth"][y], PCT2)
+    _nb = len(SC[SIDS[0]]["behring_growth"])
+    for y in range(_H + 1):
+        if y < _nb:
+            scen_row(f"  Behring growth {YRS[y+1]}", f"behring_g{y}",
+                     lambda sid, y=y: SC[sid]["behring_growth"][y], PCT2)
+        else:
+            ws.cell(r[0], 1, f"  Behring growth {YRS[y+1]} (held)")
+            for j, sid in enumerate(SIDS):
+                cc = ws.cell(r[0], 3 + j, f"={R[f'behring_g{y-1}:{sid}']}"); cc.number_format = PCT2
+                R[f"behring_g{y}:{sid}"] = f"'Assumptions'!${_col(3 + j)}${r[0]}"
+            r[0] += 1
+    _last_typed = _nb - 1
     sub("Segment CAGR / margin uplift / terminal by scenario")
     scen_hdr()
     scen_row("Seqirus revenue CAGR", "seqirus_cagr", lambda sid: SC[sid]["seqirus_cagr"], PCT2)
@@ -1598,9 +1616,9 @@ def build_csl_workbook_bytes(cfg=None):
     _inps = {sid: _li(_ROOT, sid, "biopharmaceuticals", "csl") for sid in SIDS}
     for sid_seg, stem, _r0, _m0 in SEGS:
         var = _sgv(inp, sid_seg)
-        sub(f"{stem.title()} archetype growth series by scenario ({var}; FY26..FY31)")
+        sub(f"{stem.title()} archetype growth series by scenario ({var}; FY26..{YRS[-1]})")
         scen_hdr()
-        for y in range(6):
+        for y in range(_H + 1):
             scen_row(f"  {stem.title()} series {YRS[y+1]}", f"{stem}_ser{y}",
                      lambda sid, y=y, var=var: _msa(_inps[sid], var, y + 1), PCT2)
     scen_row("Behring margin uplift (cum FY31)", "up_behring", lambda sid: SC[sid]["behring_margin_uplift"], PCT2)
@@ -1638,17 +1656,17 @@ def build_csl_workbook_bytes(cfg=None):
     # (typed path less its steady state; zero for a flat CAGR).
     for sid_seg, stem, rev0, marg0 in SEGS:
         band(f"{stem.title()} growth applied (archetype series + company offset; D-72)")
-        for p in range(1, 7):
+        for p in range(1, NY):
             def f_g(s, c, j, p=p, stem=stem):
                 ser = R[f'{stem}_ser{p-1}:{s}']
                 if stem == "behring":
-                    return f"={ser}+({R[f'behring_g{p-1}:{s}']}-{R[f'behring_g5:{s}']})"
+                    return f"={ser}+({R[f'behring_g{p-1}:{s}']}-{R[f'behring_g{_last_typed}:{s}']})"
                 return f"={ser}+({R[f'{stem}_cagr:{s}']}-{R[f'{stem}_cagr:{s}']})"
             row(f"{stem}_g{p}", f"  {YRS[p]}", PCT2, f_g)
-    # per-segment revenue (FY25..FY31)
+    # per-segment revenue (FY25..final explicit year)
     for sid_seg, stem, rev0, marg0 in SEGS:
         band(f"{stem.title()} revenue")
-        for p in range(7):
+        for p in range(NY):
             def f_rev(s, c, j, p=p, stem=stem):
                 if p == 0: return f"={R[f'rev0:{stem}']}"
                 return f"={c}{m[f'{stem}_rev{p-1}']}*(1+{c}{m[f'{stem}_g{p}']})"
@@ -1656,35 +1674,35 @@ def build_csl_workbook_bytes(cfg=None):
     # per-segment operating result (rev x margin-glide)
     for sid_seg, stem, rev0, marg0 in SEGS:
         band(f"{stem.title()} operating result")
-        for p in range(7):
+        for p in range(NY):
             def f_or(s, c, j, p=p, stem=stem):
-                marg = f"({R[f'marg0:{stem}']}+{R[f'up_{stem}:{s}']}*{p}/6)"
+                marg = f"({R[f'marg0:{stem}']}+{R[f'up_{stem}:{s}']}*MIN({p}/{_U},1))"
                 return f"={c}{m[f'{stem}_rev{p}']}*{marg}"
             row(f"{stem}_or{p}", f"  {YRS[p]}", NUM0, f_or)
     # group rollup
     band("Group")
-    for p in range(7):
+    for p in range(NY):
         row(f"grev{p}", f"  Total revenue {YRS[p]}", NUM0,
             lambda s, c, j, p=p: "=" + "+".join(f"{c}{m[f'{st[1]}_rev{p}']}" for st in SEGS))
-    for p in range(7):
+    for p in range(NY):
         row(f"gor{p}", f"  Segment OR {YRS[p]}", NUM0,
             lambda s, c, j, p=p: "=" + "+".join(f"{c}{m[f'{st[1]}_or{p}']}" for st in SEGS))
-    for p in range(7):
+    for p in range(NY):
         row(f"corp{p}", f"  Corporate {YRS[p]}", NUM0,
             lambda s, c, j, p=p: f"={R['corp0']}*(1+{R['corpg']})^{p}")
-    for p in range(7):
+    for p in range(NY):
         row(f"ebit{p}", f"  Group EBIT {YRS[p]}", NUM0,
             lambda s, c, j, p=p: f"={c}{m[f'gor{p}']}+{c}{m[f'corp{p}']}")
     # FCFF FY26..FY31 (p=1..6). The working-capital charge is broken out on its
     # own row rather than buried inside the FCFF formula: at a 35% intensity it
     # is the second-largest claim on group cash flow and a reader should be able
     # to see it without opening a cell.
-    band("Free cash flow to firm (FY26..FY31)")
-    for p in range(1, 7):
+    band(f"Free cash flow to firm (FY26..{YRS[-1]})")
+    for p in range(1, NY):
         row(f"dwc{p}", f"  Change in working capital {YRS[p]}", NUM1,
             lambda s, c, j, p=p:
             f"=-({c}{m[f'grev{p}']}-{c}{m[f'grev{p-1}']})*{R['wc']}")
-    for p in range(1, 7):
+    for p in range(1, NY):
         def f_fcff(s, c, j, p=p):
             nopat = f"{c}{m[f'ebit{p}']}*(1-{R[f'tax:{s}']})"
             da = f"{c}{m[f'grev{p}']}*{R['da']}"
@@ -1692,19 +1710,19 @@ def build_csl_workbook_bytes(cfg=None):
             return f"={nopat}+{da}-{capex}+{c}{m[f'dwc{p}']}"
         row(f"fcff{p}", f"  FCFF {YRS[p]}", NUM1, f_fcff)
     # discount + PV (FY27..FY31 explicit)
-    for p in range(2, 7):
+    for p in range(2, NY):
         mt = p - 1.5
         row(f"pv{p}", f"  PV FCFF {YRS[p]}", NUM1,
             lambda s, c, j, p=p, mt=mt: f"={c}{m[f'fcff{p}']}/(1+{R['ke']})^{mt}")
-    row("pvexp", "PV explicit (FY27-FY31)", NUM1,
-        lambda s, c, j: "=" + "+".join(f"{c}{m[f'pv{p}']}" for p in range(2, 7)), bold=True)
+    row("pvexp", f"PV explicit (FY27-{YRS[-1]})", NUM1,
+        lambda s, c, j: "=" + "+".join(f"{c}{m[f'pv{p}']}" for p in range(2, NY)), bold=True)
     # terminal
     row("tfcff", "Terminal FCFF", NUM1,
-        lambda s, c, j: f"={c}{m['grev6']}*({R[f'tmargin:{s}']}*(1-{R[f'tax:{s}']})+{R['da']}-{R['tcapex']}-{R[f'tg:{s}']}*{R['wc']})*(1+{R[f'tg:{s}']})")
+        lambda s, c, j: f"={c}{m[f'grev{_T}']}*({R[f'tmargin:{s}']}*(1-{R[f'tax:{s}']})+{R['da']}-{R['tcapex']}-{R[f'tg:{s}']}*{R['wc']})*(1+{R[f'tg:{s}']})")
     row("tv", "Terminal value", NUM0,
         lambda s, c, j: f"={c}{m['tfcff']}/({R['ke']}-{R[f'tg:{s}']})")
     row("pvtv", "PV terminal", NUM0,
-        lambda s, c, j: f"={c}{m['tv']}/(1+{R['ke']})^5")
+        lambda s, c, j: f"={c}{m['tv']}/(1+{R['ke']})^{_H}")
     row("ev", "Enterprise value", NUM0,
         lambda s, c, j: f"={c}{m['pvexp']}+{c}{m['pvtv']}", bold=True)
     row("eq", "Equity value (less net debt, restructuring)", NUM0,

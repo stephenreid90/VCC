@@ -148,12 +148,21 @@ WBC_GOLDEN = {
     # flat rate, so only the shape moved: +0.2% / 0 / +0.1% / -0.0% / +0.1% / +0.3%.
     # Muddle Through is unchanged to the cent (its world series are flat).
     # Before: 36.1619 / 30.0304 / 29.6987 / 27.1096 / 22.5807 / 18.6488.
-    "orderly_convergence": 36.2265,                # binds Y4
-    "muddle_through": 30.0304,                     # unchanged; ties the v4 workbook
-    "ai_productivity_lag": 29.7176,
-    "fragmentation": 27.1084,
-    "disorderly_climate_crystallisation": 22.6051,
-    "stagflation_persists": 18.7015,
+    # Re-pinned again 14 Oct 2026 for D-71's TEN-year explicit period (Stephen's
+    # ruling the same day): five more years of the typed glides held at their Y5
+    # value, growth from the scenario path to Y10, D-60 now binding in every
+    # scenario (MT at Y7, Stagflation at Y10). OC +11.2%, MT +3.4%, AI Lag +4.0%,
+    # Frag +2.3%, DCC +2.1%, Stag -13.0% -- Stagflation FALLS because five more
+    # years at a 5.2% earned ROE against an 8.05% Ke destroy value before the 9%
+    # terminal ROE is capitalised. The v4 workbook still ties the engine run at its
+    # own five years (test_wbc_bank.py). Five-year levels on the D-72 path:
+    # 36.2265 / 30.0304 / 29.7176 / 27.1084 / 22.6051 / 18.7015.
+    "orderly_convergence": 40.2748,                # binds Y4
+    "muddle_through": 31.0502,                     # binds Y7
+    "ai_productivity_lag": 30.8918,
+    "fragmentation": 27.7263,
+    "disorderly_climate_crystallisation": 23.0864,
+    "stagflation_persists": 16.2617,
 }
 
 # --- CSL: multi-segment FCFF / Ke (M3), (USD, AUD) per share -------------------
@@ -167,12 +176,23 @@ CSL_GOLDEN = {
     # Frag +0.1%, DCC +1.2%, Stag +2.2%. Muddle Through unchanged to the cent.
     # Before (USD, AUD): 150.0986/227.4294, 126.197/191.2137, 106.8851/161.9522,
     # 110.9456/168.1047, 101.3368/153.5455.
-    "orderly_convergence": (150.6863, 228.3199),
-    "muddle_through": (129.213, 195.7835),        # independently audited (generated workbook, all six)
-    "ai_productivity_lag": (126.5514, 191.7507),
-    "fragmentation": (106.9922, 162.1145),
-    "disorderly_climate_crystallisation": (112.3121, 170.1754),
-    "stagflation_persists": (103.5286, 156.8666),
+    # Re-pinned again 14 Oct 2026 for D-71's TEN-year explicit period (Stephen's
+    # ruling): FY27-FY36, segment growth from the archetype paths to Y10, margin
+    # uplift glided to FY31 then held, Gordon terminal (no decay horizon declared
+    # for CSL yet). OC +16.8%, MT +14.0%, AI Lag +12.1%, Frag +9.2%, DCC +10.0%,
+    # Stag +3.6% -- the same horizon artefact DNL disclosed on 2 Oct: five more
+    # years of 5-7% nominal growth at a held margin before the terminal. The
+    # five-year generated workbook tie moved with it (csl_workbook_all_scenarios.json
+    # regenerated); the hand-built v4 still ties the engine run at five years.
+    # Five-year levels on the D-73 paths (USD, AUD): 150.6863/228.3199,
+    # 129.213/195.7835, 126.5514/191.7507, 106.9922/162.1145, 112.3121/170.1754,
+    # 103.5286/156.8666.
+    "orderly_convergence": (176.0748, 266.7885),
+    "muddle_through": (147.3357, 223.2431),       # independently audited (generated workbook, all six)
+    "ai_productivity_lag": (141.8839, 214.9825),
+    "fragmentation": (116.8037, 176.9810),
+    "disorderly_climate_crystallisation": (123.5242, 187.1639),
+    "stagflation_persists": (107.2600, 162.5203),
 }
 
 
@@ -224,9 +244,11 @@ TERMINAL_BREACH = {
     # Re-pinned 2 Oct 2026 (D-71): 0.7631 -> 0.7021. Then D-72 took it to 0.6980,
     # a hair UNDER the 70% line, so no DNL scenario breaches today; it is pinned
     # in dnl_shares below so the next move across the line is read, not absorbed.
-    ("wbc", "muddle_through"): 0.7631,     # back to the pre-D-60 figure (M13)
-    ("wbc", "stagflation_persists"): 0.8430,       # worst in the project; D-60 never binds here (0.8445 pre-D-72 bank path)
-    ("csl", "muddle_through"): 0.7538,
+    # 14 Oct 2026 (D-71 ten years for WBC and CSL): NO valuation in the project
+    # breaches the 70% line any more. WBC MT 0.7631 -> 0.6109, WBC Stagflation 0.8430
+    # -> 0.6926 (still the highest in the project), CSL MT 0.7538 -> 0.5738. They are
+    # pinned in wbc_shares / csl_shares below so the next move across the line is
+    # read, not absorbed. The dict is kept (empty) so the guard and its reasons stay.
 }
 
 
@@ -297,12 +319,27 @@ def test_terminal_shares_are_measured_case_by_case():
         "disorderly_climate_crystallisation": 0.6980,
         "stagflation_persists": 0.6754,
     }
+    # 14 Oct 2026: WBC and CSL moved to the ten-year explicit period (D-71) and every
+    # one of their terminal shares fell below 70% -- the same mechanism as DNL on
+    # 2 Oct (more explicit years, a smaller terminal). Pinned, not asserted below
+    # the line, so the next crossing in either direction is a conscious event.
+    wbc_shares = {
+        "orderly_convergence": 0.6373, "muddle_through": 0.6109, "ai_productivity_lag": 0.6024,
+        "fragmentation": 0.5903, "disorderly_climate_crystallisation": 0.5934,
+        "stagflation_persists": 0.6926,
+    }
+    csl_shares = {
+        "orderly_convergence": 0.5987, "muddle_through": 0.5738, "ai_productivity_lag": 0.5648,
+        "fragmentation": 0.5438, "disorderly_climate_crystallisation": 0.5445,
+        "stagflation_persists": 0.5336,
+    }
     for scenario in SCENARIOS:
         assert _dnl(scenario).terminal_share_of_ev == pytest.approx(
             dnl_shares[scenario], abs=5e-4), scenario
-        # WBC and CSL are untouched by the Denali restatement and still breach.
-        assert _wbc(scenario).terminal_share_of_claim > TERMINAL_SHARE_THRESHOLD, scenario
-        assert _csl(scenario).terminal_share_of_ev > TERMINAL_SHARE_THRESHOLD, scenario
+        assert _wbc(scenario).terminal_share_of_claim == pytest.approx(wbc_shares[scenario], abs=5e-4), scenario
+        assert _csl(scenario).terminal_share_of_ev == pytest.approx(csl_shares[scenario], abs=5e-4), scenario
+        assert _wbc(scenario).terminal_share_of_claim < TERMINAL_SHARE_THRESHOLD, scenario
+        assert _csl(scenario).terminal_share_of_ev < TERMINAL_SHARE_THRESHOLD, scenario
 
 
 

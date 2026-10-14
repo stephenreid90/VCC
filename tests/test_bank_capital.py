@@ -187,10 +187,15 @@ def test_wbc_erodes_capital_in_every_scenario_which_is_the_item_8_finding():
 
     assert all(d < 0 for d in drifts.values()), drifts
     assert all(t < 0 for t in drifts.values())
-    # None of them breaches the regulatory floor inside the explicit period; the
-    # problem is the drift and the operating target, not an APRA event.
+    # Over the ten-year explicit period (D-71, 14 Oct 2026) the UNCONSTRAINED
+    # Orderly Convergence path does cross the regulatory floor (10.25%) at Y7 --
+    # ten years of 6.4% asset growth on an unchanged payout. That is exactly the
+    # case D-60 exists for: with the constraint on (the default) no scenario
+    # reaches the floor, because the payout is cut at the operating target first.
     for s in SCENARIOS:
-        assert BankEngine().run(_off(s)).cet1_trajectory.first_below_floor is None
+        unconstrained = BankEngine().run(_off(s)).cet1_trajectory.first_below_floor
+        assert unconstrained == ("Y7" if s == "orderly_convergence" else None), (s, unconstrained)
+        assert BankEngine().run(_on(s)).cet1_trajectory.first_below_floor is None, s
 
 
 def test_the_cited_drift_figures_come_from_here():
@@ -204,21 +209,22 @@ def test_the_cited_drift_figures_come_from_here():
     def drift_bps(s):
         return BankEngine().run(_off(s)).cet1_trajectory.drift_bps
 
-    assert drift_bps("muddle_through") == pytest.approx(-97, abs=5)
-    assert drift_bps("orderly_convergence") == pytest.approx(-165, abs=5)
-    # -71 before the D-72 bank path (14 Oct 2026). Stagflation's shock phase carries
-    # HIGHER nominal balance-sheet growth in Y1-Y3 (inflation) than the old flat
-    # 2.5%, so more capital is consumed inside the five explicit years.
-    assert drift_bps("stagflation_persists") == pytest.approx(-93, abs=5)
+    # Ten-year figures (D-71, 14 Oct 2026). The five-year drifts these replaced were
+    # -97 / -165 / -71 (and -93 for Stagflation on the D-72 path at five years).
+    assert drift_bps("muddle_through") == pytest.approx(-174, abs=5)
+    assert drift_bps("orderly_convergence") == pytest.approx(-284, abs=5)
+    assert drift_bps("stagflation_persists") == pytest.approx(-122, abs=5)
 
     central = BankEngine().run(_off("muddle_through")).cet1_trajectory
     assert central.anchor_ratio == pytest.approx(0.1242, abs=1e-6)
-    assert central.closing_ratio == pytest.approx(0.1145, abs=5e-4)
-    # Against the corrected 11.25% target (M13) the unconstrained central case
-    # lands just above it rather than crossing, which is why D-60 stopped biting.
+    # Over five years the unconstrained central case closed at 11.45%, just above
+    # the 11.25% target (M13), which is why D-60 did not bite then. Over ten years
+    # (D-71) it drifts on to 10.68% and crosses the target at Y7, so D-60 bites in
+    # Muddle Through as well -- the drift was always there; the horizon now shows it.
+    assert central.closing_ratio == pytest.approx(0.1068, abs=5e-4)
     assert central.operating_target == pytest.approx(0.1125, abs=1e-9)
-    assert central.first_below_target is None
-    assert central.closing_ratio > central.operating_target
+    assert central.first_below_target == "Y7"
+    assert central.closing_ratio < central.operating_target
 
 
 def test_the_capital_ordering_is_inverted_against_value():
@@ -241,16 +247,13 @@ def test_the_capital_ordering_is_inverted_against_value():
 
     worst_value = min(rows, key=lambda s: rows[s][0])
     best_capital = max(rows, key=lambda s: rows[s][1])
-    assert worst_value == "stagflation_persists", rows
-    # Read, not assumed (D-56). Until 14 Oct 2026 Stagflation was also the best for
-    # capital, because its flat balance-sheet growth was the lowest (2.5%). Under
-    # the D-72 bank path its growth is front-loaded -- the shock phase is
-    # inflationary, so NOMINAL assets grow 3.4% in Y1 and only fall to 2.2% by Y5 --
-    # while Fragmentation runs a steady ~4.0% with no inflation spike and now
-    # consumes the least capital. The inversion best-value/worst-capital still
-    # holds; the symmetric worst-value/best-capital no longer does, for a reason
-    # the scenario files state rather than one the test assumed.
-    assert best_capital == "fragmentation", rows
+    # Read, not assumed (D-56). At FIVE years on the D-72 path (earlier on 14 Oct
+    # 2026) Fragmentation was briefly the best for capital: Stagflation's shock phase
+    # is inflationary and front-loads NOMINAL asset growth (3.4% in Y1). At TEN
+    # years (D-71) Stagflation's low growth from its resolution phase (2.2% from Y5)
+    # dominates and it is again the scenario that consumes the least capital, so
+    # the full inversion holds once more -- for a reason the scenario files state.
+    assert worst_value == best_capital == "stagflation_persists", rows
 
 
 # ------------------------------------- D-60: the rule, built but switched off
@@ -274,9 +277,11 @@ def test_the_constraint_is_on_by_default_and_gives_the_ratified_level():
     assert inp.constrain_payout_to_capital is True
     assert inp.cet1_operating_target == pytest.approx(0.1125, abs=1e-9)
     r = BankEngine().run(inp)
-    assert r.value_per_share == pytest.approx(30.0304, abs=1e-3)
-    assert r.capital_constraint_binds_from is None
-    assert r.dividends_forgone == 0.0
+    # 30.0304 with no bite at five years; at ten years (D-71, 14 Oct 2026) the ratio
+    # reaches 11.25% at Y7 and the payout is cut from there.
+    assert r.value_per_share == pytest.approx(31.0502, abs=1e-3)
+    assert r.capital_constraint_binds_from == "Y7"
+    assert r.dividends_forgone > 0
 
 
 def test_when_on_it_holds_the_ratio_exactly_on_the_operating_target():
@@ -307,12 +312,24 @@ def test_the_rule_is_one_sided_and_never_raises_the_payout():
 
 
 def test_a_scenario_that_never_reaches_the_target_is_untouched():
-    """Stagflation and Fragmentation erode least, so the rule must not bite."""
+    """Where the ratio stays above the target the rule does nothing at all.
+
+    At five years Stagflation and Fragmentation never reached it. Over ten years
+    (D-71) every scenario eventually does -- Stagflation last, in Y10 -- so the
+    property is checked on a shortened run of the same inputs instead of on a
+    scenario that no longer exists in the data.
+    """
+    from dataclasses import replace
     for s in ("stagflation_persists", "fragmentation"):
-        off = BankEngine().run(_off(s))
-        on = BankEngine().run(_on(s))
+        short = dict(horizon_years=5, aiea_growth=BankEngine.aiea_growth_path(_off(s))[:5],
+                     nim_applied=_off(s).nim_applied[:6], cost_to_income=_off(s).cost_to_income[:6],
+                     credit_loss_rate=_off(s).credit_loss_rate[:6])
+        off = BankEngine().run(replace(_off(s), **short))
+        on = BankEngine().run(replace(_on(s), **short))
         assert on.capital_constraint_binds_from is None, s
         assert on.value_per_share == pytest.approx(off.value_per_share, abs=1e-12), s
+    # and at the full ten years the rule does bite, last of all in Stagflation
+    assert BankEngine().run(_on("stagflation_persists")).capital_constraint_binds_from == "Y10"
 
 
 def test_the_constraint_raises_value_which_is_the_retention_trade():
@@ -331,6 +348,16 @@ def test_the_constraint_raises_value_which_is_the_retention_trade():
 
     Asserted so the direction is a stated property rather than a surprise.
     """
+    # Ten-year finding (D-71, 14 Oct 2026). In this engine a retained dollar earns
+    # NOTHING until the terminal -- NPAT is struck on AIEA x NIM, not on book equity
+    # -- so retention pays only if the terminal multiple outruns Ke compounded over
+    # the years between the cut and the terminal. Disorderly Climate binds at Y6 with
+    # a multiple of 1.20 against (1.0805)^4.35 = 1.40, and its value FALLS by 1c.
+    # The other five bind later or carry a higher multiple and rise. Read, not
+    # assumed: the direction is pinned per scenario with the arithmetic beside it.
+    # Letting retained equity earn inside the explicit period is a modelling gap,
+    # noted in WORKING_NOTES (14 Oct 2026), not fixed here.
+    falls = {"disorderly_climate_crystallisation"}
     for s in SCENARIOS:
         inp = _off(s)
         multiple = (inp.terminal_roe - inp.terminal_growth) / (inp.cost_of_equity - inp.terminal_growth)
@@ -339,7 +366,10 @@ def test_the_constraint_raises_value_which_is_the_retention_trade():
 
         assert multiple > 1.0, (s, multiple)
         if on.dividends_forgone > 0:
-            assert on.value_per_share > off.value_per_share, (s, off.value_per_share, on.value_per_share)
+            if s in falls:
+                assert on.value_per_share < off.value_per_share, (s, off.value_per_share, on.value_per_share)
+            else:
+                assert on.value_per_share > off.value_per_share, (s, off.value_per_share, on.value_per_share)
             assert on.terminal_share_of_claim > off.terminal_share_of_claim, s
 
 

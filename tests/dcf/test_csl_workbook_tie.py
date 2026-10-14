@@ -11,8 +11,8 @@ The oracle (``golden/csl_workbook_all_scenarios.json``) comes from
 workbook in LibreOffice. The workbook is formula-only and regenerates from the
 data files, so it cannot drift from the register the way a hand-built file can.
 
-Note the index offset: the workbook's group vectors run FY26..FY31, the engine's
-run FY25..FY31, so the engine side is sliced from index 1.
+Note the index offset: the workbook's group vectors run FY26..FY36, the engine's
+run FY25..FY36, so the engine side is sliced from index 1.
 """
 
 from __future__ import annotations

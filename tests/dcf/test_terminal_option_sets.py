@@ -119,8 +119,10 @@ def test_engine_current_reproduces_every_engine_value_per_share(rows):
     # DNL re-pinned 2 Oct 2026 for D-71 (1.8461 -> 1.9422): fixed ten-year
     # horizon, excess-return convergence headline.
     # D-72 (same day): 1.9422 -> 2.1382 (scenario paths, derived g).
-    pinned = {("dnl", "muddle_through"): 2.1382, ("wbc", "muddle_through"): 30.0304,
-              ("csl", "muddle_through"): 195.7835}
+    # WBC and CSL re-pinned 14 Oct 2026 for D-71's ten-year period (30.0304 ->
+    # 31.0502; 195.7835 -> 223.2431); the D-73 scenario paths left MT unchanged.
+    pinned = {("dnl", "muddle_through"): 2.1382, ("wbc", "muddle_through"): 31.0502,
+              ("csl", "muddle_through"): 223.2431}
     for key, vps in pinned.items():
         v = next(x for x in rows if (x.company_id, x.scenario_id) == key)
         assert _basis(v, "engine_current").value_per_share == pytest.approx(vps, abs=1e-4)

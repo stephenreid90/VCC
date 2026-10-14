@@ -42,15 +42,15 @@ def test_bank_muddle_through_path_is_the_old_flat_rate():
     inp = _wbc("muddle_through")
     shared = inp["company_raw"]["normalised_baseline"]["bank_build"]["aiea_nim_chain"]["shared"]
     flat = shared["industry"]["aiea_growth"] + shared["company_offset"]["aiea_growth_offset"]
-    assert bank_aiea_growth_path_from_data(inp, 5) == pytest.approx([flat] * 5)
+    assert bank_aiea_growth_path_from_data(inp, 10) == pytest.approx([flat] * 10)
 
 
 @pytest.mark.parametrize("s", SCENARIOS)
 def test_bank_path_is_scenario_series_plus_company_offset_per_year(s):
     inp = _wbc(s)
     offset = inp["company_raw"]["normalised_baseline"]["bank_build"]["aiea_nim_chain"]["shared"]["company_offset"]["aiea_growth_offset"]
-    path = bank_aiea_growth_path_from_data(inp, 5)
-    assert path == pytest.approx([macro_series_at(inp, "bank_system_aiea_growth", y) + offset for y in range(1, 6)])
+    path = bank_aiea_growth_path_from_data(inp, 10)
+    assert path == pytest.approx([macro_series_at(inp, "bank_system_aiea_growth", y) + offset for y in range(1, 11)])
     bi = build_bank_inputs_from_data(inp, s)
     assert BankEngine.aiea_growth_path(bi) == pytest.approx(path)
 
@@ -83,9 +83,11 @@ def test_each_segment_reads_its_own_archetypes_single_declared_series(seg, var):
 def test_muddle_through_segment_paths_are_the_typed_paths():
     inp = _csl("muddle_through")
     scen = inp["company_raw"]["normalised_baseline"]["segment_fcff"]["by_scenario"]["muddle_through"]
-    assert segment_growth_path_from_data(inp, "muddle_through", "csl_behring", 5) == pytest.approx(scen["behring_growth"], abs=1e-9)
-    assert segment_growth_path_from_data(inp, "muddle_through", "csl_seqirus", 5) == pytest.approx([scen["seqirus_cagr"]] * 6, abs=1e-9)
-    assert segment_growth_path_from_data(inp, "muddle_through", "csl_vifor", 5) == pytest.approx([scen["vifor_cagr"]] * 6, abs=1e-9)
+    # D-71: ten years; the typed Behring path (FY26..FY31) holds its steady state to FY36
+    typed = scen["behring_growth"]
+    assert segment_growth_path_from_data(inp, "muddle_through", "csl_behring", 10) == pytest.approx(typed + [typed[-1]] * 5, abs=1e-9)
+    assert segment_growth_path_from_data(inp, "muddle_through", "csl_seqirus", 10) == pytest.approx([scen["seqirus_cagr"]] * 11, abs=1e-9)
+    assert segment_growth_path_from_data(inp, "muddle_through", "csl_vifor", 10) == pytest.approx([scen["vifor_cagr"]] * 11, abs=1e-9)
 
 
 @pytest.mark.parametrize("s", SCENARIOS)
@@ -93,9 +95,9 @@ def test_behring_j_curve_offset_survives_in_every_scenario(s):
     """The offset is the typed path less its steady state, so the recovery shape is scenario-invariant."""
     inp = _csl(s)
     scen = inp["company_raw"]["normalised_baseline"]["segment_fcff"]["by_scenario"][s]
-    typed = scen["behring_growth"]
-    path = segment_growth_path_from_data(inp, s, "csl_behring", 5)
-    series = [macro_series_at(inp, SEGMENTS["csl_behring"], t + 1) for t in range(6)]
+    typed = scen["behring_growth"]; typed = typed + [typed[-1]] * (11 - len(typed))
+    path = segment_growth_path_from_data(inp, s, "csl_behring", 10)
+    series = [macro_series_at(inp, SEGMENTS["csl_behring"], t + 1) for t in range(11)]
     assert [p - x for p, x in zip(path, series)] == pytest.approx([g - typed[-1] for g in typed], abs=1e-12)
     assert path[-1] == pytest.approx(series[-1])      # steady state = the archetype series
 
@@ -104,5 +106,5 @@ def test_behring_j_curve_offset_survives_in_every_scenario(s):
 def test_a_flat_cagr_segment_carries_no_company_offset(s):
     inp = _csl(s)
     for seg in ("csl_seqirus", "csl_vifor"):
-        path = segment_growth_path_from_data(inp, s, seg, 5)
-        assert path == pytest.approx([macro_series_at(inp, SEGMENTS[seg], t + 1) for t in range(6)])
+        path = segment_growth_path_from_data(inp, s, seg, 10)
+        assert path == pytest.approx([macro_series_at(inp, SEGMENTS[seg], t + 1) for t in range(11)])

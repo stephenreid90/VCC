@@ -87,8 +87,11 @@ def test_wbc_stagflation_terminal_roe_is_a_recovery_assumption(rows):
     wbc = {r.scenario_id: r for r in rows if r.company_id == "wbc"}
     stag = wbc["stagflation_persists"]
 
-    assert stag.step_from_earned == pytest.approx(0.0401, abs=0.002)
-    assert stag.earned_final_explicit == pytest.approx(0.0499, abs=0.002)
+    # Ten-year figures (D-71, 14 Oct 2026); at five years they were 0.0401 / 0.0499.
+    # Five more years of the Stagflation glides (CTI 51%, +50bp losses) earn 5.2% on
+    # the closing equity against a declared 9%: the recovery step is 3.8pp.
+    assert stag.step_from_earned == pytest.approx(0.0378, abs=0.002)
+    assert stag.earned_final_explicit == pytest.approx(0.0522, abs=0.002)
     assert any("recovery assumption" in w for w in stag.warnings)
 
     # Every other scenario is conservative or flat, which is what makes the

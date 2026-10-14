@@ -27,6 +27,21 @@ def _run(scenario):
     return BankEngine().run(build_bank_inputs_from_data(inp, scenario))
 
 
+def _at_five_years(inp):
+    """The audited v4 workbook is a FIVE-year model. D-71 moved WBC to ten years on
+    14 Oct 2026; the workbook stays the independent audit of the §15 mechanics by
+    running the same engine at the workbook's own horizon (glides sliced to Y5, the
+    growth path to Y1..Y5). Nothing about the engine differs between the two runs
+    except the length of the explicit period."""
+    return replace(
+        inp, horizon_years=5,
+        aiea_growth=list(BankEngine.aiea_growth_path(inp))[:5],
+        nim_applied=inp.nim_applied[:6], cost_to_income=inp.cost_to_income[:6],
+        credit_loss_rate=inp.credit_loss_rate[:6],
+        terminal_form="gordon", convergence_years=None,
+    )
+
+
 def test_muddle_through_ties_workbook():
     """The independent tie, struck on the UNCONSTRAINED path (D-60, 16 Sep 2026).
 
@@ -39,12 +54,12 @@ def test_muddle_through_ties_workbook():
     ties the base engine, and the constrained level is asserted separately below.
     """
     r = BankEngine().run(replace(
-        build_bank_inputs_from_data(load_inputs(ROOT, "muddle_through",
-                                                "australian_major_banks", "wbc"),
-                                    "muddle_through"),
+        _at_five_years(build_bank_inputs_from_data(load_inputs(ROOT, "muddle_through",
+                                                               "australian_major_banks", "wbc"),
+                                                   "muddle_through")),
         constrain_payout_to_capital=False,
     ))
-    # headline value per share (workbook DDM + ROE-fade terminal)
+    # headline value per share (workbook DDM + ROE-fade terminal), at the workbook's five years
     assert r.value_per_share == pytest.approx(30.0304, abs=1e-3)
     # key bridge lines tie the audited workbook
     assert r.closing_book_equity == pytest.approx(83682.114, abs=0.1)
@@ -65,20 +80,35 @@ def test_muddle_through_no_longer_binds_so_it_ties_the_workbook_on_both_paths():
     therefore agree here, and both tie the audited v4 workbook -- which is a
     stronger position than the overlay it replaced.
     """
-    r = _run("muddle_through")
+    r = BankEngine().run(_at_five_years(build_bank_inputs_from_data(
+        load_inputs(ROOT, "muddle_through", "australian_major_banks", "wbc"), "muddle_through")))
     assert r.value_per_share == pytest.approx(30.0304, abs=1e-3)
     assert r.capital_constraint_binds_from is None
     assert r.dividends_forgone == 0.0
     assert r.closing_book_equity == pytest.approx(83682.114, abs=0.1)
 
 
+def test_at_ten_years_the_constraint_binds_in_muddle_through_too():
+    """D-71 (14 Oct 2026): five more years of CET1 drift reach the 11.25% target in
+    every scenario -- Muddle Through at Y7. The v4 tie above is unchanged because it
+    runs at the workbook's own five years; this is the live ten-year level."""
+    r = _run("muddle_through")
+    assert len(r.period_labels) == 11   # stub + Y1..Y10
+    assert r.value_per_share == pytest.approx(31.0502, abs=1e-3)
+    assert r.capital_constraint_binds_from == "Y7"
+    assert r.dividends_forgone > 0
+
+
 def test_orderly_convergence_is_the_one_scenario_the_constraint_still_bites():
-    """It erodes fastest — 165bp — so it is the one that still reaches 11.25%.
+    """It erodes fastest — 165bp — so it is the one that still reaches 11.25% inside FIVE years.
 
     Keeps a live assertion on the D-60 machinery. If this stops binding too, the
-    payout constraint has become dead code and the register should say so.
+    payout constraint has become dead code and the register should say so. At the
+    ten-year horizon (D-71, 14 Oct 2026) every scenario eventually binds; this test
+    keeps the five-year reading because that is the claim the docstring makes.
     """
-    r = _run("orderly_convergence")
+    r = BankEngine().run(_at_five_years(build_bank_inputs_from_data(
+        load_inputs(ROOT, "orderly_convergence", "australian_major_banks", "wbc"), "orderly_convergence")))
     assert r.value_per_share == pytest.approx(36.2265, abs=1e-3)  # 36.1619 before the D-72 bank path (14 Oct 2026)
     assert r.capital_constraint_binds_from == "Y4"
     assert r.dividends_forgone > 0

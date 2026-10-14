@@ -62,6 +62,17 @@ class BankInputs:
     cost_of_equity: float
     terminal_roe: float
     terminal_growth: float
+    # D-71 / D-62 (routed 14 Oct 2026): the headline terminal form. "gordon" is the
+    # justified price-to-book, closing equity x (ROE - g)/(Ke - g) -- the earned ROE
+    # held forever. "excess_return_convergence" holds the same closing equity C and
+    # converges ROE to Ke over ``convergence_years`` (the declared decay horizon),
+    # then Gordon: TV = C x [(R-g)/(r-g) x (1-k^N) + k^N], k = (1+g)/(1+r). D-62
+    # states it in bank terms; the algebra is terminal_value.two_stage, shared with
+    # the industrial engine. Hand-built inputs default to Gordon; the assembler
+    # (translator.terminal_form_from_data) picks convergence where a decay horizon
+    # is declared and falls back to Gordon, saying so, where none is.
+    terminal_form: str = "gordon"
+    convergence_years: Optional[float] = None
     # §15.5 capital diagnostic (open item 8). Optional, and warn-only: supply all
     # four and the engine projects the CET1 path and warns; omit any and it is
     # skipped. Optional rather than required so that the diagnostic can never be
@@ -122,6 +133,9 @@ class BankResult:
     # §11.4.2 diagnostics. The bank terminal is a share of the *equity claim*
     # (PV dividends + PV terminal), there being no EV bridge in the §15 fork.
     terminal_share_of_claim: float = 0.0
+    # D-71: which terminal form struck the headline, and the decay horizon it used.
+    terminal_form: str = "gordon"
+    convergence_years: Optional[float] = None
     warnings: List[str] = field(default_factory=list)
     # Per-period equity roll-forward. The engine has always computed retained
     # earnings as one lump over the horizon, which is all the terminal value
@@ -171,6 +185,9 @@ class BankEngine:
         for p in range(2, n):
             aiea[p] = aiea[p - 1] * (1.0 + g[p - 1])
 
+        for name in ("nim_applied", "cost_to_income", "credit_loss_rate"):
+            if len(getattr(inp, name)) != n:
+                raise ValueError(f"{name} has {len(getattr(inp, name))} entries; need stub + {H} years = {n}")
         nim = list(inp.nim_applied)
         nii = [aiea[p] * nim[p] * period_length[p] for p in range(n)]
 
@@ -266,7 +283,15 @@ class BankEngine:
         retained = sum(npat) - sum(dividends)
         closing_equity = inp.book_equity + retained
         g = inp.terminal_growth
-        tv = closing_equity * (inp.terminal_roe - g) / (ke - g)
+        if inp.terminal_form == "excess_return_convergence":
+            if inp.convergence_years is None:
+                raise ValueError("terminal_form='excess_return_convergence' requires convergence_years")
+            from vcc_valuations.dcf.terminal_value import two_stage
+            tv = two_stage(closing_equity, inp.terminal_roe, ke, g, inp.convergence_years)
+        elif inp.terminal_form == "gordon":
+            tv = closing_equity * (inp.terminal_roe - g) / (ke - g)
+        else:
+            raise ValueError(f"terminal_form must be 'gordon' or 'excess_return_convergence', got {inp.terminal_form!r}")
         terminal_end = inp.stub_years + H
         tdf = 1.0 / (1.0 + ke) ** terminal_end
         pv_terminal = tv * tdf
@@ -329,6 +354,7 @@ class BankEngine:
             treasury_shares=inp.treasury_shares, ordinary_equity_value=ordinary,
             shares_outstanding_m=inp.shares_outstanding_m, value_per_share=vps,
             terminal_share_of_claim=terminal_share, warnings=warnings,
+            terminal_form=inp.terminal_form, convergence_years=inp.convergence_years,
             retained_by_period=retained_by_period, book_equity_path=book_equity_path,
             rwa_by_period=rwa_by_period, cet1_trajectory=trajectory,
             payout_applied=payout_applied,

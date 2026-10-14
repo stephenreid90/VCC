@@ -671,7 +671,11 @@ normalised_baseline:
     # observed anchors in data/financials/csl.yaml; here are the layer-2 drivers.
     # Standing rule 1: segment paths + corporate build separate; the engine derives FCFF.
     timing:
-      horizon_years: 5           # FY27-FY31 explicit; FY26 is the anchor (mid-time 0)
+      horizon_years: 10          # FY27-FY36 explicit; FY26 is the anchor (mid-time 0). D-71: a fixed
+                                 # ten years for every company; moved from 5 on 14 Oct 2026 (Stephen's
+                                 # ruling). Segment growth reads each archetype's scenario path to Y10
+                                 # (D-73); the typed Behring path holds its steady state beyond FY31.
+      margin_uplift_years: 6     # the typed margin uplifts are "cumulative by FY31": glide FY25->FY31, then hold
     fx_aud_per_usd: 1.5152       # spot; value_per_share_AUD = USD x FX
     corporate:
       unallocated_fy25: -2559    # R&D + G&A + central (USD m)

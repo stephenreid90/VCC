@@ -20,7 +20,7 @@ Inputs carry ZERO derived values; every derived quantity is computed here and ex
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from vcc_valuations.derivation import DerivationBuilder
 from vcc_valuations.dcf.fcf_engine import terminal_share_warning
@@ -31,8 +31,12 @@ class SegmentSpec:
     name: str
     fy25_revenue: float
     fy25_or_margin: float
-    growth_path: List[float]   # 6 per-year growth rates FY26..FY31 (flat CAGR -> repeated)
-    margin_uplift_cum: float   # cumulative OR-margin uplift by FY31 (linear glide)
+    growth_path: List[float]   # H+1 per-year growth rates FY26..FY(26+H) (flat CAGR -> repeated)
+    margin_uplift_cum: float   # cumulative OR-margin uplift reached by the end of margin_uplift_years
+    # D-71 (14 Oct 2026): the uplift glides linearly from FY25 over this many years
+    # and then HOLDS -- it is the company's stated FY31 steady state, not a trend
+    # to run on to FY36. Declared in data (segment_fcff.timing.margin_uplift_years).
+    margin_uplift_years: int = 6
 
 
 @dataclass
@@ -55,6 +59,16 @@ class SegmentInputs:
     restructuring_cash_to_come: float
     shares_outstanding_m: float
     fx_aud_per_usd: float
+    # D-71 / D-62 (routed 14 Oct 2026): the headline terminal form. "gordon"
+    # capitalises the normalised terminal FCFF. "excess_return_convergence" holds the
+    # closing invested-capital base C (D-67, supplied as terminal_invested_capital),
+    # sets next-year NOPAT = C x R with R the return the explicit period leaves it
+    # earning, and converges R to Ke over convergence_years, then Gordon -- the same
+    # two_stage algebra as the industrial and bank engines. The assembler picks
+    # convergence where a decay horizon is declared and Gordon, saying so, where none is.
+    terminal_form: str = "gordon"
+    convergence_years: Optional[float] = None
+    terminal_invested_capital: Optional[float] = None
 
 
 @dataclass
@@ -89,6 +103,9 @@ class SegmentResult:
     value_per_share_usd: float
     value_per_share_aud: float
     terminal_share_of_ev: float
+    terminal_form: str = "gordon"
+    convergence_years: Optional[float] = None
+    terminal_earned_return: Optional[float] = None
     # §11.4.2 sensitivity-pass warning, shared with the industrial engine.
     warnings: List[str] = field(default_factory=list)
 
@@ -97,18 +114,22 @@ class SegmentEngine:
     """``run(SegmentInputs) -> SegmentResult``. Bottom-up multi-segment FCFF, Ke discount."""
 
     def run(self, inp: SegmentInputs) -> SegmentResult:
-        H = inp.horizon_years           # 5 explicit forecast years beyond FY26 anchor
-        n = H + 2                        # FY25 (anchor base) + FY26..FY31 => 7 points
+        H = inp.horizon_years           # explicit forecast years beyond the FY26 anchor (10 under D-71)
+        n = H + 2                        # FY25 (anchor base) + FY26..FY(26+H)
         labels = ["FY25"] + [f"FY{26 + k}" for k in range(H + 1)]
 
         seg_rev: Dict[str, List[float]] = {}
         seg_or: Dict[str, List[float]] = {}
         for seg in inp.segments:
+            if len(seg.growth_path) != H + 1:
+                raise ValueError(f"{seg.name}: growth_path has {len(seg.growth_path)} entries; need {H + 1}")
             rev = [seg.fy25_revenue]
             for y in range(1, n):
                 rev.append(rev[-1] * (1.0 + seg.growth_path[y - 1]))
-            # margin glides linearly from FY25 base by the cumulative uplift over 6 years
-            marg = [seg.fy25_or_margin + seg.margin_uplift_cum * (y / (n - 1)) for y in range(n)]
+            # margin glides linearly from the FY25 base to the cumulative uplift over
+            # margin_uplift_years, then holds (D-71: the glide endpoint is the stated steady state)
+            U = seg.margin_uplift_years
+            marg = [seg.fy25_or_margin + seg.margin_uplift_cum * min(y / U, 1.0) for y in range(n)]
             seg_rev[seg.name] = rev
             seg_or[seg.name] = [rev[y] * marg[y] for y in range(n)]
 
@@ -134,13 +155,28 @@ class SegmentEngine:
         pv = [0.0] + [fcff[i] * dfs[i] for i in range(1, H + 1)]
         pv_explicit = sum(pv)
 
-        fy31_rev = group_rev[-1]
+        fy31_rev = group_rev[-1]   # the final explicit year (name kept from the five-year build)
         terminal_fcff = fy31_rev * (
             inp.terminal_ebit_margin * (1.0 - inp.tax_rate)
             + inp.da_pct_revenue - inp.terminal_capex_pct_revenue
             - inp.terminal_growth * inp.wc_change_pct_revenue_change
         ) * (1.0 + inp.terminal_growth)
-        tv = terminal_fcff / (ke - inp.terminal_growth)
+        terminal_earned_return = None
+        if inp.terminal_form == "excess_return_convergence":
+            if inp.convergence_years is None or inp.terminal_invested_capital is None:
+                raise ValueError("terminal_form='excess_return_convergence' requires convergence_years "
+                                 "and terminal_invested_capital (D-67)")
+            from vcc_valuations.dcf.terminal_value import two_stage
+            g = inp.terminal_growth
+            # the return the explicit period leaves the capital base earning, on the
+            # normalised terminal NOPAT (terminal margin, next year) -- mirrors fcf_engine
+            terminal_nopat_next = fy31_rev * inp.terminal_ebit_margin * (1.0 - inp.tax_rate) * (1.0 + g)
+            terminal_earned_return = terminal_nopat_next / inp.terminal_invested_capital
+            tv = two_stage(inp.terminal_invested_capital, terminal_earned_return, ke, g, inp.convergence_years)
+        elif inp.terminal_form == "gordon":
+            tv = terminal_fcff / (ke - inp.terminal_growth)
+        else:
+            raise ValueError(f"terminal_form must be 'gordon' or 'excess_return_convergence', got {inp.terminal_form!r}")
         tdf = 1.0 / (1.0 + ke) ** H
         pv_terminal = tv * tdf
 
@@ -167,6 +203,8 @@ class SegmentEngine:
             shares_outstanding_m=inp.shares_outstanding_m, value_per_share_usd=vps_usd,
             value_per_share_aud=vps_aud,
             terminal_share_of_ev=terminal_share,
+            terminal_form=inp.terminal_form, convergence_years=inp.convergence_years,
+            terminal_earned_return=terminal_earned_return,
             warnings=warnings,
         )
 

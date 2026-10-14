@@ -80,6 +80,6 @@ def test_csl_per_year_derivation_ties_result():
     r = SegmentEngine().run(build_segment_inputs_from_data(inp, "muddle_through"))
     d = SegmentEngine().per_year_derivation(r)
     assert d.result == pytest.approx(r.fcff[-1], abs=1e-9)
-    # FY26..FY31 (skips the FY25 anchor): 6 years x 3 lines
+    # FY26..FY36 (skips the FY25 anchor): H+1 years x 3 lines
     assert len(d) == 3 * (len(r.year_labels) - 1)
-    assert d["FY31_ebit"].value == pytest.approx(r.group_ebit[-1], abs=1e-9)
+    assert d[f"{r.year_labels[-1]}_ebit"].value == pytest.approx(r.group_ebit[-1], abs=1e-9)

@@ -66,8 +66,30 @@ def test_every_scenario_reaches_its_own_equilibrium_inside_the_explicit_period()
         assert y <= 10, (s, y)
 
 
+def _all_engine_forms():
+    """(company:scenario, terminal_form) for all eighteen pairs -- the three engines all
+    route through terminal_form_from_data since 14 Oct 2026 (bridge note step 2)."""
+    from vcc_valuations.dcf.bank_engine import BankEngine
+    from vcc_valuations.dcf.segment_engine import SegmentEngine
+    from vcc_valuations.translator import build_bank_inputs_from_data, build_segment_inputs_from_data
+    out = {}
+    for s in SCENARIOS:
+        out[f"dnl:{s}"] = FcfEngine().run(build_engine_inputs_from_data(_inputs(s), s)).terminal_form
+        w = load_inputs(ROOT, s, "australian_major_banks", "wbc")
+        out[f"wbc:{s}"] = BankEngine().run(build_bank_inputs_from_data(w, s)).terminal_form
+        c = load_inputs(ROOT, s, "biopharmaceuticals", "csl")
+        out[f"csl:{s}"] = SegmentEngine().run(build_segment_inputs_from_data(c, s)).terminal_form
+    return out
+
+
+def test_all_three_engines_carry_the_terminal_form():
+    forms = _all_engine_forms()
+    assert len(forms) == 18
+    assert set(forms.values()) <= {"gordon", "excess_return_convergence"}
+
+
 def test_gordon_fallbacks_are_baselined_and_only_shrink(results):
-    found = sorted(f"dnl:{s}" for s, r in results.items() if r.terminal_form == "gordon")
+    found = sorted(k for k, form in _all_engine_forms().items() if form == "gordon")
     baseline = json.loads(BASELINE.read_text(encoding="utf-8"))
     recorded = sorted(baseline["gordon_fallback"])
     new = sorted(set(found) - set(recorded))

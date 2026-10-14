@@ -26,13 +26,25 @@ def _run(scenario):
     return SegmentEngine().run(build_segment_inputs_from_data(inp, scenario))
 
 
+def _run_at_five_years(scenario):
+    """The audited figures below are a FIVE-year model's (FY27-FY31). D-71 moved CSL
+    to ten years on 14 Oct 2026; the tie stays independent by running the same engine
+    at the workbook's own horizon (growth paths sliced to FY26..FY31)."""
+    from dataclasses import replace
+    inp = load_inputs(ROOT, scenario, "biopharmaceuticals", "csl")
+    si = build_segment_inputs_from_data(inp, scenario, route_terminal_form=False)
+    si = replace(si, horizon_years=5,
+                 segments=[replace(sg, growth_path=sg.growth_path[:6]) for sg in si.segments])
+    return SegmentEngine().run(si)
+
+
 def test_muddle_through_ties_workbook():
     """Restated 23 Aug 2026 (D-30): the v4 workbook was struck at the hand-typed
     10% working-capital intensity and no longer arbitrates. The live tie is
     ``test_csl_workbook_tie.py``, against the generated workbook recalculated in
     LibreOffice across all six scenarios; these figures are that workbook's.
     """
-    r = _run("muddle_through")
+    r = _run_at_five_years("muddle_through")
     assert r.value_per_share_usd == pytest.approx(129.2130, abs=1e-3)
     assert r.value_per_share_aud == pytest.approx(195.78, abs=0.02)
     assert r.enterprise_value == pytest.approx(71487.10, abs=1.0)
@@ -41,6 +53,17 @@ def test_muddle_through_ties_workbook():
     assert r.equity_value == pytest.approx(61880.10, abs=1.0)
     # cost of equity Rf + beta*ERP = 4.5% + 0.85*5.0%
     assert r.value_per_share_aud == pytest.approx(r.value_per_share_usd * 1.5152, abs=1e-6)
+
+
+def test_at_ten_years_the_live_level_is_the_golden():
+    """D-71 (14 Oct 2026): the live model runs FY27-FY36. Five more years of the
+    segment paths at a held margin before the Gordon terminal lift Muddle Through
+    from 195.78 to 223.24 AUD -- the same horizon artefact DNL disclosed on 2 Oct;
+    the full six are pinned in test_scenario_goldens.py with the reason."""
+    r = _run("muddle_through")
+    assert len(r.year_labels) == 12          # FY25 anchor + FY26..FY36
+    assert r.value_per_share_aud == pytest.approx(223.2431, abs=1e-3)
+    assert r.terminal_form == "gordon"       # no decay horizon declared for CSL yet
 
 
 def test_all_six_scenarios_value_and_downside_skewed():
