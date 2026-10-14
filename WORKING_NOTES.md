@@ -21,7 +21,55 @@ kept getting reopened.
 It regenerates the two maps, runs the suite and the ratchet, checks the base ties and
 prints git state.
 
-## 🔴 HANDOVER — sitting of 2 October 2026 (read this first)
+## 🔴 HANDOVER — sitting of 14 October 2026 (read this first)
+
+**Bridge note still in force: `notes/bridge/bridge_note_2026-10-02.md`** (the five-step
+repeatable-process plan). This block records what the 14 October sitting did against it.
+
+**State:** suite 583 passed / 2 deselected; SSOT lint 14/14; base ties DNL 2.138 / WBC
+30.03 / CSL 195.78 (all unchanged -- Muddle Through's world series are flat). Commits on
+`main` on Stephen's checkout; see the bottom of this block for landing.
+
+### Step 1 DONE for all three companies -- D-73
+
+Plain terms: each industry archetype now declares, for every macro driver its chain
+reads, how each world scenario gets its year-by-year path, and one script derives all of
+them. No company or driver is named in code. WBC and CSL now run their growth per year
+from those paths, as DNL has since D-72. Full text and the three rulings (proxies not
+new AU series; one nominal CSL series per segment; bank NIM held back) in `DECISIONS.md`
+D-73. Levels: MT unchanged; WBC +0.0 to +0.3%; CSL +0.1 to +2.2%, all re-pinned with the
+reason in `tests/dcf/test_scenario_goldens.py`. Both workbooks carry the paths and tie.
+
+**Open data items D-73 created (not blocking):**
+1. Bank NIM pass-through rule (a NIM beta to the policy rate with a Five Forces basis).
+2. CSL volume/price split (needs a healthcare-inflation view); US real GDP series in all
+   six scenario files (then `series:` in the three CSL archetypes changes one word).
+3. Level anchors still live in the company files (`LevelAnchor` says where); lifting them
+   to the archetype is a follow-up.
+
+### Environment note (durable, replaces the "mount cannot delete" quirk for this setup)
+
+From 14 October 2026 the session shell on Stephen's machine CAN delete and run git,
+once delete permission for the repo folder is granted at the start of the sitting (the
+desktop app prompts). `git commit` on the mount leaves no stranded lock; the suite,
+`session_start.py` and LibreOffice recalcs all run there (pip-install the requirements
+into the shell first: pydantic pandas numpy openpyxl scipy pytest pyyaml). So this sitting
+worked directly on `C:\Users\steph\vcc-valuations` -- no container clone, no bundle. Push
+still uses the PAT: `git push https://stephenreid90:$(cat .github-token)@github.com/stephenreid90/VCC main`.
+`CLAUDE.md` "Operational quirks" is now partly stale and should be rewritten in a quiet
+sitting (standing rule 5: not mid-task).
+
+### Next (bridge note order)
+
+1. **Step 2 -- terminal form in all three engines.** Needs Stephen's call first: WBC and
+   CSL run a FIVE-year explicit period (typed Y1..Y5 glides); D-71 says ten for every
+   company. Extend them to ten now (hold the glides at Y5 beyond, read growth from the
+   paths, which already reach Y10) or keep five until the Five Forces pass?
+2. Step 3 -- decay-horizon checklist, then DNL Frag/Stag, WBC x6, CSL x6.
+3. Step 4 -- equilibrium-chain terms declared per archetype.
+4. Step 5 -- `design/methodology/adding_a_company.md`.
+
+## HANDOVER — sitting of 2 October 2026 (superseded by the block above)
 
 **Bridge note for the next chat: `notes/bridge/bridge_note_2026-10-02.md`.** It carries the
 plan (Five Forces pass, DNL gaps only), the traps and the expected base ties.
