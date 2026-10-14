@@ -1,0 +1,216 @@
+terminal_growth_sets:
+  current:
+    name: current
+    basis: 'Terminal growth DERIVED for every company (D-72 for the industrial chain,
+      D-79 for the bank and segment chains): the growth chain read at the end of the
+      explicit period with the archetype''s current-cycle terms at their equilibrium
+      reading (D-78), capped at the scenario''s nominal GDP there, (1 + world real
+      GDP)(1 + advanced CPI) - 1. g_chain is the uncapped reading, g_cap the cap,
+      g what the engine uses. Where D-79 retired a typed rate, retired_typed_growth
+      and value_per_share_at_typed are the rate and the level the same engine gives
+      on it today, so the disclosed movement regenerates. Values per share are AUD.'
+    regenerated_by: scripts/size_terminal_growth.py
+    asserted_by: tests/dcf/test_terminal_growth_sets.py
+    decisions:
+    - D-72
+    - D-78
+    - D-79
+    rows:
+    - company: dnl
+      scenario: ai_productivity_lag
+      horizon_years: 10
+      g_chain: 0.046727
+      g_cap: 0.04856
+      g: 0.046727
+      capped: false
+      value_per_share: 2.1071
+      retired_typed_growth: null
+      value_per_share_at_typed: null
+      level_change: null
+    - company: dnl
+      scenario: disorderly_climate_crystallisation
+      horizon_years: 10
+      g_chain: 0.049389
+      g_cap: 0.05266
+      g: 0.049389
+      capped: false
+      value_per_share: 1.0762
+      retired_typed_growth: null
+      value_per_share_at_typed: null
+      level_change: null
+    - company: dnl
+      scenario: fragmentation
+      horizon_years: 10
+      g_chain: 0.044536
+      g_cap: 0.05366
+      g: 0.044536
+      capped: false
+      value_per_share: 1.4342
+      retired_typed_growth: null
+      value_per_share_at_typed: null
+      level_change: null
+    - company: dnl
+      scenario: muddle_through
+      horizon_years: 10
+      g_chain: 0.052675
+      g_cap: 0.05369
+      g: 0.052675
+      capped: false
+      value_per_share: 2.1382
+      retired_typed_growth: null
+      value_per_share_at_typed: null
+      level_change: null
+    - company: dnl
+      scenario: orderly_convergence
+      horizon_years: 10
+      g_chain: 0.062575
+      g_cap: 0.05369
+      g: 0.05369
+      capped: true
+      value_per_share: 2.4908
+      retired_typed_growth: null
+      value_per_share_at_typed: null
+      level_change: null
+    - company: dnl
+      scenario: stagflation_persists
+      horizon_years: 10
+      g_chain: 0.031943
+      g_cap: 0.0557
+      g: 0.031943
+      capped: false
+      value_per_share: 1.1361
+      retired_typed_growth: null
+      value_per_share_at_typed: null
+      level_change: null
+    - company: wbc
+      scenario: ai_productivity_lag
+      horizon_years: 10
+      g_chain: 0.0442
+      g_cap: 0.04856
+      g: 0.0442
+      capped: false
+      value_per_share: 33.0905
+      retired_typed_growth: 0.0325
+      value_per_share_at_typed: 30.8918
+      level_change: 0.0712
+    - company: wbc
+      scenario: disorderly_climate_crystallisation
+      horizon_years: 10
+      g_chain: 0.0346
+      g_cap: 0.05266
+      g: 0.0346
+      capped: false
+      value_per_share: 23.2017
+      retired_typed_growth: 0.0325
+      value_per_share_at_typed: 23.0864
+      level_change: 0.005
+    - company: wbc
+      scenario: fragmentation
+      horizon_years: 10
+      g_chain: 0.0392
+      g_cap: 0.05366
+      g: 0.0392
+      capped: false
+      value_per_share: 28.5658
+      retired_typed_growth: 0.0325
+      value_per_share_at_typed: 27.7263
+      level_change: 0.0303
+    - company: wbc
+      scenario: muddle_through
+      horizon_years: 10
+      g_chain: 0.045
+      g_cap: 0.05369
+      g: 0.045
+      capped: false
+      value_per_share: 33.0779
+      retired_typed_growth: 0.035
+      value_per_share_at_typed: 31.0502
+      level_change: 0.0653
+    - company: wbc
+      scenario: orderly_convergence
+      horizon_years: 10
+      g_chain: 0.0634
+      g_cap: 0.05369
+      g: 0.05369
+      capped: true
+      value_per_share: 46.9911
+      retired_typed_growth: 0.0375
+      value_per_share_at_typed: 40.2748
+      level_change: 0.1668
+    - company: wbc
+      scenario: stagflation_persists
+      horizon_years: 10
+      g_chain: 0.0194
+      g_cap: 0.0557
+      g: 0.0194
+      capped: false
+      value_per_share: 15.7985
+      retired_typed_growth: 0.0325
+      value_per_share_at_typed: 16.2617
+      level_change: -0.0285
+    - company: csl
+      scenario: ai_productivity_lag
+      horizon_years: 10
+      g_chain: 0.04864
+      g_cap: 0.04856
+      g: 0.04856
+      capped: true
+      value_per_share: 198.2605
+      retired_typed_growth: 0.0288
+      value_per_share_at_typed: 181.0605
+      level_change: 0.095
+    - company: csl
+      scenario: disorderly_climate_crystallisation
+      horizon_years: 10
+      g_chain: 0.038495
+      g_cap: 0.05266
+      g: 0.038495
+      capped: false
+      value_per_share: 166.5064
+      retired_typed_growth: 0.0275
+      value_per_share_at_typed: 159.1748
+      level_change: 0.0461
+    - company: csl
+      scenario: fragmentation
+      horizon_years: 10
+      g_chain: 0.039048
+      g_cap: 0.05366
+      g: 0.039048
+      capped: false
+      value_per_share: 157.4527
+      retired_typed_growth: 0.0275
+      value_per_share_at_typed: 150.2342
+      level_change: 0.048
+    - company: csl
+      scenario: muddle_through
+      horizon_years: 10
+      g_chain: 0.054072
+      g_cap: 0.05369
+      g: 0.05369
+      capped: true
+      value_per_share: 208.8861
+      retired_typed_growth: 0.03
+      value_per_share_at_typed: 186.4975
+      level_change: 0.12
+    - company: csl
+      scenario: orderly_convergence
+      horizon_years: 10
+      g_chain: 0.063258
+      g_cap: 0.05369
+      g: 0.05369
+      capped: true
+      value_per_share: 243.9092
+      retired_typed_growth: 0.0325
+      value_per_share_at_typed: 219.0118
+      level_change: 0.1137
+    - company: csl
+      scenario: stagflation_persists
+      horizon_years: 10
+      g_chain: 0.027328
+      g_cap: 0.0557
+      g: 0.027328
+      capped: false
+      value_per_share: 134.7404
+      retired_typed_growth: 0.03
+      value_per_share_at_typed: 136.0337
+      level_change: -0.0095

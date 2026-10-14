@@ -123,8 +123,10 @@ def test_engine_current_reproduces_every_engine_value_per_share(rows):
     # 31.0502; 195.7835 -> 223.2431); the D-73 scenario paths left MT unchanged.
     # Step 3 (same day): WBC declared indefinite (level unchanged, 31.0502); CSL
     # declared 20-30 years, convergence at N = 25 (223.2431 -> 186.4975).
-    pinned = {("dnl", "muddle_through"): 2.1382, ("wbc", "muddle_through"): 31.0502,
-              ("csl", "muddle_through"): 186.4975}
+    # D-79 (same day): terminal growth derived for WBC and CSL (31.0502 -> 33.0779;
+    # 186.4975 -> 208.8861).
+    pinned = {("dnl", "muddle_through"): 2.1382, ("wbc", "muddle_through"): 33.0779,
+              ("csl", "muddle_through"): 208.8861}
     for key, vps in pinned.items():
         v = next(x for x in rows if (x.company_id, x.scenario_id) == key)
         assert _basis(v, "engine_current").value_per_share == pytest.approx(vps, abs=1e-4)
@@ -140,8 +142,11 @@ def test_the_current_terminal_carries_the_moat_the_five_forces_work_chose(by_key
     declared decay horizon, so inverting the headline gives back exactly the
     moat the five-forces work declared: 12.5 years, the 10-15 band's midpoint.
     The finding is kept as its own resolution. WBC's declared terminal ROEs
-    still imply 17 to 37 years and are untouched by D-71 (no decay horizon has
-    been declared for the bank; see tests/dcf/test_terminal_form.py)."""
+    imply a finite excess-return life of 38 to 48 years in total (D-79, 14 Oct
+    2026: the derived terminal growth of 3.5-5.4% lengthens it from 28-42; a
+    declared ROE held at a higher g is worth more, so inverting it gives a
+    longer moat). WBC's declared decay horizon is indefinite (D-75), so a long
+    implied life is consistent with the matrix, not a finding against it."""
     for s in ("muddle_through", "ai_productivity_lag", "orderly_convergence"):
         m = _basis(by_key[("dnl", s)], "engine_current").implied_moat
         assert m.status == "finite", (s, m)
@@ -149,7 +154,7 @@ def test_the_current_terminal_carries_the_moat_the_five_forces_work_chose(by_key
     for s in ("muddle_through", "ai_productivity_lag", "orderly_convergence",
               "fragmentation", "disorderly_climate_crystallisation"):
         m = _basis(by_key[("wbc", s)], "engine_current").implied_moat
-        assert m.status == "finite" and 15 < 5 + m.extension_years < 42, (s, m)
+        assert m.status == "finite" and 35 < 10 + m.extension_years < 50, (s, m)
 
 
 def test_wbc_stagflation_recovery_shows_up_on_the_new_axis(by_key):

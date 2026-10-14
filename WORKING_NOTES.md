@@ -21,16 +21,46 @@ kept getting reopened.
 It regenerates the two maps, runs the suite and the ratchet, checks the base ties and
 prints git state.
 
-## 🔴 HANDOVER — sitting of 14 October 2026 (read this first)
+## 🔴 HANDOVER — sittings of 14 October 2026 (read this first)
 
 **Bridge note: `notes/bridge/bridge_note_2026-10-14.md`.** The five-step repeatable-process
-plan of 2 October is COMPLETE as of this sitting (steps 1-5, D-73 to D-78). This block
-records what the 14 October sitting did against it.
+plan of 2 October is COMPLETE (steps 1-5, D-73 to D-78). The fourth sitting of 14 October
+took the first follow-up item, (a), and closed it as **D-79**. This block records both.
 
-**State:** suite 617 passed / 1 skipped / 2 deselected; SSOT lint 14/14; base ties **DNL
-2.138 / WBC 31.05 / CSL 186.5** (`session_start.py` unchanged by D-76; CSL moved with the
-step 3 decay horizon, D-75). Commits on `main` on Stephen's checkout, pushed at the end of
-the sitting.
+**State:** suite 642 passed / 1 skipped / 2 deselected; SSOT lint 14/14; base ties **DNL
+2.138 / WBC 33.08 / CSL 208.89** (`session_start.py` re-pinned for D-79; were 31.05 and
+186.5 on the typed terminal growth). Commits on `main` on Stephen's checkout, pushed at the
+end of each sitting.
+
+### D-79 DONE -- WBC's and CSL's terminal growth is derived, not typed
+
+Plain terms: until today DNL's terminal growth came from its growth chain (D-72: the chain
+at year 10 with current-cycle terms off, capped at the scenario's nominal GDP) while WBC
+and CSL typed theirs by hand (3.25-3.75% and 2.75-3.25%). Those typed rates were written
+when nominal GDP was taken as about 3%; the scenario files assert 4.9-5.6% at year 10. Now
+all three companies use the same rule. For the bank: the industry balance-sheet series at
+year 10 (its gap to nominal GDP and the scenario shift persist, like the mining gap) plus
+WBC's share-loss offset at its D-78 reading, which is current-cycle and switches off. For
+CSL: each segment's archetype series at year 10, weighted by final-year segment revenue;
+the company offset is already zero there. Both capped at nominal GDP. Stephen ratified the
+rule, the classification, the final-year weights and the level moves.
+
+Levels: WBC MT 31.05 -> 33.08 (+6.5%), OC +16.7%, Stag -2.8%; CSL MT 186.50 -> 208.89
+(+12.0%), OC +11.4%, Stag -1.0%. Full table in `DECISIONS.md` D-79 and
+`design/methodology/terminal_growth_sets.yaml` (new sizing set, `scripts/size_terminal_growth.py`).
+Most of the movement is the typed 3% giving way to the nominal GDP the scenarios already
+assert. **Open, Stephen's call:** whether 3% advanced CPI at year 10 in Muddle Through (and
+3.3-3.5% in Fragmentation and Stagflation) is the view; if not, the fix is in the scenario
+files and every level moves with it (`test_nominal_gdp_at_year_ten_is_about_five_percent_in_every_scenario`
+will say so).
+
+Done against standing rule 4: new `tests/dcf/test_derived_terminal_growth_bank_segment.py`
+and `test_terminal_growth_sets.py`; goldens, shares, option/return/two-stage sets re-pinned;
+both generated workbooks carry g as a formula and tie in LibreOffice; the hand-built v4
+ties run at the workbook's own typed g (that is the workbook's input, not the model's).
+The bank and segment archetypes' `growth_chain_terms` are no longer empty-for-want-of-a-rule:
+the bank declares four terms; the segment archetypes declare `[]` because a segment chain
+has no scenario-invariant term, and the comment says so.
 
 ### D-76 DONE -- the declared terminal return is a live lever (D-42 step 2 closed)
 

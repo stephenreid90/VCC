@@ -388,7 +388,8 @@ def test_csl_split_reconstructs_cost_of_equity_build():
     # that pins a duplicate keeps the duplicate alive.
     mt = norm["segment_fcff"]["by_scenario"]["muddle_through"]
     assert mt["tax_rate"] == 0.19               # ssot-allow: pinning the join
-    assert mt["terminal_growth"] == 0.03        # ssot-allow
+    # terminal_growth left the block 14 Oct 2026 (D-79): it is derived, not typed.
+    assert "terminal_growth" not in mt
     assert mt["terminal_ebit_margin"] == 0.30   # ssot-allow
 
     # Rejoined cost_of_equity_build spans both layers.

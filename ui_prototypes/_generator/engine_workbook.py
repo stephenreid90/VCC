@@ -1299,7 +1299,7 @@ def build_wbc_workbook_bytes(cfg=None):
     # D-76: the terminal ROE is the declared rate on the australian_major_banks matrix.
     scen_row("Terminal ROE (declared on the matrix, D-76)", "troe",
              lambda s: _declared_terminal_return_for(s, "australian_major_banks", "wbc"), PCT2)
-    scen_row("Terminal growth g", "tg", lambda s: ov["by_scenario"][s]["terminal_growth"], PCT2)
+    # Terminal growth g is DERIVED (D-79) as a formula below the AIEA path block.
     r[0] += 1
     # baseline per-year glides (stub..Y5 as columns C..H)
     _H = timing["horizon_years"]; _G = timing.get("glide_years", _H)
@@ -1340,6 +1340,40 @@ def build_wbc_workbook_bytes(cfg=None):
             c = ws.cell(r[0], 2 + y, _msa(_inp_s, "bank_system_aiea_growth", y)); c.fill = YELLOW; c.font = BLUEFONT; c.number_format = PCT2
             R[f"aieapath:{sid}:{y}"] = f"'Assumptions'!${_col(2 + y)}${r[0]}"
         r[0] += 1
+    r[0] += 1
+    # D-79 (14 Oct 2026): terminal growth is DERIVED, the same rule as DNL (D-72):
+    # the industry path at year H plus the company offset at its D-78 equilibrium
+    # reading, capped at scenario nominal GDP. The two world series the cap reads
+    # and the D-78 declaration are written as inputs (yellow); g is a formula.
+    sub(f"Terminal growth (D-79: derived from the chain in equilibrium at Y{_H}, capped at nominal GDP)")
+    _inps_w = {sid: _li(_ROOT, sid, "australian_major_banks", "wbc") for sid, _ in SCEN}
+    hdr = r[0]; ws.cell(hdr, 1, "Driver").font = BOLD
+    for j, (sid, nm) in enumerate(SCEN):
+        cc = ws.cell(hdr, 3 + j, nm); cc.font = BOLD; cc.alignment = Alignment(horizontal="right", wrap_text=True)
+    r[0] += 1
+    scen_row(f"World real GDP growth Y{_H} (scenario series)", "gdp_h",
+             lambda s: _msa(_inps_w[s], "real_gdp_growth_world", _H), PCT2)
+    scen_row(f"Advanced-economy CPI Y{_H} (scenario series)", "cpi_h",
+             lambda s: _msa(_inps_w[s], "cpi_inflation_advanced", _H), PCT2)
+    # the D-78 declaration on the bank archetype: the company offset's equilibrium reading
+    _terms = {t.path: t for t in inp["archetype"].growth_chain_terms}
+    _t = _terms["company_offset.aiea_growth_offset"]
+    ws.cell(r[0], 1, "Company AIEA offset in equilibrium (D-78: archetype declaration)")
+    if _t.role.value == "current_cycle":
+        c = ws.cell(r[0], 2, _t.equilibrium_value); c.fill = YELLOW; c.font = BLUEFONT; c.number_format = PCT2
+        R["off_aiea_eq"] = f"'Assumptions'!$B${r[0]}"
+    else:
+        ws.cell(r[0], 2, "(typed value persists)").font = NOTE
+        R["off_aiea_eq"] = R["off_aiea"]
+    ws.cell(r[0], 3, _t.role.value)
+    r[0] += 1
+    ws.cell(r[0], 1, "Terminal growth g (derived)")
+    for j, (sid, nm) in enumerate(SCEN):
+        f = (f"=MIN({R[f'aieapath:{sid}:{_H}']}+{R['off_aiea_eq']},"
+             f"(1+{R[f'gdp_h:{sid}']})*(1+{R[f'cpi_h:{sid}']})-1)")
+        c = ws.cell(r[0], 3 + j, f); c.number_format = PCT2
+        R[f"tg:{sid}"] = f"'Assumptions'!${_col(3 + j)}${r[0]}"
+    r[0] += 1
     ws.column_dimensions["A"].width = 40
     for j in range(2, 3 + NP): ws.column_dimensions[_col(j)].width = 13
 
@@ -1696,7 +1730,12 @@ def build_csl_workbook_bytes(cfg=None):
     scen_row("Seqirus margin uplift (cum FY31)", "up_seqirus", lambda sid: SC[sid]["seqirus_margin_uplift"], PCT2)
     scen_row("Vifor margin uplift (cum FY31)", "up_vifor", lambda sid: SC[sid]["vifor_margin_uplift"], PCT2)
     scen_row("Terminal EBIT margin", "tmargin", lambda sid: SC[sid]["terminal_ebit_margin"], PCT2)
-    scen_row("Terminal growth g", "tg", lambda sid: SC[sid]["terminal_growth"], PCT2)
+    # D-79: terminal growth g is DERIVED on the Segment FCFF sheet (revenue-weighted
+    # segment series at year H, capped at nominal GDP); the cap's two world series:
+    scen_row(f"World real GDP growth Y{_H} (scenario series; D-79 cap)", "gdp_h",
+             lambda sid: _msa(_inps[sid], "real_gdp_growth_world", _H), PCT2)
+    scen_row(f"Advanced-economy CPI Y{_H} (scenario series; D-79 cap)", "cpi_h",
+             lambda sid: _msa(_inps[sid], "cpi_inflation_advanced", _H), PCT2)
     scen_row("Effective tax rate", "tax", lambda sid: SC[sid]["tax_rate"], PCT2)
     # D-71: the decay horizon declared on the biopharmaceuticals matrix (D-42,
     # D-58); blank means the Gordon fallback. 14 Oct 2026: 25 (long band 20-30).
@@ -1771,6 +1810,17 @@ def build_csl_workbook_bytes(cfg=None):
     for p in range(NY):
         row(f"ebit{p}", f"  Group EBIT {YRS[p]}", NUM0,
             lambda s, c, j, p=p: f"={c}{m[f'gor{p}']}+{c}{m[f'corp{p}']}")
+    # D-79 (14 Oct 2026): terminal growth is DERIVED, the same rule as DNL (D-72):
+    # each segment grows at its archetype's series at year H (the company offset is
+    # zero there by construction), weighted by final-year segment revenue, capped
+    # at scenario nominal GDP. Formula-linked so oracle and engine cannot drift.
+    band(f"Terminal growth (D-79: revenue-weighted segment series at Y{_H}, capped at nominal GDP)")
+    def f_tg(s, c, j):
+        num = "+".join(f"{c}{m[f'{st[1]}_rev{_T}']}*{R[f'{st[1]}_ser{_H - 1}:{s}']}" for st in SEGS)
+        return f"=MIN(({num})/{c}{m[f'grev{_T}']},(1+{R[f'gdp_h:{s}']})*(1+{R[f'cpi_h:{s}']})-1)"
+    row("tg", "  Terminal growth g (derived)", PCT2, f_tg, bold=True)
+    for j, sid in enumerate(SIDS):
+        R[f"tg:{sid}"] = f"'Segment FCFF'!${COLS[j]}${m['tg']}"
     # FCFF FY26..FY31 (p=1..6). The working-capital charge is broken out on its
     # own row rather than buried inside the FCFF formula: at a 35% intensity it
     # is the second-largest claim on group cash flow and a reader should be able

@@ -28,11 +28,32 @@ industry_archetype:
             - path: normalised_baseline.bank_build.aiea_nim_chain.by_scenario.{scenario}.aiea_growth_delta
   archetype_class: bank
 
-  # D-78 (14 Oct 2026, bridge note step 4): declared EMPTY. WBC terminal growth is typed per scenario in wbc.yaml, not
-  # derived from the chain, so no chain term is classified as current-cycle or
-  # equilibrium yet. Deriving that terminal growth is the follow-up recorded
-  # in DECISIONS.md D-78; when it lands, the terms are classified here.
-  growth_chain_terms: []
+  # D-78 / D-79 (14 Oct 2026). The bank chain's scenario-invariant terms, under
+  # normalised_baseline.bank_build.aiea_nim_chain.shared in the company file, and
+  # whether each persists into the equilibrium reading that sets terminal growth.
+  # Terminal growth is DERIVED (D-79, same rule as the industrial chain, D-72):
+  # the bank_system_aiea_growth series at year 10 -- which already carries the
+  # industry gap to nominal GDP and the scenario's own shift, both of which
+  # persist exactly as the mining gap does for explosives -- plus the company
+  # offset at its reading below, capped at scenario nominal GDP. Ratified by
+  # Stephen 14 Oct 2026. The NIM terms are margin terms, not growth terms: they
+  # persist through the explicit period and the terminal RETURN they feed is
+  # the declared rate on the impact matrix (D-76), so neither is current-cycle.
+  growth_chain_terms:
+    - path: industry.aiea_growth
+      role: equilibrium
+    - path: industry.nim_anchor
+      role: equilibrium
+    - path: company_offset.aiea_growth_offset
+      role: current_cycle
+      equilibrium_value: 0.0
+      basis: >
+        A bank's share gain or loss against the system is a feature of the current
+        cycle (front-book pricing, broker position, remediation drag); in
+        equilibrium a major grows with the system it is part of. The same
+        treatment as the industrial chain's company Five Forces offsets (D-78).
+    - path: company_offset.nim_offset
+      role: equilibrium
 
   geography: domestic_au_nz
 

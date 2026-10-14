@@ -278,8 +278,9 @@ def test_the_constraint_is_on_by_default_and_gives_the_ratified_level():
     assert inp.cet1_operating_target == pytest.approx(0.1125, abs=1e-9)
     r = BankEngine().run(inp)
     # 30.0304 with no bite at five years; at ten years (D-71, 14 Oct 2026) the ratio
-    # reaches 11.25% at Y7 and the payout is cut from there.
-    assert r.value_per_share == pytest.approx(31.0502, abs=1e-3)
+    # reaches 11.25% at Y7 and the payout is cut from there. D-79 (same day):
+    # 31.0502 -> 33.0779 on the derived terminal growth (4.5%, was typed 3.5%).
+    assert r.value_per_share == pytest.approx(33.0779, abs=1e-3)
     assert r.capital_constraint_binds_from == "Y7"
     assert r.dividends_forgone > 0
 

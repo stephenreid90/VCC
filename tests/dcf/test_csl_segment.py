@@ -33,7 +33,9 @@ def _run_at_five_years(scenario):
     from dataclasses import replace
     inp = load_inputs(ROOT, scenario, "biopharmaceuticals", "csl")
     si = build_segment_inputs_from_data(inp, scenario, route_terminal_form=False)
-    si = replace(si, horizon_years=5,
+    # D-79 (14 Oct 2026): the live terminal growth is derived; the v4 workbook typed
+    # 3.0% for Muddle Through and the tie runs at the WORKBOOK's input.
+    si = replace(si, horizon_years=5, terminal_growth=0.03,
                  segments=[replace(sg, growth_path=sg.growth_path[:6]) for sg in si.segments])
     return SegmentEngine().run(si)
 
@@ -65,7 +67,9 @@ def test_at_ten_years_the_live_level_is_the_golden():
     # 14 Oct 2026 step 3: CSL declares a 20-30 year decay horizon (biopharmaceuticals
     # matrix), so the live level is 186.50 under convergence at N = 25; the Gordon
     # level of 223.24 is the upper bound the sizing set still shows.
-    assert r.value_per_share_aud == pytest.approx(186.4975, abs=1e-3)
+    # D-79 (same day): 186.4975 -> 208.8861 as terminal growth moves from the typed
+    # 3.0% to the derived 5.37% (segment series at Y10, capped at nominal GDP).
+    assert r.value_per_share_aud == pytest.approx(208.8861, abs=1e-3)
     assert r.terminal_form == "excess_return_convergence" and r.convergence_years == 25
 
 

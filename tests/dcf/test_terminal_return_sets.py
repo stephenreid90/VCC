@@ -65,12 +65,15 @@ def test_csl_terminal_asserts_an_implausible_return_on_new_capital(rows):
 
     Pinned as a band rather than a point: the finding is the order of magnitude,
     and implementing D-53 should drop it into the range DNL now occupies.
+    D-79 (14 Oct 2026): the derived terminal growth (2.7-5.4%, was typed 2.75-3.25%)
+    lifts the reinvestment rate to 4-7% (it is g x working-capital intensity over
+    earnings); the return on new capital stays in the sixties and seventies.
     """
     csl = [r for r in rows if r.company_id == "csl"]
     assert len(csl) == 6
 
     for r in csl:
-        assert r.reinvestment_rate < 0.06, (r.scenario_id, r.reinvestment_rate)
+        assert r.reinvestment_rate < 0.08, (r.scenario_id, r.reinvestment_rate)
         assert 0.55 < r.return_on_new_capital < 0.80, (r.scenario_id, r.return_on_new_capital)
         assert r.excess_over_cost_of_capital > 0.45, r.scenario_id
         assert any("exceeds" in w for w in r.warnings)

@@ -597,6 +597,44 @@ def _numeric_leaves(block, prefix: str = "") -> Dict[str, float]:
     return out
 
 
+# The ``shared`` (scenario-invariant) block of each growth-chain shape a company
+# file can carry, by the block that holds it. D-79 (14 Oct 2026): the D-78
+# classification applies to whichever chain the company runs -- the industrial
+# revenue chain or the bank AIEA chain -- so the locator lives here once. A
+# segment-valued company has no shared block: its only company term is the typed
+# path less its own steady state, which is zero by construction at the end of the
+# explicit period (segment_growth_path_from_data), so there is nothing to classify.
+GROWTH_CHAIN_SHARED_PATHS = (
+    ("revenue_growth_chain", "shared"),
+    ("bank_build", "aiea_nim_chain", "shared"),
+)
+
+
+def growth_chain_shared_block(inputs: dict) -> dict:
+    """The scenario-invariant ``shared`` block of the company's growth chain, or ``{}``."""
+    nb = (inputs.get("company_raw") or {}).get("normalised_baseline") or {}
+    for path in GROWTH_CHAIN_SHARED_PATHS:
+        node = nb
+        for key in path:
+            node = (node or {}).get(key)
+            if node is None:
+                break
+        if node:
+            return node
+    return {}
+
+
+def nominal_gdp_at(inputs: dict, year: float) -> float:
+    """The scenario's nominal GDP growth at ``year``: (1 + world real GDP)(1 + advanced CPI) - 1.
+
+    D-72's cap on terminal growth, shared by every engine (D-79): a mature company
+    does not outgrow the economy it sells into in perpetuity.
+    """
+    gdp = macro_series_at(inputs, "real_gdp_growth_world", year)
+    cpi = macro_series_at(inputs, "cpi_inflation_advanced", year)
+    return (1.0 + gdp) * (1.0 + cpi) - 1.0
+
+
 def equilibrium_chain_terms(inputs: dict) -> Dict[str, float]:
     """D-78: the archetype's equilibrium reading of the company's growth chain.
 
@@ -608,15 +646,14 @@ def equilibrium_chain_terms(inputs: dict) -> Dict[str, float]:
     unclassified term raises, so nothing is silently treated as permanent, and
     nothing in code names a company or a term.
     """
-    company_raw = inputs.get("company_raw") or {}
-    shared = ((company_raw.get("normalised_baseline") or {}).get("revenue_growth_chain") or {}).get("shared") or {}
+    shared = growth_chain_shared_block(inputs)
     if not shared:
         return {}
     archetype = inputs.get("archetype")
     declared = None if archetype is None else archetype.growth_chain_terms
     if declared is None:
         raise ValueError(
-            "the company carries a revenue_growth_chain but its archetype declares no "
+            "the company carries a growth chain but its archetype declares no "
             "growth_chain_terms (D-78): say which chain terms are current_cycle and "
             "which are equilibrium."
         )
@@ -792,15 +829,94 @@ def terminal_growth_from_data(inputs: dict, scenario_id: str, horizon_years: int
         chain.result, "revenue_growth_chain[equilibrium] at year H",
         {"year": horizon_years, "chain": chain.result}, units="%",
     )
+    _cap_terminal_growth(b, inputs, horizon_years, uncapped)
+    return b.build(result_key="g")
+
+
+def _cap_terminal_growth(b, inputs: dict, horizon_years: int, uncapped: float) -> None:
+    """The two closing steps every derived terminal growth shares (D-72 cap, D-79)."""
     gdp = macro_series_at(inputs, "real_gdp_growth_world", horizon_years)
     cpi = macro_series_at(inputs, "cpi_inflation_advanced", horizon_years)
     cap = b.step(
         "g_cap", "Scenario nominal GDP at the end of the explicit period",
-        (1.0 + gdp) * (1.0 + cpi) - 1.0, "(1 + real_gdp_growth_world)(1 + cpi) - 1",
+        nominal_gdp_at(inputs, horizon_years), "(1 + real_gdp_growth_world)(1 + cpi) - 1",
         {"real_gdp_growth_world": gdp, "cpi_inflation_advanced": cpi}, units="%",
     )
     b.step("g", "Terminal growth (capped)", min(uncapped, cap), "min(g_chain, g_cap)",
            {"g_chain": uncapped, "g_cap": cap}, units="%")
+
+
+def bank_terminal_growth_from_data(inputs: dict, scenario_id: str, horizon_years: int):
+    """D-79: a bank's terminal growth, DERIVED the D-72 way, scenario-specific, capped.
+
+    The bank chain in equilibrium at the end of the explicit period: the industry
+    balance-sheet growth series the archetype declares (``bank_system_aiea_growth``,
+    which already carries the industry gap to nominal GDP and the scenario's own
+    shift -- both persist, exactly as the mining gap does for the industrial chain)
+    plus the company offset at its EQUILIBRIUM reading (D-78: the archetype says
+    whether a company's share gain or loss persists; WBC's does not). Capped at the
+    scenario's nominal GDP. Returns a :class:`Derivation` with result key ``g``.
+    """
+    from vcc_valuations.derivation import DerivationBuilder
+
+    shared = growth_chain_shared_block(inputs)
+    typed_offset = shared["company_offset"]["aiea_growth_offset"]
+    eq = equilibrium_chain_terms(inputs)
+    offset = eq.get("company_offset.aiea_growth_offset", typed_offset)
+    series = macro_series_at(inputs, "bank_system_aiea_growth", horizon_years)
+    b = DerivationBuilder(f"terminal_growth[{scenario_id}]")
+    b.step("industry_y_h", "Industry balance-sheet growth at the end of the explicit period",
+           series, "bank_system_aiea_growth at year H",
+           {"year": horizon_years}, units="%")
+    b.step("offset_eq", "Company offset at its equilibrium reading (D-78)", offset,
+           "growth_chain_terms[company_offset.aiea_growth_offset]",
+           {"typed": typed_offset, "equilibrium": offset}, units="%")
+    uncapped = b.step("g_chain", "Equilibrium chain growth at the end of the explicit period",
+                      series + offset, "industry_y_h + offset_eq",
+                      {"industry_y_h": series, "offset_eq": offset}, units="%")
+    _cap_terminal_growth(b, inputs, horizon_years, uncapped)
+    return b.build(result_key="g")
+
+
+def segment_terminal_growth_from_data(inputs: dict, scenario_id: str, horizon_years: int):
+    """D-79: a segment-valued company's terminal growth, DERIVED, scenario-specific, capped.
+
+    Each segment's archetype declares one nominal growth series (D-73); at the end
+    of the explicit period the company offset (the typed path less its own steady
+    state) is zero by construction, so each segment grows at its archetype's series.
+    The group rate is the revenue-weighted mean of those series at year H, weighted
+    by each segment's revenue in the FINAL explicit year (not FY25: a segment that
+    has outgrown the others by then carries more of the group). Capped at the
+    scenario's nominal GDP. Returns a :class:`Derivation` with result key ``g``.
+    """
+    from vcc_valuations.derivation import DerivationBuilder
+
+    financials = inputs["financials"]
+    b = DerivationBuilder(f"terminal_growth[{scenario_id}]")
+    weighted = 0.0
+    total = 0.0
+    parts = {}
+    for s in financials["segments"]:
+        name = s["segment"]
+        path = segment_growth_path_from_data(inputs, scenario_id, name, horizon_years)
+        rev_h = s["fy25_revenue"]
+        for g in path:
+            rev_h *= 1.0 + g
+        variable = segment_archetype_growth_variable(inputs, name)
+        g_h = macro_series_at(inputs, variable, horizon_years)
+        b.step(f"rev_h[{name}]", f"{name} revenue in the final explicit year", rev_h,
+               "fy25_revenue x prod(1 + growth_path)", {"fy25_revenue": s["fy25_revenue"]})
+        b.step(f"g_h[{name}]", f"{name} archetype series at the end of the explicit period",
+               g_h, f"{variable} at year H", {"year": horizon_years}, units="%")
+        weighted += rev_h * g_h
+        total += rev_h
+        parts[name] = (rev_h, g_h)
+    uncapped = b.step(
+        "g_chain", "Revenue-weighted segment growth at the end of the explicit period",
+        weighted / total, "sum(rev_h x g_h) / sum(rev_h)",
+        {n: {"rev_h": r, "g_h": g} for n, (r, g) in parts.items()}, units="%",
+    )
+    _cap_terminal_growth(b, inputs, horizon_years, uncapped)
     return b.build(result_key="g")
 
 
@@ -1596,7 +1712,9 @@ def build_bank_inputs_from_data(inputs: dict, scenario_id: str):
         # impact matrix (lifted off wbc.yaml 14 Oct 2026); None lets the engine
         # start from the earned ROE.
         terminal_roe=declared_terminal_return_from_matrix(inputs, scenario_id),
-        terminal_growth=scen["terminal_growth"],
+        # D-79: derived from the bank chain in equilibrium, capped at scenario
+        # nominal GDP; the typed per-scenario rate left wbc.yaml 14 Oct 2026.
+        terminal_growth=bank_terminal_growth_from_data(inputs, scenario_id, timing["horizon_years"]).result,
         cet1_anchor_ratio=cet1_anchor_ratio,
         rwa_anchor=rwa_anchor,
         rwa_density=rwa_density,
@@ -1677,7 +1795,11 @@ def build_segment_inputs_from_data(inputs: dict, scenario_id: str, route_termina
         # at g x intensity in the terminal — so only the number moves here.
         wc_change_pct_revenue_change=_segment_working_capital_intensity(inputs, company),
         terminal_capex_pct_revenue=drv["terminal_capex_pct_revenue"],
-        terminal_ebit_margin=scen["terminal_ebit_margin"], terminal_growth=scen["terminal_growth"],
+        terminal_ebit_margin=scen["terminal_ebit_margin"],
+        # D-79: derived from the segments' archetype series at year H, weighted by
+        # final-year revenue, capped at scenario nominal GDP; the typed rate left
+        # csl.yaml 14 Oct 2026.
+        terminal_growth=segment_terminal_growth_from_data(inputs, scenario_id, horizon).result,
         tax_rate=scen["tax_rate"], cost_of_equity=ke,
         net_debt=anch["net_debt"], restructuring_cash_to_come=anch["restructuring_cash_to_come"],
         shares_outstanding_m=anch["shares_outstanding_m"], fx_aud_per_usd=sf["fx_aud_per_usd"],

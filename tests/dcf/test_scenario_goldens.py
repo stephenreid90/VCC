@@ -164,12 +164,21 @@ WBC_GOLDEN = {
     # terminal ROE is capitalised. The v4 workbook still ties the engine run at its
     # own five years (test_wbc_bank.py). Five-year levels on the D-72 path:
     # 36.2265 / 30.0304 / 29.7176 / 27.1084 / 22.6051 / 18.7015.
-    "orderly_convergence": 40.2748,                # binds Y4
-    "muddle_through": 31.0502,                     # binds Y7
-    "ai_productivity_lag": 30.8918,
-    "fragmentation": 27.7263,
-    "disorderly_climate_crystallisation": 23.0864,
-    "stagflation_persists": 16.2617,
+    # Re-pinned 14 Oct 2026 for D-79 (Stephen's ruling): terminal growth is DERIVED
+    # from the bank chain in equilibrium -- the bank_system_aiea_growth path at Y10
+    # with WBC's share-loss offset off (D-78), capped at scenario nominal GDP -- in
+    # place of the typed 3.25-3.75%. Derived g: 5.37 (capped) / 4.50 / 4.42 / 3.92 /
+    # 3.46 / 1.94%. OC +16.7%, MT +6.5%, AI Lag +7.1%, Frag +3.0%, DCC +0.5%,
+    # Stag -2.8% (its shrinking system is below the old typed rate). Most of the
+    # movement is the typed 3.5% giving way to the 4.5-5.4% nominal world the
+    # scenario files already assert, not a method change. Before: 40.2748 /
+    # 31.0502 / 30.8918 / 27.7263 / 23.0864 / 16.2617.
+    "orderly_convergence": 46.9911,                # binds Y4
+    "muddle_through": 33.0779,                     # binds Y7
+    "ai_productivity_lag": 33.0905,
+    "fragmentation": 28.5658,
+    "disorderly_climate_crystallisation": 23.2017,
+    "stagflation_persists": 15.7985,
 }
 
 # --- CSL: multi-segment FCFF / Ke (M3), (USD, AUD) per share -------------------
@@ -204,12 +213,21 @@ CSL_GOLDEN = {
     # Five-year levels on the D-73 paths (USD, AUD): 150.6863/228.3199,
     # 129.213/195.7835, 126.5514/191.7507, 106.9922/162.1145, 112.3121/170.1754,
     # 103.5286/156.8666.
-    "orderly_convergence": (144.5432, 219.0118),
-    "muddle_through": (123.0844, 186.4975),       # Gordon level independently audited (generated workbook, all six)
-    "ai_productivity_lag": (119.4961, 181.0605),
-    "fragmentation": (99.1514, 150.2342),
-    "disorderly_climate_crystallisation": (105.0520, 159.1748),
-    "stagflation_persists": (89.7794, 136.0337),
+    # Re-pinned 14 Oct 2026 for D-79 (Stephen's ruling): terminal growth is DERIVED
+    # -- each segment's archetype series at Y10 (the company offset is zero there by
+    # construction), weighted by final-year segment revenue, capped at scenario
+    # nominal GDP -- in place of the typed 2.75-3.25%. Derived g: 5.37 (capped) /
+    # 5.37 (capped) / 4.86 / 3.90 / 3.85 / 2.73%. OC +11.4%, MT +12.0%, AI Lag +9.5%,
+    # Frag +4.8%, DCC +4.6%, Stag -1.0%. As for WBC, the movement is the typed 3%
+    # giving way to the nominal GDP the scenario files assert at Y10. Before (USD,
+    # AUD): 144.5432/219.0118, 123.0844/186.4975, 119.4961/181.0605,
+    # 99.1514/150.2342, 105.0520/159.1748, 89.7794/136.0337.
+    "orderly_convergence": (160.9749, 243.9092),
+    "muddle_through": (137.8604, 208.8861),       # generated workbook ties (LibreOffice recalc, all six)
+    "ai_productivity_lag": (130.8477, 198.2605),
+    "fragmentation": (103.9154, 157.4527),
+    "disorderly_climate_crystallisation": (109.8907, 166.5064),
+    "stagflation_persists": (88.9258, 134.7404),
 }
 
 
@@ -342,18 +360,21 @@ def test_terminal_shares_are_measured_case_by_case():
     # one of their terminal shares fell below 70% -- the same mechanism as DNL on
     # 2 Oct (more explicit years, a smaller terminal). Pinned, not asserted below
     # the line, so the next crossing in either direction is a conscious event.
+    # D-79 (14 Oct 2026): a higher derived g lifts every WBC terminal share (OC
+    # 0.6373 -> 0.6864, Stag 0.6926 -> 0.6849 the other way); none crosses 70%.
     wbc_shares = {
-        "orderly_convergence": 0.6373, "muddle_through": 0.6109, "ai_productivity_lag": 0.6024,
-        "fragmentation": 0.5903, "disorderly_climate_crystallisation": 0.5934,
-        "stagflation_persists": 0.6926,
+        "orderly_convergence": 0.6864, "muddle_through": 0.6330, "ai_productivity_lag": 0.6269,
+        "fragmentation": 0.6014, "disorderly_climate_crystallisation": 0.5952,
+        "stagflation_persists": 0.6849,
     }
     # CSL re-pinned 14 Oct 2026 (step 3): the 20-30 year decay horizon takes every
     # terminal share down 7-8 points. Gordon shares before: 0.5987, 0.5738, 0.5648,
     # 0.5438, 0.5445, 0.5336.
+    # D-79 (14 Oct 2026): derived g lifts every CSL share 2-5 points; Stag -0.4.
     csl_shares = {
-        "orderly_convergence": 0.5218, "muddle_through": 0.5016, "ai_productivity_lag": 0.4950,
-        "fragmentation": 0.4762, "disorderly_climate_crystallisation": 0.4772,
-        "stagflation_persists": 0.4593,
+        "orderly_convergence": 0.5652, "muddle_through": 0.5482, "ai_productivity_lag": 0.5330,
+        "fragmentation": 0.4964, "disorderly_climate_crystallisation": 0.4967,
+        "stagflation_persists": 0.4551,
     }
     for scenario in SCENARIOS:
         assert _dnl(scenario).terminal_share_of_ev == pytest.approx(

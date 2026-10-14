@@ -131,8 +131,8 @@ terminal_return_sets:
       construction: bank_roe
       cost_of_capital_name: Ke
       cost_of_capital: 0.0805
-      terminal_growth: 0.0325
-      reinvestment_rate: 0.309524
+      terminal_growth: 0.0442
+      reinvestment_rate: 0.420952
       return_on_new_capital: 0.105
       excess_over_cost_of_capital: 0.0245
       earned_final_explicit: 0.110732
@@ -149,8 +149,8 @@ terminal_return_sets:
       construction: bank_roe
       cost_of_capital_name: Ke
       cost_of_capital: 0.0805
-      terminal_growth: 0.0325
-      reinvestment_rate: 0.361111
+      terminal_growth: 0.0346
+      reinvestment_rate: 0.384444
       return_on_new_capital: 0.09
       excess_over_cost_of_capital: 0.0095
       earned_final_explicit: 0.090895
@@ -167,8 +167,8 @@ terminal_return_sets:
       construction: bank_roe
       cost_of_capital_name: Ke
       cost_of_capital: 0.0805
-      terminal_growth: 0.0325
-      reinvestment_rate: 0.325
+      terminal_growth: 0.0392
+      reinvestment_rate: 0.392
       return_on_new_capital: 0.1
       excess_over_cost_of_capital: 0.0195
       earned_final_explicit: 0.103577
@@ -185,8 +185,8 @@ terminal_return_sets:
       construction: bank_roe
       cost_of_capital_name: Ke
       cost_of_capital: 0.0805
-      terminal_growth: 0.035
-      reinvestment_rate: 0.333333
+      terminal_growth: 0.045
+      reinvestment_rate: 0.428571
       return_on_new_capital: 0.105
       excess_over_cost_of_capital: 0.0245
       earned_final_explicit: 0.109528
@@ -203,8 +203,8 @@ terminal_return_sets:
       construction: bank_roe
       cost_of_capital_name: Ke
       cost_of_capital: 0.0805
-      terminal_growth: 0.0375
-      reinvestment_rate: 0.340909
+      terminal_growth: 0.05369
+      reinvestment_rate: 0.488091
       return_on_new_capital: 0.11
       excess_over_cost_of_capital: 0.0295
       earned_final_explicit: 0.131673
@@ -221,8 +221,8 @@ terminal_return_sets:
       construction: bank_roe
       cost_of_capital_name: Ke
       cost_of_capital: 0.0805
-      terminal_growth: 0.0325
-      reinvestment_rate: 0.361111
+      terminal_growth: 0.0194
+      reinvestment_rate: 0.215556
       return_on_new_capital: 0.09
       excess_over_cost_of_capital: 0.0095
       earned_final_explicit: 0.052222
@@ -239,8 +239,8 @@ terminal_return_sets:
       construction: segment_roic
       cost_of_capital_name: Ke
       cost_of_capital: 0.0875
-      terminal_growth: 0.0288
-      reinvestment_rate: 0.041139
+      terminal_growth: 0.04856
+      reinvestment_rate: 0.069364
       return_on_new_capital: 0.700071
       excess_over_cost_of_capital: 0.612571
       earned_final_explicit: null
@@ -257,8 +257,8 @@ terminal_return_sets:
       construction: segment_roic
       cost_of_capital_name: Ke
       cost_of_capital: 0.0875
-      terminal_growth: 0.0275
-      reinvestment_rate: 0.042438
+      terminal_growth: 0.038495
+      reinvestment_rate: 0.059405
       return_on_new_capital: 0.648
       excess_over_cost_of_capital: 0.5605
       earned_final_explicit: null
@@ -275,8 +275,8 @@ terminal_return_sets:
       construction: segment_roic
       cost_of_capital_name: Ke
       cost_of_capital: 0.0875
-      terminal_growth: 0.0275
-      reinvestment_rate: 0.042664
+      terminal_growth: 0.039048
+      reinvestment_rate: 0.060579
       return_on_new_capital: 0.644571
       excess_over_cost_of_capital: 0.557071
       earned_final_explicit: null
@@ -293,8 +293,8 @@ terminal_return_sets:
       construction: segment_roic
       cost_of_capital_name: Ke
       cost_of_capital: 0.0875
-      terminal_growth: 0.03
-      reinvestment_rate: 0.04321
+      terminal_growth: 0.05369
+      reinvestment_rate: 0.077331
       return_on_new_capital: 0.694286
       excess_over_cost_of_capital: 0.606786
       earned_final_explicit: null
@@ -311,8 +311,8 @@ terminal_return_sets:
       construction: segment_roic
       cost_of_capital_name: Ke
       cost_of_capital: 0.0875
-      terminal_growth: 0.0325
-      reinvestment_rate: 0.044582
+      terminal_growth: 0.05369
+      reinvestment_rate: 0.073649
       return_on_new_capital: 0.729
       excess_over_cost_of_capital: 0.6415
       earned_final_explicit: null
@@ -329,8 +329,8 @@ terminal_return_sets:
       construction: segment_roic
       cost_of_capital_name: Ke
       cost_of_capital: 0.0875
-      terminal_growth: 0.03
-      reinvestment_rate: 0.048917
+      terminal_growth: 0.027328
+      reinvestment_rate: 0.04456
       return_on_new_capital: 0.613286
       excess_over_cost_of_capital: 0.525786
       earned_final_explicit: null

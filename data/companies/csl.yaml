@@ -679,9 +679,13 @@ normalised_baseline:
         that underwrites the terminal. Scenario-conditional: 31.5% Orderly ->
         26.5% Stagflation.
       terminal_growth_rationale: >
-        US nominal-GDP-adjacent for a global essential-therapies franchise.
-        Scenario-conditional (3.25% Orderly -> 2.75% Fragmentation/Disorderly;
-        held 3.0% nominal in Stagflation).
+        DERIVED, not typed (D-79, 14 Oct 2026). Each segment archetype declares one
+        nominal growth series (D-73); at year 10 the company offset is zero by
+        construction, so the group rate is the revenue-weighted mean of the three
+        series in the final explicit year, capped at scenario nominal GDP
+        (translator.segment_terminal_growth_from_data). The typed 2.75-3.25% this
+        replaced was written as "US nominal-GDP-adjacent" when nominal GDP was
+        taken as about 3%; the scenario files assert 4.9-5.6% at year 10.
     # Segment-FCFF (M3) valuation build (methodology §4 mechanics, per-segment).
     # Sourced from analyses/csl/valuations/csl_muddle_through_valuation_v4.xlsx and
     # csl_scenarios_comparison_v2.xlsx. Segment FY25 revenue / margin are the layer-1
@@ -722,7 +726,6 @@ normalised_baseline:
         seqirus_margin_uplift: 0.015
         vifor_margin_uplift: 0.015
         terminal_ebit_margin: 0.315
-        terminal_growth: 0.0325
         tax_rate: 0.19
       muddle_through:
         behring_growth: [-0.01, 0.025, 0.045, 0.055, 0.055, 0.055]
@@ -732,7 +735,6 @@ normalised_baseline:
         seqirus_margin_uplift: 0.01
         vifor_margin_uplift: 0.01
         terminal_ebit_margin: 0.30
-        terminal_growth: 0.03
         tax_rate: 0.19
       ai_productivity_lag:
         behring_growth: [-0.01, 0.025, 0.045, 0.05, 0.05, 0.05]
@@ -742,7 +744,6 @@ normalised_baseline:
         seqirus_margin_uplift: 0.01
         vifor_margin_uplift: 0.01
         terminal_ebit_margin: 0.3025
-        terminal_growth: 0.0288
         tax_rate: 0.19
       fragmentation:
         behring_growth: [-0.015, 0.015, 0.03, 0.04, 0.04, 0.04]
@@ -752,7 +753,6 @@ normalised_baseline:
         seqirus_margin_uplift: 0.0
         vifor_margin_uplift: 0.0
         terminal_ebit_margin: 0.282
-        terminal_growth: 0.0275
         tax_rate: 0.20
       disorderly_climate_crystallisation:
         behring_growth: [-0.01, 0.02, 0.035, 0.045, 0.045, 0.045]
@@ -762,7 +762,6 @@ normalised_baseline:
         seqirus_margin_uplift: 0.005
         vifor_margin_uplift: 0.0
         terminal_ebit_margin: 0.28
-        terminal_growth: 0.0275
         tax_rate: 0.19
       stagflation_persists:
         behring_growth: [-0.015, 0.01, 0.025, 0.035, 0.035, 0.035]
@@ -772,5 +771,4 @@ normalised_baseline:
         seqirus_margin_uplift: -0.005
         vifor_margin_uplift: -0.005
         terminal_ebit_margin: 0.265
-        terminal_growth: 0.03
         tax_rate: 0.19

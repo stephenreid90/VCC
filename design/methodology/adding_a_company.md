@@ -49,15 +49,23 @@ declarations. If a step seems to need a company's name in `src/`, the step is wr
    SSOT lint (`tests/test_ssot_lint.py`, 14 checks) enforces the split: no derived value
    stored, no judgement in layer 1, every rate declares the basis it was struck on, the
    anchor dates pair up. Run it after every edit.
-4. **Equilibrium chain terms (D-72, D-78).** Where the company's terminal growth is
-   DERIVED from its growth chain, the archetype must classify every numeric term of the
-   chain's `shared` block in `growth_chain_terms`: `current_cycle` (switched off at the
-   end of the explicit period; give the `equilibrium_value` and a `basis`) or
-   `equilibrium` (keeps its typed value). `translator.equilibrium_chain_terms` raises on
-   an unclassified term. Terminal growth is then the chain in equilibrium at year ten,
-   capped at the scenario's nominal GDP. Where terminal growth is still typed per
-   scenario (WBC and CSL today), declare `growth_chain_terms: []` and record that
-   deriving it is open.
+4. **Equilibrium chain terms and derived terminal growth (D-72, D-78, D-79).** Terminal
+   growth is never typed. It is the company's growth chain read at year ten with the
+   archetype's current-cycle terms at their equilibrium reading, capped at the
+   scenario's nominal GDP ((1 + world real GDP)(1 + advanced CPI) - 1). The archetype
+   must classify every numeric term of the chain's `shared` block in
+   `growth_chain_terms`: `current_cycle` (switched off at the end of the explicit
+   period; give the `equilibrium_value` and a `basis`) or `equilibrium` (keeps its typed
+   value). `translator.equilibrium_chain_terms` raises on an unclassified term and
+   `translator.growth_chain_shared_block` finds the chain whichever shape it has. The
+   derivation per engine: `terminal_growth_from_data` (industrial chain),
+   `bank_terminal_growth_from_data` (industry series at Y10 plus the company offset at
+   its equilibrium reading) and `segment_terminal_growth_from_data` (each segment's
+   archetype series at Y10, weighted by final-year segment revenue). A segment chain has
+   no `shared` block, so its archetypes declare `growth_chain_terms: []` and say why.
+   Size it before landing: `scripts/size_terminal_growth.py` reports the uncapped chain,
+   the cap and the level against any rate it replaces
+   (`design/methodology/terminal_growth_sets.yaml`).
 5. **Ten years and the terminal form (D-71, D-74).** The explicit period is a fixed ten
    years for every company (`horizon_years: 10`). Typed glides hold their last value to
    year ten. The headline terminal is convergence over the declared decay horizon, then

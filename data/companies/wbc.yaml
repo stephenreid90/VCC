@@ -119,17 +119,21 @@ normalised_baseline:
         # terminal_roe lifted to the impact matrix 14 Oct 2026 (D-76):
         # data/impact_matrix/by_industry/australian_major_banks.yaml,
         # excess_return_defence.declared_terminal_return per scenario.
-        terminal_growth: 0.035
+        # terminal_growth removed 14 Oct 2026 (D-79): it is DERIVED -- the
+        # bank_system_aiea_growth series at year 10 plus the company offset at its
+        # D-78 equilibrium reading, capped at scenario nominal GDP
+        # (translator.bank_terminal_growth_from_data). The typed 3.25-3.75% sat
+        # about 2pp below the nominal GDP the scenario files assert.
       by_scenario:
         # y5_cost_to_income re-anchors the CTI glide endpoint (parallel shift so Y5
         # hits the target); credit_loss_delta_bps shifts the loss-rate glide;
-        # terminal_growth is absolute per world; terminal_roe lives on the matrix (D-76).
-        orderly_convergence: {y5_cost_to_income: 0.46, credit_loss_delta_bps: -20, terminal_growth: 0.0375}
-        muddle_through: {y5_cost_to_income: 0.48, credit_loss_delta_bps: 0, terminal_growth: 0.035}
-        ai_productivity_lag: {y5_cost_to_income: 0.475, credit_loss_delta_bps: 0, terminal_growth: 0.0325}
-        fragmentation: {y5_cost_to_income: 0.49, credit_loss_delta_bps: 5, terminal_growth: 0.0325}
-        disorderly_climate_crystallisation: {y5_cost_to_income: 0.49, credit_loss_delta_bps: 20, terminal_growth: 0.0325}
-        stagflation_persists: {y5_cost_to_income: 0.51, credit_loss_delta_bps: 50, terminal_growth: 0.0325}
+        # terminal_roe lives on the matrix (D-76); terminal growth is derived (D-79).
+        orderly_convergence: {y5_cost_to_income: 0.46, credit_loss_delta_bps: -20}
+        muddle_through: {y5_cost_to_income: 0.48, credit_loss_delta_bps: 0}
+        ai_productivity_lag: {y5_cost_to_income: 0.475, credit_loss_delta_bps: 0}
+        fragmentation: {y5_cost_to_income: 0.49, credit_loss_delta_bps: 5}
+        disorderly_climate_crystallisation: {y5_cost_to_income: 0.49, credit_loss_delta_bps: 20}
+        stagflation_persists: {y5_cost_to_income: 0.51, credit_loss_delta_bps: 50}
 
 company_position:
   id: wbc

@@ -23,7 +23,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_BASES = {"DNL": "2.138", "WBC": "31.05", "CSL": "186.5"}  # DNL 2 Oct (D-71 + D-72); WBC 14 Oct (D-71 ten-year period, D-73 paths; indefinite horizon leaves it); CSL 14 Oct step 3 (20-30y decay horizon, D-75; was 223.24 Gordon, 195.78 at five years)
+EXPECTED_BASES = {"DNL": "2.138", "WBC": "33.08", "CSL": "208.89"}  # DNL 2 Oct (D-71 + D-72); WBC and CSL 14 Oct D-79 (terminal growth derived from the chain, capped at scenario nominal GDP; were 31.05 and 186.5 on the typed 3.5% / 3.0%)
 
 
 def run(cmd: list[str], timeout: int = 900, cwd: Path | None = None) -> tuple[int, str]:

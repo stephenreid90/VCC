@@ -8,8 +8,9 @@ explicit period for the reading that sets terminal growth, D-72) or equilibrium
 
 What the data path carries today: industrial_explosives classifies all ten DNL terms
 (ratified by Stephen 14 Oct 2026 as the classification D-72 implemented, so no level
-moves); the bank and the three CSL segment archetypes declare an EMPTY list, because
-WBC's and CSL's terminal growth is still typed per scenario, not derived.
+moves). D-79 (same day): the bank archetype classifies the four terms of the AIEA
+chain and the three CSL segment archetypes declare an empty list because a segment
+chain has no scenario-invariant term -- see test_derived_terminal_growth_bank_segment.py.
 """
 
 from __future__ import annotations

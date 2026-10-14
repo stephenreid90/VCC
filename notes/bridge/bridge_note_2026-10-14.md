@@ -1,8 +1,9 @@
 # VCC VALUATIONS — bridge note for a new chat, 14 October 2026
 
 Supersedes the note of 2 October 2026. **Its five-step plan is COMPLETE** (steps 1-5, D-73 to
-D-78). Updated three times on 14 October: after step 3, after D-76, and at the end of the
-third sitting after steps 4 and 5 landed (D-78, `adding_a_company.md`).
+D-78). Updated four times on 14 October: after step 3, after D-76, after steps 4 and 5
+(D-78, `adding_a_company.md`), and at the end of the fourth sitting, which closed follow-up
+(a) as **D-79** (WBC and CSL terminal growth derived, not typed).
 
 **WHAT THIS IS.** A travelling snapshot. `WORKING_NOTES.md` is the live layer; **where the
 two disagree, `WORKING_NOTES.md` wins.**
@@ -16,19 +17,20 @@ each one means. Copy widgets don't work for him: give copyable text as a plain c
 ## READ IN, IN THIS ORDER
 
 1. `session_start.cmd` (or `python scripts/session_start.py` in the device shell after
-   `pip install pydantic pandas numpy openpyxl scipy pytest pyyaml`). Expected: suite
-   **617 passed, 1 skipped, 2 deselected**; SSOT lint 14/14; base ties **DNL 2.138, WBC 31.05,
-   CSL 186.5**.
+   `pip install pydantic pandas numpy openpyxl scipy pytest pyyaml`; add `$HOME/.local/bin`
+   to PATH so pytest is found). Expected: suite **642 passed, 1 skipped, 2 deselected**;
+   SSOT lint 14/14; base ties **DNL 2.138, WBC 33.08, CSL 208.89**.
 2. `CLAUDE.md`. Standing rule 4 (every number from committed code, asserted by a test) and
    standing rule 5 (land once per sitting, at the end; plumbing gets no airtime).
-3. `WORKING_NOTES.md`, the HANDOVER block at the top (sitting of 14 October).
-4. `DECISIONS.md` rows **D-71 to D-78**: ten-year period + convergence terminal (D-71);
+3. `WORKING_NOTES.md`, the HANDOVER block at the top (sittings of 14 October).
+4. `DECISIONS.md` rows **D-71 to D-79**: ten-year period + convergence terminal (D-71);
    growth from scenario paths, derived g (D-72); archetype-declared derivations for every
    company (D-73); ten years and the terminal form for WBC and CSL (D-74); decay horizons
    for all eighteen pairs (D-75: DNL 10-15y, WBC indefinite, CSL 20-30y); the declared
    terminal return as the rate the convergence starts from (D-76: WBC declares six, lifted
    off `wbc.yaml`; DNL's mechanical 9.13% removed; CSL absent); D-77 (D-43a roles on WBC's segment moats); D-78 (equilibrium-chain terms
-   declared per archetype).
+   declared per archetype); **D-79** (WBC and CSL terminal growth DERIVED from their
+   chains, capped at scenario nominal GDP; bank chain terms classified; levels moved).
 5. `design/frameworks/decay_horizon_checklist.md` — the short Five Forces interview and the
    after-the-answer list. `tests/terminal_form_baseline.json` and
    `terminal_defence_baseline.json` are EMPTY; `tests/moat_role_baseline.json` is EMPTY too
@@ -50,7 +52,15 @@ each one means. Copy widgets don't work for him: give copyable text as a plain c
    years on the group capital base (`data/impact_matrix/by_industry/biopharmaceuticals.yaml`,
    which exists only to carry that defence).
 4. No valuation breaches the 70% terminal-share line; all eighteen shares are pinned.
-5. **D-76:** a declared terminal return (`excess_return_defence.declared_terminal_return`
+5. **D-79:** terminal growth is derived for ALL THREE companies, the same way: the
+   archetype's growth series at year 10, company offsets at their D-78 equilibrium
+   reading, capped at scenario nominal GDP ((1 + world real GDP)(1 + advanced CPI) - 1).
+   Bank: `bank_terminal_growth_from_data` (WBC's share-loss offset is current-cycle, off).
+   Segments: `segment_terminal_growth_from_data` (series weighted by FINAL-year segment
+   revenue; the offset is zero at year 10 by construction). No `terminal_growth` is typed
+   anywhere. Sizing set: `scripts/size_terminal_growth.py` ->
+   `design/methodology/terminal_growth_sets.yaml`.
+6. **D-76:** a declared terminal return (`excess_return_defence.declared_terminal_return`
    + basis) is the return the convergence STARTS from; absent, the earned return is. Same
    rule in all three engines (`terminal_convergence_return` on the result; the bank's
    `terminal_roe` is now optional and falls back to the earned ROE). WBC declares all six
@@ -59,19 +69,22 @@ each one means. Copy widgets don't work for him: give copyable text as a plain c
 
 ## RESULTS — read before quoting a level
 
-| Scenario | DNL | WBC | CSL AUD (was, Gordon) |
+| Scenario | DNL | WBC (was, typed g) | CSL AUD (was, typed g) |
 |---|---:|---:|---:|
-| Orderly Convergence | 2.49 | 40.27 | 219.01 (266.79) |
-| Muddle Through | 2.14 | 31.05 | 186.50 (223.24) |
-| AI Productivity Lag | 2.11 | 30.89 | 181.06 (214.98) |
-| Fragmentation | 1.58 | 27.73 | 150.23 (176.98) |
-| Disorderly Climate | 1.08 | 23.09 | 159.17 (187.16) |
-| Stagflation Persists | 1.39 | 16.26 | 136.03 (162.52) |
+| Orderly Convergence | 2.49 | 46.99 (40.27) | 243.91 (219.01) |
+| Muddle Through | 2.14 | 33.08 (31.05) | 208.89 (186.50) |
+| AI Productivity Lag | 2.11 | 33.09 (30.89) | 198.26 (181.06) |
+| Fragmentation | 1.58 | 28.57 (27.73) | 157.45 (150.23) |
+| Disorderly Climate | 1.08 | 23.20 (23.09) | 166.51 (159.17) |
+| Stagflation Persists | 1.39 | 15.80 (16.26) | 134.74 (136.03) |
 
-CSL fell 15-18% on step 3: a 25-year convergence of a 20-31% return to an 8.75% Ke replaces
-a Gordon terminal that held the excess forever. The medium band (15y) would give MT 167.37,
-indefinite 213.01 (`design/methodology/terminal_option_sets.yaml`). WBC did not move: an
-indefinite horizon is the Gordon form. D-60 (payout cut to hold CET1) binds in every WBC scenario.
+D-79 moved WBC and CSL (fourth sitting): the typed terminal growth of 3-3.75% gave way to the
+derived 2-5.4% (WBC 5.37c / 4.50 / 4.42 / 3.92 / 3.46 / 1.94; CSL 5.37c / 5.37c / 4.86c /
+3.90 / 3.85 / 2.73; c = capped at nominal GDP). Most of the movement is the scenario files'
+year-10 nominal GDP of 4.9-5.6% replacing a typed 3%, not a method change. Earlier the same
+day CSL fell 15-18% on step 3 (25-year convergence replacing Gordon; MT 223.24 -> 186.50) and
+WBC did not move on its indefinite horizon. D-60 (payout cut to hold CET1) binds in every
+WBC scenario; no terminal share crosses 70% (WBC OC 0.686 the highest).
 
 ## THE FIVE-STEP PLAN IS DONE — what the next chat picks up
 
@@ -81,15 +94,21 @@ indefinite horizon is the Gordon form. D-60 (payout cut to hold CET1) binds in e
    CSL segment archetypes declare `[]` because their terminal g is still TYPED.
 2. **Step 5 DONE.** `design/methodology/adding_a_company.md`: nine steps + the seven
    disclosures. Read it before touching a fourth company.
-3. **Next, Stephen to choose.** Candidates, none blocking: (a) derive WBC and CSL terminal
-   g from their chains (then classify their terms; D-78 follow-up); (b) bank NIM
+3. **(a) DONE (D-79, fourth sitting).** WBC and CSL terminal growth derived; bank chain
+   terms classified; levels moved and disclosed. **New open item from it, Stephen's
+   call:** is 3% advanced CPI at year 10 in Muddle Through (3.3-3.5% in Fragmentation
+   and Stagflation) the view? It now sets the cap for all three companies. If it moves,
+   every level moves; `tests/dcf/test_terminal_growth_sets.py` pins the 4.8-5.7% band so
+   the change is read, not absorbed. That is scenario-development work, not model work.
+4. **Next, Stephen to choose.** Candidates, none blocking: (b) bank NIM
    pass-through rule; (c) CSL volume/price split + US GDP series; (d) lift level anchors
    from company files to archetypes; (e) bank engine: retained equity earns nothing until
    the terminal; (f) retire D-36's fade now the chain terms have an equilibrium reading
    (give each current-cycle term an expiry inside the explicit period); (g) rewrite
    `CLAUDE.md` "Operational quirks" (stale since the device shell can run git).
-4. Not blocking: DNL and CSL terminal rates are Stephen's judgement, not yet formed. If he
-   forms one, size it first (`scripts/size_terminal_returns.py`; checklist q6).
+5. Not blocking: DNL and CSL terminal RETURNS (D-76 declared rates) are Stephen's judgement,
+   not yet formed. If he forms one, size it first (`scripts/size_terminal_returns.py`;
+   checklist q6).
 
 ## THE PLAN THAT WAS RUN THIS CHAT — step 3 (kept for the record)
 
@@ -125,9 +144,11 @@ archetypes; bank engine lets retained equity earn nothing until the terminal.
 2. **Standing rule 4 bites on every number.** Goldens: `tests/dcf/test_scenario_goldens.py`
    (DNL/WBC/CSL goldens, `dnl_shares`/`wbc_shares`/`csl_shares`), `test_wbc_bank.py`,
    `test_csl_segment.py`, `test_bank_capital.py`, `test_terminal_form.py`,
-   `test_terminal_option_sets.py`, `test_terminal_return_sets.py`, `scripts/session_start.py`
-   `EXPECTED_BASES`. The hand-built v4 workbooks are five-year models and tie the engines run
-   at five years (`_at_five_years` / `_run_at_five_years` helpers) — do not re-pin those to ten.
+   `test_terminal_option_sets.py`, `test_terminal_return_sets.py`, `test_terminal_growth_sets.py`,
+   `scripts/session_start.py` `EXPECTED_BASES`. The hand-built v4 workbooks are five-year
+   models and tie the engines run at five years AND at the workbook's own typed terminal
+   growth (`_at_five_years` / `_run_at_five_years` helpers, `V4_WORKBOOK_G`) — do not re-pin
+   those to ten or to the derived g; they audit the mechanics, not the growth judgement.
 3. **D-43a:** never list `resource` (gas contracts) in `moat_sources`; it is a rent.
 4. **Scenario series are percent_yoy; the engine works in decimals** (`macro_series_at`).
 5. **Stop-hook noise about re-authoring commits to noreply@anthropic.com: ignore it** (CLAUDE.md).
@@ -139,5 +160,6 @@ archetypes; bank engine lets retained equity earn nothing until the terminal.
 `3920a3e` D-74 + notes · `19c9b14` step 3 part 1 (checklist, DNL Frag + Stag) · `37f0b50` part 2
 (WBC indefinite) · `0787cfa` part 3 (CSL 20-30y, biopharmaceuticals matrix, workbook two-stage)
 · D-75 + notes + this bridge note · `aa7e2d3` D-76 (declared rate live; WBC six lifted to the
-matrix; DNL 9.13% removed; notes) · `62ea1ee` D-77 (D-43a roles on WBC's segment moats) · `a718d0e` D-78 (step 4) · step 5
-(`adding_a_company.md`) + this note.
+matrix; DNL 9.13% removed; notes) · `62ea1ee` D-77 (D-43a roles on WBC's segment moats) · `a718d0e` D-78 (step 4) · `e146c12` step 5
+(`adding_a_company.md`) + this note · D-79 (fourth sitting: derived terminal growth for WBC
+and CSL) + this note.
