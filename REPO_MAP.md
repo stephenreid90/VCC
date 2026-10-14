@@ -3,10 +3,10 @@
 _Generated 2026-10-14 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `3f470e6 Repeatable process step 1: archetype-declared macro-driver derivations (D-72 generalised); no golden moves` on `main`
-- Unpushed commits: **1**
+- HEAD: `1dac19b D-72 for the bank archetype: WBC balance-sheet growth read per year from the scenario path` on `main`
+- Unpushed commits: **3**
 - Tracked files: 349
-- Untracked files: 1
+- Untracked files: 2
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -160,7 +160,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **vcc_valuations/**
     - `__init__.py` (667B)
     - `derivation.py` (4.4KB)
-    - `translator.py` (77.4KB)
+    - `translator.py` (80.8KB)
     - **assumptions/**
       - `__init__.py` (775B)
       - `trade_working_capital.py` (5.8KB)
@@ -168,7 +168,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - **dcf/**
       - `__init__.py` (51B)
       - `bank_capital.py` (9.8KB)
-      - `bank_engine.py` (18.1KB)
+      - `bank_engine.py` (18.9KB)
       - `fcf_engine.py` (30.9KB)
       - `fcf_stub.py` (10.1KB)
       - `segment_engine.py` (10.2KB)
@@ -202,7 +202,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `terminal_form_baseline.json` (1.3KB)
   - `test_adjustments.py` (1.6KB)
   - `test_archetypes_validate.py` (10.2KB)
-  - `test_bank_capital.py` (15.2KB)
+  - `test_bank_capital.py` (16.1KB)
   - `test_comps.py` (670B)
   - `test_csl_loads.py` (2.0KB)
   - `test_dcf.py` (1.4KB)
@@ -223,6 +223,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `__init__.py` (0B)
     - `test_csl_segment.py` (3.0KB)
     - `test_csl_workbook_tie.py` (3.8KB)
+    - `test_d72_bank_and_segment_paths.py` (5.2KB)
     - `test_dnl_all_scenarios.py` (7.2KB)
     - `test_dnl_mt_from_data.py` (13.4KB)
     - `test_dnl_mt_ratified.py` (7.5KB)
@@ -232,7 +233,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `test_horizon_variant_sets.py` (5.1KB)
     - `test_per_year_derivations.py` (3.9KB)
     - `test_replica_ties_engine.py` (6.6KB)
-    - `test_scenario_goldens.py` (15.3KB)
+    - `test_scenario_goldens.py` (16.4KB)
     - `test_terminal_defence.py` (7.0KB)
     - `test_terminal_form.py` (6.7KB)
     - `test_terminal_option_sets.py` (11.1KB)
@@ -243,7 +244,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `__init__.py` (0B)
       - `_recalc.py` (4.2KB)
       - `_recalc_generated_workbooks.py` (6.6KB)
-      - `csl_workbook_all_scenarios.json` (6.6KB)
+      - `csl_workbook_all_scenarios.json` (6.7KB)
       - `dnl_mt_inputs.py` (5.5KB)
       - `dnl_mt_v6.json` (2.6KB)
       - `dnl_workbook_all_scenarios.json` (16.7KB)
@@ -265,7 +266,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `beta_data.py` (10.0KB)
     - `build_cfgs.py` (94.6KB)
     - `cfgs_gen.json` (225.3KB)
-    - `engine_workbook.py` (99.2KB)
+    - `engine_workbook.py` (102.3KB)
     - `gen_ui.py` (89.4KB)
 
 ## Analyses (workbooks)
@@ -351,4 +352,5 @@ Not in git. Either commit them or clear them — an untracked file is invisible
 to anyone who clones the repo, and is the most common way work gets lost.
 
 - `"Claude outputs/"`
+- `tests/dcf/test_d72_bank_and_segment_paths.py`
 

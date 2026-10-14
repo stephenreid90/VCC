@@ -207,6 +207,7 @@ def load_inputs(
         "matrix": matrix,
         "financials": financials,
         "company_raw": company_raw,
+        "repo_root": repo_root,
     }
 
 
@@ -1561,12 +1562,9 @@ def build_segment_inputs_from_data(inputs: dict, scenario_id: str):
     ke = rf + beta * erp
 
     horizon = sf["timing"]["horizon_years"]
-    # per-segment growth path (Behring is an explicit path; the others a flat CAGR).
+
     def growth_path(seg_name):
-        if f"{_seg_key(seg_name)}_growth" in scen:
-            return list(scen[f"{_seg_key(seg_name)}_growth"])
-        cagr = scen[f"{_seg_key(seg_name)}_cagr"]
-        return [cagr] * (horizon + 1)
+        return segment_growth_path_from_data(inputs, scenario_id, seg_name, horizon)
 
     segs = []
     for s in financials["segments"]:
@@ -1615,6 +1613,54 @@ def _segment_working_capital_intensity(inputs: dict, company) -> float:
             "build_segment_inputs_from_data is the segment FCFF assembler."
         )
     return derived.result
+
+
+def _typed_segment_growth(scen: dict, seg_name: str, horizon: int) -> List[float]:
+    """The company's typed per-year path for a segment (explicit list, or a flat CAGR), FY26..FY(25+H+1)."""
+    key = _seg_key(seg_name)
+    if f"{key}_growth" in scen:
+        return list(scen[f"{key}_growth"])
+    return [scen[f"{key}_cagr"]] * (horizon + 1)
+
+
+def segment_archetype_growth_variable(inputs: dict, seg_name: str) -> str:
+    """The scenario series a segment's archetype declares for its nominal growth (D-72).
+
+    Read from ``company_position.industry_archetype_by_segment`` and the archetype's
+    own ``required_macro_drivers``; the archetype must declare exactly one, so the
+    segment has nothing to pick and nothing to type.
+    """
+    company_raw = inputs.get("company_raw") or {}
+    by_seg = (company_raw.get("company_position") or {}).get("industry_archetype_by_segment") or {}
+    archetype_id = by_seg.get(seg_name)
+    if archetype_id is None:
+        raise ValueError(f"{seg_name}: no industry_archetype_by_segment entry")
+    from vcc_valuations.schemas.industry import IndustryArchetypeFile
+    path = inputs["repo_root"] / "data" / "industries" / f"{archetype_id}.yaml"
+    arch = IndustryArchetypeFile.model_validate(_load(path)).industry_archetype
+    names = arch.required_macro_driver_names
+    if len(names) != 1:
+        raise ValueError(f"{archetype_id}: expected exactly one required macro driver for a "
+                         f"segment growth chain, found {names}")
+    return names[0]
+
+
+def segment_growth_path_from_data(inputs: dict, scenario_id: str, seg_name: str, horizon: int) -> List[float]:
+    """D-72 for a segment-valued company: the segment's per-year nominal growth, FY26..
+
+    growth[t] = the archetype's scenario series at year t+1 (nominal GDP proxy plus a
+    gap calibrated to the scenario's typed STEADY-STATE rate, derived by
+    scripts/derive_macro_driver_paths.py) + the company's time-limited offset, which
+    is the typed path less its own steady state (Behring's J-curve recovery: -6.5pp,
+    -3.0pp, -1.0pp, then zero; a flat CAGR has no offset). In Muddle Through the
+    world series are flat, so the result IS the typed path. Decimals.
+    """
+    sf = (inputs.get("company_raw") or {})["normalised_baseline"]["segment_fcff"]
+    scen = sf["by_scenario"][scenario_id]
+    typed = _typed_segment_growth(scen, seg_name, horizon)
+    steady = typed[-1]
+    variable = segment_archetype_growth_variable(inputs, seg_name)
+    return [macro_series_at(inputs, variable, t + 1) + (g - steady) for t, g in enumerate(typed)]
 
 
 def _seg_key(segment_name: str) -> str:

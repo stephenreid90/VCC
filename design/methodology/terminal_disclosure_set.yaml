@@ -237,15 +237,15 @@ terminal_disclosure_set:
       moat-length assignment pending)
     cost_of_capital: 0.0875
     terminal_growth: 0.0288
-    capital: 23143.999
-    earned_return: 0.223126
+    capital: 23156.128
+    earned_return: 0.223726
     moat_years: null
     moat_band: null
     moat_basis: null
     terminal_value: null
     value_per_share: null
-    engine_terminal_value: 79868.215
-    engine_value_per_share: 191.2137
+    engine_terminal_value: 80048.395
+    engine_value_per_share: 191.7507
   - company: csl
     scenario: disorderly_climate_crystallisation
     available: false
@@ -253,15 +253,15 @@ terminal_disclosure_set:
       moat-length assignment pending)
     cost_of_capital: 0.0875
     terminal_growth: 0.0275
-    capital: 22988.948
-    earned_return: 0.203515
+    capital: 23059.239
+    earned_return: 0.20647
     moat_years: null
     moat_band: null
     moat_basis: null
     terminal_value: null
     value_per_share: null
-    engine_terminal_value: 70246.902
-    engine_value_per_share: 168.1047
+    engine_terminal_value: 71089.234
+    engine_value_per_share: 170.1754
   - company: csl
     scenario: fragmentation
     available: false
@@ -269,15 +269,15 @@ terminal_disclosure_set:
       moat-length assignment pending)
     cost_of_capital: 0.0875
     terminal_growth: 0.0275
-    capital: 22834.73
-    earned_return: 0.196282
+    capital: 22842.646
+    earned_return: 0.196578
     moat_years: null
     moat_band: null
     moat_basis: null
     terminal_value: null
     value_per_share: null
-    engine_terminal_value: 67956.057
-    engine_value_per_share: 161.9522
+    engine_terminal_value: 68040.847
+    engine_value_per_share: 162.1145
   - company: csl
     scenario: muddle_through
     available: false
@@ -301,15 +301,15 @@ terminal_disclosure_set:
       moat-length assignment pending)
     cost_of_capital: 0.0875
     terminal_growth: 0.0325
-    capital: 23594.025
-    earned_return: 0.248592
+    capital: 23614.249
+    earned_return: 0.249532
     moat_years: null
     moat_band: null
     moat_basis: null
     terminal_value: null
     value_per_share: null
-    engine_terminal_value: 95512.615
-    engine_value_per_share: 227.4294
+    engine_terminal_value: 95835.202
+    engine_value_per_share: 228.3199
   - company: csl
     scenario: stagflation_persists
     available: false
@@ -317,12 +317,12 @@ terminal_disclosure_set:
       moat-length assignment pending)
     cost_of_capital: 0.0875
     terminal_growth: 0.03
-    capital: 22642.583
-    earned_return: 0.18238
+    capital: 22710.002
+    earned_return: 0.185994
     moat_years: null
     moat_band: null
     moat_basis: null
     terminal_value: null
     value_per_share: null
-    engine_terminal_value: 64877.993
-    engine_value_per_share: 153.5455
+    engine_terminal_value: 65846.519
+    engine_value_per_share: 156.8666

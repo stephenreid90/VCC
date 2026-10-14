@@ -1589,6 +1589,20 @@ def build_csl_workbook_bytes(cfg=None):
     scen_hdr()
     scen_row("Seqirus revenue CAGR", "seqirus_cagr", lambda sid: SC[sid]["seqirus_cagr"], PCT2)
     scen_row("Vifor revenue CAGR", "vifor_cagr", lambda sid: SC[sid]["vifor_cagr"], PCT2)
+    # D-72 (14 Oct 2026): each segment archetype's scenario series (nominal GDP proxy
+    # plus a gap calibrated to the typed steady state above), FY26..FY31, read from
+    # the scenario files. Applied growth = series + (typed path - its steady state),
+    # derived on the Segment FCFF sheet. In Muddle Through the series are flat, so
+    # applied growth there IS the typed path.
+    from vcc_valuations.translator import macro_series_at as _msa, segment_archetype_growth_variable as _sgv
+    _inps = {sid: _li(_ROOT, sid, "biopharmaceuticals", "csl") for sid in SIDS}
+    for sid_seg, stem, _r0, _m0 in SEGS:
+        var = _sgv(inp, sid_seg)
+        sub(f"{stem.title()} archetype growth series by scenario ({var}; FY26..FY31)")
+        scen_hdr()
+        for y in range(6):
+            scen_row(f"  {stem.title()} series {YRS[y+1]}", f"{stem}_ser{y}",
+                     lambda sid, y=y, var=var: _msa(_inps[sid], var, y + 1), PCT2)
     scen_row("Behring margin uplift (cum FY31)", "up_behring", lambda sid: SC[sid]["behring_margin_uplift"], PCT2)
     scen_row("Seqirus margin uplift (cum FY31)", "up_seqirus", lambda sid: SC[sid]["seqirus_margin_uplift"], PCT2)
     scen_row("Vifor margin uplift (cum FY31)", "up_vifor", lambda sid: SC[sid]["vifor_margin_uplift"], PCT2)
@@ -1620,17 +1634,24 @@ def build_csl_workbook_bytes(cfg=None):
             c = ws.cell(rr[0], 3 + j, fn(sid, COLS[j], j)); c.number_format = fmt
             if bold: c.font = BOLD
         m[key] = rr[0]; rr[0] += 1
+    # D-72: applied growth per segment-year = archetype scenario series + company offset
+    # (typed path less its steady state; zero for a flat CAGR).
+    for sid_seg, stem, rev0, marg0 in SEGS:
+        band(f"{stem.title()} growth applied (archetype series + company offset; D-72)")
+        for p in range(1, 7):
+            def f_g(s, c, j, p=p, stem=stem):
+                ser = R[f'{stem}_ser{p-1}:{s}']
+                if stem == "behring":
+                    return f"={ser}+({R[f'behring_g{p-1}:{s}']}-{R[f'behring_g5:{s}']})"
+                return f"={ser}+({R[f'{stem}_cagr:{s}']}-{R[f'{stem}_cagr:{s}']})"
+            row(f"{stem}_g{p}", f"  {YRS[p]}", PCT2, f_g)
     # per-segment revenue (FY25..FY31)
     for sid_seg, stem, rev0, marg0 in SEGS:
         band(f"{stem.title()} revenue")
         for p in range(7):
             def f_rev(s, c, j, p=p, stem=stem):
                 if p == 0: return f"={R[f'rev0:{stem}']}"
-                if stem == "behring":
-                    g = R[f'behring_g{p-1}:{s}']
-                else:
-                    g = R[f'{stem}_cagr:{s}']
-                return f"={c}{m[f'{stem}_rev{p-1}']}*(1+{g})"
+                return f"={c}{m[f'{stem}_rev{p-1}']}*(1+{c}{m[f'{stem}_g{p}']})"
             row(f"{stem}_rev{p}", f"  {YRS[p]}", NUM0, f_rev)
     # per-segment operating result (rev x margin-glide)
     for sid_seg, stem, rev0, marg0 in SEGS:

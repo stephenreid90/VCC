@@ -158,12 +158,21 @@ WBC_GOLDEN = {
 
 # --- CSL: multi-segment FCFF / Ke (M3), (USD, AUD) per share -------------------
 CSL_GOLDEN = {
-    "orderly_convergence": (150.0986, 227.4294),
+    # Re-pinned 14 Oct 2026 (D-72 for the segment archetypes): each segment's growth
+    # is now its archetype's scenario series (nominal-GDP proxy plus a gap calibrated
+    # to the typed steady state) plus the company's time-limited offset (the typed
+    # path less its steady state -- Behring's J-curve). The series' MEAN over the
+    # D-37 anchor years is the typed rate, so only the shape moved; the inflationary
+    # scenarios front-load nominal growth and rise most: OC +0.4%, AI Lag +0.3%,
+    # Frag +0.1%, DCC +1.2%, Stag +2.2%. Muddle Through unchanged to the cent.
+    # Before (USD, AUD): 150.0986/227.4294, 126.197/191.2137, 106.8851/161.9522,
+    # 110.9456/168.1047, 101.3368/153.5455.
+    "orderly_convergence": (150.6863, 228.3199),
     "muddle_through": (129.213, 195.7835),        # independently audited (generated workbook, all six)
-    "ai_productivity_lag": (126.197, 191.2137),
-    "fragmentation": (106.8851, 161.9522),
-    "disorderly_climate_crystallisation": (110.9456, 168.1047),
-    "stagflation_persists": (101.3368, 153.5455),
+    "ai_productivity_lag": (126.5514, 191.7507),
+    "fragmentation": (106.9922, 162.1145),
+    "disorderly_climate_crystallisation": (112.3121, 170.1754),
+    "stagflation_persists": (103.5286, 156.8666),
 }
 
 
