@@ -195,6 +195,15 @@ company_position:
           - regulatory
           - resource
           - patent_lifecycle_management
+        # D-43a roles, declared 14 Oct 2026 (bridge note step 3). The collection
+        # network is the company-specific barrier the decay horizon rests on.
+        # Resource (plasma supply) is a rent: a cost position, not an exclusion.
+        source_roles:
+          manufacturing_complexity: barrier
+          scale_of_plasma_collection_network: barrier
+          regulatory: barrier
+          resource: rent
+          patent_lifecycle_management: both
         durability: high
         evidence: >
           Plasma collection network represents 5+ years of capex and
@@ -313,6 +322,10 @@ company_position:
           - manufacturing_complexity
           - regulatory
           - real_world_data
+        source_roles:
+          manufacturing_complexity: barrier
+          regulatory: barrier
+          real_world_data: rent
         durability: moderate
         evidence: >
           Manufacturing scale and regulatory approval barriers are real
@@ -374,6 +387,10 @@ company_position:
           - patent_protection_with_lcm
           - real_world_data
           - commercial_scale
+        source_roles:
+          patent_protection_with_lcm: both
+          real_world_data: rent
+          commercial_scale: barrier
         durability: moderate
         evidence: >
           Smaller / younger franchise than Behring. Patent exposure on

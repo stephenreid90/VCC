@@ -174,6 +174,16 @@ WBC_GOLDEN = {
 
 # --- CSL: multi-segment FCFF / Ke (M3), (USD, AUD) per share -------------------
 CSL_GOLDEN = {
+    # Re-pinned 14 Oct 2026 (step 3, ratified by Stephen): CSL's six scenarios now
+    # declare a LONG decay horizon, 20-30 years (midpoint 25), on the plasma-
+    # collection network, manufacturing complexity, regulatory and patent-LCM
+    # barriers (data/impact_matrix/by_industry/biopharmaceuticals.yaml). The
+    # terminal is excess_return_convergence with N = 25 on the group capital base,
+    # in place of Gordon: OC -17.9%, MT -16.5%, AI Lag -15.8%, Frag -15.1%,
+    # DCC -15.0%, Stag -16.3%. Gordon levels before (USD, AUD): 176.0748/266.7885,
+    # 147.3357/223.2431, 141.8839/214.9825, 116.8037/176.9810, 123.5242/187.1639,
+    # 107.2600/162.5203. Independently reproduced by the sizing script
+    # (terminal_disclosure_set.yaml) before the pin.
     # Re-pinned 14 Oct 2026 (D-72 for the segment archetypes): each segment's growth
     # is now its archetype's scenario series (nominal-GDP proxy plus a gap calibrated
     # to the typed steady state) plus the company's time-limited offset (the typed
@@ -194,12 +204,12 @@ CSL_GOLDEN = {
     # Five-year levels on the D-73 paths (USD, AUD): 150.6863/228.3199,
     # 129.213/195.7835, 126.5514/191.7507, 106.9922/162.1145, 112.3121/170.1754,
     # 103.5286/156.8666.
-    "orderly_convergence": (176.0748, 266.7885),
-    "muddle_through": (147.3357, 223.2431),       # independently audited (generated workbook, all six)
-    "ai_productivity_lag": (141.8839, 214.9825),
-    "fragmentation": (116.8037, 176.9810),
-    "disorderly_climate_crystallisation": (123.5242, 187.1639),
-    "stagflation_persists": (107.2600, 162.5203),
+    "orderly_convergence": (144.5432, 219.0118),
+    "muddle_through": (123.0844, 186.4975),       # Gordon level independently audited (generated workbook, all six)
+    "ai_productivity_lag": (119.4961, 181.0605),
+    "fragmentation": (99.1514, 150.2342),
+    "disorderly_climate_crystallisation": (105.0520, 159.1748),
+    "stagflation_persists": (89.7794, 136.0337),
 }
 
 
@@ -337,10 +347,13 @@ def test_terminal_shares_are_measured_case_by_case():
         "fragmentation": 0.5903, "disorderly_climate_crystallisation": 0.5934,
         "stagflation_persists": 0.6926,
     }
+    # CSL re-pinned 14 Oct 2026 (step 3): the 20-30 year decay horizon takes every
+    # terminal share down 7-8 points. Gordon shares before: 0.5987, 0.5738, 0.5648,
+    # 0.5438, 0.5445, 0.5336.
     csl_shares = {
-        "orderly_convergence": 0.5987, "muddle_through": 0.5738, "ai_productivity_lag": 0.5648,
-        "fragmentation": 0.5438, "disorderly_climate_crystallisation": 0.5445,
-        "stagflation_persists": 0.5336,
+        "orderly_convergence": 0.5218, "muddle_through": 0.5016, "ai_productivity_lag": 0.4950,
+        "fragmentation": 0.4762, "disorderly_climate_crystallisation": 0.4772,
+        "stagflation_persists": 0.4593,
     }
     for scenario in SCENARIOS:
         assert _dnl(scenario).terminal_share_of_ev == pytest.approx(

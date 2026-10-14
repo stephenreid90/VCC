@@ -57,12 +57,12 @@
     "scalars": {
       "pv_explicit": 37697.9348446072,
       "terminal_fcff": 7155.38930793178,
-      "terminal_value": 130097.987416942,
-      "pv_terminal": 56231.2738364304,
-      "enterprise_value": 93929.2086810377,
-      "equity_value": 84322.2086810377,
-      "value_per_share_usd": 176.0747727731,
-      "value_per_share_aud": 266.788495705801
+      "terminal_value": 95161.1690273453,
+      "pv_terminal": 41130.7957979577,
+      "enterprise_value": 78828.7306425649,
+      "equity_value": 69221.7306425649,
+      "value_per_share_usd": 144.543183634506,
+      "value_per_share_aud": 219.011831843004
     }
   },
   "muddle_through": {
@@ -123,12 +123,12 @@
     "scalars": {
       "pv_explicit": 34166.0981342839,
       "terminal_fcff": 6119.53149233405,
-      "terminal_value": 106426.634649288,
-      "pv_terminal": 45999.9832070771,
-      "enterprise_value": 80166.081341361,
-      "equity_value": 70559.081341361,
-      "value_per_share_usd": 147.335730510255,
-      "value_per_share_aud": 223.243098869138
+      "terminal_value": 79556.3029169872,
+      "pv_terminal": 34386.0219789731,
+      "enterprise_value": 68552.120113257,
+      "equity_value": 58945.120113257,
+      "value_per_share_usd": 123.084401990514,
+      "value_per_share_aud": 186.497485896026
     }
   },
   "ai_productivity_lag": {
@@ -189,12 +189,12 @@
     "scalars": {
       "pv_explicit": 33751.970443029,
       "terminal_fcff": 5948.90340840248,
-      "terminal_value": 101344.180722359,
-      "pv_terminal": 43803.232402545,
-      "enterprise_value": 77555.202845574,
-      "equity_value": 67948.202845574,
-      "value_per_share_usd": 141.88390654745,
-      "value_per_share_aud": 214.982495200697
+      "terminal_value": 76538.6383471408,
+      "pv_terminal": 33081.7195363095,
+      "enterprise_value": 66833.6899793385,
+      "equity_value": 57226.6899793385,
+      "value_per_share_usd": 119.496116056251,
+      "value_per_share_aud": 181.060515048431
     }
   },
   "fragmentation": {
@@ -255,12 +255,12 @@
     "scalars": {
       "pv_explicit": 29902.0313193121,
       "terminal_fcff": 4947.76608114988,
-      "terminal_value": 82462.7680191647,
-      "pv_terminal": 35642.2615127392,
-      "enterprise_value": 65544.2928320513,
-      "equity_value": 55937.2928320513,
-      "value_per_share_usd": 116.80370188359,
-      "value_per_share_aud": 176.980969094016
+      "terminal_value": 62904.1215449486,
+      "pv_terminal": 27188.5749677131,
+      "enterprise_value": 57090.6062870252,
+      "equity_value": 47483.6062870252,
+      "value_per_share_usd": 99.1514017269267,
+      "value_per_share_aud": 150.234203896639
     }
   },
   "disorderly_climate_crystallisation": {
@@ -321,12 +321,12 @@
     "scalars": {
       "pv_explicit": 31321.9227913356,
       "terminal_fcff": 5197.43656570515,
-      "terminal_value": 86623.9427617525,
-      "pv_terminal": 37440.8147500141,
-      "enterprise_value": 68762.7375413497,
-      "equity_value": 59155.7375413497,
-      "value_per_share_usd": 123.52419616068,
-      "value_per_share_aud": 187.163862022663
+      "terminal_value": 66156.8969748117,
+      "pv_terminal": 28594.497607691,
+      "enterprise_value": 59916.4203990266,
+      "equity_value": 50309.4203990266,
+      "value_per_share_usd": 105.052036748855,
+      "value_per_share_aud": 159.174846081865
     }
   },
   "stagflation_persists": {
@@ -387,12 +387,12 @@
     "scalars": {
       "pv_explicit": 28441.0898564735,
       "terminal_fcff": 4327.93662286074,
-      "terminal_value": 75268.4630062738,
-      "pv_terminal": 32532.7212095047,
-      "enterprise_value": 60973.8110659782,
-      "equity_value": 51366.8110659782,
-      "value_per_share_usd": 107.259993873414,
-      "value_per_share_aud": 162.520342716998
+      "terminal_value": 55900.0284392202,
+      "pv_terminal": 24161.2485253612,
+      "enterprise_value": 52602.3383818347,
+      "equity_value": 42995.3383818347,
+      "value_per_share_usd": 89.7793660092601,
+      "value_per_share_aud": 136.033695377231
     }
   }
 }

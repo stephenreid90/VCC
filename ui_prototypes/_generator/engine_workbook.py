@@ -130,11 +130,14 @@ def _load_central():
     return load_inputs(_ROOT, CENTRAL, "industrial_explosives", "dnl")
 
 
-def _convergence_years_for(scenario_id):
+def _convergence_years_for(scenario_id, archetype="industrial_explosives", company="dnl"):
     """D-71: the convergence horizon the translator applies, or None (Gordon)."""
     from vcc_valuations.translator import terminal_form_from_data
-    inp = load_inputs(_ROOT, scenario_id, "industrial_explosives", "dnl")
-    horizon = inp["company_raw"]["normalised_baseline"]["horizon_years"]
+    inp = load_inputs(_ROOT, scenario_id, archetype, company)
+    if company == "csl":
+        horizon = inp["company_raw"]["normalised_baseline"]["segment_fcff"]["timing"]["horizon_years"]
+    else:
+        horizon = inp["company_raw"]["normalised_baseline"]["horizon_years"]
     form, years, _ = terminal_form_from_data(inp, scenario_id, horizon)
     if form != "excess_return_convergence":
         return None
@@ -1568,6 +1571,11 @@ def build_csl_workbook_bytes(cfg=None):
     line("Corporate growth p.a.", corp["unallocated_growth"], "corpg", PCT2)
     line("Net debt at anchor", anch["net_debt"], "nd", NUM0)
     line("Restructuring cash to come", anch["restructuring_cash_to_come"], "restr", NUM0)
+    # D-44/D-62: the opening invested-capital stock the two-stage terminal rolls
+    # forward (translator.csl_terminal_invested_capital). Goodwill excluded.
+    _bs = inp["financials"]["balance_sheet"]
+    line("Net PP&E FY25 incl. right-of-use (D-53)", _bs["property_plant_and_equipment_net"], "ppe0", NUM0)
+    line("Intangibles FY25 ex goodwill (D-53)", _bs["intangible_assets"], "int0", NUM0)
     line("Shares outstanding (m)", anch["shares_outstanding_m"], "shares", NUM1)
     line("FX (AUD per USD)", sf["fx_aud_per_usd"], "fx", NUM1 + "000")
     line("Market price (AUD)", cfg.get("market", 0), "mkt", NUM1 + "0")
@@ -1627,6 +1635,10 @@ def build_csl_workbook_bytes(cfg=None):
     scen_row("Terminal EBIT margin", "tmargin", lambda sid: SC[sid]["terminal_ebit_margin"], PCT2)
     scen_row("Terminal growth g", "tg", lambda sid: SC[sid]["terminal_growth"], PCT2)
     scen_row("Effective tax rate", "tax", lambda sid: SC[sid]["tax_rate"], PCT2)
+    # D-71: the decay horizon declared on the biopharmaceuticals matrix (D-42,
+    # D-58); blank means the Gordon fallback. 14 Oct 2026: 25 (long band 20-30).
+    scen_row("Convergence years N (D-71; blank = Gordon fallback)", "cyrs",
+             lambda sid: _convergence_years_for(sid, "biopharmaceuticals", "csl"), "0.0")
     ws.column_dimensions["A"].width = 42
     for cc in "BCDEFGH": ws.column_dimensions[cc].width = 13
 
@@ -1719,8 +1731,28 @@ def build_csl_workbook_bytes(cfg=None):
     # terminal
     row("tfcff", "Terminal FCFF", NUM1,
         lambda s, c, j: f"={c}{m[f'grev{_T}']}*({R[f'tmargin:{s}']}*(1-{R[f'tax:{s}']})+{R['da']}-{R['tcapex']}-{R[f'tg:{s}']}*{R['wc']})*(1+{R[f'tg:{s}']})")
-    row("tv", "Terminal value", NUM0,
-        lambda s, c, j: f"={c}{m['tfcff']}/({R['ke']}-{R[f'tg:{s}']})")
+    # D-71: excess-return convergence where a decay horizon is declared, Gordon
+    # otherwise -- the same two-stage form as the DNL sheet (D-62 to D-66). The
+    # capital base rolls forward from the FY25 stock through every explicit year
+    # (translator.roll_forward_invested_capital: capex adds, D&A reduces, a
+    # working-capital outflow adds); R is next year's normalised NOPAT on it.
+    band("Invested capital roll-forward (D-44/D-62; for the two-stage terminal)")
+    row("ic0", f"  Invested capital {YRS[0]} = PP&E + intangibles + WC intensity x revenue", NUM0,
+        lambda s, c, j: f"={R['ppe0']}+{R['int0']}+{R['wc']}*{c}{m['grev0']}")
+    for p in range(1, NY):
+        row(f"ic{p}", f"  Invested capital {YRS[p]}", NUM0,
+            lambda s, c, j, p=p: (f"={c}{m[f'ic{p-1}']}+{c}{m[f'grev{p}']}*{R['capex']}"
+                                  f"-{c}{m[f'grev{p}']}*{R['da']}-{c}{m[f'dwc{p}']}"))
+    row("t_ret", f"Earned return R = {YRS[_T]} NOPAT at terminal margin x (1+g) / {YRS[_T]} invested capital", PCT2,
+        lambda s, c, j: f"={c}{m[f'grev{_T}']}*{R[f'tmargin:{s}']}*(1-{R[f'tax:{s}']})*(1+{R[f'tg:{s}']})/{c}{m[f'ic{_T}']}")
+    def f_tv(s, c, j):
+        g = R[f'tg:{s}']; r_ = R['ke']; n = R[f'cyrs:{s}']
+        gordon = f"{c}{m['tfcff']}/({r_}-{g})"
+        k = f"((1+{g})/(1+{r_}))"
+        mult = f"(({c}{m['t_ret']}-{g})/({r_}-{g}))"
+        two = f"{c}{m[f'ic{_T}']}*({mult}*(1-{k}^{n})+{k}^{n})"
+        return f"=IF({n}=\"\",{gordon},{two})"
+    row("tv", "Terminal value", NUM0, f_tv)
     row("pvtv", "PV terminal", NUM0,
         lambda s, c, j: f"={c}{m['tv']}/(1+{R['ke']})^{_H}")
     row("ev", "Enterprise value", NUM0,

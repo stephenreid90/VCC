@@ -269,97 +269,139 @@ terminal_disclosure_set:
     engine_value_per_share: 16.2617
   - company: csl
     scenario: ai_productivity_lag
-    available: false
-    reason: no decay_horizon declared for this company x scenario yet (five-forces
-      moat-length assignment pending)
+    available: true
+    reason: null
     cost_of_capital: 0.0875
     terminal_growth: 0.0288
     capital: 23283.093
     earned_return: 0.304493
-    moat_years: null
-    moat_band: null
-    moat_basis: null
-    terminal_value: null
-    value_per_share: null
-    engine_terminal_value: 101344.181
-    engine_value_per_share: 214.9825
+    moat_years: 25.0
+    moat_band: 20-30
+    moat_basis: 'Threat of new entrants LOW (a collection network takes 5+ years of
+      capex and FDA/EMA licensing to replicate, and fractionation scale is a second
+      gate behind it), rivalry MODERATE in a three-firm plasma oligopoly (CSL, Grifols,
+      Takeda), substitutes MODERATE and rising (recombinants, FcRn inhibitors). Section
+      12 reads this as the long band: barrier high and slow to assemble, erosion path
+      real but a generation away. Archetype-level, so the band is the same in all
+      six scenarios; the named threat is what changes.
+
+      '
+    terminal_value: 87854.768
+    value_per_share: 196.5355
+    engine_terminal_value: 76538.638
+    engine_value_per_share: 181.0605
   - company: csl
     scenario: disorderly_climate_crystallisation
-    available: false
-    reason: no decay_horizon declared for this company x scenario yet (five-forces
-      moat-length assignment pending)
+    available: true
+    reason: null
     cost_of_capital: 0.0875
     terminal_growth: 0.0275
     capital: 22900.792
     earned_return: 0.271685
-    moat_years: null
-    moat_band: null
-    moat_basis: null
-    terminal_value: null
-    value_per_share: null
-    engine_terminal_value: 86623.943
-    engine_value_per_share: 187.1639
+    moat_years: 25.0
+    moat_band: 20-30
+    moat_basis: 'Threat of new entrants LOW (a collection network takes 5+ years of
+      capex and FDA/EMA licensing to replicate, and fractionation scale is a second
+      gate behind it), rivalry MODERATE in a three-firm plasma oligopoly (CSL, Grifols,
+      Takeda), substitutes MODERATE and rising (recombinants, FcRn inhibitors). Section
+      12 reads this as the long band: barrier high and slow to assemble, erosion path
+      real but a generation away. Archetype-level, so the band is the same in all
+      six scenarios; the named threat is what changes.
+
+      '
+    terminal_value: 76187.944
+    value_per_share: 172.8925
+    engine_terminal_value: 66156.897
+    engine_value_per_share: 159.1748
   - company: csl
     scenario: fragmentation
-    available: false
-    reason: no decay_horizon declared for this company x scenario yet (five-forces
-      moat-length assignment pending)
+    available: true
+    reason: null
     cost_of_capital: 0.0875
     terminal_growth: 0.0275
     capital: 22656.089
     earned_return: 0.258175
-    moat_years: null
-    moat_band: null
-    moat_basis: null
-    terminal_value: null
-    value_per_share: null
-    engine_terminal_value: 82462.768
-    engine_value_per_share: 176.981
+    moat_years: 25.0
+    moat_band: 20-30
+    moat_basis: 'Threat of new entrants LOW (a collection network takes 5+ years of
+      capex and FDA/EMA licensing to replicate, and fractionation scale is a second
+      gate behind it), rivalry MODERATE in a three-firm plasma oligopoly (CSL, Grifols,
+      Takeda), substitutes MODERATE and rising (recombinants, FcRn inhibitors). Section
+      12 reads this as the long band: barrier high and slow to assemble, erosion path
+      real but a generation away. Archetype-level, so the band is the same in all
+      six scenarios; the named threat is what changes.
+
+      '
+    terminal_value: 71507.166
+    value_per_share: 161.999
+    engine_terminal_value: 62904.122
+    engine_value_per_share: 150.2342
   - company: csl
     scenario: muddle_through
-    available: false
-    reason: no decay_horizon declared for this company x scenario yet (five-forces
-      moat-length assignment pending)
+    available: true
+    reason: null
     cost_of_capital: 0.0875
     terminal_growth: 0.03
     capital: 23558.368
     earned_return: 0.314877
-    moat_years: null
-    moat_band: null
-    moat_basis: null
-    terminal_value: null
-    value_per_share: null
-    engine_terminal_value: 106426.635
-    engine_value_per_share: 223.2431
+    moat_years: 25.0
+    moat_band: 20-30
+    moat_basis: 'Threat of new entrants LOW (a collection network takes 5+ years of
+      capex and FDA/EMA licensing to replicate, and fractionation scale is a second
+      gate behind it), rivalry MODERATE in a three-firm plasma oligopoly (CSL, Grifols,
+      Takeda), substitutes MODERATE and rising (recombinants, FcRn inhibitors). Section
+      12 reads this as the long band: barrier high and slow to assemble, erosion path
+      real but a generation away. Archetype-level, so the band is the same in all
+      six scenarios; the named threat is what changes.
+
+      '
+    terminal_value: 92760.775
+    value_per_share: 204.5548
+    engine_terminal_value: 79556.303
+    engine_value_per_share: 186.4975
   - company: csl
     scenario: orderly_convergence
-    available: false
-    reason: no decay_horizon declared for this company x scenario yet (five-forces
-      moat-length assignment pending)
+    available: true
+    reason: null
     cost_of_capital: 0.0875
     terminal_growth: 0.0325
     capital: 24340.595
     earned_return: 0.358919
-    moat_years: null
-    moat_band: null
-    moat_basis: null
-    terminal_value: null
-    value_per_share: null
-    engine_terminal_value: 130097.987
-    engine_value_per_share: 266.7885
+    moat_years: 25.0
+    moat_band: 20-30
+    moat_basis: 'Threat of new entrants LOW (a collection network takes 5+ years of
+      capex and FDA/EMA licensing to replicate, and fractionation scale is a second
+      gate behind it), rivalry MODERATE in a three-firm plasma oligopoly (CSL, Grifols,
+      Takeda), substitutes MODERATE and rising (recombinants, FcRn inhibitors). Section
+      12 reads this as the long band: barrier high and slow to assemble, erosion path
+      real but a generation away. Archetype-level, so the band is the same in all
+      six scenarios; the named threat is what changes.
+
+      '
+    terminal_value: 111639.507
+    value_per_share: 241.5462
+    engine_terminal_value: 95161.169
+    engine_value_per_share: 219.0118
   - company: csl
     scenario: stagflation_persists
-    available: false
-    reason: no decay_horizon declared for this company x scenario yet (five-forces
-      moat-length assignment pending)
+    available: true
+    reason: null
     cost_of_capital: 0.0875
     terminal_growth: 0.03
     capital: 22147.656
     earned_return: 0.229402
-    moat_years: null
-    moat_band: null
-    moat_basis: null
-    terminal_value: null
-    value_per_share: null
-    engine_terminal_value: 75268.463
-    engine_value_per_share: 162.5203
+    moat_years: 25.0
+    moat_band: 20-30
+    moat_basis: 'Threat of new entrants LOW (a collection network takes 5+ years of
+      capex and FDA/EMA licensing to replicate, and fractionation scale is a second
+      gate behind it), rivalry MODERATE in a three-firm plasma oligopoly (CSL, Grifols,
+      Takeda), substitutes MODERATE and rising (recombinants, FcRn inhibitors). Section
+      12 reads this as the long band: barrier high and slow to assemble, erosion path
+      real but a generation away. Archetype-level, so the band is the same in all
+      six scenarios; the named threat is what changes.
+
+      '
+    terminal_value: 62749.567
+    value_per_share: 145.4005
+    engine_terminal_value: 55900.028
+    engine_value_per_share: 136.0337

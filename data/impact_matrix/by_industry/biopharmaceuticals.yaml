@@ -1,0 +1,281 @@
+# Impact matrix for the biopharmaceuticals archetype (CSL consolidated).
+#
+# CSL is valued bottom-up by segment (Behring / Seqirus / Vifor), each with its own
+# archetype matrix. This file exists for the ONE thing the segment matrices cannot
+# carry: the terminal excess-return defence (D-42, D-58). The terminal is struck on
+# the GROUP capital base (translator.csl_terminal_invested_capital), so the decay
+# horizon is a company-level call, not a per-segment one. Sparse per architecture
+# spec 10.2: only the terminal_roic driver is declared here, and it is declared
+# NEUTRAL in every scenario so that it moves no explicit-period level. The segment
+# matrices still carry the scenario views on growth and margin.
+#
+# Declared 14 Oct 2026 (bridge note step 3, design/frameworks/
+# decay_horizon_checklist.md), ratified by Stephen: LONG band, 20-30 years, all six
+# scenarios. Evidence: analyses/csl/terminal_moat_fade_evidence.md supports long
+# persistence for pharmaceuticals at the industry level and requires a
+# company-specific barrier to go beyond the medium band; the plasma-collection
+# network (5+ years of capex and licensing to replicate) is that barrier.
+# Indefinite was rejected: it would need a declared terminal return well below the
+# 20-31% the final explicit year earns, and no such view has been formed.
+# Effect on Muddle Through: 223.24 -> 186.50 AUD per share (-16%).
+
+industry: biopharmaceuticals
+matrix:
+- scenario: muddle_through
+  scenario_version: "2026-Q2-v1"
+  drivers:
+    terminal_roic:
+      direction: neutral
+      magnitude: small
+      confidence: moderate
+      rationale: >
+        Group-level carrier for the excess-return defence only. The segment
+        matrices hold the scenario view on margin and growth; this driver is
+        neutral so that it moves nothing in the explicit period. The rate
+        itself (declared_terminal_return) awaits the moat work, as for DNL.
+      not_applicable: false
+      evidence_refs: []
+      excess_return_defence:
+        # Barriers only (D-43a, roles on data/companies/csl.yaml). Resource
+        # (plasma supply cost) and real-world data are rents and are not listed.
+        moat_sources:
+          - scale_of_plasma_collection_network
+          - manufacturing_complexity
+          - regulatory
+          - patent_lifecycle_management
+        decay_horizon:
+          years_low: 20
+          years_high: 30
+          basis: >
+            Threat of new entrants LOW (a collection network takes 5+ years of
+            capex and FDA/EMA licensing to replicate, and fractionation scale
+            is a second gate behind it), rivalry MODERATE in a three-firm
+            plasma oligopoly (CSL, Grifols, Takeda), substitutes MODERATE and
+            rising (recombinants, FcRn inhibitors). Section 12 reads this as
+            the long band: barrier high and slow to assemble, erosion path
+            real but a generation away. Archetype-level, so the band is the
+            same in all six scenarios; the named threat is what changes.
+        named_threat: >
+          US Medicare Part D redesign and reference pricing extending to plasma-derived and specialty biologics. Price, not volume, is where the excess is competed away for a product the patient cannot do without: payers, not rivals, are the force that closes the gap.
+        sensitivity: >
+          Shortening the band to the medium 10-20 years (midpoint 15) is the
+          test: Muddle Through 186.50 -> 167.37 AUD per share. Sized in
+          design/methodology/terminal_option_sets.yaml and
+          terminal_disclosure_set.yaml. Indefinite (213.01) is shown there as
+          the upper bound the Gordon form implied.
+
+- scenario: orderly_convergence
+  scenario_version: "2026-Q2-v1"
+  drivers:
+    terminal_roic:
+      direction: neutral
+      magnitude: small
+      confidence: moderate
+      rationale: >
+        Group-level carrier for the excess-return defence only. The segment
+        matrices hold the scenario view on margin and growth; this driver is
+        neutral so that it moves nothing in the explicit period. The rate
+        itself (declared_terminal_return) awaits the moat work, as for DNL.
+      not_applicable: false
+      evidence_refs: []
+      excess_return_defence:
+        # Barriers only (D-43a, roles on data/companies/csl.yaml). Resource
+        # (plasma supply cost) and real-world data are rents and are not listed.
+        moat_sources:
+          - scale_of_plasma_collection_network
+          - manufacturing_complexity
+          - regulatory
+          - patent_lifecycle_management
+        decay_horizon:
+          years_low: 20
+          years_high: 30
+          basis: >
+            Threat of new entrants LOW (a collection network takes 5+ years of
+            capex and FDA/EMA licensing to replicate, and fractionation scale
+            is a second gate behind it), rivalry MODERATE in a three-firm
+            plasma oligopoly (CSL, Grifols, Takeda), substitutes MODERATE and
+            rising (recombinants, FcRn inhibitors). Section 12 reads this as
+            the long band: barrier high and slow to assemble, erosion path
+            real but a generation away. Archetype-level, so the band is the
+            same in all six scenarios; the named threat is what changes.
+        named_threat: >
+          Recombinant and FcRn-inhibitor substitution for immunoglobulin and haemophilia products. In a world of cheap capital and faster science, the therapeutic substitutes that do not need plasma are the threat to the collection-network barrier itself, because they make the network unnecessary rather than beating it.
+        sensitivity: >
+          Shortening the band to the medium 10-20 years (midpoint 15) is the
+          test: Muddle Through 186.50 -> 167.37 AUD per share. Sized in
+          design/methodology/terminal_option_sets.yaml and
+          terminal_disclosure_set.yaml. Indefinite (213.01) is shown there as
+          the upper bound the Gordon form implied.
+
+- scenario: ai_productivity_lag
+  scenario_version: "2026-Q2-v1"
+  drivers:
+    terminal_roic:
+      direction: neutral
+      magnitude: small
+      confidence: moderate
+      rationale: >
+        Group-level carrier for the excess-return defence only. The segment
+        matrices hold the scenario view on margin and growth; this driver is
+        neutral so that it moves nothing in the explicit period. The rate
+        itself (declared_terminal_return) awaits the moat work, as for DNL.
+      not_applicable: false
+      evidence_refs: []
+      excess_return_defence:
+        # Barriers only (D-43a, roles on data/companies/csl.yaml). Resource
+        # (plasma supply cost) and real-world data are rents and are not listed.
+        moat_sources:
+          - scale_of_plasma_collection_network
+          - manufacturing_complexity
+          - regulatory
+          - patent_lifecycle_management
+        decay_horizon:
+          years_low: 20
+          years_high: 30
+          basis: >
+            Threat of new entrants LOW (a collection network takes 5+ years of
+            capex and FDA/EMA licensing to replicate, and fractionation scale
+            is a second gate behind it), rivalry MODERATE in a three-firm
+            plasma oligopoly (CSL, Grifols, Takeda), substitutes MODERATE and
+            rising (recombinants, FcRn inhibitors). Section 12 reads this as
+            the long band: barrier high and slow to assemble, erosion path
+            real but a generation away. Archetype-level, so the band is the
+            same in all six scenarios; the named threat is what changes.
+        named_threat: >
+          Recombinant and FcRn-inhibitor substitution, arriving on the same timetable while CSL's own manufacturing-productivity gains lag: the cost advantage of the fractionation scale barrier narrows from both sides.
+        sensitivity: >
+          Shortening the band to the medium 10-20 years (midpoint 15) is the
+          test: Muddle Through 186.50 -> 167.37 AUD per share. Sized in
+          design/methodology/terminal_option_sets.yaml and
+          terminal_disclosure_set.yaml. Indefinite (213.01) is shown there as
+          the upper bound the Gordon form implied.
+
+- scenario: fragmentation
+  scenario_version: "2026-Q2-v1"
+  drivers:
+    terminal_roic:
+      direction: neutral
+      magnitude: small
+      confidence: moderate
+      rationale: >
+        Group-level carrier for the excess-return defence only. The segment
+        matrices hold the scenario view on margin and growth; this driver is
+        neutral so that it moves nothing in the explicit period. The rate
+        itself (declared_terminal_return) awaits the moat work, as for DNL.
+      not_applicable: false
+      evidence_refs: []
+      excess_return_defence:
+        # Barriers only (D-43a, roles on data/companies/csl.yaml). Resource
+        # (plasma supply cost) and real-world data are rents and are not listed.
+        moat_sources:
+          - scale_of_plasma_collection_network
+          - manufacturing_complexity
+          - regulatory
+          - patent_lifecycle_management
+        decay_horizon:
+          years_low: 20
+          years_high: 30
+          basis: >
+            Threat of new entrants LOW (a collection network takes 5+ years of
+            capex and FDA/EMA licensing to replicate, and fractionation scale
+            is a second gate behind it), rivalry MODERATE in a three-firm
+            plasma oligopoly (CSL, Grifols, Takeda), substitutes MODERATE and
+            rising (recombinants, FcRn inhibitors). Section 12 reads this as
+            the long band: barrier high and slow to assemble, erosion path
+            real but a generation away. Archetype-level, so the band is the
+            same in all six scenarios; the named threat is what changes.
+        named_threat: >
+          Localisation of plasma supply: China's domestic collection and plasma self-sufficiency rules, and EU and US pressure to keep collected plasma inside the bloc. The collection network is the barrier, and it is a US-centred network; a world that will not trade plasma across blocs shrinks the market the network can serve.
+        sensitivity: >
+          Shortening the band to the medium 10-20 years (midpoint 15) is the
+          test: Muddle Through 186.50 -> 167.37 AUD per share. Sized in
+          design/methodology/terminal_option_sets.yaml and
+          terminal_disclosure_set.yaml. Indefinite (213.01) is shown there as
+          the upper bound the Gordon form implied.
+
+- scenario: disorderly_climate_crystallisation
+  scenario_version: "2026-Q2-v1"
+  drivers:
+    terminal_roic:
+      direction: neutral
+      magnitude: small
+      confidence: moderate
+      rationale: >
+        Group-level carrier for the excess-return defence only. The segment
+        matrices hold the scenario view on margin and growth; this driver is
+        neutral so that it moves nothing in the explicit period. The rate
+        itself (declared_terminal_return) awaits the moat work, as for DNL.
+      not_applicable: false
+      evidence_refs: []
+      excess_return_defence:
+        # Barriers only (D-43a, roles on data/companies/csl.yaml). Resource
+        # (plasma supply cost) and real-world data are rents and are not listed.
+        moat_sources:
+          - scale_of_plasma_collection_network
+          - manufacturing_complexity
+          - regulatory
+          - patent_lifecycle_management
+        decay_horizon:
+          years_low: 20
+          years_high: 30
+          basis: >
+            Threat of new entrants LOW (a collection network takes 5+ years of
+            capex and FDA/EMA licensing to replicate, and fractionation scale
+            is a second gate behind it), rivalry MODERATE in a three-firm
+            plasma oligopoly (CSL, Grifols, Takeda), substitutes MODERATE and
+            rising (recombinants, FcRn inhibitors). Section 12 reads this as
+            the long band: barrier high and slow to assemble, erosion path
+            real but a generation away. Archetype-level, so the band is the
+            same in all six scenarios; the named threat is what changes.
+        named_threat: >
+          Energy and carbon cost on a manufacturing-scale barrier. Fractionation and cold chain are energy-intensive; a disorderly carbon price raises the cost of the barrier for the incumbent as much as for the entrant, so it compresses the return the barrier protects rather than the barrier.
+        sensitivity: >
+          Shortening the band to the medium 10-20 years (midpoint 15) is the
+          test: Muddle Through 186.50 -> 167.37 AUD per share. Sized in
+          design/methodology/terminal_option_sets.yaml and
+          terminal_disclosure_set.yaml. Indefinite (213.01) is shown there as
+          the upper bound the Gordon form implied.
+
+- scenario: stagflation_persists
+  scenario_version: "2026-Q2-v1"
+  drivers:
+    terminal_roic:
+      direction: neutral
+      magnitude: small
+      confidence: moderate
+      rationale: >
+        Group-level carrier for the excess-return defence only. The segment
+        matrices hold the scenario view on margin and growth; this driver is
+        neutral so that it moves nothing in the explicit period. The rate
+        itself (declared_terminal_return) awaits the moat work, as for DNL.
+      not_applicable: false
+      evidence_refs: []
+      excess_return_defence:
+        # Barriers only (D-43a, roles on data/companies/csl.yaml). Resource
+        # (plasma supply cost) and real-world data are rents and are not listed.
+        moat_sources:
+          - scale_of_plasma_collection_network
+          - manufacturing_complexity
+          - regulatory
+          - patent_lifecycle_management
+        decay_horizon:
+          years_low: 20
+          years_high: 30
+          basis: >
+            Threat of new entrants LOW (a collection network takes 5+ years of
+            capex and FDA/EMA licensing to replicate, and fractionation scale
+            is a second gate behind it), rivalry MODERATE in a three-firm
+            plasma oligopoly (CSL, Grifols, Takeda), substitutes MODERATE and
+            rising (recombinants, FcRn inhibitors). Section 12 reads this as
+            the long band: barrier high and slow to assemble, erosion path
+            real but a generation away. Archetype-level, so the band is the
+            same in all six scenarios; the named threat is what changes.
+        named_threat: >
+          US Medicare Part D redesign and reference pricing, pressed harder by fiscal stress: governments in persistent stagflation go after drug prices first. The threat is to the price the excess is earned at, with the barrier intact.
+        sensitivity: >
+          Shortening the band to the medium 10-20 years (midpoint 15) is the
+          test: Muddle Through 186.50 -> 167.37 AUD per share. Sized in
+          design/methodology/terminal_option_sets.yaml and
+          terminal_disclosure_set.yaml. Indefinite (213.01) is shown there as
+          the upper bound the Gordon form implied.
+

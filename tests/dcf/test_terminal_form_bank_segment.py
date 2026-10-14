@@ -39,6 +39,14 @@ def _seg(s="muddle_through"):
     return si, csl_terminal_invested_capital(inp, s)
 
 
+def _seg_gordon(s="muddle_through"):
+    """Gordon-form inputs to build the form comparisons from (the data path is
+    convergence at N = 25 since 14 Oct 2026)."""
+    inp = load_inputs(ROOT, s, "biopharmaceuticals", "csl")
+    si = build_segment_inputs_from_data(inp, s, route_terminal_form=False)
+    return si, csl_terminal_invested_capital(inp, s)
+
+
 # ------------------------------------------------------------------ bank
 def test_bank_data_path_is_indefinite_convergence_which_equals_gordon():
     """14 Oct 2026: WBC declares an indefinite moat on a statutory barrier (D-46/D-58),
@@ -86,15 +94,18 @@ def test_bank_convergence_inputs_are_validated():
 
 
 # --------------------------------------------------------------- segment
-def test_segment_data_path_is_gordon_fallback_today():
+def test_segment_data_path_is_convergence_at_the_declared_long_band():
+    """14 Oct 2026 step 3: CSL declares 20-30 years (midpoint 25) on the
+    biopharmaceuticals matrix, so the data path is convergence at N = 25."""
     si, _ = _seg()
     r = SegmentEngine().run(si)
-    assert r.terminal_form == "gordon" and r.terminal_earned_return is None
+    assert r.terminal_form == "excess_return_convergence" and r.convergence_years == 25
+    assert r.terminal_earned_return is not None and r.terminal_earned_return > si.cost_of_equity
 
 
 def test_segment_convergence_at_infinity_is_gordon_on_the_earned_return():
     """At N -> inf the two-stage form is C x (R-g)/(Ke-g) with R the earned return on C."""
-    si, cap = _seg()
+    si, cap = _seg_gordon()
     conv = SegmentEngine().run(replace(si, terminal_form="excess_return_convergence",
                                        convergence_years=math.inf, terminal_invested_capital=cap))
     ke, g = si.cost_of_equity, si.terminal_growth
@@ -103,7 +114,7 @@ def test_segment_convergence_at_infinity_is_gordon_on_the_earned_return():
 
 
 def test_segment_convergence_at_zero_years_is_the_capital_base():
-    si, cap = _seg()
+    si, cap = _seg_gordon()
     conv = SegmentEngine().run(replace(si, terminal_form="excess_return_convergence",
                                        convergence_years=0, terminal_invested_capital=cap))
     assert conv.terminal_value == pytest.approx(cap, rel=1e-12)
@@ -112,7 +123,7 @@ def test_segment_convergence_at_zero_years_is_the_capital_base():
 def test_csl_earns_well_above_ke_so_convergence_cuts_the_terminal():
     """D-67: CSL earns 18-25% on its capital base against an 8.75% Ke, so a finite
     moat is worth less than the Gordon terminal that holds that return forever."""
-    si, cap = _seg()
+    si, cap = _seg_gordon()
     gordon = SegmentEngine().run(si)
     conv = SegmentEngine().run(replace(si, terminal_form="excess_return_convergence",
                                        convergence_years=12.5, terminal_invested_capital=cap))
@@ -122,10 +133,12 @@ def test_csl_earns_well_above_ke_so_convergence_cuts_the_terminal():
 
 
 def test_segment_convergence_inputs_are_validated():
-    si, cap = _seg()
+    si, cap = _seg_gordon()
     with pytest.raises(ValueError):
-        SegmentEngine().run(replace(si, terminal_form="excess_return_convergence", convergence_years=12.5))
+        SegmentEngine().run(replace(si, terminal_form="excess_return_convergence", convergence_years=12.5,
+                                    terminal_invested_capital=None))
     with pytest.raises(ValueError):
-        SegmentEngine().run(replace(si, terminal_form="excess_return_convergence", terminal_invested_capital=cap))
+        SegmentEngine().run(replace(si, terminal_form="excess_return_convergence", convergence_years=None,
+                                    terminal_invested_capital=cap))
     with pytest.raises(ValueError):
         SegmentEngine().run(replace(si, terminal_form="three_phase"))

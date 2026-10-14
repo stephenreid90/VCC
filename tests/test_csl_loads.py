@@ -34,9 +34,12 @@ def test_csl_company_file_validates():
 def test_csl_loads_through_pipeline():
     inp = load_inputs(ROOT, "muddle_through", "biopharmaceuticals", "csl")
     assert inp["company"].id == "csl"
-    # no consolidated archetype / matrix file -> tolerant None (resolved per segment)
+    # no consolidated archetype file -> tolerant None (resolved per segment); the
+    # consolidated MATRIX exists since 14 Oct 2026 and carries only the group-level
+    # excess-return defence (D-42), one neutral driver per scenario.
     assert inp["archetype"] is None
-    assert inp["matrix"] is None
+    assert inp["matrix"] is not None and inp["matrix"].industry == "biopharmaceuticals"
+    assert all(set(e.drivers) == {"terminal_roic"} for e in inp["matrix"].matrix)
 
 
 def test_dnl_and_wbc_paths_unaffected():

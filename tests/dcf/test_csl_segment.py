@@ -62,8 +62,11 @@ def test_at_ten_years_the_live_level_is_the_golden():
     the full six are pinned in test_scenario_goldens.py with the reason."""
     r = _run("muddle_through")
     assert len(r.year_labels) == 12          # FY25 anchor + FY26..FY36
-    assert r.value_per_share_aud == pytest.approx(223.2431, abs=1e-3)
-    assert r.terminal_form == "gordon"       # no decay horizon declared for CSL yet
+    # 14 Oct 2026 step 3: CSL declares a 20-30 year decay horizon (biopharmaceuticals
+    # matrix), so the live level is 186.50 under convergence at N = 25; the Gordon
+    # level of 223.24 is the upper bound the sizing set still shows.
+    assert r.value_per_share_aud == pytest.approx(186.4975, abs=1e-3)
+    assert r.terminal_form == "excess_return_convergence" and r.convergence_years == 25
 
 
 def test_all_six_scenarios_value_and_downside_skewed():

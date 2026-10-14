@@ -121,8 +121,10 @@ def test_engine_current_reproduces_every_engine_value_per_share(rows):
     # D-72 (same day): 1.9422 -> 2.1382 (scenario paths, derived g).
     # WBC and CSL re-pinned 14 Oct 2026 for D-71's ten-year period (30.0304 ->
     # 31.0502; 195.7835 -> 223.2431); the D-73 scenario paths left MT unchanged.
+    # Step 3 (same day): WBC declared indefinite (level unchanged, 31.0502); CSL
+    # declared 20-30 years, convergence at N = 25 (223.2431 -> 186.4975).
     pinned = {("dnl", "muddle_through"): 2.1382, ("wbc", "muddle_through"): 31.0502,
-              ("csl", "muddle_through"): 223.2431}
+              ("csl", "muddle_through"): 186.4975}
     for key, vps in pinned.items():
         v = next(x for x in rows if (x.company_id, x.scenario_id) == key)
         assert _basis(v, "engine_current").value_per_share == pytest.approx(vps, abs=1e-4)

@@ -13,26 +13,13 @@
     "Updated 2 Oct 2026 (D-71). dnl:fragmentation is BACK on this list: the fixed ten-year horizon holds the flat chain growth four more years, and the whole-base terminal return rises to 9.83% against an 8.88% WACC -- 95bp, no longer the four-basis-point rounding of 25 Sep. Fragmentation has no declared decay horizon (analyses/dnl/five_forces_driver_gap_audit_2026-09-25.md, a genuine gap, not a transcription), so under D-71 it falls back to Gordon on that excess until the five-forces pass assigns one. Baselined on that ground; the gap audit owns the fix.",
     "Updated 2 Oct 2026 (D-72). dnl:stagflation_persists joins: decisions 3 and 4 make it a cyclical scenario (gas spike ends and the margin hit reverts at its own resolution phase, year 5), so by year 10 its whole-base return is 11.8% against an 8.88% WACC. No decay horizon is declared for it (the same genuine gap as Fragmentation), so under D-71 it falls back to Gordon. Baselined pending the five-forces pass.",
     "Updated 14 Oct 2026 (bridge note step 3). dnl:fragmentation and dnl:stagflation_persists have LEFT this list: both now declare an excess_return_defence (scale + switching_cost, 10-15y) via design/frameworks/decay_horizon_checklist.md, ratified by Stephen. The DNL list is empty; WBC and CSL are the step-3 worklist.",
-    "Updated 14 Oct 2026 (step 3). WBC x6 have LEFT this list: all six declare an indefinite excess_return_defence on a statutory barrier with the finite-horizon sensitivity D-58 requires. Only CSL remains, pending an impact-matrix file."
+    "Updated 14 Oct 2026 (step 3). WBC x6 have LEFT this list: all six declare an indefinite excess_return_defence on a statutory barrier with the finite-horizon sensitivity D-58 requires. Only CSL remains, pending an impact-matrix file.",
+    "14 Oct 2026 (step 3, part 3): CSL x6 declare a defence. The list is now EMPTY. D-42 is met on all eighteen company x scenario pairs; declared_terminal_return is still outstanding everywhere (a separate step)."
   ],
-  "undeclared": [
-    "csl:muddle_through",
-    "csl:orderly_convergence",
-    "csl:ai_productivity_lag",
-    "csl:fragmentation",
-    "csl:disorderly_climate_crystallisation",
-    "csl:stagflation_persists"
-  ],
+  "undeclared": [],
   "reasons": {
     "dnl": "(none outstanding since 14 Oct 2026 -- see _comment)",
     "wbc": "(none outstanding since 14 Oct 2026 -- see _comment)",
-    "csl": [
-      "Do not write a defence for a defect. CSL's 61-73% terminal return on new capital is",
-      "an artefact of D-53 being unimplemented: terminal_capex_pct_revenue is declared equal",
-      "to da_pct_revenue, so net terminal capex is zero and almost nothing is reinvested.",
-      "See M15. Implementing D-53 should drop the implied return into the range DNL occupies",
-      "and most of these pairs should leave this list by arithmetic rather than by being",
-      "justified. CSL also has no impact-matrix file, so there is no home for a defence yet."
-    ]
+    "csl": "(none outstanding since 14 Oct 2026 -- see _comment)"
   }
 }

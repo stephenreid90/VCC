@@ -10,22 +10,16 @@
     "14 Oct 2026; all twelve of their pairs are gaps today because no decay horizon is declared for",
     "either company anywhere.",
     "14 Oct 2026: DNL Fragmentation and Stagflation declared (10-15y, scale + switching_cost; design/frameworks/decay_horizon_checklist.md) -- all six DNL pairs now converge. The DNL list is empty.",
-    "14 Oct 2026: WBC x6 declared INDEFINITE (regulatory + scale + switching_cost, finite sensitivity 20-30y), ratified by Stephen; convergence_years = inf reproduces the justified price-to-book exactly, so no WBC level moved. Only CSL remains."
+    "14 Oct 2026: WBC x6 declared INDEFINITE (regulatory + scale + switching_cost, finite sensitivity 20-30y), ratified by Stephen; convergence_years = inf reproduces the justified price-to-book exactly, so no WBC level moved. Only CSL remains.",
+    "14 Oct 2026 (step 3, part 3): CSL x6 declared LONG 20-30y on the plasma-collection network (data/impact_matrix/by_industry/biopharmaceuticals.yaml, created for this). The list is now EMPTY: every one of the eighteen valuations declares its terminal form from data."
   ],
-  "gordon_fallback": [
-    "csl:ai_productivity_lag",
-    "csl:disorderly_climate_crystallisation",
-    "csl:fragmentation",
-    "csl:muddle_through",
-    "csl:orderly_convergence",
-    "csl:stagflation_persists"
-  ],
+  "gordon_fallback": [],
   "reasons": {
-    "csl:muddle_through": "CSL has no impact-matrix file; no excess_return_defence can be declared until one exists (D-42 sizing: six baselined with the instruction not to defend a defect). Decay horizons for CSL are bridge note step 3.",
-    "csl:orderly_convergence": "CSL has no impact-matrix file; no excess_return_defence can be declared until one exists (D-42 sizing: six baselined with the instruction not to defend a defect). Decay horizons for CSL are bridge note step 3.",
-    "csl:ai_productivity_lag": "CSL has no impact-matrix file; no excess_return_defence can be declared until one exists (D-42 sizing: six baselined with the instruction not to defend a defect). Decay horizons for CSL are bridge note step 3.",
-    "csl:fragmentation": "CSL has no impact-matrix file; no excess_return_defence can be declared until one exists (D-42 sizing: six baselined with the instruction not to defend a defect). Decay horizons for CSL are bridge note step 3.",
-    "csl:disorderly_climate_crystallisation": "CSL has no impact-matrix file; no excess_return_defence can be declared until one exists (D-42 sizing: six baselined with the instruction not to defend a defect). Decay horizons for CSL are bridge note step 3.",
-    "csl:stagflation_persists": "CSL has no impact-matrix file; no excess_return_defence can be declared until one exists (D-42 sizing: six baselined with the instruction not to defend a defect). Decay horizons for CSL are bridge note step 3."
+    "csl:muddle_through": "(none outstanding since 14 Oct 2026 -- see _comment)",
+    "csl:orderly_convergence": "(none outstanding since 14 Oct 2026 -- see _comment)",
+    "csl:ai_productivity_lag": "(none outstanding since 14 Oct 2026 -- see _comment)",
+    "csl:fragmentation": "(none outstanding since 14 Oct 2026 -- see _comment)",
+    "csl:disorderly_climate_crystallisation": "(none outstanding since 14 Oct 2026 -- see _comment)",
+    "csl:stagflation_persists": "(none outstanding since 14 Oct 2026 -- see _comment)"
   }
 }
