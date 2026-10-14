@@ -280,8 +280,11 @@ class FcfEngineInputs:
     # declare. None where the capex rule rolls no base forward.
     terminal_invested_capital: Optional[float] = None
     # The rate the moat work declares for this scenario, read off the impact
-    # matrix's excess_return_defence. Disclosure only; the diagnostic reconciles
-    # it against what the capital build produces and warns where they disagree.
+    # matrix's excess_return_defence. D-76 (14 Oct 2026): where declared it is
+    # the return R the convergence terminal STARTS from (D-64's return lever:
+    # capital held, earnings flexed); where absent the engine starts from the
+    # return the explicit period leaves the capital base earning. The diagnostic
+    # still reports the declared rate against the earned one.
     declared_terminal_return: Optional[float] = None
 
     # Discounting
@@ -429,6 +432,10 @@ class FcfDcfResult:
     terminal_form: str = "gordon"
     convergence_years: Optional[float] = None
     terminal_earned_return: Optional[float] = None
+    # D-76: the return the convergence actually started from -- the declared
+    # rate where one exists, else the earned return above. None under "gordon".
+    terminal_convergence_return: Optional[float] = None
+    declared_terminal_return: Optional[float] = None
 
 
 class FcfEngine:
@@ -521,11 +528,19 @@ class FcfEngine:
         # N = 0 is convergence at the end of the forecast (TV = C); N -> inf
         # is Gordon on the earned return. Symmetric in R - r.
         terminal_earned_return: Optional[float] = None
+        terminal_convergence_return: Optional[float] = None
         if inp.terminal_form == "excess_return_convergence":
             from vcc_valuations.dcf.terminal_value import two_stage
             capital_T = inp.terminal_invested_capital
             terminal_earned_return = nopat[-1] * (1.0 + g) / capital_T
-            terminal_value = two_stage(capital_T, terminal_earned_return, wacc, g,
+            # D-76: the declared rate, where the moat work has formed one, is the
+            # starting return; the earned return otherwise.
+            terminal_convergence_return = (
+                inp.declared_terminal_return
+                if inp.declared_terminal_return is not None
+                else terminal_earned_return
+            )
+            terminal_value = two_stage(capital_T, terminal_convergence_return, wacc, g,
                                        inp.convergence_years)
         else:
             terminal_value = terminal_fcff / (wacc - g)
@@ -637,6 +652,8 @@ class FcfEngine:
             terminal_form=inp.terminal_form,
             convergence_years=inp.convergence_years,
             terminal_earned_return=terminal_earned_return,
+            terminal_convergence_return=terminal_convergence_return,
+            declared_terminal_return=inp.declared_terminal_return,
             terminal_return_on_whole_capital=terminal_return_on_whole_capital,
             market_reference_price=eb.market_reference_price,
             discount_to_market=discount_to_market,

@@ -60,8 +60,13 @@ class BankInputs:
     credit_loss_rate: List[float]
     # discount rate & terminal
     cost_of_equity: float
-    terminal_roe: float
     terminal_growth: float
+    # D-76 (14 Oct 2026): the terminal ROE is the rate the moat work declares on
+    # the impact matrix (excess_return_defence.declared_terminal_return), read by
+    # the assembler. Where none is declared the engine starts the terminal from
+    # the ROE the final explicit year leaves closing equity earning -- the same
+    # rule as the industrial and segment engines.
+    terminal_roe: Optional[float] = None
     # D-71 / D-62 (routed 14 Oct 2026): the headline terminal form. "gordon" is the
     # justified price-to-book, closing equity x (ROE - g)/(Ke - g) -- the earned ROE
     # held forever. "excess_return_convergence" holds the same closing equity C and
@@ -136,6 +141,11 @@ class BankResult:
     # D-71: which terminal form struck the headline, and the decay horizon it used.
     terminal_form: str = "gordon"
     convergence_years: Optional[float] = None
+    # D-76: the ROE the terminal was struck on (declared where one exists), the
+    # earned ROE it would otherwise have used, and the declared rate itself.
+    terminal_roe: Optional[float] = None
+    terminal_earned_return: Optional[float] = None
+    declared_terminal_return: Optional[float] = None
     warnings: List[str] = field(default_factory=list)
     # Per-period equity roll-forward. The engine has always computed retained
     # earnings as one lump over the horizon, which is all the terminal value
@@ -283,13 +293,21 @@ class BankEngine:
         retained = sum(npat) - sum(dividends)
         closing_equity = inp.book_equity + retained
         g = inp.terminal_growth
+        # D-76: the ROE the terminal starts from is the declared rate where the
+        # moat work has formed one, else the ROE the final explicit year leaves
+        # closing equity earning (next-year NPAT over closing equity, the same
+        # convention as the industrial and segment engines).
+        terminal_earned_return = npat[-1] * (1.0 + g) / closing_equity if closing_equity else None
+        terminal_roe = inp.terminal_roe if inp.terminal_roe is not None else terminal_earned_return
+        if terminal_roe is None:
+            raise ValueError("terminal ROE: nothing declared and no closing equity to earn on")
         if inp.terminal_form == "excess_return_convergence":
             if inp.convergence_years is None:
                 raise ValueError("terminal_form='excess_return_convergence' requires convergence_years")
             from vcc_valuations.dcf.terminal_value import two_stage
-            tv = two_stage(closing_equity, inp.terminal_roe, ke, g, inp.convergence_years)
+            tv = two_stage(closing_equity, terminal_roe, ke, g, inp.convergence_years)
         elif inp.terminal_form == "gordon":
-            tv = closing_equity * (inp.terminal_roe - g) / (ke - g)
+            tv = closing_equity * (terminal_roe - g) / (ke - g)
         else:
             raise ValueError(f"terminal_form must be 'gordon' or 'excess_return_convergence', got {inp.terminal_form!r}")
         terminal_end = inp.stub_years + H
@@ -314,8 +332,8 @@ class BankEngine:
         warnings.extend(from_bank_parts(
             company_id=inp.company_id, scenario_id=inp.scenario_id,
             closing_book_equity=closing_equity, final_npat=npat[-1],
-            terminal_roe=inp.terminal_roe, terminal_growth=g,
-            cost_of_equity=ke,
+            terminal_roe=terminal_roe, terminal_growth=g,
+            cost_of_equity=ke, declared_return=inp.terminal_roe,
         ).warnings)
 
         # §15.5 capital trajectory. Still reported even when the constraint is
@@ -355,6 +373,8 @@ class BankEngine:
             shares_outstanding_m=inp.shares_outstanding_m, value_per_share=vps,
             terminal_share_of_claim=terminal_share, warnings=warnings,
             terminal_form=inp.terminal_form, convergence_years=inp.convergence_years,
+            terminal_roe=terminal_roe, terminal_earned_return=terminal_earned_return,
+            declared_terminal_return=inp.terminal_roe,
             retained_by_period=retained_by_period, book_equity_path=book_equity_path,
             rwa_by_period=rwa_by_period, cet1_trajectory=trajectory,
             payout_applied=payout_applied,
@@ -393,7 +413,7 @@ class BankEngine:
                units="AUD m")
         b.step("tv", "Terminal value", result.terminal_value,
                "closing_equity * (terminal_ROE - g) / (Ke - g)",
-               {"terminal_ROE": inp.terminal_roe, "g": inp.terminal_growth, "Ke": inp.cost_of_equity},
+               {"terminal_ROE": result.terminal_roe, "g": inp.terminal_growth, "Ke": inp.cost_of_equity},
                units="AUD m")
         b.step("pv_tv", "PV of terminal value", result.pv_terminal_value,
                "terminal_value * discount_factor", {"tdf": result.terminal_discount_factor},

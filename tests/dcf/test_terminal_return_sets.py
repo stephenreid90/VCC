@@ -165,30 +165,42 @@ def test_the_two_readings_no_longer_disagree_about_fragmentation(rows):
     ), [r.scenario_id for r in dnl_rows]
 
 
-def test_the_declared_rate_does_not_reconcile_with_the_capital_build(rows):
-    """The D-42 step 2 finding: D-45 and D-49 disagree, and by how much.
+def test_dnl_declares_no_terminal_rate_and_the_earned_return_governs(rows):
+    """D-76 (14 Oct 2026): a declared rate now MOVES the level, so none is copied.
 
-    Orderly Convergence is the only valuation in the project that declares a
-    terminal return. The rate comes from its own declared movement — positive,
-    small, which the project's translation table maps to +25bp on the
-    convergence target — so it is the moat work's view rather than an invention.
-    The capital build produces something far above it. Both cannot be right.
+    Until 14 Oct Orderly Convergence carried 9.13%, derived mechanically from its
+    own declared movement (positive-small -> +25bp over the convergence target).
+    While the field was disclosure-only that was harmless and the 639bp gap
+    against the capital build was the D-42 finding. Under D-76 the declared rate
+    is the return the convergence STARTS from, and 9.13% against the 15.5% the
+    explicit period leaves the base earning would have cut the valuation by 27%
+    on a number nobody chose. So it was removed: DNL declares no rate, the earned
+    return governs, and the reconciliation warning is silent until Stephen
+    declares one with a basis (decay_horizon_checklist.md q6).
     """
-    oc = next(r for r in rows if r.company_id == "dnl"
-              and r.scenario_id == "orderly_convergence")
-    assert oc.declared_return == pytest.approx(0.0913, abs=1e-6)
-    # Re-pinned 25 Sep 2026 for D-35/D-36 (was 0.1246 / -0.0333): the longer
-    # horizon and the growth fade both lower the return the capital build
-    # produces, narrowing but not closing the gap against the declared rate.
-    # Re-pinned 2 Oct 2026 for D-71 (0.1193 / -0.0280): the ten-year horizon's
-    # extra years of chain growth RAISE the return the capital build produces,
-    # widening the gap against the declared rate. The disagreement is the
-    # finding; it is now larger, not smaller.
-    # D-72 (same day): 0.1432 / -0.0519 -> 0.1552 / -0.0639 -- the scenario's
-    # own paths (higher CPI pass-through, mining supercycle spread) raise it again.
+    dnl_rows = [r for r in rows if r.company_id == "dnl"]
+    assert all(r.declared_return is None for r in dnl_rows), [
+        (r.scenario_id, r.declared_return) for r in dnl_rows if r.declared_return is not None]
+    oc = next(r for r in dnl_rows if r.scenario_id == "orderly_convergence")
     assert oc.return_on_whole_capital == pytest.approx(0.1552, abs=5e-4)
-    assert oc.declared_versus_whole_capital == pytest.approx(-0.0639, abs=5e-4)
-    assert any("declares a terminal return" in w for w in oc.warnings)
+    assert oc.declared_versus_whole_capital is None
+    assert not any("declares a terminal return" in w for w in oc.warnings)
+
+
+def test_wbc_declares_its_terminal_roe_on_the_matrix(rows):
+    """D-76: WBC's six terminal ROEs live on the australian_major_banks matrix.
+
+    They were lifted off wbc.yaml unchanged (OC 11.0, MT 10.5, AI Lag 10.5,
+    Frag 10.0, DCC 9.0, Stag 9.0), so no level moved. The bank fork reports the
+    declared rate as the return on new capital, exactly as before.
+    """
+    expected = {"orderly_convergence": 0.11, "muddle_through": 0.105,
+                "ai_productivity_lag": 0.105, "fragmentation": 0.10,
+                "disorderly_climate_crystallisation": 0.09, "stagflation_persists": 0.09}
+    wbc = {r.scenario_id: r for r in rows if r.company_id == "wbc"}
+    assert set(wbc) == set(expected)
+    for sid, roe in expected.items():
+        assert wbc[sid].return_on_new_capital == pytest.approx(roe, abs=1e-9), sid
 
 
 def test_only_dnl_reports_a_return_on_the_whole_capital_base(rows):

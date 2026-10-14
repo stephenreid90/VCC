@@ -208,8 +208,14 @@ def _warnings_for(t: TerminalReturn) -> List[str]:
 
 def from_bank_parts(*, company_id: str, scenario_id: str, closing_book_equity: float,
                     final_npat: float, terminal_roe: float, terminal_growth: float,
-                    cost_of_equity: float) -> TerminalReturn:
-    """Bank fork from primitives. See :func:`from_bank` for the reasoning."""
+                    cost_of_equity: float,
+                    declared_return: Optional[float] = None) -> TerminalReturn:
+    """Bank fork from primitives. See :func:`from_bank` for the reasoning.
+
+    ``terminal_roe`` is the ROE the terminal was struck on; ``declared_return``
+    is the rate the matrix declares (D-76), which is the same number wherever one
+    is declared and None where the engine fell back to the earned ROE.
+    """
     rate = terminal_growth / terminal_roe if terminal_roe else None
     earned = final_npat / closing_book_equity if closing_book_equity else None
     t = TerminalReturn(
@@ -218,7 +224,7 @@ def from_bank_parts(*, company_id: str, scenario_id: str, closing_book_equity: f
         terminal_growth=terminal_growth,
         terminal_earnings=closing_book_equity * terminal_roe,
         reinvestment_rate=rate, return_on_new_capital=terminal_roe,
-        earned_final_explicit=earned,
+        earned_final_explicit=earned, declared_return=declared_return,
     )
     t.warnings = _warnings_for(t)
     return t
@@ -273,8 +279,9 @@ def from_bank(result, inputs) -> TerminalReturn:
     return from_bank_parts(
         company_id=result.company_id, scenario_id=result.scenario_id,
         closing_book_equity=result.closing_book_equity, final_npat=result.cash_npat[-1],
-        terminal_roe=inputs.terminal_roe, terminal_growth=inputs.terminal_growth,
+        terminal_roe=result.terminal_roe, terminal_growth=inputs.terminal_growth,
         cost_of_equity=result.cost_of_equity,
+        declared_return=result.declared_terminal_return,
     )
 
 

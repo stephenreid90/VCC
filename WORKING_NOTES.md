@@ -26,9 +26,29 @@ prints git state.
 **Bridge note still in force: `notes/bridge/bridge_note_2026-10-02.md`** (the five-step
 repeatable-process plan). This block records what the 14 October sitting did against it.
 
-**State:** suite 593 passed / 1 skipped / 2 deselected; SSOT lint 14/14; base ties **DNL
-2.138 / WBC 31.05 / CSL 186.5** (`session_start.py` updated; CSL moved with the step 3
-decay horizon, D-75). Commits on `main` on Stephen's checkout, pushed at the end of the sitting.
+**State:** suite 599 passed / 1 skipped / 2 deselected; SSOT lint 14/14; base ties **DNL
+2.138 / WBC 31.05 / CSL 186.5** (`session_start.py` unchanged by D-76; CSL moved with the
+step 3 decay horizon, D-75). Commits on `main` on Stephen's checkout, pushed at the end of
+the sitting.
+
+### D-76 DONE -- the declared terminal return is a live lever (D-42 step 2 closed)
+
+Plain terms: where a matrix declares a terminal return, the convergence terminal now
+starts from that rate instead of the return the explicit period leaves the capital base
+earning. Same rule in all three engines. Before today the field only fed a warning in the
+DNL engine and the WBC and CSL engines never read it, so the framework's second lever
+(D-64) had no way in. Three consequences, all ratified by Stephen: WBC's six terminal ROEs
+moved off `wbc.yaml` onto the `australian_major_banks` matrix as the declared rate with a
+basis each (no level moved, 31.05); DNL's mechanical 9.13% on Orderly Convergence was
+removed (live, it would have cut that pair by 27%; sizing table in `DECISIONS.md` D-76);
+CSL stays absent until a view exists. No golden moved. The two-stage disclosure set now
+applies the same rule, so WBC's indefinite disclosure equals the engine level. The DNL and
+CSL generated workbooks carry a declared-return driver row (blank = earned) and both
+oracles are unchanged in LibreOffice. New `tests/dcf/test_declared_terminal_return.py`.
+
+Open from D-76: DNL and CSL rates are a judgement Stephen has not formed. When he does,
+`scripts/size_terminal_returns.py` reports declared against earned, and the checklist q6
+says to size before landing.
 
 ### Step 3 DONE -- D-75 (decay horizons for all eighteen pairs)
 
@@ -97,14 +117,17 @@ sitting (standing rule 5: not mid-task).
 
 ### Next (bridge note order)
 
-1. Step 3 is DONE (D-75). Its one leftover: `declared_terminal_return` on every matrix
-   (the rate the moat work pins, D-42 step 2); the D-42 diagnostic is vacuous until then.
-2. Step 4 -- equilibrium-chain terms declared per archetype (which chain terms are
+1. Step 3 is DONE (D-75) and its leftover is DONE (D-76: the declared rate is live; WBC
+   declares six, DNL and CSL none until Stephen forms a view).
+2. D-43a roles on WBC's four segment moats (`tests/moat_role_baseline.json` still lists
+   them; a RENT has an end date and lives in the explicit period, a BARRIER is what the
+   decay horizon measures).
+3. Step 4 -- equilibrium-chain terms declared per archetype (which chain terms are
    current-cycle and switch off at Y10); WBC and CSL need it once their chains have terms.
-3. Step 5 -- `design/methodology/adding_a_company.md`, one page, with the seven §8 disclosures.
-4. Open data items from D-73/D-74: bank NIM pass-through rule; CSL volume/price split and
-   US GDP series in all six scenarios; level anchors lifted to archetypes; the two
-   modelling gaps above.
+4. Step 5 -- `design/methodology/adding_a_company.md`, one page, with the seven §8 disclosures.
+5. Open data items from D-73/D-74: bank NIM pass-through rule; CSL volume/price split and
+   US GDP series in all six scenarios; remaining level anchors lifted to archetypes (WBC's
+   terminal ROE is done under D-76); the two modelling gaps above.
 
 ## HANDOVER — sitting of 2 October 2026 (superseded by the block above)
 

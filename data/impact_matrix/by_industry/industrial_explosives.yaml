@@ -271,17 +271,14 @@ matrix:
             Halving the fade-period extension still preserves positive
             scenario value, so the excess return is not load-bearing for the
             sign of this scenario's result.
-          declared_terminal_return: 0.0913
-          declared_terminal_return_basis: >
-            Derived from this block's OWN declared movement rather than chosen
-            afresh: terminal_roic is direction positive, magnitude small, and
-            the project's translation table (RATE_DELTA_BPS in translator.py)
-            maps positive-small on a rate driver to +25bp. The baseline it is a
-            delta from is the cost-of-capital convergence target named in the
-            rationale above, i.e. the WACC of 8.877%, giving 9.13%. Recorded so
-            the declared view can be reconciled against what the capital build
-            actually produces. It does not reconcile — see the handover — and
-            that mismatch is the finding, not a defect in this field.
+          # declared_terminal_return REMOVED 14 Oct 2026 (D-76). The 9.13% that sat
+          # here was derived mechanically (positive-small on the translation table,
+          # +25bp over WACC), not chosen. Under D-76 a declared rate is the return
+          # the convergence starts from, and 9.13% against the 15.5% the explicit
+          # period leaves the capital base earning would have cut this valuation by
+          # 27% on a number nobody formed a view on. Absent is honest
+          # (decay_horizon_checklist.md q6); the earned return governs until Stephen
+          # declares a rate with a basis.
         governance:
           created_by: tara@reidadvisory.net
           created_at: 2026-05-17T10:00:00Z

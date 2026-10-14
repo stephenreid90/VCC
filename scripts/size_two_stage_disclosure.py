@@ -68,7 +68,7 @@ def as_set(rows: List[TwoStageDisclosure]) -> dict:
             ),
             "regenerated_by": "scripts/size_two_stage_disclosure.py",
             "asserted_by": "tests/dcf/test_two_stage_disclosure.py",
-            "decisions": ["D-62", "D-63", "D-64", "D-65", "D-66"],
+            "decisions": ["D-62", "D-63", "D-64", "D-65", "D-66", "D-76"],
             "rows": [
                 {
                     "company": v.company_id,
@@ -79,6 +79,8 @@ def as_set(rows: List[TwoStageDisclosure]) -> dict:
                     "terminal_growth": _r(v.terminal_growth),
                     "capital": _r(v.capital, 3),
                     "earned_return": _r(v.earned_return),
+                    "declared_return": _r(v.declared_return),
+                    "convergence_return": _r(v.convergence_return),
                     "moat_years": _r(v.moat_years, 2),
                     "moat_band": v.moat_band,
                     "moat_basis": v.moat_basis,

@@ -1540,7 +1540,10 @@ def build_bank_inputs_from_data(inputs: dict, scenario_id: str):
         convergence_years=convergence_years,
         credit_loss_rate=credit_loss_rate,
         cost_of_equity=ke,
-        terminal_roe=scen["terminal_roe"],
+        # D-76: the terminal ROE is the rate the moat work declares on the
+        # impact matrix (lifted off wbc.yaml 14 Oct 2026); None lets the engine
+        # start from the earned ROE.
+        terminal_roe=declared_terminal_return_from_matrix(inputs, scenario_id),
         terminal_growth=scen["terminal_growth"],
         cet1_anchor_ratio=cet1_anchor_ratio,
         rwa_anchor=rwa_anchor,
@@ -1628,6 +1631,8 @@ def build_segment_inputs_from_data(inputs: dict, scenario_id: str, route_termina
         shares_outstanding_m=anch["shares_outstanding_m"], fx_aud_per_usd=sf["fx_aud_per_usd"],
         terminal_form=terminal_form, convergence_years=convergence_years,
         terminal_invested_capital=terminal_capital,
+        # D-76: declared rate from the matrix, if the moat work has formed one.
+        declared_terminal_return=declared_terminal_return_from_matrix(inputs, scenario_id),
     )
 
 

@@ -211,6 +211,10 @@ class TwoStageDisclosure:
     terminal_growth: Optional[float] = None
     capital: Optional[float] = None
     earned_return: Optional[float] = None
+    # D-76: the rate the moat work declares on the matrix, if any; the
+    # convergence starts from it where present, from earned_return otherwise.
+    declared_return: Optional[float] = None
+    convergence_return: Optional[float] = None
     moat_years: Optional[float] = None
     moat_band: Optional[str] = None
     moat_basis: Optional[str] = None
@@ -248,6 +252,11 @@ def two_stage_disclosure(root: Path, company_id: str, archetype_id: str,
 
     e1 = f["earnings_T"] * (1.0 + g)
     earned = e1 / capital
+    # D-76: the declared rate starts the convergence where the moat work has
+    # formed one (the engines apply the same rule), the earned return otherwise.
+    from vcc_valuations.translator import declared_terminal_return_from_matrix
+    declared = declared_terminal_return_from_matrix(f["inputs"], scenario_id)
+    start = declared if declared is not None else earned
 
     horizon = decay_horizon_from_matrix(f["inputs"], scenario_id)
     moat_years = moat_years_from_decay_horizon(horizon)
@@ -257,10 +266,11 @@ def two_stage_disclosure(root: Path, company_id: str, archetype_id: str,
             reason="no decay_horizon declared for this company x scenario yet "
                    "(five-forces moat-length assignment pending)",
             cost_of_capital=r, terminal_growth=g, capital=capital, earned_return=earned,
+            declared_return=declared, convergence_return=start,
             engine_terminal_value=f["tv"], engine_value_per_share=f["vps"],
         )
 
-    tv = two_stage(capital, earned, r, g, moat_years)
+    tv = two_stage(capital, start, r, g, moat_years)
     if math.isinf(moat_years):
         band = "indefinite"
     else:
@@ -271,6 +281,7 @@ def two_stage_disclosure(root: Path, company_id: str, archetype_id: str,
     return TwoStageDisclosure(
         company_id, scenario_id, available=True,
         cost_of_capital=r, terminal_growth=g, capital=capital, earned_return=earned,
+        declared_return=declared, convergence_return=start,
         moat_years=moat_years, moat_band=band, moat_basis=horizon.basis,
         terminal_value=tv, value_per_share=vps,
         engine_terminal_value=f["tv"], engine_value_per_share=f["vps"],

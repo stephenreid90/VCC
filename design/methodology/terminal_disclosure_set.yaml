@@ -14,6 +14,7 @@ terminal_disclosure_set:
   - D-64
   - D-65
   - D-66
+  - D-76
   rows:
   - company: dnl
     scenario: ai_productivity_lag
@@ -23,6 +24,8 @@ terminal_disclosure_set:
     terminal_growth: 0.046727
     capital: 4479.676
     earned_return: 0.135887
+    declared_return: null
+    convergence_return: 0.135887
     moat_years: 12.5
     moat_band: 10-15
     moat_basis: 'Five Forces ratings for industrial explosives -- threat of new entrants
@@ -45,6 +48,8 @@ terminal_disclosure_set:
     terminal_growth: 0.049389
     capital: 6174.5
     earned_return: 0.083151
+    declared_return: null
+    convergence_return: 0.083151
     moat_years: 12.5
     moat_band: 10-15
     moat_basis: 'Same Five Forces read as Muddle Through / Orderly Convergence (new
@@ -67,6 +72,8 @@ terminal_disclosure_set:
     terminal_growth: 0.044536
     capital: 4504.337
     earned_return: 0.102203
+    declared_return: null
+    convergence_return: 0.102203
     moat_years: 12.5
     moat_band: 10-15
     moat_basis: 'Archetype ratings (new entrants low, rivalry high, substitutes low)
@@ -86,6 +93,8 @@ terminal_disclosure_set:
     terminal_growth: 0.052675
     capital: 4547.095
     earned_return: 0.137836
+    declared_return: null
+    convergence_return: 0.137836
     moat_years: 12.5
     moat_band: 10-15
     moat_basis: 'Five Forces ratings for industrial explosives -- threat of new entrants
@@ -108,6 +117,8 @@ terminal_disclosure_set:
     terminal_growth: 0.05369
     capital: 4681.251
     earned_return: 0.155166
+    declared_return: null
+    convergence_return: 0.155166
     moat_years: 12.5
     moat_band: 10-15
     moat_basis: 'Five Forces ratings for industrial explosives — threat of new entrants
@@ -129,6 +140,8 @@ terminal_disclosure_set:
     terminal_growth: 0.031943
     capital: 4372.516
     earned_return: 0.118271
+    declared_return: null
+    convergence_return: 0.118271
     moat_years: 12.5
     moat_band: 10-15
     moat_basis: 'Archetype ratings (new entrants low, rivalry high, substitutes low)
@@ -149,6 +162,8 @@ terminal_disclosure_set:
     terminal_growth: 0.0325
     capital: 101708.922
     earned_return: 0.114331
+    declared_return: 0.105
+    convergence_return: 0.105
     moat_years: .inf
     moat_band: indefinite
     moat_basis: 'Threat of new entrants LOW on a statutory barrier (APRA licensing,
@@ -158,8 +173,8 @@ terminal_disclosure_set:
       table).
 
       '
-    terminal_value: 173394.017
-    value_per_share: 33.4898
+    terminal_value: 153622.851
+    value_per_share: 30.8918
     engine_terminal_value: 153622.851
     engine_value_per_share: 30.8918
   - company: wbc
@@ -170,6 +185,8 @@ terminal_disclosure_set:
     terminal_growth: 0.0325
     capital: 96889.783
     earned_return: 0.093849
+    declared_return: 0.09
+    convergence_return: 0.09
     moat_years: .inf
     moat_band: indefinite
     moat_basis: 'Threat of new entrants LOW on a statutory barrier (APRA licensing,
@@ -179,8 +196,8 @@ terminal_disclosure_set:
       table).
 
       '
-    terminal_value: 123835.832
-    value_per_share: 24.1074
+    terminal_value: 116065.885
+    value_per_share: 23.0864
     engine_terminal_value: 116065.885
     engine_value_per_share: 23.0864
   - company: wbc
@@ -191,6 +208,8 @@ terminal_disclosure_set:
     terminal_growth: 0.0325
     capital: 96936.561
     earned_return: 0.106943
+    declared_return: 0.1
+    convergence_return: 0.1
     moat_years: .inf
     moat_band: indefinite
     moat_basis: 'Threat of new entrants LOW on a statutory barrier (APRA licensing,
@@ -200,8 +219,8 @@ terminal_disclosure_set:
       table).
 
       '
-    terminal_value: 150338.159
-    value_per_share: 29.5688
+    terminal_value: 136317.038
+    value_per_share: 27.7263
     engine_terminal_value: 136317.038
     engine_value_per_share: 27.7263
   - company: wbc
@@ -212,6 +231,8 @@ terminal_disclosure_set:
     terminal_growth: 0.035
     capital: 101737.851
     earned_return: 0.113362
+    declared_return: 0.105
+    convergence_return: 0.105
     moat_years: .inf
     moat_band: indefinite
     moat_basis: 'Threat of new entrants LOW on a statutory barrier (APRA licensing,
@@ -221,8 +242,8 @@ terminal_disclosure_set:
       table).
 
       '
-    terminal_value: 175216.837
-    value_per_share: 33.507
+    terminal_value: 156519.77
+    value_per_share: 31.0502
     engine_terminal_value: 156519.77
     engine_value_per_share: 31.0502
   - company: wbc
@@ -233,6 +254,8 @@ terminal_disclosure_set:
     terminal_growth: 0.0375
     capital: 123372.658
     earned_return: 0.136611
+    declared_return: 0.11
+    convergence_return: 0.11
     moat_years: .inf
     moat_band: indefinite
     moat_basis: 'Threat of new entrants LOW on a statutory barrier (APRA licensing,
@@ -242,8 +265,8 @@ terminal_disclosure_set:
       table).
 
       '
-    terminal_value: 284362.71
-    value_per_share: 50.3075
+    terminal_value: 208012.04
+    value_per_share: 40.2748
     engine_terminal_value: 208012.04
     engine_value_per_share: 40.2748
   - company: wbc
@@ -254,6 +277,8 @@ terminal_disclosure_set:
     terminal_growth: 0.0325
     capital: 83066.734
     earned_return: 0.053919
+    declared_return: 0.09
+    convergence_return: 0.09
     moat_years: .inf
     moat_band: indefinite
     moat_basis: 'Threat of new entrants LOW on a statutory barrier (APRA licensing,
@@ -263,8 +288,8 @@ terminal_disclosure_set:
       table).
 
       '
-    terminal_value: 37066.588
-    value_per_share: 8.0568
+    terminal_value: 99507.025
+    value_per_share: 16.2617
     engine_terminal_value: 99507.025
     engine_value_per_share: 16.2617
   - company: csl
@@ -275,6 +300,8 @@ terminal_disclosure_set:
     terminal_growth: 0.0288
     capital: 23283.093
     earned_return: 0.304493
+    declared_return: null
+    convergence_return: 0.304493
     moat_years: 25.0
     moat_band: 20-30
     moat_basis: 'Threat of new entrants LOW (a collection network takes 5+ years of
@@ -298,6 +325,8 @@ terminal_disclosure_set:
     terminal_growth: 0.0275
     capital: 22900.792
     earned_return: 0.271685
+    declared_return: null
+    convergence_return: 0.271685
     moat_years: 25.0
     moat_band: 20-30
     moat_basis: 'Threat of new entrants LOW (a collection network takes 5+ years of
@@ -321,6 +350,8 @@ terminal_disclosure_set:
     terminal_growth: 0.0275
     capital: 22656.089
     earned_return: 0.258175
+    declared_return: null
+    convergence_return: 0.258175
     moat_years: 25.0
     moat_band: 20-30
     moat_basis: 'Threat of new entrants LOW (a collection network takes 5+ years of
@@ -344,6 +375,8 @@ terminal_disclosure_set:
     terminal_growth: 0.03
     capital: 23558.368
     earned_return: 0.314877
+    declared_return: null
+    convergence_return: 0.314877
     moat_years: 25.0
     moat_band: 20-30
     moat_basis: 'Threat of new entrants LOW (a collection network takes 5+ years of
@@ -367,6 +400,8 @@ terminal_disclosure_set:
     terminal_growth: 0.0325
     capital: 24340.595
     earned_return: 0.358919
+    declared_return: null
+    convergence_return: 0.358919
     moat_years: 25.0
     moat_band: 20-30
     moat_basis: 'Threat of new entrants LOW (a collection network takes 5+ years of
@@ -390,6 +425,8 @@ terminal_disclosure_set:
     terminal_growth: 0.03
     capital: 22147.656
     earned_return: 0.229402
+    declared_return: null
+    convergence_return: 0.229402
     moat_years: 25.0
     moat_band: 20-30
     moat_basis: 'Threat of new entrants LOW (a collection network takes 5+ years of

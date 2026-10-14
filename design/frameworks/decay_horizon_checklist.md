@@ -63,7 +63,12 @@ switching costs, a network, a licence, a rolling patent estate). Only barriers g
 
 6. **Is a terminal return declared?** Only if the scenario has actually formed the view
    (`declared_terminal_return` + `basis`). Absence is honest; a number copied off the
-   engine makes the D-42 reconciliation vacuous.
+   engine makes the D-42 reconciliation vacuous. **Since D-76 (14 Oct 2026) a declared
+   rate MOVES the level:** it is the return the convergence starts from, in place of the
+   return the explicit period leaves the capital base earning. Declare it only as a
+   view, state it against the earned return, and size it before landing it
+   (`scripts/size_terminal_returns.py` reports both). WBC declares all six (the bank's
+   terminal ROE lives here now, not on `wbc.yaml`); DNL and CSL declare none.
 
 ## After the answer lands (every time, in this order)
 

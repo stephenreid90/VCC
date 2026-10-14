@@ -62,7 +62,7 @@ VECTORS = {
 }
 SCALARS = {
     "PV of explicit FCFF": "pv_explicit",
-    "Terminal value (D-71: convergence over N if declared, else TFCFF/(WACC-g))": "terminal_value",
+    "Terminal value (D-71: convergence over N if declared, else TFCFF/(WACC-g); D-76: R = declared if any, else earned)": "terminal_value",
     "PV of terminal value": "pv_terminal",
     "Enterprise value (EV)": "enterprise_value",
     "Equity value": "equity_value",

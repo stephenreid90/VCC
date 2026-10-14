@@ -170,6 +170,17 @@ matrix:
             years from the end of the explicit period. Sized in
             design/methodology/terminal_disclosure_set.yaml alongside the
             indefinite headline.
+          declared_terminal_return: 0.105
+          declared_terminal_return_basis: >
+            Lifted 14 Oct 2026 (D-76) from data/companies/wbc.yaml, where it had sat as
+            the per-world terminal_roe since the bank engine was built (D-45: the
+            terminal return is declared from the moat work, the retention rate is
+            derived). Same number, same level: 31.05 in Muddle Through. The archetype
+            anchor is the 10-13% Big Four range with WBC mid-range at ~10.5%; this
+            world's rate is that anchor shifted by the scenario's cost-to-income and
+            credit-loss channels. It sits below the 11.0% the final explicit year earns
+            on closing equity, so the terminal strikes no rents the explicit period did
+            not already end.
 
   # ======================================================================
   - scenario: orderly_convergence
@@ -288,6 +299,17 @@ matrix:
             years from the end of the explicit period. Sized in
             design/methodology/terminal_disclosure_set.yaml alongside the
             indefinite headline.
+          declared_terminal_return: 0.11
+          declared_terminal_return_basis: >
+            Lifted 14 Oct 2026 (D-76) from data/companies/wbc.yaml, where it had sat as
+            the per-world terminal_roe since the bank engine was built (D-45: the
+            terminal return is declared from the moat work, the retention rate is
+            derived). Same number, same level: 31.05 in Muddle Through. The archetype
+            anchor is the 10-13% Big Four range with WBC mid-range at ~10.5%; this
+            world's rate is that anchor shifted by the scenario's cost-to-income and
+            credit-loss channels. It sits below the 13.2% the final explicit year earns
+            on closing equity, so the terminal strikes no rents the explicit period did
+            not already end.
 
   # ======================================================================
   - scenario: stagflation_persists
@@ -424,6 +446,18 @@ matrix:
             years from the end of the explicit period. Sized in
             design/methodology/terminal_disclosure_set.yaml alongside the
             indefinite headline.
+          declared_terminal_return: 0.09
+          declared_terminal_return_basis: >
+            Lifted 14 Oct 2026 (D-76) from data/companies/wbc.yaml, where it had sat as
+            the per-world terminal_roe since the bank engine was built (D-45: the
+            terminal return is declared from the moat work, the retention rate is
+            derived). Same number, same level: 31.05 in Muddle Through. The archetype
+            anchor is the 10-13% Big Four range with WBC mid-range at ~10.5%; this
+            world's rate is that anchor shifted by the scenario's cost-to-income and
+            credit-loss channels. It sits ABOVE the 5.2% the final explicit year earns
+            on closing equity: a recovery from a cyclical trough in credit losses and
+            funding cost, which the D-42 diagnostic flags (M14) and which this basis
+            owns as a forecast rather than an inheritance.
 
   # ======================================================================
   - scenario: fragmentation
@@ -549,6 +583,17 @@ matrix:
             years from the end of the explicit period. Sized in
             design/methodology/terminal_disclosure_set.yaml alongside the
             indefinite headline.
+          declared_terminal_return: 0.1
+          declared_terminal_return_basis: >
+            Lifted 14 Oct 2026 (D-76) from data/companies/wbc.yaml, where it had sat as
+            the per-world terminal_roe since the bank engine was built (D-45: the
+            terminal return is declared from the moat work, the retention rate is
+            derived). Same number, same level: 31.05 in Muddle Through. The archetype
+            anchor is the 10-13% Big Four range with WBC mid-range at ~10.5%; this
+            world's rate is that anchor shifted by the scenario's cost-to-income and
+            credit-loss channels. It sits below the 10.4% the final explicit year earns
+            on closing equity, so the terminal strikes no rents the explicit period did
+            not already end.
 
   # ======================================================================
   - scenario: disorderly_climate_crystallisation
@@ -660,6 +705,17 @@ matrix:
             years from the end of the explicit period. Sized in
             design/methodology/terminal_disclosure_set.yaml alongside the
             indefinite headline.
+          declared_terminal_return: 0.09
+          declared_terminal_return_basis: >
+            Lifted 14 Oct 2026 (D-76) from data/companies/wbc.yaml, where it had sat as
+            the per-world terminal_roe since the bank engine was built (D-45: the
+            terminal return is declared from the moat work, the retention rate is
+            derived). Same number, same level: 31.05 in Muddle Through. The archetype
+            anchor is the 10-13% Big Four range with WBC mid-range at ~10.5%; this
+            world's rate is that anchor shifted by the scenario's cost-to-income and
+            credit-loss channels. It sits just below the 9.1% the final explicit year
+            earns on closing equity, so the terminal strikes no rents the explicit
+            period did not already end.
 
   # ======================================================================
   - scenario: ai_productivity_lag
@@ -756,3 +812,14 @@ matrix:
             years from the end of the explicit period. Sized in
             design/methodology/terminal_disclosure_set.yaml alongside the
             indefinite headline.
+          declared_terminal_return: 0.105
+          declared_terminal_return_basis: >
+            Lifted 14 Oct 2026 (D-76) from data/companies/wbc.yaml, where it had sat as
+            the per-world terminal_roe since the bank engine was built (D-45: the
+            terminal return is declared from the moat work, the retention rate is
+            derived). Same number, same level: 31.05 in Muddle Through. The archetype
+            anchor is the 10-13% Big Four range with WBC mid-range at ~10.5%; this
+            world's rate is that anchor shifted by the scenario's cost-to-income and
+            credit-loss channels. It sits below the 11.1% the final explicit year earns
+            on closing equity, so the terminal strikes no rents the explicit period did
+            not already end.

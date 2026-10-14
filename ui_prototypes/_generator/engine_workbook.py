@@ -144,6 +144,13 @@ def _convergence_years_for(scenario_id, archetype="industrial_explosives", compa
     return years
 
 
+def _declared_terminal_return_for(scenario_id, archetype="industrial_explosives", company="dnl"):
+    """D-76: the terminal return the moat work declares on the matrix, or None (earned)."""
+    from vcc_valuations.translator import declared_terminal_return_from_matrix
+    inp = load_inputs(_ROOT, scenario_id, archetype, company)
+    return declared_terminal_return_from_matrix(inp, scenario_id)
+
+
 def _col(i):  # 1-based -> letter
     return get_column_letter(i)
 
@@ -226,6 +233,9 @@ class Book:
             # horizon midpoint). Blank where none is declared -> the DCF sheet
             # falls back to Gordon, exactly as the translator does.
             ("convergence_years", "Convergence years N (D-71; blank = Gordon fallback)", "0.0", lambda s: _convergence_years_for(s)),
+            # D-76: the declared terminal return, where the moat work has formed
+            # one; blank -> the convergence starts from the earned return R.
+            ("declared_terminal_return", "Declared terminal return (D-76; blank = earned R)", PCT2, lambda s: _declared_terminal_return_for(s)),
         ]
         for key, label, fmt, fn in drivers:
             ws.cell(r[0], 1, label)
@@ -714,10 +724,12 @@ class Book:
                 g = R[f'macro:terminal_growth:{s}']; r = R['wacc']; n = R[f'macro:convergence_years:{s}']
                 gordon = f"{c}{rmap['tfcff']}/({r}-{g})"
                 k = f"((1+{g})/(1+{r}))"
-                m = f"(({c}{rmap['t_ret']}-{g})/({r}-{g}))"
+                d = R[f'macro:declared_terminal_return:{s}']
+                rr = f"IF({d}=\"\",{c}{rmap['t_ret']},{d})"   # D-76
+                m = f"(({rr}-{g})/({r}-{g}))"
                 two = f"{c}{rmap[f'ic{H}']}*({m}*(1-{k}^{n})+{k}^{n})"
                 return f"=IF({n}=\"\",{gordon},{two})"
-            prow("tv", "Terminal value (D-71: convergence over N if declared, else TFCFF/(WACC-g))", MONEY, f_tv)
+            prow("tv", "Terminal value (D-71: convergence over N if declared, else TFCFF/(WACC-g); D-76: R = declared if any, else earned)", MONEY, f_tv)
         else:
             prow("tv", "Terminal value = TFCFF/(WACC-g)", MONEY,
                  lambda s, c, j: f"={c}{rmap['tfcff']}/({R['wacc']}-{R[f'macro:terminal_growth:{s}']})")
@@ -1235,7 +1247,9 @@ def build_wbc_workbook_bytes(cfg=None):
     scen_row("NIM delta (bps)", "d_nimbps", lambda s: chain["by_scenario"][s]["nim_delta_bps"], "0")
     scen_row("Y5 cost-to-income", "y5cti", lambda s: ov["by_scenario"][s]["y5_cost_to_income"], PCT2)
     scen_row("Credit-loss delta (bps)", "d_clbps", lambda s: ov["by_scenario"][s]["credit_loss_delta_bps"], "0")
-    scen_row("Terminal ROE", "troe", lambda s: ov["by_scenario"][s]["terminal_roe"], PCT2)
+    # D-76: the terminal ROE is the declared rate on the australian_major_banks matrix.
+    scen_row("Terminal ROE (declared on the matrix, D-76)", "troe",
+             lambda s: _declared_terminal_return_for(s, "australian_major_banks", "wbc"), PCT2)
     scen_row("Terminal growth g", "tg", lambda s: ov["by_scenario"][s]["terminal_growth"], PCT2)
     r[0] += 1
     # baseline per-year glides (stub..Y5 as columns C..H)
@@ -1639,6 +1653,9 @@ def build_csl_workbook_bytes(cfg=None):
     # D-58); blank means the Gordon fallback. 14 Oct 2026: 25 (long band 20-30).
     scen_row("Convergence years N (D-71; blank = Gordon fallback)", "cyrs",
              lambda sid: _convergence_years_for(sid, "biopharmaceuticals", "csl"), "0.0")
+    # D-76: declared terminal return, blank -> the earned return R starts the convergence.
+    scen_row("Declared terminal return (D-76; blank = earned R)", "dtr",
+             lambda sid: _declared_terminal_return_for(sid, "biopharmaceuticals", "csl"), PCT2)
     ws.column_dimensions["A"].width = 42
     for cc in "BCDEFGH": ws.column_dimensions[cc].width = 13
 
@@ -1749,7 +1766,9 @@ def build_csl_workbook_bytes(cfg=None):
         g = R[f'tg:{s}']; r_ = R['ke']; n = R[f'cyrs:{s}']
         gordon = f"{c}{m['tfcff']}/({r_}-{g})"
         k = f"((1+{g})/(1+{r_}))"
-        mult = f"(({c}{m['t_ret']}-{g})/({r_}-{g}))"
+        d = R[f'dtr:{s}']
+        rr = f"IF({d}=\"\",{c}{m['t_ret']},{d})"   # D-76
+        mult = f"(({rr}-{g})/({r_}-{g}))"
         two = f"{c}{m[f'ic{_T}']}*({mult}*(1-{k}^{n})+{k}^{n})"
         return f"=IF({n}=\"\",{gordon},{two})"
     row("tv", "Terminal value", NUM0, f_tv)

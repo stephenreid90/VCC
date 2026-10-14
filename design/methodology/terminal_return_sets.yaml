@@ -105,9 +105,9 @@ terminal_return_sets:
       terminal_invested_capital: 4681.251
       governing_return: 0.155166
       excess_on_governing_return: 0.066394
-      declared_terminal_return: 0.0913
-      declared_versus_whole_capital: -0.063866
-      warning_count: 2
+      declared_terminal_return: null
+      declared_versus_whole_capital: null
+      warning_count: 1
     - company: dnl
       scenario: stagflation_persists
       construction: fcff_roic
@@ -141,7 +141,7 @@ terminal_return_sets:
       terminal_invested_capital: null
       governing_return: 0.105
       excess_on_governing_return: 0.0245
-      declared_terminal_return: null
+      declared_terminal_return: 0.105
       declared_versus_whole_capital: null
       warning_count: 1
     - company: wbc
@@ -159,7 +159,7 @@ terminal_return_sets:
       terminal_invested_capital: null
       governing_return: 0.09
       excess_on_governing_return: 0.0095
-      declared_terminal_return: null
+      declared_terminal_return: 0.09
       declared_versus_whole_capital: null
       warning_count: 1
     - company: wbc
@@ -177,7 +177,7 @@ terminal_return_sets:
       terminal_invested_capital: null
       governing_return: 0.1
       excess_on_governing_return: 0.0195
-      declared_terminal_return: null
+      declared_terminal_return: 0.1
       declared_versus_whole_capital: null
       warning_count: 1
     - company: wbc
@@ -195,7 +195,7 @@ terminal_return_sets:
       terminal_invested_capital: null
       governing_return: 0.105
       excess_on_governing_return: 0.0245
-      declared_terminal_return: null
+      declared_terminal_return: 0.105
       declared_versus_whole_capital: null
       warning_count: 1
     - company: wbc
@@ -213,7 +213,7 @@ terminal_return_sets:
       terminal_invested_capital: null
       governing_return: 0.11
       excess_on_governing_return: 0.0295
-      declared_terminal_return: null
+      declared_terminal_return: 0.11
       declared_versus_whole_capital: null
       warning_count: 1
     - company: wbc
@@ -231,7 +231,7 @@ terminal_return_sets:
       terminal_invested_capital: null
       governing_return: 0.09
       excess_on_governing_return: 0.0095
-      declared_terminal_return: null
+      declared_terminal_return: 0.09
       declared_versus_whole_capital: null
       warning_count: 2
     - company: csl

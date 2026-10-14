@@ -69,6 +69,10 @@ class SegmentInputs:
     terminal_form: str = "gordon"
     convergence_years: Optional[float] = None
     terminal_invested_capital: Optional[float] = None
+    # D-76: the terminal return the moat work declares on the impact matrix, if
+    # any. Where present it is the R the convergence starts from; where absent
+    # the earned return on the capital base is. Same rule as the other engines.
+    declared_terminal_return: Optional[float] = None
 
 
 @dataclass
@@ -106,6 +110,9 @@ class SegmentResult:
     terminal_form: str = "gordon"
     convergence_years: Optional[float] = None
     terminal_earned_return: Optional[float] = None
+    # D-76: the return the convergence started from (declared where one exists).
+    terminal_convergence_return: Optional[float] = None
+    declared_terminal_return: Optional[float] = None
     # §11.4.2 sensitivity-pass warning, shared with the industrial engine.
     warnings: List[str] = field(default_factory=list)
 
@@ -162,6 +169,7 @@ class SegmentEngine:
             - inp.terminal_growth * inp.wc_change_pct_revenue_change
         ) * (1.0 + inp.terminal_growth)
         terminal_earned_return = None
+        terminal_convergence_return = None
         if inp.terminal_form == "excess_return_convergence":
             if inp.convergence_years is None or inp.terminal_invested_capital is None:
                 raise ValueError("terminal_form='excess_return_convergence' requires convergence_years "
@@ -172,7 +180,13 @@ class SegmentEngine:
             # normalised terminal NOPAT (terminal margin, next year) -- mirrors fcf_engine
             terminal_nopat_next = fy31_rev * inp.terminal_ebit_margin * (1.0 - inp.tax_rate) * (1.0 + g)
             terminal_earned_return = terminal_nopat_next / inp.terminal_invested_capital
-            tv = two_stage(inp.terminal_invested_capital, terminal_earned_return, ke, g, inp.convergence_years)
+            # D-76: declared rate starts the convergence where one exists.
+            terminal_convergence_return = (
+                inp.declared_terminal_return
+                if inp.declared_terminal_return is not None
+                else terminal_earned_return
+            )
+            tv = two_stage(inp.terminal_invested_capital, terminal_convergence_return, ke, g, inp.convergence_years)
         elif inp.terminal_form == "gordon":
             tv = terminal_fcff / (ke - inp.terminal_growth)
         else:
@@ -205,6 +219,8 @@ class SegmentEngine:
             terminal_share_of_ev=terminal_share,
             terminal_form=inp.terminal_form, convergence_years=inp.convergence_years,
             terminal_earned_return=terminal_earned_return,
+            terminal_convergence_return=terminal_convergence_return,
+            declared_terminal_return=inp.declared_terminal_return,
             warnings=warnings,
         )
 
