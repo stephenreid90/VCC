@@ -143,98 +143,128 @@ terminal_disclosure_set:
     engine_value_per_share: 1.1361
   - company: wbc
     scenario: ai_productivity_lag
-    available: false
-    reason: no decay_horizon declared for this company x scenario yet (five-forces
-      moat-length assignment pending)
+    available: true
+    reason: null
     cost_of_capital: 0.0805
     terminal_growth: 0.0325
     capital: 101708.922
     earned_return: 0.114331
-    moat_years: null
-    moat_band: null
-    moat_basis: null
-    terminal_value: null
-    value_per_share: null
+    moat_years: .inf
+    moat_band: indefinite
+    moat_basis: 'Threat of new entrants LOW on a statutory barrier (APRA licensing,
+      D-SIB capital floors), rivalry MODERATE within a four-firm oligopoly the archetype
+      calls durable, substitutes LOW-TO-MODERATE. A regulated oligopoly with no credible
+      erosion path is the indefinite band''s own definition (terminal_value.md s12
+      table).
+
+      '
+    terminal_value: 173394.017
+    value_per_share: 33.4898
     engine_terminal_value: 153622.851
     engine_value_per_share: 30.8918
   - company: wbc
     scenario: disorderly_climate_crystallisation
-    available: false
-    reason: no decay_horizon declared for this company x scenario yet (five-forces
-      moat-length assignment pending)
+    available: true
+    reason: null
     cost_of_capital: 0.0805
     terminal_growth: 0.0325
     capital: 96889.783
     earned_return: 0.093849
-    moat_years: null
-    moat_band: null
-    moat_basis: null
-    terminal_value: null
-    value_per_share: null
+    moat_years: .inf
+    moat_band: indefinite
+    moat_basis: 'Threat of new entrants LOW on a statutory barrier (APRA licensing,
+      D-SIB capital floors), rivalry MODERATE within a four-firm oligopoly the archetype
+      calls durable, substitutes LOW-TO-MODERATE. A regulated oligopoly with no credible
+      erosion path is the indefinite band''s own definition (terminal_value.md s12
+      table).
+
+      '
+    terminal_value: 123835.832
+    value_per_share: 24.1074
     engine_terminal_value: 116065.885
     engine_value_per_share: 23.0864
   - company: wbc
     scenario: fragmentation
-    available: false
-    reason: no decay_horizon declared for this company x scenario yet (five-forces
-      moat-length assignment pending)
+    available: true
+    reason: null
     cost_of_capital: 0.0805
     terminal_growth: 0.0325
     capital: 96936.561
     earned_return: 0.106943
-    moat_years: null
-    moat_band: null
-    moat_basis: null
-    terminal_value: null
-    value_per_share: null
+    moat_years: .inf
+    moat_band: indefinite
+    moat_basis: 'Threat of new entrants LOW on a statutory barrier (APRA licensing,
+      D-SIB capital floors), rivalry MODERATE within a four-firm oligopoly the archetype
+      calls durable, substitutes LOW-TO-MODERATE. A regulated oligopoly with no credible
+      erosion path is the indefinite band''s own definition (terminal_value.md s12
+      table).
+
+      '
+    terminal_value: 150338.159
+    value_per_share: 29.5688
     engine_terminal_value: 136317.038
     engine_value_per_share: 27.7263
   - company: wbc
     scenario: muddle_through
-    available: false
-    reason: no decay_horizon declared for this company x scenario yet (five-forces
-      moat-length assignment pending)
+    available: true
+    reason: null
     cost_of_capital: 0.0805
     terminal_growth: 0.035
     capital: 101737.851
     earned_return: 0.113362
-    moat_years: null
-    moat_band: null
-    moat_basis: null
-    terminal_value: null
-    value_per_share: null
+    moat_years: .inf
+    moat_band: indefinite
+    moat_basis: 'Threat of new entrants LOW on a statutory barrier (APRA licensing,
+      D-SIB capital floors), rivalry MODERATE within a four-firm oligopoly the archetype
+      calls durable, substitutes LOW-TO-MODERATE. A regulated oligopoly with no credible
+      erosion path is the indefinite band''s own definition (terminal_value.md s12
+      table).
+
+      '
+    terminal_value: 175216.837
+    value_per_share: 33.507
     engine_terminal_value: 156519.77
     engine_value_per_share: 31.0502
   - company: wbc
     scenario: orderly_convergence
-    available: false
-    reason: no decay_horizon declared for this company x scenario yet (five-forces
-      moat-length assignment pending)
+    available: true
+    reason: null
     cost_of_capital: 0.0805
     terminal_growth: 0.0375
     capital: 123372.658
     earned_return: 0.136611
-    moat_years: null
-    moat_band: null
-    moat_basis: null
-    terminal_value: null
-    value_per_share: null
+    moat_years: .inf
+    moat_band: indefinite
+    moat_basis: 'Threat of new entrants LOW on a statutory barrier (APRA licensing,
+      D-SIB capital floors), rivalry MODERATE within a four-firm oligopoly the archetype
+      calls durable, substitutes LOW-TO-MODERATE. A regulated oligopoly with no credible
+      erosion path is the indefinite band''s own definition (terminal_value.md s12
+      table).
+
+      '
+    terminal_value: 284362.71
+    value_per_share: 50.3075
     engine_terminal_value: 208012.04
     engine_value_per_share: 40.2748
   - company: wbc
     scenario: stagflation_persists
-    available: false
-    reason: no decay_horizon declared for this company x scenario yet (five-forces
-      moat-length assignment pending)
+    available: true
+    reason: null
     cost_of_capital: 0.0805
     terminal_growth: 0.0325
     capital: 83066.734
     earned_return: 0.053919
-    moat_years: null
-    moat_band: null
-    moat_basis: null
-    terminal_value: null
-    value_per_share: null
+    moat_years: .inf
+    moat_band: indefinite
+    moat_basis: 'Threat of new entrants LOW on a statutory barrier (APRA licensing,
+      D-SIB capital floors), rivalry MODERATE within a four-firm oligopoly the archetype
+      calls durable, substitutes LOW-TO-MODERATE. A regulated oligopoly with no credible
+      erosion path is the indefinite band''s own definition (terminal_value.md s12
+      table).
+
+      '
+    terminal_value: 37066.588
+    value_per_share: 8.0568
     engine_terminal_value: 99507.025
     engine_value_per_share: 16.2617
   - company: csl

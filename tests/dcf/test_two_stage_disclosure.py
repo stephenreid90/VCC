@@ -64,17 +64,19 @@ def test_the_committed_set_regenerates(rows):
     )
 
 
-def test_exactly_six_of_eighteen_valuations_have_a_declared_moat_length(rows):
-    """The 14 October 2026 state: DNL only, all six scenarios (was four until step 3).
+def test_exactly_twelve_of_eighteen_valuations_have_a_declared_moat_length(rows):
+    """The 14 October 2026 state: DNL x6 (dated, 10-15y) and WBC x6 (indefinite).
 
-    This is expected to grow as moat lengths are assigned in a later pass --
-    the number here is a snapshot of today's data, not a rule the code enforces.
+    This grows as moat lengths are assigned -- the number here is a snapshot of
+    today's data, not a rule the code enforces. CSL's six are the remainder (no
+    impact-matrix file yet).
     """
     available = [v for v in rows if v.available]
     assert len(rows) == 18
-    assert {(v.company_id, v.scenario_id) for v in available} == {
-        ("dnl", s) for s in DNL_DECLARED
-    }
+    assert {(v.company_id, v.scenario_id) for v in available} == (
+        {("dnl", s) for s in DNL_DECLARED} | {("wbc", s) for s in DNL_DECLARED}
+    )
+    assert all(not v.available for v in rows if v.company_id == "csl")
 
 
 def test_unavailable_rows_carry_a_reason_and_no_fabricated_number(rows):

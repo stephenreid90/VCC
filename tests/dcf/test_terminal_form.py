@@ -16,6 +16,7 @@ WBC and CSL, and routing them through the same form, is the pass the gap audit
 from __future__ import annotations
 
 import json
+import math
 import sys
 from pathlib import Path
 
@@ -150,11 +151,15 @@ def test_the_simpler_option_is_selectable(results):
 
 
 def test_the_form_is_declared_not_defaulted_on_the_data_path():
-    # 14 Oct 2026: DNL Fragmentation gained a decay horizon, so the Gordon-fallback
-    # reading is now checked on WBC (none declared), the convergence reading on DNL.
+    # 14 Oct 2026: DNL and WBC all declare a horizon, so the Gordon-fallback reading
+    # is checked on CSL (no impact-matrix file), the convergence reading on DNL, and
+    # the indefinite reading (inf) on WBC.
+    c = load_inputs(ROOT, "fragmentation", "biopharmaceuticals", "csl")
+    form, years, note = terminal_form_from_data(c, "fragmentation", 10)
+    assert form == "gordon" and years is None and "no decay_horizon" in note
     w = load_inputs(ROOT, "fragmentation", "australian_major_banks", "wbc")
     form, years, note = terminal_form_from_data(w, "fragmentation", 10)
-    assert form == "gordon" and years is None and "no decay_horizon" in note
+    assert form == "excess_return_convergence" and years == math.inf and note is None
     form, years, note = terminal_form_from_data(_inputs("fragmentation"), "fragmentation", 10)
     assert form == "excess_return_convergence" and years == 12.5 and note is None
     form, years, note = terminal_form_from_data(_inputs("muddle_through"), "muddle_through", 10)

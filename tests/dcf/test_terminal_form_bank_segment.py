@@ -29,6 +29,10 @@ def _bank(s="muddle_through"):
     return build_bank_inputs_from_data(load_inputs(ROOT, s, "australian_major_banks", "wbc"), s)
 
 
+def _bank_gordon(s="muddle_through"):
+    return replace(_bank(s), terminal_form="gordon", convergence_years=None)
+
+
 def _seg(s="muddle_through"):
     inp = load_inputs(ROOT, s, "biopharmaceuticals", "csl")
     si = build_segment_inputs_from_data(inp, s)
@@ -36,14 +40,19 @@ def _seg(s="muddle_through"):
 
 
 # ------------------------------------------------------------------ bank
-def test_bank_data_path_is_gordon_fallback_today():
+def test_bank_data_path_is_indefinite_convergence_which_equals_gordon():
+    """14 Oct 2026: WBC declares an indefinite moat on a statutory barrier (D-46/D-58),
+    so the data path selects convergence with N = inf, which IS the justified
+    price-to-book. The level is the same as before the declaration, by construction."""
     r = BankEngine().run(_bank())
-    assert r.terminal_form == "gordon" and r.convergence_years is None
+    assert r.terminal_form == "excess_return_convergence" and r.convergence_years == math.inf
+    gordon = BankEngine().run(replace(_bank(), terminal_form="gordon", convergence_years=None))
+    assert r.value_per_share == pytest.approx(gordon.value_per_share, rel=1e-12)
 
 
 def test_bank_convergence_at_infinity_is_the_justified_price_to_book():
-    base = BankEngine().run(_bank())
-    conv = BankEngine().run(replace(_bank(), terminal_form="excess_return_convergence", convergence_years=math.inf))
+    base = BankEngine().run(_bank_gordon())
+    conv = BankEngine().run(replace(_bank_gordon(), terminal_form="excess_return_convergence", convergence_years=math.inf))
     assert conv.terminal_value == pytest.approx(base.terminal_value, rel=1e-12)
     assert conv.value_per_share == pytest.approx(base.value_per_share, rel=1e-12)
 
@@ -55,7 +64,7 @@ def test_bank_convergence_at_zero_years_is_closing_equity():
 
 def test_bank_convergence_is_symmetric_in_the_excess():
     """ROE above Ke converges DOWN (TV below Gordon); ROE below Ke converges UP (TV above Gordon)."""
-    inp = _bank()
+    inp = _bank_gordon()
     ke = inp.cost_of_equity
     for roe in (ke + 0.02, ke - 0.02):
         g = replace(inp, terminal_roe=roe)
@@ -71,7 +80,7 @@ def test_bank_convergence_is_symmetric_in_the_excess():
 
 def test_bank_convergence_inputs_are_validated():
     with pytest.raises(ValueError):
-        BankEngine().run(replace(_bank(), terminal_form="excess_return_convergence"))
+        BankEngine().run(replace(_bank_gordon(), terminal_form="excess_return_convergence"))
     with pytest.raises(ValueError):
         BankEngine().run(replace(_bank(), terminal_form="three_phase"))
 

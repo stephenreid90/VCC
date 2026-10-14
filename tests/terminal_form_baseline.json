@@ -9,7 +9,8 @@
     "CSL (segment: return on the D-67 capital base converging to Ke) route through the form from",
     "14 Oct 2026; all twelve of their pairs are gaps today because no decay horizon is declared for",
     "either company anywhere.",
-    "14 Oct 2026: DNL Fragmentation and Stagflation declared (10-15y, scale + switching_cost; design/frameworks/decay_horizon_checklist.md) -- all six DNL pairs now converge. The DNL list is empty."
+    "14 Oct 2026: DNL Fragmentation and Stagflation declared (10-15y, scale + switching_cost; design/frameworks/decay_horizon_checklist.md) -- all six DNL pairs now converge. The DNL list is empty.",
+    "14 Oct 2026: WBC x6 declared INDEFINITE (regulatory + scale + switching_cost, finite sensitivity 20-30y), ratified by Stephen; convergence_years = inf reproduces the justified price-to-book exactly, so no WBC level moved. Only CSL remains."
   ],
   "gordon_fallback": [
     "csl:ai_productivity_lag",
@@ -17,26 +18,14 @@
     "csl:fragmentation",
     "csl:muddle_through",
     "csl:orderly_convergence",
-    "csl:stagflation_persists",
-    "wbc:ai_productivity_lag",
-    "wbc:disorderly_climate_crystallisation",
-    "wbc:fragmentation",
-    "wbc:muddle_through",
-    "wbc:orderly_convergence",
-    "wbc:stagflation_persists"
+    "csl:stagflation_persists"
   ],
   "reasons": {
-    "wbc:muddle_through": "No excess_return_defence is declared on the bank impact matrix for any scenario (D-42 sizing: all six baselined). Decay horizons for WBC are bridge note step 3.",
     "csl:muddle_through": "CSL has no impact-matrix file; no excess_return_defence can be declared until one exists (D-42 sizing: six baselined with the instruction not to defend a defect). Decay horizons for CSL are bridge note step 3.",
-    "wbc:orderly_convergence": "No excess_return_defence is declared on the bank impact matrix for any scenario (D-42 sizing: all six baselined). Decay horizons for WBC are bridge note step 3.",
     "csl:orderly_convergence": "CSL has no impact-matrix file; no excess_return_defence can be declared until one exists (D-42 sizing: six baselined with the instruction not to defend a defect). Decay horizons for CSL are bridge note step 3.",
-    "wbc:ai_productivity_lag": "No excess_return_defence is declared on the bank impact matrix for any scenario (D-42 sizing: all six baselined). Decay horizons for WBC are bridge note step 3.",
     "csl:ai_productivity_lag": "CSL has no impact-matrix file; no excess_return_defence can be declared until one exists (D-42 sizing: six baselined with the instruction not to defend a defect). Decay horizons for CSL are bridge note step 3.",
-    "wbc:fragmentation": "No excess_return_defence is declared on the bank impact matrix for any scenario (D-42 sizing: all six baselined). Decay horizons for WBC are bridge note step 3.",
     "csl:fragmentation": "CSL has no impact-matrix file; no excess_return_defence can be declared until one exists (D-42 sizing: six baselined with the instruction not to defend a defect). Decay horizons for CSL are bridge note step 3.",
-    "wbc:disorderly_climate_crystallisation": "No excess_return_defence is declared on the bank impact matrix for any scenario (D-42 sizing: all six baselined). Decay horizons for WBC are bridge note step 3.",
     "csl:disorderly_climate_crystallisation": "CSL has no impact-matrix file; no excess_return_defence can be declared until one exists (D-42 sizing: six baselined with the instruction not to defend a defect). Decay horizons for CSL are bridge note step 3.",
-    "wbc:stagflation_persists": "No excess_return_defence is declared on the bank impact matrix for any scenario (D-42 sizing: all six baselined). Decay horizons for WBC are bridge note step 3.",
     "csl:stagflation_persists": "CSL has no impact-matrix file; no excess_return_defence can be declared until one exists (D-42 sizing: six baselined with the instruction not to defend a defect). Decay horizons for CSL are bridge note step 3."
   }
 }

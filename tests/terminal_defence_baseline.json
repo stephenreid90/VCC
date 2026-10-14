@@ -12,15 +12,10 @@
     "Updated 25 Sep 2026 (D-35/D-36, build order item 4). dnl:fragmentation has LEFT this list: the longer horizon and the revenue-growth fade both narrow the gap between the return-on-new-capital and return-on-whole-capital readings, and Fragmentation now sits (slightly) below WACC on both -- the four-basis-point excess the dnl reason below describes no longer exists. The ratchet tightening as intended.",
     "Updated 2 Oct 2026 (D-71). dnl:fragmentation is BACK on this list: the fixed ten-year horizon holds the flat chain growth four more years, and the whole-base terminal return rises to 9.83% against an 8.88% WACC -- 95bp, no longer the four-basis-point rounding of 25 Sep. Fragmentation has no declared decay horizon (analyses/dnl/five_forces_driver_gap_audit_2026-09-25.md, a genuine gap, not a transcription), so under D-71 it falls back to Gordon on that excess until the five-forces pass assigns one. Baselined on that ground; the gap audit owns the fix.",
     "Updated 2 Oct 2026 (D-72). dnl:stagflation_persists joins: decisions 3 and 4 make it a cyclical scenario (gas spike ends and the margin hit reverts at its own resolution phase, year 5), so by year 10 its whole-base return is 11.8% against an 8.88% WACC. No decay horizon is declared for it (the same genuine gap as Fragmentation), so under D-71 it falls back to Gordon. Baselined pending the five-forces pass.",
-    "Updated 14 Oct 2026 (bridge note step 3). dnl:fragmentation and dnl:stagflation_persists have LEFT this list: both now declare an excess_return_defence (scale + switching_cost, 10-15y) via design/frameworks/decay_horizon_checklist.md, ratified by Stephen. The DNL list is empty; WBC and CSL are the step-3 worklist."
+    "Updated 14 Oct 2026 (bridge note step 3). dnl:fragmentation and dnl:stagflation_persists have LEFT this list: both now declare an excess_return_defence (scale + switching_cost, 10-15y) via design/frameworks/decay_horizon_checklist.md, ratified by Stephen. The DNL list is empty; WBC and CSL are the step-3 worklist.",
+    "Updated 14 Oct 2026 (step 3). WBC x6 have LEFT this list: all six declare an indefinite excess_return_defence on a statutory barrier with the finite-horizon sensitivity D-58 requires. Only CSL remains, pending an impact-matrix file."
   ],
   "undeclared": [
-    "wbc:muddle_through",
-    "wbc:orderly_convergence",
-    "wbc:ai_productivity_lag",
-    "wbc:fragmentation",
-    "wbc:disorderly_climate_crystallisation",
-    "wbc:stagflation_persists",
     "csl:muddle_through",
     "csl:orderly_convergence",
     "csl:ai_productivity_lag",
@@ -30,14 +25,7 @@
   ],
   "reasons": {
     "dnl": "(none outstanding since 14 Oct 2026 -- see _comment)",
-    "wbc": [
-      "The bank matrix carries no terminal_roic driver for any scenario. In the section 15",
-      "fork the terminal return is a DECLARED input on the scenario overlay (terminal_roe)",
-      "rather than a matrix cell, so a defence has nowhere to live without deciding where a",
-      "bank's terminal-return defence belongs. That is a structural question, not an",
-      "omission to be filled in, and it needs Stephen rather than a session.",
-      "All six scenarios exceed Ke, by 95 to 295bp."
-    ],
+    "wbc": "(none outstanding since 14 Oct 2026 -- see _comment)",
     "csl": [
       "Do not write a defence for a defect. CSL's 61-73% terminal return on new capital is",
       "an artefact of D-53 being unimplemented: terminal_capex_pct_revenue is declared equal",

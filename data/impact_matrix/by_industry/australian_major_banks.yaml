@@ -135,6 +135,41 @@ matrix:
           Terminal ROE converges to the archetype anchor (10-13% Big
           Four range) — for WBC the franchise-specific anchor sits
           mid-range at ~10.5%.
+        excess_return_defence:
+          # Declared 14 Oct 2026 (bridge note step 3, design/frameworks/
+          # decay_horizon_checklist.md), ratified by Stephen: INDEFINITE for all six
+          # WBC scenarios. The barrier is statutory (APRA licence, D-SIB designation:
+          # D-46 makes indefinite the default for a statutory barrier) plus the
+          # deposit-franchise scale and switching costs the archetype rates. D-58's
+          # second lever is already in the construction: the declared terminal ROE
+          # sits BELOW the ROE the final explicit year earns (terminal_value.md s12,
+          # "indefinite moats need a second lever, not a longer first one"). No
+          # rents to strike. Declaring indefinite moves no level: it states what the
+          # Gordon terminal already assumed, and makes the assumption visible.
+          moat_sources:
+            - regulatory
+            - scale
+            - switching_cost
+          decay_horizon:
+            indefinite: true
+            basis: >
+              Threat of new entrants LOW on a statutory barrier (APRA licensing,
+              D-SIB capital floors), rivalry MODERATE within a four-firm oligopoly
+              the archetype calls durable, substitutes LOW-TO-MODERATE. A
+              regulated oligopoly with no credible erosion path is the
+              indefinite band's own definition (terminal_value.md s12 table).
+          named_threat: >
+            Narrow-product entrants and open-banking unbundling: non-bank BNPL lenders, neo-deposit franchises (Up, Judo) and payments platforms peel off the highest-return slices of the retail franchise one product at a time, while the oligopoly keeps the licence and the balance sheet. The archetype rationale records that the licensing waves to date have not produced material disruption; this names the path by which that would change.
+          sensitivity: >
+            The declared terminal ROE against the cost of equity is the live
+            lever (D-58 second lever): the excess is the declared rate less Ke,
+            not the earned rate less Ke. Sized in
+            design/methodology/terminal_option_sets.yaml.
+          finite_horizon_sensitivity: >
+            Long band, 20-30 years (midpoint 25): ROE converging to Ke over 25
+            years from the end of the explicit period. Sized in
+            design/methodology/terminal_disclosure_set.yaml alongside the
+            indefinite headline.
 
   # ======================================================================
   - scenario: orderly_convergence
@@ -218,6 +253,41 @@ matrix:
         rationale: >
           Productivity lift edges terminal ROE toward upper end of
           archetype range (~11.5% for WBC).
+        excess_return_defence:
+          # Declared 14 Oct 2026 (bridge note step 3, design/frameworks/
+          # decay_horizon_checklist.md), ratified by Stephen: INDEFINITE for all six
+          # WBC scenarios. The barrier is statutory (APRA licence, D-SIB designation:
+          # D-46 makes indefinite the default for a statutory barrier) plus the
+          # deposit-franchise scale and switching costs the archetype rates. D-58's
+          # second lever is already in the construction: the declared terminal ROE
+          # sits BELOW the ROE the final explicit year earns (terminal_value.md s12,
+          # "indefinite moats need a second lever, not a longer first one"). No
+          # rents to strike. Declaring indefinite moves no level: it states what the
+          # Gordon terminal already assumed, and makes the assumption visible.
+          moat_sources:
+            - regulatory
+            - scale
+            - switching_cost
+          decay_horizon:
+            indefinite: true
+            basis: >
+              Threat of new entrants LOW on a statutory barrier (APRA licensing,
+              D-SIB capital floors), rivalry MODERATE within a four-firm oligopoly
+              the archetype calls durable, substitutes LOW-TO-MODERATE. A
+              regulated oligopoly with no credible erosion path is the
+              indefinite band's own definition (terminal_value.md s12 table).
+          named_threat: >
+            Narrow-product entrants and open-banking unbundling, moving faster in a world of cheap capital and productivity gains: fintech lenders funded at scale take share in mortgages and SME lending before the majors' digital cost base catches up.
+          sensitivity: >
+            The declared terminal ROE against the cost of equity is the live
+            lever (D-58 second lever): the excess is the declared rate less Ke,
+            not the earned rate less Ke. Sized in
+            design/methodology/terminal_option_sets.yaml.
+          finite_horizon_sensitivity: >
+            Long band, 20-30 years (midpoint 25): ROE converging to Ke over 25
+            years from the end of the explicit period. Sized in
+            design/methodology/terminal_disclosure_set.yaml alongside the
+            indefinite headline.
 
   # ======================================================================
   - scenario: stagflation_persists
@@ -319,6 +389,41 @@ matrix:
         rationale: >
           Terminal ROE compressed to 8-9% range — toward regional-bank
           territory. Cost-to-income deteriorates structurally.
+        excess_return_defence:
+          # Declared 14 Oct 2026 (bridge note step 3, design/frameworks/
+          # decay_horizon_checklist.md), ratified by Stephen: INDEFINITE for all six
+          # WBC scenarios. The barrier is statutory (APRA licence, D-SIB designation:
+          # D-46 makes indefinite the default for a statutory barrier) plus the
+          # deposit-franchise scale and switching costs the archetype rates. D-58's
+          # second lever is already in the construction: the declared terminal ROE
+          # sits BELOW the ROE the final explicit year earns (terminal_value.md s12,
+          # "indefinite moats need a second lever, not a longer first one"). No
+          # rents to strike. Declaring indefinite moves no level: it states what the
+          # Gordon terminal already assumed, and makes the assumption visible.
+          moat_sources:
+            - regulatory
+            - scale
+            - switching_cost
+          decay_horizon:
+            indefinite: true
+            basis: >
+              Threat of new entrants LOW on a statutory barrier (APRA licensing,
+              D-SIB capital floors), rivalry MODERATE within a four-firm oligopoly
+              the archetype calls durable, substitutes LOW-TO-MODERATE. A
+              regulated oligopoly with no credible erosion path is the
+              indefinite band's own definition (terminal_value.md s12 table).
+          named_threat: >
+            Structural cost-to-income deterioration taking the franchise to regional-bank-grade returns: if the 51% CTI and 50bp loss uplift of the explicit years become permanent rather than cyclical, the declared 9% terminal ROE is a recovery assumption (D-42 diagnostic: the final explicit year earns 5.2%). The barrier holds; the return it protects may not clear Ke.
+          sensitivity: >
+            The declared terminal ROE against the cost of equity is the live
+            lever (D-58 second lever): the excess is the declared rate less Ke,
+            not the earned rate less Ke. Sized in
+            design/methodology/terminal_option_sets.yaml.
+          finite_horizon_sensitivity: >
+            Long band, 20-30 years (midpoint 25): ROE converging to Ke over 25
+            years from the end of the explicit period. Sized in
+            design/methodology/terminal_disclosure_set.yaml alongside the
+            indefinite headline.
 
   # ======================================================================
   - scenario: fragmentation
@@ -409,6 +514,41 @@ matrix:
         rationale: >
           Slightly compressed terminal ROE — institutional franchise
           drag and structural risk premium widening.
+        excess_return_defence:
+          # Declared 14 Oct 2026 (bridge note step 3, design/frameworks/
+          # decay_horizon_checklist.md), ratified by Stephen: INDEFINITE for all six
+          # WBC scenarios. The barrier is statutory (APRA licence, D-SIB designation:
+          # D-46 makes indefinite the default for a statutory barrier) plus the
+          # deposit-franchise scale and switching costs the archetype rates. D-58's
+          # second lever is already in the construction: the declared terminal ROE
+          # sits BELOW the ROE the final explicit year earns (terminal_value.md s12,
+          # "indefinite moats need a second lever, not a longer first one"). No
+          # rents to strike. Declaring indefinite moves no level: it states what the
+          # Gordon terminal already assumed, and makes the assumption visible.
+          moat_sources:
+            - regulatory
+            - scale
+            - switching_cost
+          decay_horizon:
+            indefinite: true
+            basis: >
+              Threat of new entrants LOW on a statutory barrier (APRA licensing,
+              D-SIB capital floors), rivalry MODERATE within a four-firm oligopoly
+              the archetype calls durable, substitutes LOW-TO-MODERATE. A
+              regulated oligopoly with no credible erosion path is the
+              indefinite band's own definition (terminal_value.md s12 table).
+          named_threat: >
+            A structurally wider institutional risk premium: offshore wholesale funding reprices as blocs form, compressing the funding-cost advantage that is half the scale barrier. The licence and domestic deposit base are protective (the write-up: domestic-regulator-bound, cross-bloc bank competition not a meaningful threat), so the threat is to the size of the excess, not to the barrier.
+          sensitivity: >
+            The declared terminal ROE against the cost of equity is the live
+            lever (D-58 second lever): the excess is the declared rate less Ke,
+            not the earned rate less Ke. Sized in
+            design/methodology/terminal_option_sets.yaml.
+          finite_horizon_sensitivity: >
+            Long band, 20-30 years (midpoint 25): ROE converging to Ke over 25
+            years from the end of the explicit period. Sized in
+            design/methodology/terminal_disclosure_set.yaml alongside the
+            indefinite headline.
 
   # ======================================================================
   - scenario: disorderly_climate_crystallisation
@@ -485,6 +625,41 @@ matrix:
         rationale: >
           Climate-RWA uplifts compress ROE; ongoing transition costs;
           terminal ROE toward 8.5-9.5%.
+        excess_return_defence:
+          # Declared 14 Oct 2026 (bridge note step 3, design/frameworks/
+          # decay_horizon_checklist.md), ratified by Stephen: INDEFINITE for all six
+          # WBC scenarios. The barrier is statutory (APRA licence, D-SIB designation:
+          # D-46 makes indefinite the default for a statutory barrier) plus the
+          # deposit-franchise scale and switching costs the archetype rates. D-58's
+          # second lever is already in the construction: the declared terminal ROE
+          # sits BELOW the ROE the final explicit year earns (terminal_value.md s12,
+          # "indefinite moats need a second lever, not a longer first one"). No
+          # rents to strike. Declaring indefinite moves no level: it states what the
+          # Gordon terminal already assumed, and makes the assumption visible.
+          moat_sources:
+            - regulatory
+            - scale
+            - switching_cost
+          decay_horizon:
+            indefinite: true
+            basis: >
+              Threat of new entrants LOW on a statutory barrier (APRA licensing,
+              D-SIB capital floors), rivalry MODERATE within a four-firm oligopoly
+              the archetype calls durable, substitutes LOW-TO-MODERATE. A
+              regulated oligopoly with no credible erosion path is the
+              indefinite band's own definition (terminal_value.md s12 table).
+          named_threat: >
+            Climate-risk capital rules: APRA climate-RWA uplifts and transition-asset provisioning compress ROE toward the cost of equity. The regulator that sets the barrier is the same actor that can compress the return it protects.
+          sensitivity: >
+            The declared terminal ROE against the cost of equity is the live
+            lever (D-58 second lever): the excess is the declared rate less Ke,
+            not the earned rate less Ke. Sized in
+            design/methodology/terminal_option_sets.yaml.
+          finite_horizon_sensitivity: >
+            Long band, 20-30 years (midpoint 25): ROE converging to Ke over 25
+            years from the end of the explicit period. Sized in
+            design/methodology/terminal_disclosure_set.yaml alongside the
+            indefinite headline.
 
   # ======================================================================
   - scenario: ai_productivity_lag
@@ -546,3 +721,38 @@ matrix:
         confidence: moderate
         rationale: >
           Modest cost benefit; broadly anchor-consistent.
+        excess_return_defence:
+          # Declared 14 Oct 2026 (bridge note step 3, design/frameworks/
+          # decay_horizon_checklist.md), ratified by Stephen: INDEFINITE for all six
+          # WBC scenarios. The barrier is statutory (APRA licence, D-SIB designation:
+          # D-46 makes indefinite the default for a statutory barrier) plus the
+          # deposit-franchise scale and switching costs the archetype rates. D-58's
+          # second lever is already in the construction: the declared terminal ROE
+          # sits BELOW the ROE the final explicit year earns (terminal_value.md s12,
+          # "indefinite moats need a second lever, not a longer first one"). No
+          # rents to strike. Declaring indefinite moves no level: it states what the
+          # Gordon terminal already assumed, and makes the assumption visible.
+          moat_sources:
+            - regulatory
+            - scale
+            - switching_cost
+          decay_horizon:
+            indefinite: true
+            basis: >
+              Threat of new entrants LOW on a statutory barrier (APRA licensing,
+              D-SIB capital floors), rivalry MODERATE within a four-firm oligopoly
+              the archetype calls durable, substitutes LOW-TO-MODERATE. A
+              regulated oligopoly with no credible erosion path is the
+              indefinite band's own definition (terminal_value.md s12 table).
+          named_threat: >
+            Narrow-product entrants and open-banking unbundling. With the AI productivity dividend late, the majors' cost-to-income advantage over narrow digital lenders is slower to arrive, so the unbundlers hold their price advantage longer.
+          sensitivity: >
+            The declared terminal ROE against the cost of equity is the live
+            lever (D-58 second lever): the excess is the declared rate less Ke,
+            not the earned rate less Ke. Sized in
+            design/methodology/terminal_option_sets.yaml.
+          finite_horizon_sensitivity: >
+            Long band, 20-30 years (midpoint 25): ROE converging to Ke over 25
+            years from the end of the explicit period. Sized in
+            design/methodology/terminal_disclosure_set.yaml alongside the
+            indefinite headline.
