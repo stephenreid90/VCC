@@ -26,9 +26,28 @@ prints git state.
 **Bridge note still in force: `notes/bridge/bridge_note_2026-10-02.md`** (the five-step
 repeatable-process plan). This block records what the 14 October sitting did against it.
 
-**State:** suite 583 passed / 2 deselected; SSOT lint 14/14; base ties DNL 2.138 / WBC
-30.03 / CSL 195.78 (all unchanged -- Muddle Through's world series are flat). Commits on
-`main` on Stephen's checkout; see the bottom of this block for landing.
+**State:** suite 593 passed / 1 skipped / 2 deselected; SSOT lint 14/14; base ties **DNL
+2.138 / WBC 31.05 / CSL 223.24** (`session_start.py` updated; WBC and CSL moved with the
+ten-year period, D-74). Commits on `main` on Stephen's checkout, pushed at the end of the sitting.
+
+### Step 2 DONE -- D-74 (ten years for WBC and CSL; terminal form in all three engines)
+
+Plain terms: WBC and CSL now run a ten-year explicit period like DNL. Their typed
+five-year glides hold their last value to year ten. All three engines carry the
+convergence terminal; WBC and CSL fall back to Gordon everywhere because no decay horizon
+is declared for either (twelve baseline entries, step 3's worklist). Levels moved, all
+from the horizon: WBC MT 30.03 -> 31.05, Stagflation -13%; CSL MT 195.78 -> 223.24, every
+CSL scenario +4% to +17% (the DNL horizon artefact of 2 Oct, now visible on CSL). Full
+disclosure in `DECISIONS.md` D-74 and the golden comments.
+
+**Two modelling gaps D-74 surfaced (not fixed, not blocking):**
+1. Bank engine: retained equity earns nothing inside the explicit period (NPAT is AIEA x
+   NIM). With D-60 binding earlier, a withheld dividend is dead money until the terminal;
+   in Disorderly Climate the constraint lowers value by 1c. Letting retained capital earn
+   the asset yield (or reduce funding cost) is a bank-engine item for a quiet sitting.
+2. CSL margins hold flat FY31-FY36 and the terminal is Gordon on a held margin; the +14%
+   on Muddle Through is five more years of 5.5-7% nominal growth at that margin. The
+   Five Forces pass (step 3) is what disciplines it, exactly as for DNL.
 
 ### Step 1 DONE for all three companies -- D-73
 
@@ -61,13 +80,18 @@ sitting (standing rule 5: not mid-task).
 
 ### Next (bridge note order)
 
-1. **Step 2 -- terminal form in all three engines.** Needs Stephen's call first: WBC and
-   CSL run a FIVE-year explicit period (typed Y1..Y5 glides); D-71 says ten for every
-   company. Extend them to ten now (hold the glides at Y5 beyond, read growth from the
-   paths, which already reach Y10) or keep five until the Five Forces pass?
-2. Step 3 -- decay-horizon checklist, then DNL Frag/Stag, WBC x6, CSL x6.
-3. Step 4 -- equilibrium-chain terms declared per archetype.
-4. Step 5 -- `design/methodology/adding_a_company.md`.
+1. **Step 3 -- the decay-horizon interview as a SHORT checklist** in `design/frameworks/`
+   producing exactly the four `excess_return_defence` fields (moat_sources, barrier-bearing
+   only per D-43a; decay_horizon band + basis; named_threat; sensitivity) for one company x
+   scenario. Then run it: DNL Fragmentation and Stagflation, WBC x6, CSL x6 (CSL needs an
+   impact-matrix file first -- none exists). Each landing shrinks
+   `tests/terminal_form_baseline.json` (14 entries today) and `terminal_defence_baseline.json`.
+2. Step 4 -- equilibrium-chain terms declared per archetype (which chain terms are
+   current-cycle and switch off at Y10); WBC and CSL need it once their chains have terms.
+3. Step 5 -- `design/methodology/adding_a_company.md`, one page, with the seven §8 disclosures.
+4. Open data items from D-73/D-74: bank NIM pass-through rule; CSL volume/price split and
+   US GDP series in all six scenarios; level anchors lifted to archetypes; the two
+   modelling gaps above.
 
 ## HANDOVER — sitting of 2 October 2026 (superseded by the block above)
 
