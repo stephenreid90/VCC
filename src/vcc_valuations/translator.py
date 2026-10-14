@@ -1130,6 +1130,19 @@ def decay_horizon_from_matrix(inputs: dict, scenario_id: str):
     return None
 
 
+def bank_aiea_growth_path_from_data(inputs: dict, horizon_years: int) -> List[float]:
+    """D-72 for the bank archetype: industry balance-sheet growth per explicit year.
+
+    ``bank_system_aiea_growth`` is the scenario series the bank archetype declares
+    (``required_macro_drivers``); the company offset is added here, in the company
+    layer (standing rule 1). Returns decimals, [Y1..YH].
+    """
+    shared = inputs["company_raw"]["normalised_baseline"]["bank_build"]["aiea_nim_chain"]["shared"]
+    offset = shared["company_offset"]["aiea_growth_offset"]
+    return [macro_series_at(inputs, "bank_system_aiea_growth", y) + offset
+            for y in range(1, horizon_years + 1)]
+
+
 def scenario_equilibrium_year(inputs: dict) -> int:
     """The year the scenario's own ``time_profile`` reaches its final phase.
 
@@ -1426,9 +1439,13 @@ def build_bank_inputs_from_data(inputs: dict, scenario_id: str):
     if macro is None or scen is None:
         raise ValueError(f"{company.id}: no bank scenario {scenario_id!r}.")
 
-    # AIEA growth: industry anchor + scenario delta + company offset (Five Forces).
-    aiea_growth = (shared["industry"]["aiea_growth"] + macro.get("aiea_growth_delta", 0.0)
-                   + shared["company_offset"]["aiea_growth_offset"])
+    # AIEA growth, per year (D-72, 14 Oct 2026): the scenario's own
+    # ``bank_system_aiea_growth`` path (derived by scripts/derive_macro_driver_paths.py
+    # from the archetype's declaration -- nominal GDP proxy plus a gap calibrated to
+    # the industry anchor plus this scenario's shift) plus WBC's Five Forces offset.
+    # The flat ``industry.aiea_growth + aiea_growth_delta`` is now the level anchor
+    # that path is calibrated to, not what the engine reads.
+    aiea_growth = bank_aiea_growth_path_from_data(inputs, timing["horizon_years"])
 
     # Per-year glides, parallel-shifted per scenario.
     nim_shift = macro.get("nim_delta_bps", 0) / 10000.0

@@ -22,7 +22,7 @@ the industrial ``FcfEngine`` / ``Derivation`` pattern.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import List, Optional
+from typing import List, Optional, Sequence, Union
 
 from vcc_valuations.derivation import DerivationBuilder
 from vcc_valuations.dcf.bank_capital import Cet1Trajectory, project_cet1
@@ -46,7 +46,10 @@ class BankInputs:
     shares_outstanding_m: float
     non_interest_income_1h: float          # half-year anchor
     # forecast drivers
-    aiea_growth: float                     # derived industry+offset(+scenario), passed in
+    # D-72 (14 Oct 2026): a per-year path [Y1..YH] read from the scenario's own
+    # ``bank_system_aiea_growth`` series plus the company offset; a scalar is
+    # still accepted (held flat) so the pre-D-72 shape and its tests keep working.
+    aiea_growth: Union[float, Sequence[float]]
     non_interest_income_growth: float
     avg_loans_pct_aiea: float
     effective_tax_rate: float
@@ -143,6 +146,16 @@ class BankResult:
 class BankEngine:
     """``run(BankInputs) -> BankResult``. Residual-income / DDM on equity (§15)."""
 
+    @staticmethod
+    def aiea_growth_path(inp: BankInputs) -> List[float]:
+        """The balance-sheet growth rate applied in each explicit year, [Y1..YH]."""
+        if isinstance(inp.aiea_growth, (int, float)):
+            return [float(inp.aiea_growth)] * max(inp.horizon_years, 1)
+        g = [float(x) for x in inp.aiea_growth]
+        if len(g) != inp.horizon_years:
+            raise ValueError(f"aiea_growth path has {len(g)} entries for a {inp.horizon_years}-year horizon")
+        return g
+
     def run(self, inp: BankInputs) -> BankResult:
         H = inp.horizon_years
         n = H + 1
@@ -150,12 +163,13 @@ class BankEngine:
         period_length = [inp.stub_years] + [1.0] * H
 
         # AIEA: anchor x (1 + g x time_factor); stub factor = stub/2, Y1 given, Y2+ compound.
+        g = self.aiea_growth_path(inp)             # [Y1..YH]; stub uses Y1
         aiea: List[float] = [0.0] * n
-        aiea[0] = inp.aiea_anchor * (1.0 + inp.aiea_growth * (inp.stub_years / 2.0))
+        aiea[0] = inp.aiea_anchor * (1.0 + g[0] * (inp.stub_years / 2.0))
         if H >= 1:
-            aiea[1] = inp.aiea_anchor * (1.0 + inp.aiea_growth * inp.aiea_y1_time_factor)
+            aiea[1] = inp.aiea_anchor * (1.0 + g[0] * inp.aiea_y1_time_factor)
         for p in range(2, n):
-            aiea[p] = aiea[p - 1] * (1.0 + inp.aiea_growth)
+            aiea[p] = aiea[p - 1] * (1.0 + g[p - 1])
 
         nim = list(inp.nim_applied)
         nii = [aiea[p] * nim[p] * period_length[p] for p in range(n)]

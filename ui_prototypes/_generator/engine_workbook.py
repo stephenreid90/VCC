@@ -1149,6 +1149,7 @@ def build_wbc_workbook_bytes(cfg=None):
         build_bank_inputs_from_data as _bbi,
     )
     from vcc_valuations.dcf.bank_engine import BankEngine as _BE
+    from vcc_valuations.translator import macro_series_at as _msa
 
     if cfg is None:
         import json as _json
@@ -1188,7 +1189,7 @@ def build_wbc_workbook_bytes(cfg=None):
     line("Beta (peer-triangulated)", coe["beta"], "beta", NUM1 + "0")
     r[0] += 1
     sub("AIEA / NIM chain (industry anchor + company Five-Forces offset; standing rule 1)")
-    line("Industry AIEA growth", shared["industry"]["aiea_growth"], "ind_aiea", PCT2)
+    line("Industry AIEA growth (level anchor the scenario path is calibrated to; memo)", shared["industry"]["aiea_growth"], "ind_aiea", PCT2)
     line("Industry NIM anchor", shared["industry"]["nim_anchor"], "ind_nim", PCT3)
     line("WBC AIEA growth offset", shared["company_offset"]["aiea_growth_offset"], "off_aiea", PCT2)
     line("WBC NIM offset", shared["company_offset"]["nim_offset"], "off_nim", PCT3)
@@ -1227,7 +1228,7 @@ def build_wbc_workbook_bytes(cfg=None):
             c = ws.cell(r[0], 3 + j, fn(sid)); c.fill = YELLOW; c.font = BLUEFONT; c.number_format = fmt
             R[f"{key}:{sid}"] = f"'Assumptions'!${_col(3 + j)}${r[0]}"
         r[0] += 1
-    scen_row("AIEA growth delta", "d_aiea", lambda s: chain["by_scenario"][s]["aiea_growth_delta"], PCT2)
+    scen_row("AIEA growth delta (level anchor; memo)", "d_aiea", lambda s: chain["by_scenario"][s]["aiea_growth_delta"], PCT2)
     scen_row("NIM delta (bps)", "d_nimbps", lambda s: chain["by_scenario"][s]["nim_delta_bps"], "0")
     scen_row("Y5 cost-to-income", "y5cti", lambda s: ov["by_scenario"][s]["y5_cost_to_income"], PCT2)
     scen_row("Credit-loss delta (bps)", "d_clbps", lambda s: ov["by_scenario"][s]["credit_loss_delta_bps"], "0")
@@ -1249,6 +1250,24 @@ def build_wbc_workbook_bytes(cfg=None):
     glide_row("NIM applied", "nim", base["nim_applied"], PCT3)
     glide_row("Cost-to-income", "cti", base["cost_to_income"], PCT2)
     glide_row("Credit-loss rate", "clr", base["credit_loss_rate"], PCT3)
+    r[0] += 1
+    # D-72 (14 Oct 2026): the industry balance-sheet growth path per scenario, Y1..YH,
+    # read from the scenario file's bank_system_aiea_growth series (derived by
+    # scripts/derive_macro_driver_paths.py from the bank archetype's declaration).
+    # The applied WBC rate = path + company offset, derived on the chain sheet.
+    sub("Industry AIEA growth path by scenario (scenario series bank_system_aiea_growth; Y1..Y5)")
+    ph = r[0]; ws.cell(ph, 1, "Scenario").font = BOLD
+    for j, lab in enumerate(["Y1", "Y2", "Y3", "Y4", "Y5"]):
+        ws.cell(ph, 3 + j, lab).font = BOLD
+    r[0] += 1
+    _H = timing["horizon_years"]
+    for sid, nm in SCEN:
+        ws.cell(r[0], 1, nm)
+        _inp_s = _li(_ROOT, sid, "australian_major_banks", "wbc")
+        for y in range(1, _H + 1):
+            c = ws.cell(r[0], 2 + y, _msa(_inp_s, "bank_system_aiea_growth", y)); c.fill = YELLOW; c.font = BLUEFONT; c.number_format = PCT2
+            R[f"aieapath:{sid}:{y}"] = f"'Assumptions'!${_col(2 + y)}${r[0]}"
+        r[0] += 1
     ws.column_dimensions["A"].width = 40
     for cc in "BCDEFGH": ws.column_dimensions[cc].width = 13
 
@@ -1266,13 +1285,20 @@ def build_wbc_workbook_bytes(cfg=None):
     hr = 4; ws.cell(hr, 1, "Derived").font = BOLD
     for j, (sid, nm) in enumerate(SCEN):
         ws.cell(hr, 3 + j, nm).font = BOLD
-    ws.cell(hr + 1, 1, "WBC AIEA growth")
+    ws.cell(hr + 1, 1, "WBC AIEA growth (level anchor, memo)")
     ws.cell(hr + 2, 1, "WBC NIM anchor")
     for j, (sid, nm) in enumerate(SCEN):
         col = _col(3 + j)
         ws.cell(hr + 1, 3 + j, f"={R['ind_aiea']}+{R[f'd_aiea:{sid}']}+{R['off_aiea']}").number_format = PCT3
         ws.cell(hr + 2, 3 + j, f"={R['ind_nim']}+{R[f'd_nimbps:{sid}']}/10000+{R['off_nim']}").number_format = PCT3
-        R[f"aieag:{sid}"] = f"'AIEA-NIM chain'!{col}{hr+1}"
+    # D-72: the applied growth per explicit year = scenario path + company offset.
+    ws.cell(hr + 4, 1, "WBC AIEA growth applied, per year (path + offset; D-72)").font = BOLD
+    for y in range(1, timing["horizon_years"] + 1):
+        ws.cell(hr + 4 + y, 1, f"  Y{y}")
+        for j, (sid, nm) in enumerate(SCEN):
+            col = _col(3 + j)
+            ws.cell(hr + 4 + y, 3 + j, f"={R[f'aieapath:{sid}:{y}']}+{R['off_aiea']}").number_format = PCT3
+            R[f"aieag:{sid}:{y}"] = f"'AIEA-NIM chain'!{col}{hr + 4 + y}"
     ws.column_dimensions["A"].width = 22
     for cc in "CDEFGH": ws.column_dimensions[cc].width = 15
 
@@ -1299,9 +1325,10 @@ def build_wbc_workbook_bytes(cfg=None):
     band("AIEA (average interest-earning assets)")
     for p in range(6):
         def f_aiea(s, c, j, p=p):
-            if p == 0: return f"={R['aiea']}*(1+{R[f'aieag:{s}']}*{R['stub']}/2)"
-            if p == 1: return f"={R['aiea']}*(1+{R[f'aieag:{s}']}*{R['aiea_y1f']})"
-            return f"={c}{rmap[f'aiea{p-1}']}*(1+{R[f'aieag:{s}']})"
+            # stub and Y1 grow at the Y1 rate; Yp compounds at the Yp rate (engine order)
+            if p == 0: return f"={R['aiea']}*(1+{R[f'aieag:{s}:1']}*{R['stub']}/2)"
+            if p == 1: return f"={R['aiea']}*(1+{R[f'aieag:{s}:1']}*{R['aiea_y1f']})"
+            return f"={c}{rmap[f'aiea{p-1}']}*(1+{R[f'aieag:{s}:{p}']})"
         prow(f"aiea{p}", f"  {PL[p]} AIEA", NUM0, f_aiea)
     band("NIM applied")
     for p in range(6):

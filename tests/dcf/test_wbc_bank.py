@@ -79,7 +79,7 @@ def test_orderly_convergence_is_the_one_scenario_the_constraint_still_bites():
     payout constraint has become dead code and the register should say so.
     """
     r = _run("orderly_convergence")
-    assert r.value_per_share == pytest.approx(36.1619, abs=1e-3)
+    assert r.value_per_share == pytest.approx(36.2265, abs=1e-3)  # 36.1619 before the D-72 bank path (14 Oct 2026)
     assert r.capital_constraint_binds_from == "Y4"
     assert r.dividends_forgone > 0
     assert r.cet1_trajectory.operating_target == pytest.approx(0.1125, abs=1e-9)

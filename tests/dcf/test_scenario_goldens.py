@@ -141,12 +141,19 @@ WBC_GOLDEN = {
     # five return to their pre-D-60 values and only Orderly Convergence, which
     # erodes fastest, still binds. Pre-D-60: 35.7058 / 30.0304 / 29.6987 /
     # 27.1096 / 22.5807 / 18.6488.
-    "orderly_convergence": 36.1619,                # binds Y4 (was Y3 at 11.50%)
-    "muddle_through": 30.0304,                     # no longer binds; ties the v4 workbook again
-    "ai_productivity_lag": 29.6987,                # no longer binds
-    "fragmentation": 27.1096,                      # never bound
-    "disorderly_climate_crystallisation": 22.5807,  # no longer binds
-    "stagflation_persists": 18.6488,               # never bound
+    # Re-pinned 14 Oct 2026 (D-72 for the bank archetype): AIEA growth is now the
+    # scenario's own bank_system_aiea_growth path (nominal-GDP proxy plus a gap
+    # calibrated to the old flat industry anchor + scenario shift) plus WBC's
+    # offset, read per year. The path's MEAN over the D-37 anchor years is the old
+    # flat rate, so only the shape moved: +0.2% / 0 / +0.1% / -0.0% / +0.1% / +0.3%.
+    # Muddle Through is unchanged to the cent (its world series are flat).
+    # Before: 36.1619 / 30.0304 / 29.6987 / 27.1096 / 22.5807 / 18.6488.
+    "orderly_convergence": 36.2265,                # binds Y4
+    "muddle_through": 30.0304,                     # unchanged; ties the v4 workbook
+    "ai_productivity_lag": 29.7176,
+    "fragmentation": 27.1084,
+    "disorderly_climate_crystallisation": 22.6051,
+    "stagflation_persists": 18.7015,
 }
 
 # --- CSL: multi-segment FCFF / Ke (M3), (USD, AUD) per share -------------------
@@ -209,7 +216,7 @@ TERMINAL_BREACH = {
     # a hair UNDER the 70% line, so no DNL scenario breaches today; it is pinned
     # in dnl_shares below so the next move across the line is read, not absorbed.
     ("wbc", "muddle_through"): 0.7631,     # back to the pre-D-60 figure (M13)
-    ("wbc", "stagflation_persists"): 0.8445,       # worst in the project; D-60 never binds here
+    ("wbc", "stagflation_persists"): 0.8430,       # worst in the project; D-60 never binds here (0.8445 pre-D-72 bank path)
     ("csl", "muddle_through"): 0.7538,
 }
 

@@ -206,7 +206,10 @@ def test_the_cited_drift_figures_come_from_here():
 
     assert drift_bps("muddle_through") == pytest.approx(-97, abs=5)
     assert drift_bps("orderly_convergence") == pytest.approx(-165, abs=5)
-    assert drift_bps("stagflation_persists") == pytest.approx(-71, abs=5)
+    # -71 before the D-72 bank path (14 Oct 2026). Stagflation's shock phase carries
+    # HIGHER nominal balance-sheet growth in Y1-Y3 (inflation) than the old flat
+    # 2.5%, so more capital is consumed inside the five explicit years.
+    assert drift_bps("stagflation_persists") == pytest.approx(-93, abs=5)
 
     central = BankEngine().run(_off("muddle_through")).cet1_trajectory
     assert central.anchor_ratio == pytest.approx(0.1242, abs=1e-6)
@@ -238,7 +241,16 @@ def test_the_capital_ordering_is_inverted_against_value():
 
     worst_value = min(rows, key=lambda s: rows[s][0])
     best_capital = max(rows, key=lambda s: rows[s][1])
-    assert worst_value == best_capital == "stagflation_persists", rows
+    assert worst_value == "stagflation_persists", rows
+    # Read, not assumed (D-56). Until 14 Oct 2026 Stagflation was also the best for
+    # capital, because its flat balance-sheet growth was the lowest (2.5%). Under
+    # the D-72 bank path its growth is front-loaded -- the shock phase is
+    # inflationary, so NOMINAL assets grow 3.4% in Y1 and only fall to 2.2% by Y5 --
+    # while Fragmentation runs a steady ~4.0% with no inflation spike and now
+    # consumes the least capital. The inversion best-value/worst-capital still
+    # holds; the symmetric worst-value/best-capital no longer does, for a reason
+    # the scenario files state rather than one the test assumed.
+    assert best_capital == "fragmentation", rows
 
 
 # ------------------------------------- D-60: the rule, built but switched off
