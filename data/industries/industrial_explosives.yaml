@@ -36,6 +36,60 @@ industry_archetype:
           company: dnl
           path: normalised_baseline.revenue_growth_chain.by_scenario.{scenario}.macro.gas_price_growth
 
+  # D-78 (14 Oct 2026, bridge note step 4). Which terms of the company's
+  # revenue_growth_chain (shared block, workbook B18-B42) are CURRENT-CYCLE --
+  # switched off at the end of the explicit period for the equilibrium reading
+  # that sets terminal growth (D-72) -- and which are EQUILIBRIUM and persist.
+  # Paths are under normalised_baseline.revenue_growth_chain.shared. The
+  # translator reads this list; nothing is named in code. Ratified by Stephen
+  # 14 Oct 2026 as the classification D-72 implemented.
+  growth_chain_terms:
+    - path: industry_structure.volume_coefficient_a
+      role: current_cycle
+      equilibrium_value: 1.0
+      basis: >
+        Explosives volume outgrowing mining output (beta 1.15) is a current-cycle
+        feature of deeper pits and lower grades; in equilibrium volume tracks
+        mining one-for-one.
+    - path: industry_structure.volume_constant_b
+      role: current_cycle
+      equilibrium_value: 0.0
+      basis: >
+        The ore-grade pickup is a trend of the current mining cycle, not a
+        permanent addition to volume growth.
+    - path: industry_structure.pricing_weight_inflation
+      role: equilibrium
+    - path: industry_structure.pricing_weight_gas
+      role: equilibrium
+    - path: industry_structure.productivity_sharing
+      role: current_cycle
+      equilibrium_value: 0.0
+      basis: >
+        Retained productivity gains are competed away; a mature industry does not
+        keep 0.5pp of pricing above its input costs forever.
+    - path: company_offset.em_growth_premium
+      role: current_cycle
+      equilibrium_value: 1.0
+      basis: >
+        Emerging markets converge on developed-market growth in every scenario's
+        equilibrium phase; the geographic-mix multiplier returns to one.
+    - path: company_offset.five_forces_offset.rivalry_competitive_position
+      role: current_cycle
+      equilibrium_value: 0.0
+      basis: Five Forces offsets are time-limited by their own description (D-43a).
+    - path: company_offset.five_forces_offset.rivalry_product_mix
+      role: current_cycle
+      equilibrium_value: 0.0
+      basis: Five Forces offsets are time-limited by their own description (D-43a).
+    - path: company_offset.five_forces_offset.new_entrants_pipeline_uplift
+      role: current_cycle
+      equilibrium_value: 0.0
+      basis: Five Forces offsets are time-limited by their own description (D-43a).
+    - path: company_offset.five_forces_offset.buyer_supplier_substitutes
+      role: current_cycle
+      equilibrium_value: 0.0
+      basis: Five Forces offsets are time-limited by their own description (D-43a).
+
   geography: multi_geographic
 
   submarkets:

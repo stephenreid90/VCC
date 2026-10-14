@@ -382,6 +382,51 @@ class RequiredMacroDriver(BaseModel):
         return self.derivation.method != DerivationMethod.SCENARIO_SERIES
 
 
+class ChainTermRole(str, Enum):
+    """D-78: whether a growth-chain term survives into the scenario's equilibrium.
+
+    CURRENT_CYCLE terms are switched off for the equilibrium reading of the chain
+    (the reading that sets terminal growth, D-72) -- they take their declared
+    ``equilibrium_value`` from the end of the explicit period. EQUILIBRIUM terms
+    stay at their typed value forever.
+    """
+
+    CURRENT_CYCLE = "current_cycle"
+    EQUILIBRIUM = "equilibrium"
+
+
+class GrowthChainTerm(BaseModel):
+    """One coefficient of a company's growth chain and its role in equilibrium (D-78).
+
+    ``path`` is the dotted path of the term under the company chain's ``shared``
+    block (e.g. ``industry_structure.volume_coefficient_a``). A current-cycle term
+    must say what value it takes once off (1.0 for a multiplier, 0.0 for an
+    additive term) and why; an equilibrium term carries neither.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    path: str
+    role: ChainTermRole
+    equilibrium_value: Optional[float] = None
+    basis: Optional[str] = None
+
+    @model_validator(mode="after")
+    def _shape_matches_role(self):
+        if self.role == ChainTermRole.CURRENT_CYCLE:
+            if self.equilibrium_value is None or not self.basis:
+                raise ValueError(
+                    f"growth chain term {self.path!r}: a current_cycle term needs an "
+                    "equilibrium_value and a basis"
+                )
+        elif self.equilibrium_value is not None or self.basis:
+            raise ValueError(
+                f"growth chain term {self.path!r}: an equilibrium term carries no "
+                "equilibrium_value or basis (it keeps its typed value)"
+            )
+        return self
+
+
 class IndustryArchetype(BaseModel):
     """Industry archetype per section 7.4."""
 
@@ -424,9 +469,25 @@ class IndustryArchetype(BaseModel):
         # D-72: a plain variable name means "the scenario carries it natively".
         return [{"variable": x} if isinstance(x, str) else x for x in (v or [])]
 
+    # D-78 (14 Oct 2026, bridge note step 4). Which terms of the company growth
+    # chain this archetype reads are current-cycle (off in the equilibrium
+    # reading that sets terminal growth) and which persist. ``None`` means the
+    # archetype has not answered; ``[]`` means it has, and none are classified
+    # because its companies' terminal growth is still typed, not derived.
+    growth_chain_terms: Optional[List[GrowthChainTerm]] = None
+
     @property
     def required_macro_driver_names(self) -> List[str]:
         return [d.variable for d in self.required_macro_drivers]
+
+    @property
+    def equilibrium_chain_values(self) -> Dict[str, float]:
+        """``{path: equilibrium_value}`` for every current-cycle chain term."""
+        return {
+            t.path: t.equilibrium_value
+            for t in (self.growth_chain_terms or [])
+            if t.role == ChainTermRole.CURRENT_CYCLE
+        }
 
 
 # ---------------------------------------------------------------- §7.4-v2 bank

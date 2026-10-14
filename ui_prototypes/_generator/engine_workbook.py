@@ -294,19 +294,6 @@ class Book:
         line("Pricing weight — gas", istr["pricing_weight_gas"], "w_gas", NUM1 + "0")
         line("Productivity sharing", istr["productivity_sharing"], "prod", PCT2)
         blank()
-        # derived terminal growth, per scenario, as a formula (D-72 decision 1)
-        ws.cell(r[0], 1, "Terminal growth g (D-72: equilibrium chain at Y{}, capped at nominal GDP)".format(H))
-        for j, (sid, nm) in enumerate(SCEN):
-            m = self.ref[f"path:global_mining_real_growth:{sid}:{H}"]
-            ci = self.ref[f"path:cpi_inflation_advanced:{sid}:{H}"]
-            g_ = self.ref[f"path:gas_price_growth:{sid}:{H}"]
-            gdp = self.ref[f"path:real_gdp_growth_world:{sid}:{H}"]
-            f = (f"=MIN((1+{m})*(1+{self.ref['w_infl']}*{ci}+{self.ref['w_gas']}*{g_})-1,"
-                 f"(1+{gdp})*(1+{ci})-1)")
-            c = ws.cell(r[0], 3 + j, f); c.number_format = PCT2
-            self.ref[f"macro:terminal_growth:{sid}"] = f"'Assumptions'!${_col(3 + j)}${r[0]}"
-        r[0] += 1
-        blank()
 
         # --- Company offset (shared) ---
         ws.cell(r[0], 1, "Company-position offset (shared)"); ws.cell(r[0], 1).font = SUB; r[0] += 1
@@ -325,6 +312,8 @@ class Book:
             ws.cell(gh, cc).font = BOLD
         r[0] += 1
         dm_regions = set(coff["developed_market_regions"])
+        geo_names_dm = [g["geo"] for g in geo if g["geo"] in dm_regions]
+        geo_names_em = [g["geo"] for g in geo if g["geo"] not in dm_regions]
         geo_rows = {}
         for g in geo:
             name = g["geo"]; ws.cell(r[0], 1, name)
@@ -338,6 +327,66 @@ class Book:
             geo_rows[name] = r[0]
             r[0] += 1
         self.geo_names = [g["geo"] for g in geo]
+        blank()
+
+        # --- D-78: the archetype's equilibrium reading of the chain ---
+        # One row per chain term: its role and, for a current-cycle term, the
+        # value it takes once off (yellow). The terminal-growth formula below
+        # reads a term's equilibrium cell where the archetype calls it
+        # current_cycle and its live cell where it calls it equilibrium -- the
+        # same declaration the engine reads (translator.equilibrium_chain_terms).
+        TERM_REF = {
+            "industry_structure.volume_coefficient_a": "a",
+            "industry_structure.volume_constant_b": "b",
+            "industry_structure.pricing_weight_inflation": "w_infl",
+            "industry_structure.pricing_weight_gas": "w_gas",
+            "industry_structure.productivity_sharing": "prod",
+            "company_offset.em_growth_premium": "em_prem",
+            "company_offset.five_forces_offset.rivalry_competitive_position": "ff_riv",
+            "company_offset.five_forces_offset.rivalry_product_mix": "ff_mix",
+            "company_offset.five_forces_offset.new_entrants_pipeline_uplift": "ff_ent",
+            "company_offset.five_forces_offset.buyer_supplier_substitutes": "ff_bss",
+        }
+        ws.cell(r[0], 1, "Equilibrium chain terms (D-78: archetype declaration; current-cycle terms switch off at Y{})".format(H)); ws.cell(r[0], 1).font = SUB; r[0] += 1
+        ws.cell(r[0], 1, "Chain term"); ws.cell(r[0], 2, "Equilibrium value"); ws.cell(r[0], 3, "Role")
+        for cc in (1, 2, 3):
+            ws.cell(r[0], cc).font = BOLD
+        r[0] += 1
+        eq_ref = {}
+        for t in inp["archetype"].growth_chain_terms:
+            key = TERM_REF[t.path]
+            ws.cell(r[0], 1, t.path)
+            if t.role.value == "current_cycle":
+                c = ws.cell(r[0], 2, t.equilibrium_value); c.fill = YELLOW; c.font = BLUEFONT
+                c.number_format = PCT2 if key in ("b", "prod") or key.startswith("ff_") else NUM1 + "00"
+                eq_ref[key] = f"'Assumptions'!$B${r[0]}"
+            else:
+                ws.cell(r[0], 2, "(typed value persists)").font = NOTE
+                eq_ref[key] = self.ref[key]
+            ws.cell(r[0], 3, t.role.value)
+            r[0] += 1
+        blank()
+
+        # derived terminal growth, per scenario, as a formula (D-72 decision 1):
+        # the FULL chain at year H with each term at its equilibrium reading
+        # (D-78), capped at scenario nominal GDP.
+        dm_sum = "+".join(self.ref[f"geo_w:{g}"] for g in geo_names_dm) or "0"
+        em_sum = "+".join(self.ref[f"geo_w:{g}"] for g in geo_names_em) or "0"
+        ws.cell(r[0], 1, "Terminal growth g (D-72: equilibrium chain at Y{}, capped at nominal GDP)".format(H))
+        for j, (sid, nm) in enumerate(SCEN):
+            m = self.ref[f"path:global_mining_real_growth:{sid}:{H}"]
+            ci = self.ref[f"path:cpi_inflation_advanced:{sid}:{H}"]
+            g_ = self.ref[f"path:gas_price_growth:{sid}:{H}"]
+            gdp = self.ref[f"path:real_gdp_growth_world:{sid}:{H}"]
+            E = eq_ref
+            chain = (f"(((1+{E['a']}*{m}+{E['b']})*(1+{E['w_infl']}*{ci}+{E['w_gas']}*{g_}+{E['prod']})-1)"
+                     f"*(({dm_sum})+({em_sum})*{E['em_prem']})"
+                     f"+{E['ff_riv']}+{E['ff_mix']}+{E['ff_ent']}+{E['ff_bss']})")
+            f = f"=MIN({chain},(1+{gdp})*(1+{ci})-1)"
+            c = ws.cell(r[0], 3 + j, f); c.number_format = PCT2
+            self.ref[f"macro:terminal_growth:{sid}"] = f"'Assumptions'!${_col(3 + j)}${r[0]}"
+        r[0] += 1
+        blank()
         line("Effective tax rate (stub)", tb["effective_tax_rate"], "eff_tax", PCT2)
         # glide fractions
         ws.cell(r[0], 1, "Tax glide fractions (Y1..Y5)"); 

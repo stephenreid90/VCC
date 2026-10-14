@@ -26,7 +26,7 @@ prints git state.
 **Bridge note still in force: `notes/bridge/bridge_note_2026-10-02.md`** (the five-step
 repeatable-process plan). This block records what the 14 October sitting did against it.
 
-**State:** suite 599 passed / 1 skipped / 2 deselected; SSOT lint 14/14; base ties **DNL
+**State:** suite 617 passed / 1 skipped / 2 deselected; SSOT lint 14/14; base ties **DNL
 2.138 / WBC 31.05 / CSL 186.5** (`session_start.py` unchanged by D-76; CSL moved with the
 step 3 decay horizon, D-75). Commits on `main` on Stephen's checkout, pushed at the end of
 the sitting.
@@ -49,6 +49,19 @@ oracles are unchanged in LibreOffice. New `tests/dcf/test_declared_terminal_retu
 Open from D-76: DNL and CSL rates are a judgement Stephen has not formed. When he does,
 `scripts/size_terminal_returns.py` reports declared against earned, and the checklist q6
 says to size before landing.
+
+### Step 4 DONE -- D-78 (equilibrium-chain terms declared per archetype)
+
+Plain terms: the growth chain has terms that only hold in the current cycle (the mining
+beta, the ore-grade pickup, retained productivity, the EM premium, the Five Forces
+offsets) and terms that persist (the two pricing weights). Which is which used to be a
+list of names inside `translator.py` and a formula in the DNL workbook. It is now a
+declaration on the archetype (`growth_chain_terms` in `data/industries/*.yaml`); the
+translator reads it and refuses a term nobody has classified. Stephen ratified the
+classification as D-72 had it, so no level moved and no golden changed. WBC and CSL
+archetypes declare an empty list because their terminal growth is still typed, not
+derived from a chain; deriving it is the follow-up. Suite 617 passed. New
+`tests/dcf/test_equilibrium_chain_terms.py`.
 
 ### D-77 DONE -- D-43a roles on WBC's four segment moats
 

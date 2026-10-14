@@ -1,6 +1,6 @@
 # Driver paths inside the explicit period — translation proposal (D-72 implementation)
 
-**Status: RULED 2 Oct 2026 (Stephen: §0 equilibrium chain capped at nominal GDP; §2 spread; §3 yes; §4 as proposed) and IMPLEMENTED the same sitting -- see D-72 in DECISIONS.md. Kept as the record of the reasoning and the tables.**
+**Status (14 Oct 2026, D-78): the §0 equilibrium reading -- which chain terms are current-cycle and switch off at Y10 -- is now declared per archetype in `data/industries/<id>.yaml` `growth_chain_terms`, not hard-coded. RULED 2 Oct 2026 (Stephen: §0 equilibrium chain capped at nominal GDP; §2 spread; §3 yes; §4 as proposed) and IMPLEMENTED the same sitting -- see D-72 in DECISIONS.md. Kept as the record of the reasoning and the tables.**
 Companion to D-71 (fixed ten-year horizon, convergence terminal) and D-72 (growth inside
 the explicit period is the chain evaluated per year on the scenario's own paths; terminal
 `g` is the chain at the scenario's equilibrium, not a typed overlay). Nothing in this file

@@ -3,10 +3,10 @@
 _Generated 2026-10-14 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `afe47d4 D-75: decay horizons declared for all eighteen pairs; notes and bridge note updated; CSL base tie 186.5` on `main`
+- HEAD: `62ea1ee D-77: D-43a roles declared on WBC's four segment moats; moat-role ratchet empty` on `main`
 - Unpushed commits: **0**
-- Tracked files: 354
-- Untracked files: 1
+- Tracked files: 355
+- Untracked files: 2
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -31,7 +31,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
 | Path | Present | What it is |
 |---|---|---|
-| `data/companies/wbc.yaml` | yes (37.2KB) | company position + layer-2 method (judgement) |
+| `data/companies/wbc.yaml` | yes (38.3KB) | company position + layer-2 method (judgement) |
 | `data/companies/wbc.md` | yes (7.7KB) | company narrative |
 | `data/companies/wbc_documents.yaml` | yes (20.3KB) | document register |
 | `data/financials/wbc.yaml` | yes (1.9KB) | curated layer-1 financials (a SUMMARY — check for raw sources too) |
@@ -60,7 +60,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `dnl.yaml` (45.8KB)
     - `dnl_documents.yaml` (8.7KB)
     - `wbc.md` (7.7KB)
-    - `wbc.yaml` (37.2KB)
+    - `wbc.yaml` (38.3KB)
     - `wbc_documents.yaml` (20.3KB)
   - **financials/**
     - `anz_eodhd_fundamentals_2026-06-15.csv` (167.3KB)
@@ -75,20 +75,20 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - **historical/**
   - **impact_matrix/**
     - **by_industry/**
-      - `australian_major_banks.yaml` (32.3KB)
+      - `australian_major_banks.yaml` (37.0KB)
       - `biopharmaceuticals.yaml` (14.7KB)
-      - `industrial_explosives.yaml` (41.2KB)
+      - `industrial_explosives.yaml` (41.1KB)
       - `plasma_derived_therapies.yaml` (11.2KB)
       - `specialty_pharmaceuticals.yaml` (5.1KB)
       - `vaccines.yaml` (4.3KB)
   - **industries/**
     - `australian_major_banks.md` (7.4KB)
-    - `australian_major_banks.yaml` (19.7KB)
+    - `australian_major_banks.yaml` (20.0KB)
     - `industrial_explosives.md` (14.6KB)
-    - `industrial_explosives.yaml` (11.4KB)
-    - `plasma_derived_therapies.yaml` (8.2KB)
-    - `specialty_pharmaceuticals.yaml` (3.2KB)
-    - `vaccines.yaml` (4.0KB)
+    - `industrial_explosives.yaml` (14.0KB)
+    - `plasma_derived_therapies.yaml` (8.6KB)
+    - `specialty_pharmaceuticals.yaml` (3.6KB)
+    - `vaccines.yaml` (4.4KB)
   - **scenarios/**
     - `ai_productivity_lag.md` (8.9KB)
     - `ai_productivity_lag.yaml` (13.1KB)
@@ -117,7 +117,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `ui_design_brief.md` (10.1KB)
   - `writing_style.md` (4.7KB)
   - **frameworks/**
-    - `decay_horizon_checklist.md` (5.3KB)
+    - `decay_horizon_checklist.md` (5.7KB)
     - `five_forces_questions.md` (47.8KB)
     - `payor_and_regulator.md` (17.3KB)
   - **methodology/**
@@ -128,7 +128,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `equity_bridge_and_valuation_mechanics.md` (71.8KB)
     - `horizon_and_terminal_convergence.md` (47.2KB)
     - `horizon_variant_sets.yaml` (11.8KB)
-    - `terminal_disclosure_set.yaml` (15.2KB)
+    - `terminal_disclosure_set.yaml` (16.2KB)
     - `terminal_moat_fade_evidence.md` (6.9KB)
     - `terminal_option_sets.yaml` (75.4KB)
     - `terminal_return_sets.yaml` (11.8KB)
@@ -162,7 +162,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **vcc_valuations/**
     - `__init__.py` (667B)
     - `derivation.py` (4.4KB)
-    - `translator.py` (83.1KB)
+    - `translator.py` (86.0KB)
     - **assumptions/**
       - `__init__.py` (775B)
       - `trade_working_capital.py` (5.8KB)
@@ -170,12 +170,12 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - **dcf/**
       - `__init__.py` (51B)
       - `bank_capital.py` (9.8KB)
-      - `bank_engine.py` (20.7KB)
-      - `fcf_engine.py` (30.9KB)
+      - `bank_engine.py` (22.1KB)
+      - `fcf_engine.py` (31.9KB)
       - `fcf_stub.py` (10.1KB)
-      - `segment_engine.py` (12.7KB)
-      - `terminal_return.py` (14.9KB)
-      - `terminal_value.py` (12.1KB)
+      - `segment_engine.py` (13.6KB)
+      - `terminal_return.py` (15.3KB)
+      - `terminal_value.py` (12.8KB)
     - **market/**
       - `__init__.py` (629B)
       - `fmp_client.py` (5.8KB)
@@ -187,7 +187,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `company.py` (13.4KB)
       - `driver.py` (4.1KB)
       - `frameworks.py` (4.5KB)
-      - `industry.py` (24.0KB)
+      - `industry.py` (26.4KB)
       - `linkage.py` (12.4KB)
       - `scenario.py` (5.0KB)
 
@@ -195,9 +195,9 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
   - `__init__.py` (0B)
   - `conftest.py` (1.3KB)
-  - `moat_role_baseline.json` (873B)
+  - `moat_role_baseline.json` (895B)
   - `ssot_basis_baseline.json` (494B)
-  - `ssot_intra_file_baseline.json` (593B)
+  - `ssot_intra_file_baseline.json` (558B)
   - `ssot_lint_baseline.json` (6.2KB)
   - `ssot_macro_driver_baseline.json` (3B)
   - `terminal_defence_baseline.json` (3.4KB)
@@ -226,12 +226,14 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `test_csl_segment.py` (4.4KB)
     - `test_csl_workbook_tie.py` (3.8KB)
     - `test_d72_bank_and_segment_paths.py` (5.3KB)
+    - `test_declared_terminal_return.py` (5.7KB)
     - `test_dnl_all_scenarios.py` (7.2KB)
     - `test_dnl_mt_from_data.py` (13.4KB)
     - `test_dnl_mt_ratified.py` (7.5KB)
     - `test_dnl_workbook_tie.py` (4.5KB)
     - `test_e2e_dnl_mt.py` (4.3KB)
     - `test_engine_input_validation.py` (3.5KB)
+    - `test_equilibrium_chain_terms.py` (6.0KB)
     - `test_horizon_variant_sets.py` (5.1KB)
     - `test_per_year_derivations.py` (3.8KB)
     - `test_replica_ties_engine.py` (6.6KB)
@@ -240,13 +242,13 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `test_terminal_form.py` (8.6KB)
     - `test_terminal_form_bank_segment.py` (6.8KB)
     - `test_terminal_option_sets.py` (11.4KB)
-    - `test_terminal_return_sets.py` (10.4KB)
+    - `test_terminal_return_sets.py` (11.0KB)
     - `test_two_stage_disclosure.py` (7.5KB)
     - `test_wbc_bank.py` (6.7KB)
     - **golden/**
       - `__init__.py` (0B)
       - `_recalc.py` (4.2KB)
-      - `_recalc_generated_workbooks.py` (6.6KB)
+      - `_recalc_generated_workbooks.py` (6.7KB)
       - `csl_workbook_all_scenarios.json` (9.8KB)
       - `dnl_mt_inputs.py` (5.5KB)
       - `dnl_mt_v6.json` (2.6KB)
@@ -268,8 +270,8 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `README.md` (893B)
     - `beta_data.py` (10.0KB)
     - `build_cfgs.py` (94.6KB)
-    - `cfgs_gen.json` (244.2KB)
-    - `engine_workbook.py` (105.7KB)
+    - `cfgs_gen.json` (244.5KB)
+    - `engine_workbook.py` (109.9KB)
     - `gen_ui.py` (89.4KB)
 
 ## Analyses (workbooks)
@@ -355,4 +357,5 @@ Not in git. Either commit them or clear them — an untracked file is invisible
 to anyone who clones the repo, and is the most common way work gets lost.
 
 - `"Claude outputs/"`
+- `tests/dcf/test_equilibrium_chain_terms.py`
 

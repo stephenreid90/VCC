@@ -28,6 +28,12 @@ industry_archetype:
             - path: normalised_baseline.bank_build.aiea_nim_chain.by_scenario.{scenario}.aiea_growth_delta
   archetype_class: bank
 
+  # D-78 (14 Oct 2026, bridge note step 4): declared EMPTY. WBC terminal growth is typed per scenario in wbc.yaml, not
+  # derived from the chain, so no chain term is classified as current-cycle or
+  # equilibrium yet. Deriving that terminal growth is the follow-up recorded
+  # in DECISIONS.md D-78; when it lands, the terms are classified here.
+  growth_chain_terms: []
+
   geography: domestic_au_nz
 
   submarkets:

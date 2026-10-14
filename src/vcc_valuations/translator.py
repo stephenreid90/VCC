@@ -585,6 +585,54 @@ def chain_macro_at(inputs: dict, year: float) -> dict:
     return {k: macro_series_at(inputs, v, year) for k, v in CHAIN_MACRO_SERIES.items()}
 
 
+def _numeric_leaves(block, prefix: str = "") -> Dict[str, float]:
+    """``{dotted.path: value}`` for every numeric leaf of a nested mapping."""
+    out: Dict[str, float] = {}
+    for k, v in (block or {}).items():
+        path = f"{prefix}.{k}" if prefix else k
+        if isinstance(v, dict):
+            out.update(_numeric_leaves(v, path))
+        elif isinstance(v, (int, float)) and not isinstance(v, bool):
+            out[path] = float(v)
+    return out
+
+
+def equilibrium_chain_terms(inputs: dict) -> Dict[str, float]:
+    """D-78: the archetype's equilibrium reading of the company's growth chain.
+
+    Returns ``{path: equilibrium_value}`` for every chain term the archetype
+    declares CURRENT-CYCLE (``growth_chain_terms`` in
+    ``data/industries/<archetype>.yaml``); a term absent from the mapping keeps
+    its typed value in equilibrium. Every numeric term the company's chain
+    ``shared`` block carries must be classified one way or the other -- an
+    unclassified term raises, so nothing is silently treated as permanent, and
+    nothing in code names a company or a term.
+    """
+    company_raw = inputs.get("company_raw") or {}
+    shared = ((company_raw.get("normalised_baseline") or {}).get("revenue_growth_chain") or {}).get("shared") or {}
+    if not shared:
+        return {}
+    archetype = inputs.get("archetype")
+    declared = None if archetype is None else archetype.growth_chain_terms
+    if declared is None:
+        raise ValueError(
+            "the company carries a revenue_growth_chain but its archetype declares no "
+            "growth_chain_terms (D-78): say which chain terms are current_cycle and "
+            "which are equilibrium."
+        )
+    terms = _numeric_leaves(shared)
+    paths = {t.path for t in declared}
+    missing = sorted(set(terms) - paths)
+    unknown = sorted(paths - set(terms))
+    if missing or unknown:
+        raise ValueError(
+            "growth_chain_terms (D-78) do not match the company's chain: "
+            + (f"unclassified {missing}; " if missing else "")
+            + (f"declared but absent from the chain {unknown}" if unknown else "")
+        )
+    return dict(archetype.equilibrium_chain_values)
+
+
 def revenue_growth_chain_from_data(inputs: dict, scenario_id: str, year: float = 1,
                                    equilibrium: bool = False):
     """The §11 revenue-growth chain as a fully-traceable :class:`Derivation`.
@@ -631,26 +679,31 @@ def revenue_growth_chain_from_data(inputs: dict, scenario_id: str, year: float =
         "[equilibrium]" if equilibrium else f"[year {year}]")
     b = DerivationBuilder(label)
 
-    # In EQUILIBRIUM (D-72) the chain's current-cycle extras are switched off:
-    # explosives volume tracks mining one-for-one (no volume beta, no ore-grade
-    # pickup), pricing carries no retained productivity, and the geographic-mix
-    # multiplier and the five-forces offsets -- all time-limited by their own
-    # descriptions -- are zero. What is left is the growth of the world the
-    # scenario ends in.
-    a = 1.0 if equilibrium else ib["volume_coefficient_a"]
+    # In EQUILIBRIUM (D-72) the chain's current-cycle terms are switched off.
+    # WHICH terms, and the value each takes once off, is the archetype's
+    # declaration (D-78, ``growth_chain_terms``), not a choice made here: a
+    # term the archetype calls current_cycle reads its equilibrium_value, an
+    # equilibrium term keeps its typed value. What is left is the growth of
+    # the world the scenario ends in.
+    eq = equilibrium_chain_terms(inputs) if equilibrium else {}
+
+    def term(path: str, typed: float) -> float:
+        return eq.get(path, typed)
+
+    a = term("industry_structure.volume_coefficient_a", ib["volume_coefficient_a"])
     mining = macro["global_mining_real_growth"]
-    b_const = 0.0 if equilibrium else ib["volume_constant_b"]
+    b_const = term("industry_structure.volume_constant_b", ib["volume_constant_b"])
     volume = b.step(
         "B25", "Industry volume growth", a * mining + b_const,
         "a * mining_real_growth + b",
         {"a": a, "mining_real_growth": mining, "b": b_const}, cell="B25", units="%",
     )
 
-    w_infl = ib["pricing_weight_inflation"]
+    w_infl = term("industry_structure.pricing_weight_inflation", ib["pricing_weight_inflation"])
     dm_infl = macro["dm_inflation"]
-    w_gas = ib["pricing_weight_gas"]
+    w_gas = term("industry_structure.pricing_weight_gas", ib["pricing_weight_gas"])
     gas = macro["gas_price_growth"]
-    prod = 0.0 if equilibrium else ib["productivity_sharing"]
+    prod = term("industry_structure.productivity_sharing", ib["productivity_sharing"])
     pricing = b.step(
         "B29", "Industry pricing growth", w_infl * dm_infl + w_gas * gas + prod,
         "w_infl * DM_inflation + w_gas * gas_growth + productivity",
@@ -678,7 +731,7 @@ def revenue_growth_chain_from_data(inputs: dict, scenario_id: str, year: float =
         {r["geo"]: r["share_of_revenue"] for r in regions if r["geo"] not in developed},
         cell="B34", units="%",
     )
-    em_premium = 1.0 if equilibrium else co["em_growth_premium"]
+    em_premium = term("company_offset.em_growth_premium", co["em_growth_premium"])
     geo_mix = b.step(
         "B36", "Geographic-mix multiplier", dm_weight + em_weight * em_premium,
         "DM_weight + EM_weight * EM_premium",
@@ -686,9 +739,8 @@ def revenue_growth_chain_from_data(inputs: dict, scenario_id: str, year: float =
         cell="B36",
     )
 
-    ff = co["five_forces_offset"]
-    if equilibrium:
-        ff = {k: 0.0 for k in ff}
+    ff = {k: term(f"company_offset.five_forces_offset.{k}", v)
+          for k, v in co["five_forces_offset"].items()}
     net_offset = b.step(
         "B41", "Net company-position offset",
         ff["rivalry_competitive_position"] + ff["rivalry_product_mix"]
