@@ -23,8 +23,9 @@ prints git state.
 
 ## 🔴 HANDOVER — sitting of 14 October 2026 (read this first)
 
-**Bridge note still in force: `notes/bridge/bridge_note_2026-10-02.md`** (the five-step
-repeatable-process plan). This block records what the 14 October sitting did against it.
+**Bridge note: `notes/bridge/bridge_note_2026-10-14.md`.** The five-step repeatable-process
+plan of 2 October is COMPLETE as of this sitting (steps 1-5, D-73 to D-78). This block
+records what the 14 October sitting did against it.
 
 **State:** suite 617 passed / 1 skipped / 2 deselected; SSOT lint 14/14; base ties **DNL
 2.138 / WBC 31.05 / CSL 186.5** (`session_start.py` unchanged by D-76; CSL moved with the
@@ -49,6 +50,16 @@ oracles are unchanged in LibreOffice. New `tests/dcf/test_declared_terminal_retu
 Open from D-76: DNL and CSL rates are a judgement Stephen has not formed. When he does,
 `scripts/size_terminal_returns.py` reports declared against earned, and the checklist q6
 says to size before landing.
+
+### Step 5 DONE -- `design/methodology/adding_a_company.md`
+
+Plain terms: the repeatable process is now written down on one page. Nine steps from the
+archetype's declared drivers to the write-up, each pointing at the schema, script, test
+or paper that does it, then the seven terminal disclosures at the end. The 2 October
+five-step plan is complete. What is still open from it (not blocking): derived terminal
+growth for WBC and CSL (D-78 follow-up); bank NIM pass-through; CSL volume/price split;
+level anchors lifted to archetypes; retained bank equity earning nothing until the
+terminal; DNL and CSL declared terminal rates (Stephen's judgement, not formed).
 
 ### Step 4 DONE -- D-78 (equilibrium-chain terms declared per archetype)
 

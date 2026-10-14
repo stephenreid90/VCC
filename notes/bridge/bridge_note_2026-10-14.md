@@ -1,8 +1,8 @@
 # VCC VALUATIONS — bridge note for a new chat, 14 October 2026
 
-Supersedes the note of 2 October 2026 (its five-step plan still stands; steps 1, 2 and 3 are
-done). Updated at the end of the 14 October sitting after step 3 landed, and again later the
-same day after D-76 (the declared terminal return made live).
+Supersedes the note of 2 October 2026. **Its five-step plan is COMPLETE** (steps 1-5, D-73 to
+D-78). Updated three times on 14 October: after step 3, after D-76, and at the end of the
+third sitting after steps 4 and 5 landed (D-78, `adding_a_company.md`).
 
 **WHAT THIS IS.** A travelling snapshot. `WORKING_NOTES.md` is the live layer; **where the
 two disagree, `WORKING_NOTES.md` wins.**
@@ -17,17 +17,18 @@ each one means. Copy widgets don't work for him: give copyable text as a plain c
 
 1. `session_start.cmd` (or `python scripts/session_start.py` in the device shell after
    `pip install pydantic pandas numpy openpyxl scipy pytest pyyaml`). Expected: suite
-   **599 passed, 1 skipped, 2 deselected**; SSOT lint 14/14; base ties **DNL 2.138, WBC 31.05,
+   **617 passed, 1 skipped, 2 deselected**; SSOT lint 14/14; base ties **DNL 2.138, WBC 31.05,
    CSL 186.5**.
 2. `CLAUDE.md`. Standing rule 4 (every number from committed code, asserted by a test) and
    standing rule 5 (land once per sitting, at the end; plumbing gets no airtime).
 3. `WORKING_NOTES.md`, the HANDOVER block at the top (sitting of 14 October).
-4. `DECISIONS.md` rows **D-71 to D-76**: ten-year period + convergence terminal (D-71);
+4. `DECISIONS.md` rows **D-71 to D-78**: ten-year period + convergence terminal (D-71);
    growth from scenario paths, derived g (D-72); archetype-declared derivations for every
    company (D-73); ten years and the terminal form for WBC and CSL (D-74); decay horizons
    for all eighteen pairs (D-75: DNL 10-15y, WBC indefinite, CSL 20-30y); the declared
    terminal return as the rate the convergence starts from (D-76: WBC declares six, lifted
-   off `wbc.yaml`; DNL's mechanical 9.13% removed; CSL absent).
+   off `wbc.yaml`; DNL's mechanical 9.13% removed; CSL absent); D-77 (D-43a roles on WBC's segment moats); D-78 (equilibrium-chain terms
+   declared per archetype).
 5. `design/frameworks/decay_horizon_checklist.md` — the short Five Forces interview and the
    after-the-answer list. `tests/terminal_form_baseline.json` and
    `terminal_defence_baseline.json` are EMPTY; `tests/moat_role_baseline.json` is EMPTY too
@@ -72,13 +73,22 @@ a Gordon terminal that held the excess forever. The medium band (15y) would give
 indefinite 213.01 (`design/methodology/terminal_option_sets.yaml`). WBC did not move: an
 indefinite horizon is the Gordon form. D-60 (payout cut to hold CET1) binds in every WBC scenario.
 
-## STEP 3 (D-75) AND ITS LEFTOVER (D-76) ARE DONE — what the next chat picks up
+## THE FIVE-STEP PLAN IS DONE — what the next chat picks up
 
-1. **Step 4** (equilibrium-chain terms per archetype: which chain terms are current-cycle
-   and switch off at Y10; WBC and CSL need it once their chains have terms), then step 5
-   (`design/methodology/adding_a_company.md`, one page, seven §8 disclosures).
-2. D-43a roles on WBC's segment moats are DONE (D-77); the moat-role ratchet is empty.
-3. Not blocking: DNL and CSL terminal rates are Stephen's judgement, not yet formed. If he
+1. **Step 4 DONE (D-78).** Which growth-chain terms are current-cycle (off at Y10) is now
+   `growth_chain_terms` on the archetype; `translator.equilibrium_chain_terms` reads it and
+   raises on an unclassified term. DNL classified as D-72 had it (no level moved). Bank and
+   CSL segment archetypes declare `[]` because their terminal g is still TYPED.
+2. **Step 5 DONE.** `design/methodology/adding_a_company.md`: nine steps + the seven
+   disclosures. Read it before touching a fourth company.
+3. **Next, Stephen to choose.** Candidates, none blocking: (a) derive WBC and CSL terminal
+   g from their chains (then classify their terms; D-78 follow-up); (b) bank NIM
+   pass-through rule; (c) CSL volume/price split + US GDP series; (d) lift level anchors
+   from company files to archetypes; (e) bank engine: retained equity earns nothing until
+   the terminal; (f) retire D-36's fade now the chain terms have an equilibrium reading
+   (give each current-cycle term an expiry inside the explicit period); (g) rewrite
+   `CLAUDE.md` "Operational quirks" (stale since the device shell can run git).
+4. Not blocking: DNL and CSL terminal rates are Stephen's judgement, not yet formed. If he
    forms one, size it first (`scripts/size_terminal_returns.py`; checklist q6).
 
 ## THE PLAN THAT WAS RUN THIS CHAT — step 3 (kept for the record)
@@ -129,4 +139,5 @@ archetypes; bank engine lets retained equity earn nothing until the terminal.
 `3920a3e` D-74 + notes · `19c9b14` step 3 part 1 (checklist, DNL Frag + Stag) · `37f0b50` part 2
 (WBC indefinite) · `0787cfa` part 3 (CSL 20-30y, biopharmaceuticals matrix, workbook two-stage)
 · D-75 + notes + this bridge note · `aa7e2d3` D-76 (declared rate live; WBC six lifted to the
-matrix; DNL 9.13% removed; notes) · D-77 (D-43a roles on WBC's segment moats).
+matrix; DNL 9.13% removed; notes) · `62ea1ee` D-77 (D-43a roles on WBC's segment moats) · `a718d0e` D-78 (step 4) · step 5
+(`adding_a_company.md`) + this note.
