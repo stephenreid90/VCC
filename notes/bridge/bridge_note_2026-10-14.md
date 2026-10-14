@@ -30,8 +30,8 @@ each one means. Copy widgets don't work for him: give copyable text as a plain c
    off `wbc.yaml`; DNL's mechanical 9.13% removed; CSL absent).
 5. `design/frameworks/decay_horizon_checklist.md` — the short Five Forces interview and the
    after-the-answer list. `tests/terminal_form_baseline.json` and
-   `terminal_defence_baseline.json` are EMPTY; `tests/moat_role_baseline.json` still lists
-   WBC's four segment moats (no D-43a roles declared there yet).
+   `terminal_defence_baseline.json` are EMPTY; `tests/moat_role_baseline.json` is EMPTY too
+   (D-77 declared WBC's four segment moats).
 
 ## STATE — what the model does now
 
@@ -74,11 +74,10 @@ indefinite horizon is the Gordon form. D-60 (payout cut to hold CET1) binds in e
 
 ## STEP 3 (D-75) AND ITS LEFTOVER (D-76) ARE DONE — what the next chat picks up
 
-1. **D-43a roles on WBC's four segment moats** (`tests/moat_role_baseline.json`): each
-   `moat_sources` entry declares RENT (cash advantage with an end date, lives in the explicit
-   period) or BARRIER (what the decay horizon measures) or both. Trap: never list
-   `resource` as a barrier.
-2. Step 4 (equilibrium-chain terms per archetype), then step 5 (`adding_a_company.md`).
+1. **Step 4** (equilibrium-chain terms per archetype: which chain terms are current-cycle
+   and switch off at Y10; WBC and CSL need it once their chains have terms), then step 5
+   (`design/methodology/adding_a_company.md`, one page, seven §8 disclosures).
+2. D-43a roles on WBC's segment moats are DONE (D-77); the moat-role ratchet is empty.
 3. Not blocking: DNL and CSL terminal rates are Stephen's judgement, not yet formed. If he
    forms one, size it first (`scripts/size_terminal_returns.py`; checklist q6).
 
@@ -129,5 +128,5 @@ archetypes; bank engine lets retained equity earn nothing until the terminal.
 `26f5152` CSL paths wired · `bbbcd53` D-73 + notes · `6cc6e5c` step 2 (ten years, terminal form) ·
 `3920a3e` D-74 + notes · `19c9b14` step 3 part 1 (checklist, DNL Frag + Stag) · `37f0b50` part 2
 (WBC indefinite) · `0787cfa` part 3 (CSL 20-30y, biopharmaceuticals matrix, workbook two-stage)
-· D-75 + notes + this bridge note · D-76 (declared rate live; WBC six lifted to the
-matrix; DNL 9.13% removed; notes).
+· D-75 + notes + this bridge note · `aa7e2d3` D-76 (declared rate live; WBC six lifted to the
+matrix; DNL 9.13% removed; notes) · D-77 (D-43a roles on WBC's segment moats).

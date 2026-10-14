@@ -1,10 +1,6 @@
 {
   "_why": "D-43a baseline. Every moat block listed here declares sources but not roles. The judgement of what each source actually does - a rent with an end date, or a barrier that stops a rival - has not been made for these yet. The list may only shrink: a block that acquires roles must be removed from it, and a new block may not be added without one. Generated 14 Sep 2026 when D-43a was ratified and Denali was declared.",
-  "undeclared": [
-    "wbc:company_position.segments[0].moat",
-    "wbc:company_position.segments[1].moat",
-    "wbc:company_position.segments[2].moat",
-    "wbc:company_position.segments[3].moat"
-  ],
-  "_comment": "14 Oct 2026 (step 3): CSL's three segment moat blocks declare D-43a roles (collection network, manufacturing complexity, regulatory, commercial scale = barrier; plasma supply and real-world data = rent; patent LCM = both)."
+  "undeclared": [],
+  "_comment": "14 Oct 2026 (step 3): CSL's three segment moat blocks declare D-43a roles (collection network, manufacturing complexity, regulatory, commercial scale = barrier; plasma supply and real-world data = rent; patent LCM = both).",
+  "_comment_wbc": "14 Oct 2026 (D-77): WBC's four segment moat blocks declare D-43a roles (scale, switching_cost, regulatory = barrier; distribution = both; relationship = rent). The list is now empty."
 }

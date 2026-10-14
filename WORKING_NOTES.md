@@ -50,6 +50,14 @@ Open from D-76: DNL and CSL rates are a judgement Stephen has not formed. When h
 `scripts/size_terminal_returns.py` reports declared against earned, and the checklist q6
 says to size before landing.
 
+### D-77 DONE -- D-43a roles on WBC's four segment moats
+
+Plain terms: each WBC segment moat source now says whether it is a rent (a cash advantage
+with an end date) or a barrier (what stops a rival). Scale, switching cost and regulatory
+are barriers; distribution (consumer) is both; relationship (institutional) is a rent. The
+moat-role ratchet (`tests/moat_role_baseline.json`) is empty for all three companies. No
+level moved.
+
 ### Step 3 DONE -- D-75 (decay horizons for all eighteen pairs)
 
 Plain terms: every company x scenario now says how long its excess return lasts, from the
@@ -119,9 +127,7 @@ sitting (standing rule 5: not mid-task).
 
 1. Step 3 is DONE (D-75) and its leftover is DONE (D-76: the declared rate is live; WBC
    declares six, DNL and CSL none until Stephen forms a view).
-2. D-43a roles on WBC's four segment moats (`tests/moat_role_baseline.json` still lists
-   them; a RENT has an end date and lives in the explicit period, a BARRIER is what the
-   decay horizon measures).
+2. D-43a roles on WBC's four segment moats: DONE (D-77).
 3. Step 4 -- equilibrium-chain terms declared per archetype (which chain terms are
    current-cycle and switch off at Y10); WBC and CSL need it once their chains have terms.
 4. Step 5 -- `design/methodology/adding_a_company.md`, one page, with the seven §8 disclosures.

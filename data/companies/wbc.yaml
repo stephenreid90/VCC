@@ -296,6 +296,11 @@ company_position:
           - scale
           - switching_cost
           - distribution
+        # D-43a roles, ratified by Stephen 14 Oct 2026 (D-77). Distribution is BOTH: the branch network is a barrier to reach today, its cost advantage a rent digital levels.
+        source_roles:
+          scale: barrier
+          switching_cost: barrier
+          distribution: both
         durability: high
         evidence: >
           Scale: #2 mortgage book and deposit franchise nationally.
@@ -334,6 +339,10 @@ company_position:
           - scale
           - switching_cost
         durability: moderate
+        # D-43a roles, ratified by Stephen 14 Oct 2026 (D-77). Relationship-banker model and transaction-banking integration hold the customer; neither is a dated cash advantage.
+        source_roles:
+          scale: barrier
+          switching_cost: barrier
         evidence: >
           Scale: #3 in business banking, behind NAB and CBA. Switching
           costs: relationship-banker model, transaction-banking
@@ -364,6 +373,10 @@ company_position:
         sources:
           - scale
           - relationship
+        # D-43a roles, ratified by Stephen 14 Oct 2026 (D-77). Relationship is a RENT: deal flow that walks with the banker or the tender; it excludes no rival and does not hold up the decay horizon.
+        source_roles:
+          scale: barrier
+          relationship: rent
         durability: moderate
         evidence: >
           Long-standing relationships with Australian corporates and
@@ -398,6 +411,10 @@ company_position:
           - scale
           - regulatory
         durability: high
+        # D-43a roles, ratified by Stephen 14 Oct 2026 (D-77). RBNZ BS2A is a statutory barrier, the kind the D-75 indefinite horizon rests on.
+        source_roles:
+          scale: barrier
+          regulatory: barrier
         evidence: >
           Scale: top-four NZ bank. Regulatory: RBNZ BS2A subsidiary
           capital framework is a moat against new entrants.
