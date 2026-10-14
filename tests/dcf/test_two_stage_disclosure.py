@@ -35,8 +35,10 @@ SET_PATH = ROOT / "design" / "methodology" / "terminal_disclosure_set.yaml"
 # Disorderly Climate joined on 25 Sep 2026: its defence was fully specified in
 # the scenario write-up and never transcribed into the structured block (see
 # analyses/dnl/five_forces_driver_gap_audit_2026-09-25.md).
+# 14 Oct 2026 (bridge note step 3): Fragmentation and Stagflation declared via
+# design/frameworks/decay_horizon_checklist.md -- all six DNL scenarios now carry one.
 DNL_DECLARED = {"muddle_through", "orderly_convergence", "ai_productivity_lag",
-                "disorderly_climate_crystallisation"}
+                "disorderly_climate_crystallisation", "fragmentation", "stagflation_persists"}
 # D-71 (2 Oct 2026): where a decay horizon is declared the two-stage form IS the
 # headline, so the "disclosure" reproduces the engine's own terminal exactly.
 # The disclosure module is kept as the cross-check that the headline is the
@@ -62,8 +64,8 @@ def test_the_committed_set_regenerates(rows):
     )
 
 
-def test_exactly_four_of_eighteen_valuations_have_a_declared_moat_length(rows):
-    """The October 2026 state: DNL only, four of six scenarios.
+def test_exactly_six_of_eighteen_valuations_have_a_declared_moat_length(rows):
+    """The 14 October 2026 state: DNL only, all six scenarios (was four until step 3).
 
     This is expected to grow as moat lengths are assigned in a later pass --
     the number here is a snapshot of today's data, not a rule the code enforces.

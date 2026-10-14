@@ -150,8 +150,13 @@ def test_the_simpler_option_is_selectable(results):
 
 
 def test_the_form_is_declared_not_defaulted_on_the_data_path():
-    form, years, note = terminal_form_from_data(_inputs("fragmentation"), "fragmentation", 10)
+    # 14 Oct 2026: DNL Fragmentation gained a decay horizon, so the Gordon-fallback
+    # reading is now checked on WBC (none declared), the convergence reading on DNL.
+    w = load_inputs(ROOT, "fragmentation", "australian_major_banks", "wbc")
+    form, years, note = terminal_form_from_data(w, "fragmentation", 10)
     assert form == "gordon" and years is None and "no decay_horizon" in note
+    form, years, note = terminal_form_from_data(_inputs("fragmentation"), "fragmentation", 10)
+    assert form == "excess_return_convergence" and years == 12.5 and note is None
     form, years, note = terminal_form_from_data(_inputs("muddle_through"), "muddle_through", 10)
     assert form == "excess_return_convergence" and years == 12.5 and note is None
     with pytest.raises(NotImplementedError):

@@ -8,7 +8,8 @@
     "fails tests/dcf/test_terminal_form.py. WBC (bank: ROE converging to Ke on closing equity) and",
     "CSL (segment: return on the D-67 capital base converging to Ke) route through the form from",
     "14 Oct 2026; all twelve of their pairs are gaps today because no decay horizon is declared for",
-    "either company anywhere."
+    "either company anywhere.",
+    "14 Oct 2026: DNL Fragmentation and Stagflation declared (10-15y, scale + switching_cost; design/frameworks/decay_horizon_checklist.md) -- all six DNL pairs now converge. The DNL list is empty."
   ],
   "gordon_fallback": [
     "csl:ai_productivity_lag",
@@ -17,8 +18,6 @@
     "csl:muddle_through",
     "csl:orderly_convergence",
     "csl:stagflation_persists",
-    "dnl:fragmentation",
-    "dnl:stagflation_persists",
     "wbc:ai_productivity_lag",
     "wbc:disorderly_climate_crystallisation",
     "wbc:fragmentation",
@@ -27,8 +26,6 @@
     "wbc:stagflation_persists"
   ],
   "reasons": {
-    "dnl:fragmentation": "The scenario write-up never assessed terminal ROIC or a moat length; it now sits 95bp above its WACC on the whole capital base under the ten-year horizon, so Gordon is the MORE generous reading and is baselined in tests/terminal_defence_baseline.json as well.",
-    "dnl:stagflation_persists": "The scenario write-up never assessed terminal ROIC or a moat length; it sits 3.8pp below its WACC, so Gordon on the earned return is the LESS generous reading (convergence up would lift it, as it lifts Disorderly Climate).",
     "wbc:muddle_through": "No excess_return_defence is declared on the bank impact matrix for any scenario (D-42 sizing: all six baselined). Decay horizons for WBC are bridge note step 3.",
     "csl:muddle_through": "CSL has no impact-matrix file; no excess_return_defence can be declared until one exists (D-42 sizing: six baselined with the instruction not to defend a defect). Decay horizons for CSL are bridge note step 3.",
     "wbc:orderly_convergence": "No excess_return_defence is declared on the bank impact matrix for any scenario (D-42 sizing: all six baselined). Decay horizons for WBC are bridge note step 3.",

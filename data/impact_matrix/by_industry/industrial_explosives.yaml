@@ -437,6 +437,52 @@ matrix:
           created_by: tara@reidadvisory.net
           created_at: 2026-05-17T10:00:00Z
 
+
+      # Added 14 Oct 2026 (bridge note step 3, design/frameworks/decay_horizon_checklist.md),
+      # ratified by Stephen the same day. Until then this scenario had no terminal_roic
+      # driver and fell back to Gordon (tests/terminal_form_baseline.json).
+      terminal_roic:
+        direction: negative
+        magnitude: moderate
+        confidence: moderate
+        rationale: >
+          At year 10 the return on the whole capital base sits about 3pp ABOVE
+          the WACC (D-42 diagnostic: 11.8% against 8.9%). Before D-72 this
+          scenario earned below its WACC; under the derived paths the margin
+          hit reverts by the resolution phase (year 5) while low nominal growth
+          keeps the capital base small, so the post-resolution return is an
+          excess. The decay horizon says how long it is competed away.
+        not_applicable: false
+        evidence_refs: []
+        excess_return_defence:
+          # Barriers only (D-43a). Of the write-up's four defences, gas contracts
+          # and offtake contracts are RENTS (dated, in the explicit period) and are
+          # struck; the Australian duopoly (scale) and on-site service
+          # infrastructure (switching cost) are the barriers that hold the
+          # post-resolution excess.
+          moat_sources:
+            - scale
+            - switching_cost
+          decay_horizon:
+            years_low: 10
+            years_high: 15
+            basis: >
+              Archetype ratings (new entrants low, rivalry high, substitutes low)
+              do not move by scenario, so the medium band stands. "Price
+              discipline holds" and on-site infrastructure "sticky once embedded"
+              (scenario write-up) are the barriers that carry the post-resolution
+              excess through the band.
+          named_threat: >
+            Customer renegotiation under sustained cost pressure, with Orica
+            declining to hold price: concentrated mining customers under
+            restrictive financial conditions re-tender on price, and a duopoly
+            that breaks discipline competes the excess away inside the band.
+          sensitivity: >
+            Band ends (D-63): the excess competed away over 10 years versus 15.
+            Sized in design/methodology/terminal_option_sets.yaml.
+        governance:
+          created_by: stephenreid90@gmail.com
+          created_at: 2026-10-14T03:00:00Z
   # ----------------------------------------------------------------------
   - scenario: fragmentation
     scenario_version: "2026-Q2-v1"
@@ -574,6 +620,48 @@ matrix:
           created_by: tara@reidadvisory.net
           created_at: 2026-05-17T10:00:00Z
 
+
+      # Added 14 Oct 2026 (bridge note step 3, design/frameworks/decay_horizon_checklist.md),
+      # ratified by Stephen the same day. Until then this scenario had no terminal_roic
+      # driver and fell back to Gordon (tests/terminal_form_baseline.json).
+      terminal_roic:
+        direction: negative
+        magnitude: small
+        confidence: moderate
+        rationale: >
+          At year 10 the return on the whole capital base sits about 1.3pp ABOVE
+          the WACC (D-42 diagnostic: 10.2% against 8.9%) in a structurally inferior world: lower
+          volume growth and a country-risk premium, but the Australian duopoly
+          holds margin. The excess is small and the decay horizon says how long
+          it is competed away.
+        not_applicable: false
+        evidence_refs: []
+        excess_return_defence:
+          # Barriers only (D-43a): offtake contracts and the gas position are
+          # rents and are struck. Strategic-minerals exposure is a volume
+          # offset, not a barrier.
+          moat_sources:
+            - scale
+            - switching_cost
+          decay_horizon:
+            years_low: 10
+            years_high: 15
+            basis: >
+              Archetype ratings (new entrants low, rivalry high, substitutes low)
+              do not move by scenario, so the medium band stands; the scenario
+              write-up itself says the inferior equilibrium "persists through the
+              longer 10-15 year horizon".
+          named_threat: >
+            Bloc-sponsored Tier 2 capacity. Supply-chain duplication under
+            industrial policy gives a local rival the scale it lacks today
+            ("Tier 2 competitors aren't a serious price threat in Australia" --
+            in this world that changes first), and Orica responds in Australia.
+          sensitivity: >
+            Band ends (D-63): the small excess competed away over 10 years
+            versus 15. Sized in design/methodology/terminal_option_sets.yaml.
+        governance:
+          created_by: stephenreid90@gmail.com
+          created_at: 2026-10-14T03:00:00Z
   # ----------------------------------------------------------------------
   - scenario: disorderly_climate_crystallisation
     scenario_version: "2026-Q2-v1"

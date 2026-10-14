@@ -459,11 +459,11 @@
     },
     "scalars": {
       "pv_explicit": 2011.40593802772,
-      "terminal_value": 5670.00761566235,
-      "pv_terminal": 2350.99159110836,
-      "enterprise_value": 4362.39752913609,
-      "equity_value": 2792.41465242376,
-      "value_per_share": 1.57763539684958,
+      "terminal_value": 5057.6358757076,
+      "pv_terminal": 2097.07997249093,
+      "enterprise_value": 4108.48591051865,
+      "equity_value": 2538.50303380632,
+      "value_per_share": 1.43418250497532,
       "terminal_fcff": 250.813237319384
     }
   },
@@ -693,11 +693,11 @@
     },
     "scalars": {
       "pv_explicit": 1308.27618895773,
-      "terminal_value": 6563.76134114927,
-      "pv_terminal": 2721.57442548363,
-      "enterprise_value": 4029.85061444136,
-      "equity_value": 2459.86773772903,
-      "value_per_share": 1.3897557840277,
+      "terminal_value": 5480.91700075896,
+      "pv_terminal": 2272.58773775773,
+      "enterprise_value": 3580.86392671545,
+      "equity_value": 2010.88105000312,
+      "value_per_share": 1.13609098870233,
       "terminal_fcff": 373.011201946647
     }
   }

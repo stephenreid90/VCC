@@ -61,20 +61,23 @@ terminal_disclosure_set:
     engine_value_per_share: 1.0762
   - company: dnl
     scenario: fragmentation
-    available: false
-    reason: no decay_horizon declared for this company x scenario yet (five-forces
-      moat-length assignment pending)
+    available: true
+    reason: null
     cost_of_capital: 0.088772
     terminal_growth: 0.044536
     capital: 4504.337
     earned_return: 0.102203
-    moat_years: null
-    moat_band: null
-    moat_basis: null
-    terminal_value: null
-    value_per_share: null
-    engine_terminal_value: 5670.008
-    engine_value_per_share: 1.5776
+    moat_years: 12.5
+    moat_band: 10-15
+    moat_basis: 'Archetype ratings (new entrants low, rivalry high, substitutes low)
+      do not move by scenario, so the medium band stands; the scenario write-up itself
+      says the inferior equilibrium "persists through the longer 10-15 year horizon".
+
+      '
+    terminal_value: 5057.636
+    value_per_share: 1.4342
+    engine_terminal_value: 5057.636
+    engine_value_per_share: 1.4342
   - company: dnl
     scenario: muddle_through
     available: true
@@ -120,20 +123,24 @@ terminal_disclosure_set:
     engine_value_per_share: 2.4908
   - company: dnl
     scenario: stagflation_persists
-    available: false
-    reason: no decay_horizon declared for this company x scenario yet (five-forces
-      moat-length assignment pending)
+    available: true
+    reason: null
     cost_of_capital: 0.088772
     terminal_growth: 0.031943
     capital: 4372.516
     earned_return: 0.118271
-    moat_years: null
-    moat_band: null
-    moat_basis: null
-    terminal_value: null
-    value_per_share: null
-    engine_terminal_value: 6563.761
-    engine_value_per_share: 1.3898
+    moat_years: 12.5
+    moat_band: 10-15
+    moat_basis: 'Archetype ratings (new entrants low, rivalry high, substitutes low)
+      do not move by scenario, so the medium band stands. "Price discipline holds"
+      and on-site infrastructure "sticky once embedded" (scenario write-up) are the
+      barriers that carry the post-resolution excess through the band.
+
+      '
+    terminal_value: 5480.917
+    value_per_share: 1.1361
+    engine_terminal_value: 5480.917
+    engine_value_per_share: 1.1361
   - company: wbc
     scenario: ai_productivity_lag
     available: false

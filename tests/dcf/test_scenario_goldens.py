@@ -109,7 +109,14 @@ DNL_GOLDEN = {
     "orderly_convergence": 2.4908,
     "muddle_through": 2.1382,                      # independently audited (generated workbook, all six)
     "ai_productivity_lag": 2.1071,
-    "fragmentation": 1.5776,
+    # Fragmentation and Stagflation re-pinned 14 Oct 2026 (bridge note step 3):
+    # both now declare a decay horizon (scale + switching_cost, 10-15y, ratified by
+    # Stephen via design/frameworks/decay_horizon_checklist.md), so the headline
+    # terminal is convergence over 12.5 years instead of Gordon on the earned
+    # excess. Both earn ABOVE the WACC at Y10 (Frag 10.2%, Stag 11.8% vs 8.9%),
+    # so competing the excess away cuts them: 1.5776 -> 1.4342, 1.3898 -> 1.1361.
+    # Stagflation is again the floor's neighbour, not the floor (DCC 1.08).
+    "fragmentation": 1.4342,
     "disorderly_climate_crystallisation": 1.0762,
     # Stagflation Persists crosses to slightly NEGATIVE. It was already earning
     # barely above its own cost of capital on new capital under the old 5-year
@@ -120,7 +127,7 @@ DNL_GOLDEN = {
     # margin. Back to slightly POSITIVE under D-71's ten-year horizon (the extra
     # years of chain growth), still Gordon pending a declared decay horizon.
     # D-72: 1.39 -- a cyclical scenario now, see the note above.
-    "stagflation_persists": 1.3898,
+    "stagflation_persists": 1.1361,
 }
 
 # --- WBC: bank DDM / Ke (§15), AUD per share -----------------------------------
@@ -312,12 +319,14 @@ def test_terminal_shares_are_measured_case_by_case():
         # upward convergence lifts its terminal.
         # D-72 (same day): the derived g and the explicit paths move every share;
         # Stagflation's rises most as its explicit years recover.
+        # 14 Oct 2026: Fragmentation and Stagflation converge (decay horizons
+        # declared), so their terminals shrink: 0.5389 -> 0.5104, 0.6754 -> 0.6346.
         "orderly_convergence": 0.5311,
         "muddle_through": 0.5167,
         "ai_productivity_lag": 0.5032,
-        "fragmentation": 0.5389,
+        "fragmentation": 0.5104,
         "disorderly_climate_crystallisation": 0.6980,
-        "stagflation_persists": 0.6754,
+        "stagflation_persists": 0.6346,
     }
     # 14 Oct 2026: WBC and CSL moved to the ten-year explicit period (D-71) and every
     # one of their terminal shares fell below 70% -- the same mechanism as DNL on

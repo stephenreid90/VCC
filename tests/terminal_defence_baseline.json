@@ -11,11 +11,10 @@
     "Updated 17 Sep 2026. The obligation now triggers on the GOVERNING reading -- the return on the whole capital base where D-49's roll-forward gives one -- which is why dnl:fragmentation appears: it sits below its WACC on new capital and above it on the whole base. dnl:muddle_through and dnl:ai_productivity_lag have LEFT this list, which is the ratchet tightening as intended.",
     "Updated 25 Sep 2026 (D-35/D-36, build order item 4). dnl:fragmentation has LEFT this list: the longer horizon and the revenue-growth fade both narrow the gap between the return-on-new-capital and return-on-whole-capital readings, and Fragmentation now sits (slightly) below WACC on both -- the four-basis-point excess the dnl reason below describes no longer exists. The ratchet tightening as intended.",
     "Updated 2 Oct 2026 (D-71). dnl:fragmentation is BACK on this list: the fixed ten-year horizon holds the flat chain growth four more years, and the whole-base terminal return rises to 9.83% against an 8.88% WACC -- 95bp, no longer the four-basis-point rounding of 25 Sep. Fragmentation has no declared decay horizon (analyses/dnl/five_forces_driver_gap_audit_2026-09-25.md, a genuine gap, not a transcription), so under D-71 it falls back to Gordon on that excess until the five-forces pass assigns one. Baselined on that ground; the gap audit owns the fix.",
-    "Updated 2 Oct 2026 (D-72). dnl:stagflation_persists joins: decisions 3 and 4 make it a cyclical scenario (gas spike ends and the margin hit reverts at its own resolution phase, year 5), so by year 10 its whole-base return is 11.8% against an 8.88% WACC. No decay horizon is declared for it (the same genuine gap as Fragmentation), so under D-71 it falls back to Gordon. Baselined pending the five-forces pass."
+    "Updated 2 Oct 2026 (D-72). dnl:stagflation_persists joins: decisions 3 and 4 make it a cyclical scenario (gas spike ends and the margin hit reverts at its own resolution phase, year 5), so by year 10 its whole-base return is 11.8% against an 8.88% WACC. No decay horizon is declared for it (the same genuine gap as Fragmentation), so under D-71 it falls back to Gordon. Baselined pending the five-forces pass.",
+    "Updated 14 Oct 2026 (bridge note step 3). dnl:fragmentation and dnl:stagflation_persists have LEFT this list: both now declare an excess_return_defence (scale + switching_cost, 10-15y) via design/frameworks/decay_horizon_checklist.md, ratified by Stephen. The DNL list is empty; WBC and CSL are the step-3 worklist."
   ],
   "undeclared": [
-    "dnl:fragmentation",
-    "dnl:stagflation_persists",
     "wbc:muddle_through",
     "wbc:orderly_convergence",
     "wbc:ai_productivity_lag",
@@ -30,17 +29,7 @@
     "csl:stagflation_persists"
   ],
   "reasons": {
-    "dnl": [
-      "dnl:stagflation_persists, under D-72: 11.8% on the whole base against an 8.88% WACC once its cyclical margin hit has reverted. No decay horizon declared (see the gap audit); Gordon fallback, baselined pending the five-forces pass.",
-      "dnl:fragmentation, under D-71's ten-year horizon: 9.83% on the whole capital base against",
-      "an 8.88% WACC. Not the four-basis-point rounding case of 25 Sep 2026 -- a real 95bp excess",
-      "that D-42 says must be defended or baselined. No decay horizon is declared for Fragmentation",
-      "(the scenario write-up never assessed terminal ROIC; see the 25 Sep 2026 five-forces gap",
-      "audit), so the D-71 headline falls back to Gordon on the earned return, which is the MORE",
-      "generous reading. Baselined pending the five-forces pass that assigns the horizon; the",
-      "earlier open question (should D-42 carry a materiality floor?) is left as ruled.",
-      "Muddle Through, AI Lag, Orderly Convergence and now Disorderly Climate are declared."
-    ],
+    "dnl": "(none outstanding since 14 Oct 2026 -- see _comment)",
     "wbc": [
       "The bank matrix carries no terminal_roic driver for any scenario. In the section 15",
       "fork the terminal return is a DECLARED input on the scenario overlay (terminal_roe)",
