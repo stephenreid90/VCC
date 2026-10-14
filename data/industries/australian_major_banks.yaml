@@ -2,6 +2,30 @@ industry_archetype:
   id: australian_major_banks
   name: Australian Major Banks (ADI-regulated retail and business banking)
   version: 2026-Q2-v1
+
+  # D-72 / D-37 (14 Oct 2026, Stephen's ruling: proxies from the series the
+  # scenarios already carry, not new Australian series). The bank chain's two
+  # industry anchors become scenario paths: system balance-sheet growth tracks
+  # nominal GDP (world real GDP + advanced CPI) plus a fixed gap calibrated to the
+  # industry anchor plus the scenario's own shift. The industry NIM is NOT derived
+  # yet: sized 14 Oct 2026, a NIM tracking the nominal policy rate (advanced real
+  # rate + CPI) one-for-one swings 0.8-3.0% inside a scenario, because the only
+  # method available has a pass-through of 1 and bank NIMs have a rate beta well
+  # below that. Declaring a beta would type a number with no Five Forces basis, so
+  # NIM stays on the typed per-scenario shift until a pass-through rule is ruled.
+  # The company offset (WBC's aiea_growth_offset / nim_offset) is NOT in the
+  # anchor -- it stays in the company layer (standing rule 1).
+  # Written into data/scenarios/*.yaml by scripts/derive_macro_driver_paths.py.
+  required_macro_drivers:
+    - variable: bank_system_aiea_growth
+      derivation:
+        method: spread
+        series: [real_gdp_growth_world, cpi_inflation_advanced]
+        anchor:
+          company: wbc
+          terms:
+            - path: normalised_baseline.bank_build.aiea_nim_chain.shared.industry.aiea_growth
+            - path: normalised_baseline.bank_build.aiea_nim_chain.by_scenario.{scenario}.aiea_growth_delta
   archetype_class: bank
 
   geography: domestic_au_nz

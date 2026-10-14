@@ -3,8 +3,8 @@
 _Generated 2026-10-14 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `d2dc603 Bridge note: refocus the next sitting on a repeatable process (Stephen, 2 Oct); DNL is instance one` on `main`
-- Unpushed commits: **0**
+- HEAD: `3f470e6 Repeatable process step 1: archetype-declared macro-driver derivations (D-72 generalised); no golden moves` on `main`
+- Unpushed commits: **1**
 - Tracked files: 349
 - Untracked files: 1
 
@@ -82,25 +82,25 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `vaccines.yaml` (4.3KB)
   - **industries/**
     - `australian_major_banks.md` (7.4KB)
-    - `australian_major_banks.yaml` (18.3KB)
+    - `australian_major_banks.yaml` (19.7KB)
     - `industrial_explosives.md` (14.6KB)
     - `industrial_explosives.yaml` (11.4KB)
-    - `plasma_derived_therapies.yaml` (7.2KB)
-    - `specialty_pharmaceuticals.yaml` (2.2KB)
-    - `vaccines.yaml` (2.9KB)
+    - `plasma_derived_therapies.yaml` (8.2KB)
+    - `specialty_pharmaceuticals.yaml` (3.2KB)
+    - `vaccines.yaml` (4.0KB)
   - **scenarios/**
     - `ai_productivity_lag.md` (8.9KB)
-    - `ai_productivity_lag.yaml` (10.3KB)
+    - `ai_productivity_lag.yaml` (13.1KB)
     - `disorderly_climate_crystallisation.md` (8.6KB)
-    - `disorderly_climate_crystallisation.yaml` (10.9KB)
+    - `disorderly_climate_crystallisation.yaml` (13.8KB)
     - `fragmentation.md` (7.9KB)
-    - `fragmentation.yaml` (10.8KB)
+    - `fragmentation.yaml` (13.7KB)
     - `muddle_through.md` (8.1KB)
-    - `muddle_through.yaml` (9.5KB)
+    - `muddle_through.yaml` (12.3KB)
     - `orderly_convergence.md` (7.0KB)
-    - `orderly_convergence.yaml` (9.8KB)
+    - `orderly_convergence.yaml` (12.7KB)
     - `stagflation_persists.md` (6.9KB)
-    - `stagflation_persists.yaml` (10.3KB)
+    - `stagflation_persists.yaml` (13.2KB)
 
 ## Design and methodology
 
@@ -185,7 +185,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `company.py` (13.4KB)
       - `driver.py` (4.1KB)
       - `frameworks.py` (4.5KB)
-      - `industry.py` (22.5KB)
+      - `industry.py` (24.0KB)
       - `linkage.py` (12.4KB)
       - `scenario.py` (5.0KB)
 
@@ -211,7 +211,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `test_engine_workbook.py` (4.7KB)
   - `test_generator_scripts_parse.py` (4.6KB)
   - `test_implied_emrp.py` (2.2KB)
-  - `test_macro_driver_paths.py` (8.0KB)
+  - `test_macro_driver_paths.py` (11.9KB)
   - `test_moat_source_roles.py` (4.2KB)
   - `test_ssot_lint.py` (31.2KB)
   - `test_three_statement.py` (717B)

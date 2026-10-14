@@ -2,6 +2,26 @@ industry_archetype:
   id: vaccines
   name: Vaccines (Influenza, Routine Immunisation, Specialty)
   version: 2026-Q2-v1
+
+  # D-72 / D-37 (14 Oct 2026, Stephen's ruling): the segment's nominal growth
+  # tracks nominal GDP plus a fixed gap calibrated to the steady-state rate CSL's
+  # segment block types for each scenario. Stephen asked for US real GDP as the
+  # base; only two of the six scenario files carry real_gdp_growth_us, so the base
+  # is world real GDP + advanced CPI until scenario development adds the US series
+  # to all six (then change `series` here and rerun -- nothing else). ONE
+  # nominal series, deliberately: splitting it into volume (GDP + gap) and price
+  # (CPI + healthcare spread) needs a healthcare-inflation view nobody has
+  # written down yet, and typing a spread to make the split would invent a
+  # number. The split is a follow-up for scenario development / Five Forces.
+  # Written into data/scenarios/*.yaml by scripts/derive_macro_driver_paths.py.
+  required_macro_drivers:
+    - variable: seasonal_vaccines_nominal_growth
+      derivation:
+        method: spread
+        series: [real_gdp_growth_world, cpi_inflation_advanced]
+        anchor:
+          company: csl
+          path: normalised_baseline.segment_fcff.by_scenario.{scenario}.seqirus_cagr
   archetype_class: biopharmaceutical_specialty
 
   geography: global

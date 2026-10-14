@@ -29,7 +29,7 @@ from derive_macro_driver_paths import (  # noqa: E402
     ANCHOR_YEARS, METHODS, SCENARIOS, archetypes, derive, derived_variables, interpolate, level_anchor,
 )
 from vcc_valuations.schemas.industry import (  # noqa: E402
-    DerivationMethod, IndustryArchetype, LevelAnchor, MacroDriverDerivation, RequiredMacroDriver,
+    AnchorTerm, DerivationMethod, IndustryArchetype, LevelAnchor, MacroDriverDerivation, RequiredMacroDriver,
 )
 
 PERCENT = 100.0  # ssot-allow
@@ -152,6 +152,44 @@ def test_a_declaration_missing_or_carrying_the_wrong_fields_is_rejected(bad):
         MacroDriverDerivation.model_validate(bad)
 
 
+def test_spread_over_a_sum_of_series_is_the_sum_of_the_bases_plus_one_gap():
+    """A list of base series is summed (real GDP + CPI = nominal GDP) before the gap is added."""
+    anchor = LevelAnchor(company="wbc", terms=[
+        AnchorTerm(path="normalised_baseline.bank_build.aiea_nim_chain.shared.industry.aiea_growth"),
+        AnchorTerm(path="normalised_baseline.bank_build.aiea_nim_chain.by_scenario.{scenario}.aiea_growth_delta"),
+    ])
+    decl = _synthetic(DerivationMethod.SPREAD, series=["real_gdp_growth_world", "cpi_inflation_advanced"], anchor=anchor)
+    for s in SCENARIOS:
+        series, _ = METHODS[DerivationMethod.SPREAD](decl, s)
+        gdp = [{"year": y, "value": v} for y, v in _committed(s, "real_gdp_growth_world")]
+        cpi = [{"year": y, "value": v} for y, v in _committed(s, "cpi_inflation_advanced")]
+        base = [interpolate(gdp, y) + interpolate(cpi, y) for y in ANCHOR_YEARS]
+        gaps = {round(v - b, 2) for (_, v), b in zip(series, base)}
+        assert len(gaps) == 1, (s, gaps)
+        assert sum(v for _, v in series) / len(series) == pytest.approx(level_anchor(anchor, s), abs=0.011)
+
+
+def test_anchor_terms_are_summed_in_percent_with_their_declared_units():
+    """decimal 0.045 + bps 50 = 5.0 percent; a list index picks one element of a typed path."""
+    bank = LevelAnchor(company="wbc", terms=[
+        AnchorTerm(path="normalised_baseline.bank_build.aiea_nim_chain.shared.industry.nim_anchor"),
+        AnchorTerm(path="normalised_baseline.bank_build.aiea_nim_chain.by_scenario.{scenario}.nim_delta_bps", units="bps"),
+    ])
+    assert level_anchor(bank, "stagflation_persists") == pytest.approx(1.86 - 0.20)
+    assert level_anchor(bank, "muddle_through") == pytest.approx(1.86)
+    behring = LevelAnchor(company="csl", path="normalised_baseline.segment_fcff.by_scenario.{scenario}.behring_growth[-1]")
+    assert level_anchor(behring, "muddle_through") == pytest.approx(5.5)
+
+
+def test_unknown_anchor_units_are_rejected():
+    with pytest.raises(Exception):
+        AnchorTerm(path="x", units="per_mille")
+    with pytest.raises(Exception):
+        LevelAnchor(company="x")  # neither path nor terms
+    with pytest.raises(Exception):
+        LevelAnchor(company="x", path="a", terms=[AnchorTerm(path="b")])  # both
+
+
 # ------------------------------------------------------------ (c) the DNL rulings of 2 Oct 2026
 EXPLOSIVES = "industrial_explosives"
 
@@ -178,3 +216,29 @@ def test_a_multiple_would_hold_stagflation_at_zero_forever():
 def test_ai_lag_gas_is_the_baseline_by_absence_not_by_view():
     """The AI Lag write-up never assessed gas (gap audit §2); its anchor equals the baseline."""
     assert _dnl_anchor("gas_price_growth", "ai_productivity_lag") == _dnl_anchor("gas_price_growth", "muddle_through")
+
+
+# ------------------------------------------------------------ (d) the WBC / CSL declarations of 14 Oct 2026
+def test_bank_declares_balance_sheet_growth_only_and_not_nim():
+    """NIM is held back: a pass-through of 1 from the policy rate is not defensible (archetype comment)."""
+    a = ARCHETYPES["australian_major_banks"]
+    assert a.required_macro_driver_names == ["bank_system_aiea_growth"]
+    assert a.required_macro_drivers[0].derivation.series == ["real_gdp_growth_world", "cpi_inflation_advanced"]
+
+
+def test_each_csl_segment_archetype_declares_one_nominal_growth_path():
+    for arch, var in [("plasma_derived_therapies", "plasma_therapies_nominal_growth"),
+                      ("vaccines", "seasonal_vaccines_nominal_growth"),
+                      ("specialty_pharmaceuticals", "specialty_pharma_nominal_growth")]:
+        a = ARCHETYPES[arch]
+        assert a.required_macro_driver_names == [var], arch
+        # one NOMINAL series, not a typed volume/price split (archetype comment)
+        assert a.required_macro_drivers[0].derivation.series == ["real_gdp_growth_world", "cpi_inflation_advanced"]
+
+
+def test_muddle_through_paths_reproduce_the_typed_steady_states_exactly():
+    """The baseline scenario's world series are flat, so the derived path IS the typed anchor."""
+    assert {v for _, v in _committed("muddle_through", "bank_system_aiea_growth")} == {4.5}
+    assert {v for _, v in _committed("muddle_through", "plasma_therapies_nominal_growth")} == {5.5}
+    assert {v for _, v in _committed("muddle_through", "seasonal_vaccines_nominal_growth")} == {2.0}
+    assert {v for _, v in _committed("muddle_through", "specialty_pharma_nominal_growth")} == {7.0}

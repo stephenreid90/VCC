@@ -76,17 +76,28 @@ def equilibrium_year(doc):
 
 
 _company_cache: dict = {}
+_UNIT_TO_PERCENT = {"decimal": 100.0, "percent": 1.0, "bps": 0.01}  # ssot-allow
+_INDEX_RE = re.compile(r"^(.*)\[(-?\d+)\]$")
+
+
+def _walk(node, dotted):
+    for key in dotted.split("."):
+        m = _INDEX_RE.match(key)
+        if m:
+            node = node[m.group(1)][int(m.group(2))]
+        else:
+            node = node[key]
+    return node
 
 
 def level_anchor(anchor, scenario_id) -> float:
-    """Resolve a ``LevelAnchor`` for one scenario; returned in PERCENT."""
+    """Resolve a ``LevelAnchor`` for one scenario: its terms summed, returned in PERCENT."""
     if anchor.company not in _company_cache:
         _company_cache[anchor.company] = yaml.safe_load(
             (ROOT / "data" / "companies" / f"{anchor.company}.yaml").read_text(encoding="utf-8"))
-    node = _company_cache[anchor.company]
-    for key in anchor.path.format(scenario=scenario_id).split("."):
-        node = node[key]
-    return float(node) * PERCENT
+    doc = _company_cache[anchor.company]
+    return sum(float(_walk(doc, t.path.format(scenario=scenario_id))) * _UNIT_TO_PERCENT[t.units]
+               for t in anchor.terms)
 
 
 def archetypes():
@@ -98,13 +109,18 @@ def archetypes():
 
 
 # -------------------------------------------------------------------- methods
+def base_series_at(scenario_id: str, series_names, year: float) -> float:
+    """The SPREAD base at ``year``: the named scenario series summed (percent)."""
+    doc = _scenario_doc(scenario_id)
+    return sum(interpolate(_series(doc, name), year) for name in series_names)
+
+
 def _spread(driver: RequiredMacroDriver, scenario_id: str):
     d = driver.derivation
-    base = _series(_scenario_doc(scenario_id), d.series)
-    base_at = [interpolate(base, y) for y in ANCHOR_YEARS]
+    base_at = [base_series_at(scenario_id, d.series, y) for y in ANCHOR_YEARS]
     gap = level_anchor(d.anchor, scenario_id) - sum(base_at) / len(base_at)
     return [(y, round(b + gap, 2)) for y, b in zip(ANCHOR_YEARS, base_at)], \
-        f"{d.series} plus a fixed gap of {gap:+.2f}pp (spread, not multiple)"
+        f"{' + '.join(d.series)} plus a fixed gap of {gap:+.2f}pp (spread, not multiple)"
 
 
 def _transition_then_baseline(driver: RequiredMacroDriver, scenario_id: str):
@@ -152,9 +168,10 @@ def render(archetype, scenario_id, d):
         "    # Not hand-typed: edit the declaration, the anchors or the base series, then rerun.",
     ]
     for variable, (series, note) in d.items():
+        units = next(x.derivation.units for x in archetype.required_macro_drivers if x.variable == variable)
         out += [
             f"    - variable: {variable}",
-            "      units: percent_yoy",
+            f"      units: {units}",
             "      type: time_series",
             f"      # {note}",
             "      time_series:",

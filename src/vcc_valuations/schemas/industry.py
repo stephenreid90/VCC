@@ -10,7 +10,7 @@ complementary framework where Porter does not adequately serve (section 7.5.1).
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -286,19 +286,48 @@ class DerivationMethod(str, Enum):
     TRANSITION_THEN_BASELINE = "transition_then_baseline"
 
 
-class LevelAnchor(BaseModel):
-    """Where a derivation's level anchor lives: a dotted path into a company file.
+class AnchorTerm(BaseModel):
+    """One addend of a level anchor: a dotted path into the company file and its units."""
 
-    ``{scenario}`` in ``path`` is replaced with the scenario id. Today the anchors
-    sit in the first company's own ``revenue_growth_chain.by_scenario`` block
-    (DNL); lifting them to the archetype is a follow-up, not a prerequisite --
-    this field says where they are rather than pretending they are elsewhere.
+    model_config = ConfigDict(extra="forbid")
+
+    path: str = Field(..., description="Dotted path; ``{scenario}`` substituted; ``name[-1]`` indexes a list.")
+    units: str = Field("decimal", description="'decimal' (0.0123), 'percent' (1.23) or 'bps' (123).")
+
+    @field_validator("units")
+    @classmethod
+    def _known_units(cls, v):
+        if v not in ("decimal", "percent", "bps"):
+            raise ValueError(f"anchor units must be decimal, percent or bps, got {v!r}")
+        return v
+
+
+class LevelAnchor(BaseModel):
+    """Where a derivation's level anchor lives: one or more terms in a company file, summed.
+
+    ``path`` alone is shorthand for a single decimal term. Today the anchors sit in
+    each first company's own baseline block (DNL's chain macro, WBC's industry
+    anchor plus scenario delta, CSL's segment steady-state rates); lifting them to
+    the archetype is a follow-up, not a prerequisite -- this field says where they
+    are rather than pretending they are elsewhere. The company OFFSET is never part
+    of the anchor: the derived path is the industry's, and the offset stays in the
+    company layer (standing rule 1).
     """
 
     model_config = ConfigDict(extra="forbid")
 
     company: str = Field(..., description="Company id; ``data/companies/<company>.yaml``.")
-    path: str = Field(..., description="Dotted path, ``{scenario}`` substituted, to a decimal rate.")
+    path: Optional[str] = None
+    terms: Optional[List[AnchorTerm]] = None
+
+    @model_validator(mode="after")
+    def _one_form(self):
+        if (self.path is None) == (self.terms is None):
+            raise ValueError("a level anchor is either a single `path` or a list of `terms`, not both or neither")
+        if self.path is not None:
+            self.terms = [AnchorTerm(path=self.path)]
+            self.path = None
+        return self
 
 
 class MacroDriverDerivation(BaseModel):
@@ -307,9 +336,16 @@ class MacroDriverDerivation(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     method: DerivationMethod
-    series: Optional[str] = Field(None, description="SPREAD: the scenario series the gap is added to.")
+    series: Optional[Union[str, List[str]]] = Field(
+        None, description="SPREAD: the scenario series the gap is added to; a list is summed (e.g. real GDP + CPI = nominal GDP).")
     anchor: Optional[LevelAnchor] = None
     baseline_scenario: Optional[str] = Field(None, description="TRANSITION_THEN_BASELINE: the scenario whose anchor is 'normal'.")
+    units: str = Field("percent_yoy", description="Units written on the derived scenario series ('percent_yoy' or 'percent' for a level).")
+
+    @field_validator("series", mode="before")
+    @classmethod
+    def _series_as_list(cls, v):
+        return [v] if isinstance(v, str) else v
 
     @model_validator(mode="after")
     def _fields_match_method(self):

@@ -64,6 +64,51 @@ scenario:
         real rates.
 
   macro_variables:
+    # BEGIN derived paths (vaccines)
+    # Written by scripts/derive_macro_driver_paths.py from the derivations declared in
+    # data/industries/vaccines.yaml; asserted by tests/test_macro_driver_paths.py.
+    # Not hand-typed: edit the declaration, the anchors or the base series, then rerun.
+    - variable: seasonal_vaccines_nominal_growth
+      units: percent_yoy
+      type: time_series
+      # real_gdp_growth_world + cpi_inflation_advanced plus a fixed gap of -5.06pp (spread, not multiple)
+      time_series:
+        - {year: 1, value: 1.94}
+        - {year: 3, value: 1.44}
+        - {year: 5, value: 0.74}
+        - {year: 7, value: 0.44}
+        - {year: 10, value: 0.44}
+    # END derived paths
+    # BEGIN derived paths (specialty_pharmaceuticals)
+    # Written by scripts/derive_macro_driver_paths.py from the derivations declared in
+    # data/industries/specialty_pharmaceuticals.yaml; asserted by tests/test_macro_driver_paths.py.
+    # Not hand-typed: edit the declaration, the anchors or the base series, then rerun.
+    - variable: specialty_pharma_nominal_growth
+      units: percent_yoy
+      type: time_series
+      # real_gdp_growth_world + cpi_inflation_advanced plus a fixed gap of -2.06pp (spread, not multiple)
+      time_series:
+        - {year: 1, value: 4.94}
+        - {year: 3, value: 4.44}
+        - {year: 5, value: 3.74}
+        - {year: 7, value: 3.44}
+        - {year: 10, value: 3.44}
+    # END derived paths
+    # BEGIN derived paths (plasma_derived_therapies)
+    # Written by scripts/derive_macro_driver_paths.py from the derivations declared in
+    # data/industries/plasma_derived_therapies.yaml; asserted by tests/test_macro_driver_paths.py.
+    # Not hand-typed: edit the declaration, the anchors or the base series, then rerun.
+    - variable: plasma_therapies_nominal_growth
+      units: percent_yoy
+      type: time_series
+      # real_gdp_growth_world + cpi_inflation_advanced plus a fixed gap of -2.56pp (spread, not multiple)
+      time_series:
+        - {year: 1, value: 4.44}
+        - {year: 3, value: 3.94}
+        - {year: 5, value: 3.24}
+        - {year: 7, value: 2.94}
+        - {year: 10, value: 2.94}
+    # END derived paths
     # BEGIN derived paths (industrial_explosives)
     # Written by scripts/derive_macro_driver_paths.py from the derivations declared in
     # data/industries/industrial_explosives.yaml; asserted by tests/test_macro_driver_paths.py.
@@ -88,6 +133,21 @@ scenario:
         - {year: 5, value: 2.0}
         - {year: 7, value: 2.0}
         - {year: 10, value: 2.0}
+    # END derived paths
+    # BEGIN derived paths (australian_major_banks)
+    # Written by scripts/derive_macro_driver_paths.py from the derivations declared in
+    # data/industries/australian_major_banks.yaml; asserted by tests/test_macro_driver_paths.py.
+    # Not hand-typed: edit the declaration, the anchors or the base series, then rerun.
+    - variable: bank_system_aiea_growth
+      units: percent_yoy
+      type: time_series
+      # real_gdp_growth_world + cpi_inflation_advanced plus a fixed gap of -3.56pp (spread, not multiple)
+      time_series:
+        - {year: 1, value: 3.44}
+        - {year: 3, value: 2.94}
+        - {year: 5, value: 2.24}
+        - {year: 7, value: 1.94}
+        - {year: 10, value: 1.94}
     # END derived paths
     - variable: real_gdp_growth_world
       units: percent_yoy
