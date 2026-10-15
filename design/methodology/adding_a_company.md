@@ -54,9 +54,11 @@ declarations. If a step seems to need a company's name in `src/`, the step is wr
    archetype's current-cycle terms at their equilibrium reading, capped at the
    scenario's nominal GDP ((1 + world real GDP)(1 + advanced CPI) - 1). The archetype
    must classify every numeric term of the chain's `shared` block in
-   `growth_chain_terms`: `current_cycle` (switched off at the end of the explicit
-   period; give the `equilibrium_value` and a `basis`) or `equilibrium` (keeps its typed
-   value). `translator.equilibrium_chain_terms` raises on an unclassified term and
+   `growth_chain_terms`: `current_cycle` (give the `equilibrium_value`, a `basis` and,
+   D-81, `expires_by_year`: the explicit year by which the term has glided linearly
+   from its typed value to its equilibrium value, so the growth path lands on the
+   equilibrium chain with no end-of-period fade) or `equilibrium` (keeps its typed
+   value). Size the expiry years before landing (the level moves with them). `translator.equilibrium_chain_terms` raises on an unclassified term and
    `translator.growth_chain_shared_block` finds the chain whichever shape it has. The
    derivation per engine: `terminal_growth_from_data` (industrial chain),
    `bank_terminal_growth_from_data` (industry series at Y10 plus the company offset at

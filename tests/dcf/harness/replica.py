@@ -304,7 +304,7 @@ def plan_from_engine_inputs(inp, *, invested_capital_opening: Optional[float] = 
         horizon_years=H,
         stub_years=inp.stub_years,
         base_year_revenue=inp.base_year_revenue,
-        growth_path=list(inp.revenue_growth),  # D-36: already a per-year path
+        growth_path=list(inp.revenue_growth),  # D-72/D-81: already a per-year path
         base_ebit_margin=inp.base_ebit_margin,
         margin_delta=[
             inp.margin_transformation[k] + inp.margin_gas_rolloff[k] for k in range(H)
@@ -359,10 +359,14 @@ def extend(plan: Plan, horizon_years: int) -> Plan:
 
 
 def fade_growth(plan: Plan, fade_period_length: int) -> Plan:
-    """Hold the chain rate, then glide linearly to g, landing on g in the last year.
+    """Hold the first-year rate, then glide linearly to g, landing on g in the last year.
 
-    D-36. The fade segment is the final ``fade_period_length`` years; the
-    forecast segment ahead of it keeps the chain-derived rate.
+    A sizing VARIANT, not the engine's rule. It was D-36's mechanism until D-81
+    (15 Oct 2026) retired the fade: the engine's path now glides each
+    current-cycle chain term to its equilibrium value by its declared expiry
+    (``translator.chain_terms_at_year``), and ``plan_from_engine_inputs`` copies
+    that path. This transform remains for the steady-state identities
+    (``fade_period_length == horizon``) and the historical horizon variants.
     """
     H = plan.horizon_years
     if not 1 <= fade_period_length <= H:

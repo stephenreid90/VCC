@@ -56,6 +56,16 @@ SCENARIOS = [
 
 # --- DNL: industrial FCFF / WACC, AUD per share --------------------------------
 DNL_GOLDEN = {
+    # Re-pinned 15 Oct 2026 for D-81: D-36's end-of-period fade is retired. Each
+    # current-cycle chain term now glides linearly from its typed value to its
+    # equilibrium value by the archetype's declared expiry year (beta, ore-grade
+    # pickup and EM premium over 10 years; productivity and three Five Forces
+    # offsets over 5; the DNEL pipeline uplift over 3), so the extras earn about
+    # half the explicit period instead of eight full years. Every level down
+    # 4.3-4.8%: OC 2.4619 -> 2.3451, MT 2.1059 -> 2.0067, AI 2.0903 -> 1.9984,
+    # Frag 1.4179 -> 1.3576, DCC 1.0629 -> 0.9955, Stag 1.1204 -> 1.0724.
+    # Where the nominal-GDP cap binds (OC, MT) year 10 sits above g by the cap
+    # gap (OC 6.04% vs 5.06%); disclosed, not bridged (D-71).
     # Re-pinned 25 Sep 2026 for D-35/D-36 (build order item 4): the explicit
     # horizon extends 5 -> 6 years (the longest any DNL scenario's drivers take
     # to straight-line, once D-69's gas roll-off revision is folded in), revenue
@@ -113,9 +123,9 @@ DNL_GOLDEN = {
     # the D-72 spread paths recalibrate (a fixed gap on a now-sloping base). MT and OC
     # are both capped now. OC -1.2%, MT -1.5%, AI Lag -0.8%, Frag -1.1%, DCC -1.2%,
     # Stag -1.4%. Before: 2.4908 / 2.1382 / 2.1071 / 1.4342 / 1.0762 / 1.1361.
-    "orderly_convergence": 2.4619,
-    "muddle_through": 2.1059,                      # independently audited (generated workbook, all six)
-    "ai_productivity_lag": 2.0903,
+    "orderly_convergence": 2.3451,
+    "muddle_through": 2.0067,                      # independently audited (generated workbook, all six)
+    "ai_productivity_lag": 1.9984,
     # Fragmentation and Stagflation re-pinned 14 Oct 2026 (bridge note step 3):
     # both now declare a decay horizon (scale + switching_cost, 10-15y, ratified by
     # Stephen via design/frameworks/decay_horizon_checklist.md), so the headline
@@ -123,8 +133,8 @@ DNL_GOLDEN = {
     # excess. Both earn ABOVE the WACC at Y10 (Frag 10.2%, Stag 11.8% vs 8.9%),
     # so competing the excess away cuts them: 1.5776 -> 1.4342, 1.3898 -> 1.1361.
     # Stagflation is again the floor's neighbour, not the floor (DCC 1.08).
-    "fragmentation": 1.4179,
-    "disorderly_climate_crystallisation": 1.0629,
+    "fragmentation": 1.3576,
+    "disorderly_climate_crystallisation": 0.9955,
     # Stagflation Persists crosses to slightly NEGATIVE. It was already earning
     # barely above its own cost of capital on new capital under the old 5-year
     # build (4.96% earned vs 8.877% WACC -- see terminal_return_sets.yaml); a
@@ -134,11 +144,16 @@ DNL_GOLDEN = {
     # margin. Back to slightly POSITIVE under D-71's ten-year horizon (the extra
     # years of chain growth), still Gordon pending a declared decay horizon.
     # D-72: 1.39 -- a cyclical scenario now, see the note above.
-    "stagflation_persists": 1.1204,
+    "stagflation_persists": 1.0724,
 }
 
 # --- WBC: bank DDM / Ke (§15), AUD per share -----------------------------------
 WBC_GOLDEN = {
+    # Re-pinned 15 Oct 2026 for D-81: the share-loss offset (-15bp, current-cycle
+    # since D-79) glides to zero by Y5 instead of running ten years and vanishing
+    # at the terminal. A drag that fades sooner lifts every level 0.1-0.5%:
+    # OC 45.1590 -> 45.3940, MT 32.2655 -> 32.3984, AI 32.5936 -> 32.7288,
+    # Frag 28.1291 -> 28.2314, DCC 23.0347 -> 23.0786, Stag 15.7094 -> 15.7268.
     # Re-pinned 16 Sep 2026 for D-60: the payout is cut to hold CET1 on the
     # operating target once the ratio reaches it. Retained equity is capitalised
     # in the terminal at (ROE - g)/(Ke - g), so a withheld dividend is worth more
@@ -185,12 +200,12 @@ WBC_GOLDEN = {
     # the explicit path and the derived g move: g 5.06 (capped) / 4.14 / 4.20 / 3.56 /
     # 3.10 / 1.54%. OC -3.9%, MT -2.5%, AI Lag -1.5%, Frag -1.5%, DCC -0.7%, Stag -0.6%.
     # Before: 46.9911 / 33.0779 / 33.0905 / 28.5658 / 23.2017 / 15.7985.
-    "orderly_convergence": 45.1590,                # binds Y4
-    "muddle_through": 32.2655,                     # binds Y7
-    "ai_productivity_lag": 32.5936,
-    "fragmentation": 28.1291,
-    "disorderly_climate_crystallisation": 23.0347,
-    "stagflation_persists": 15.7094,
+    "orderly_convergence": 45.3940,                # binds Y4
+    "muddle_through": 32.3984,                     # binds Y7
+    "ai_productivity_lag": 32.7288,
+    "fragmentation": 28.2314,
+    "disorderly_climate_crystallisation": 23.0786,
+    "stagflation_persists": 15.7268,
 }
 
 # --- CSL: multi-segment FCFF / Ke (M3), (USD, AUD) per share -------------------
@@ -368,12 +383,14 @@ def test_terminal_shares_are_measured_case_by_case():
         # 14 Oct 2026: Fragmentation and Stagflation converge (decay horizons
         # declared), so their terminals shrink: 0.5389 -> 0.5104, 0.6754 -> 0.6346.
         # D-80 (14 Oct 2026): lower year-10 CPI, lower g, every share down 0.3-0.6pt.
-        "orderly_convergence": 0.5272,
-        "muddle_through": 0.5118,
-        "ai_productivity_lag": 0.5006,
-        "fragmentation": 0.5070,
-        "disorderly_climate_crystallisation": 0.6953,
-        "stagflation_persists": 0.6318,
+        # D-81 (15 Oct 2026): slower explicit growth as the extras glide off takes
+        # every share down 0.5-1.1pt (DCC 0.6953 -> 0.6843).
+        "orderly_convergence": 0.5206,
+        "muddle_through": 0.5036,
+        "ai_productivity_lag": 0.4930,
+        "fragmentation": 0.4996,
+        "disorderly_climate_crystallisation": 0.6843,
+        "stagflation_persists": 0.6267,
     }
     # 14 Oct 2026: WBC and CSL moved to the ten-year explicit period (D-71) and every
     # one of their terminal shares fell below 70% -- the same mechanism as DNL on
@@ -383,9 +400,11 @@ def test_terminal_shares_are_measured_case_by_case():
     # 0.6373 -> 0.6864, Stag 0.6926 -> 0.6849 the other way); none crosses 70%.
     wbc_shares = {
         # D-80 (14 Oct 2026): lower g takes every share down 0.2-1.3pt (OC 0.6864 -> 0.6736).
-        "orderly_convergence": 0.6736, "muddle_through": 0.6229, "ai_productivity_lag": 0.6206,
-        "fragmentation": 0.5938, "disorderly_climate_crystallisation": 0.5911,
-        "stagflation_persists": 0.6826,
+        # D-81 (15 Oct 2026): the offset glide lifts every share 0.4-0.7pt; Stagflation
+        # 0.6826 -> 0.6900 is the closest to the 70% line in the project.
+        "orderly_convergence": 0.6779, "muddle_through": 0.6278, "ai_productivity_lag": 0.6254,
+        "fragmentation": 0.5987, "disorderly_climate_crystallisation": 0.5970,
+        "stagflation_persists": 0.6900,
     }
     # CSL re-pinned 14 Oct 2026 (step 3): the 20-30 year decay horizon takes every
     # terminal share down 7-8 points. Gordon shares before: 0.5987, 0.5738, 0.5648,

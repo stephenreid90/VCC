@@ -52,6 +52,7 @@ industry_archetype:
         cycle (front-book pricing, broker position, remediation drag); in
         equilibrium a major grows with the system it is part of. The same
         treatment as the industrial chain's company Five Forces offsets (D-78).
+      expires_by_year: 5   # D-81 (15 Oct 2026, Stephen): one cycle, the same as the industrial chain's Five Forces offsets; glides to zero by Y5
     - path: company_offset.nim_offset
       role: equilibrium
 

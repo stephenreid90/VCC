@@ -211,9 +211,11 @@ def test_the_cited_drift_figures_come_from_here():
 
     # Ten-year figures (D-71, 14 Oct 2026). The five-year drifts these replaced were
     # -97 / -165 / -71 (and -93 for Stagflation on the D-72 path at five years).
-    assert drift_bps("muddle_through") == pytest.approx(-174, abs=5)
-    assert drift_bps("orderly_convergence") == pytest.approx(-284, abs=5)
-    assert drift_bps("stagflation_persists") == pytest.approx(-122, abs=5)
+    # D-81 (15 Oct 2026): the share-loss offset glides to zero by Y5, so AIEA grows
+    # faster and CET1 erodes further: -174 / -284 / -122 -> -184 / -292 / -134.
+    assert drift_bps("muddle_through") == pytest.approx(-184, abs=5)
+    assert drift_bps("orderly_convergence") == pytest.approx(-292, abs=5)
+    assert drift_bps("stagflation_persists") == pytest.approx(-134, abs=5)
 
     central = BankEngine().run(_off("muddle_through")).cet1_trajectory
     assert central.anchor_ratio == pytest.approx(0.1242, abs=1e-6)
@@ -224,7 +226,8 @@ def test_the_cited_drift_figures_come_from_here():
     # D-80 (14 Oct 2026): the sloping bank path (4.49% early, 3.99% at Y10, mean 4.5%)
     # leaves the drift and the close where they were (-173bp, 10.69%) but tips the
     # knife-edge crossing one year earlier, to Y6.
-    assert central.closing_ratio == pytest.approx(0.1069, abs=5e-4)
+    # D-81 (15 Oct 2026): closes at 10.58% on the faster balance-sheet growth; still Y6.
+    assert central.closing_ratio == pytest.approx(0.1058, abs=5e-4)
     assert central.operating_target == pytest.approx(0.1125, abs=1e-9)
     assert central.first_below_target == "Y6"
     assert central.closing_ratio < central.operating_target
@@ -284,7 +287,8 @@ def test_the_constraint_is_on_by_default_and_gives_the_ratified_level():
     # reaches 11.25% at Y7 and the payout is cut from there. D-79 (same day):
     # 31.0502 -> 33.0779 on the derived terminal growth (4.5%, was typed 3.5%).
     # D-80 (same day): 33.0779 -> 32.2655 on the lower year-10 CPI; binds at Y6 now.
-    assert r.value_per_share == pytest.approx(32.2655, abs=1e-3)
+    # D-81 (15 Oct 2026): 32.2655 -> 32.3984 as the share-loss offset glides to zero by Y5.
+    assert r.value_per_share == pytest.approx(32.3984, abs=1e-3)
     assert r.capital_constraint_binds_from == "Y6"
     assert r.dividends_forgone > 0
 
@@ -336,7 +340,9 @@ def test_a_scenario_that_never_reaches_the_target_is_untouched():
     # and at the full ten years the rule does bite, last of all in Stagflation (with
     # Fragmentation): Y10 until D-80 (14 Oct 2026); the sloping path crosses at Y8
     # with the drift unchanged (-121bp), a knife-edge on a ratio that closes at 11.21%.
-    assert BankEngine().run(_on("stagflation_persists")).capital_constraint_binds_from == "Y8"
+    # D-81 (15 Oct 2026): the offset glide adds balance-sheet growth, so the drift is
+    # -134bp, the ratio closes at 11.08% and the crossing moves to Y7.
+    assert BankEngine().run(_on("stagflation_persists")).capital_constraint_binds_from == "Y7"
 
 
 def test_the_constraint_raises_value_which_is_the_retention_trade():
@@ -358,13 +364,16 @@ def test_the_constraint_raises_value_which_is_the_retention_trade():
     # Ten-year finding (D-71, 14 Oct 2026). In this engine a retained dollar earns
     # NOTHING until the terminal -- NPAT is struck on AIEA x NIM, not on book equity
     # -- so retention pays only if the terminal multiple outruns Ke compounded over
-    # the years between the cut and the terminal. Disorderly Climate binds at Y6 with
-    # a multiple of 1.20 against (1.0805)^4.35 = 1.40, and its value FALLS by 1c.
-    # The other five bind later or carry a higher multiple and rise. Read, not
-    # assumed: the direction is pinned per scenario with the arithmetic beside it.
-    # Letting retained equity earn inside the explicit period is a modelling gap,
-    # noted in WORKING_NOTES (14 Oct 2026), not fixed here.
-    falls = {"disorderly_climate_crystallisation"}
+    # the years between the cut and the terminal. Disorderly Climate binds at Y5
+    # (Y6 before D-81) with a multiple of 1.19 against Ke compounded to the terminal,
+    # and its value FALLS by 6c. D-81 (15 Oct 2026): Stagflation now binds too (Y7,
+    # the offset glide erodes CET1 faster) with the lowest multiple in the set, 1.15,
+    # and its value falls by 0.7c for the same reason. The other four bind earlier
+    # with a higher multiple and rise. Read, not assumed: the direction is pinned
+    # per scenario with the arithmetic beside it. Letting retained equity earn
+    # inside the explicit period is a modelling gap (bridge note item (e)), not
+    # fixed here.
+    falls = {"disorderly_climate_crystallisation", "stagflation_persists"}
     for s in SCENARIOS:
         inp = _off(s)
         multiple = (inp.terminal_roe - inp.terminal_growth) / (inp.cost_of_equity - inp.terminal_growth)

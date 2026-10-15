@@ -855,19 +855,9 @@ matrix:
           created_by: tara@reidadvisory.net
           created_at: 2026-05-17T10:00:00Z
 
-      fade_period_length:
-        direction: negative
-        magnitude: small
-        confidence: moderate
-        rationale: >
-          Faster fade to convergence under transition pressures. Moat
-          assets decay faster under stranded-asset and carbon-pricing
-          dynamics.
-        not_applicable: false
-        evidence_refs: []
-        governance:
-          created_by: tara@reidadvisory.net
-          created_at: 2026-05-17T10:00:00Z
+      # fade_period_length removed 15 Oct 2026 (D-81): the revenue-growth fade it
+      # shortened no longer exists; the current-cycle chain terms expire on the
+      # archetype's declared years instead.
 
   # ----------------------------------------------------------------------
   - scenario: ai_productivity_lag

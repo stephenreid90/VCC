@@ -5,7 +5,9 @@ D-78). Updated five times on 14 October: after step 3, after D-76, after steps 4
 (D-78, `adding_a_company.md`), at the end of the fourth sitting, which closed follow-up
 (a) as **D-79** (WBC and CSL terminal growth derived, not typed), and at the end of the
 fifth sitting, which closed D-79's open question as **D-80** (year-10 CPI lowered in every
-scenario; central banks do their jobs over ten years).
+scenario; central banks do their jobs over ten years). Updated a sixth time on 15 October:
+the sitting took follow-up (f) and closed it as **D-81** (current-cycle chain terms expire on
+declared years inside the explicit period; D-36's fade retired; every DNL and WBC level moved).
 
 **WHAT THIS IS.** A travelling snapshot. `WORKING_NOTES.md` is the live layer; **where the
 two disagree, `WORKING_NOTES.md` wins.**
@@ -20,12 +22,15 @@ each one means. Copy widgets don't work for him: give copyable text as a plain c
 
 1. `session_start.cmd` (or `python scripts/session_start.py` in the device shell after
    `pip install pydantic pandas numpy openpyxl scipy pytest pyyaml`; add `$HOME/.local/bin`
-   to PATH so pytest is found). Expected: suite **642 passed, 1 skipped, 2 deselected**;
-   SSOT lint 14/14; base ties **DNL 2.106, WBC 32.27, CSL 203.46** (D-80).
+   to PATH so pytest is found). Expected: suite **672 passed, 1 skipped, 2 deselected**;
+   SSOT lint 14/14; base ties **DNL 2.007, WBC 32.40, CSL 203.46** (D-81). The full suite
+   takes about two minutes; the device shell's call limit is three, and a background
+   process dies with the call, so run it in one call or in two halves (`tests/dcf`, then
+   `tests --ignore=tests/dcf`).
 2. `CLAUDE.md`. Standing rule 4 (every number from committed code, asserted by a test) and
    standing rule 5 (land once per sitting, at the end; plumbing gets no airtime).
 3. `WORKING_NOTES.md`, the HANDOVER block at the top (sittings of 14 October).
-4. `DECISIONS.md` rows **D-71 to D-79**: ten-year period + convergence terminal (D-71);
+4. `DECISIONS.md` rows **D-71 to D-81**: ten-year period + convergence terminal (D-71);
    growth from scenario paths, derived g (D-72); archetype-declared derivations for every
    company (D-73); ten years and the terminal form for WBC and CSL (D-74); decay horizons
    for all eighteen pairs (D-75: DNL 10-15y, WBC indefinite, CSL 20-30y); the declared
@@ -35,7 +40,11 @@ each one means. Copy widgets don't work for him: give copyable text as a plain c
    chains, capped at scenario nominal GDP; bank chain terms classified; levels moved);
    **D-80** (year-10 advanced CPI lowered in every scenario, OC 2.0 / MT 2.5 / AI Lag 2.5 /
    Frag 2.8 / DCC 2.5 / Stag 3.0; the D-72 spread paths now slope in Muddle Through; the
-   DNL g floor widened to 2.5%; every level down 0.6-3.9%).
+   DNL g floor widened to 2.5%; every level down 0.6-3.9%); **D-81** (each current-cycle
+   chain term declares `expires_by_year` on the archetype and glides linearly to its
+   equilibrium value by then; DNL 10/10/5/10/5/5/3/5, WBC's offset 5; the D-36 fade and
+   D-70 fade length retired; DNL down 4.3-4.8%, WBC up 0.1-0.5%; the nominal-GDP cap step
+   at year 10 disclosed, not bridged).
 5. `design/frameworks/decay_horizon_checklist.md` — the short Five Forces interview and the
    after-the-answer list. `tests/terminal_form_baseline.json` and
    `terminal_defence_baseline.json` are EMPTY; `tests/moat_role_baseline.json` is EMPTY too
@@ -69,6 +78,14 @@ each one means. Copy widgets don't work for him: give copyable text as a plain c
    revenue; the offset is zero at year 10 by construction). No `terminal_growth` is typed
    anywhere. Sizing set: `scripts/size_terminal_growth.py` ->
    `design/methodology/terminal_growth_sets.yaml`.
+7. **D-81:** inside the explicit period every current-cycle chain term glides linearly
+   from its typed value (year 0) to its equilibrium value by the archetype's
+   `expires_by_year`, then holds (`translator.chain_terms_at_year`); the revenue-growth
+   path is the full chain each year on those values (`revenue_growth_path_from_data`),
+   the bank's offset the same (`bank_aiea_growth_path_from_data`). Year 10 IS the
+   equilibrium chain; g = min(year 10, nominal GDP). There is no fade: no
+   `fade_period_length_years` anywhere, no `fade_period_length` driver. The generated
+   DNL workbook carries the expiry column and the same per-year formula.
 6. **D-76:** a declared terminal return (`excess_return_defence.declared_terminal_return`
    + basis) is the return the convergence STARTS from; absent, the earned return is. Same
    rule in all three engines (`terminal_convergence_return` on the result; the bank's
@@ -78,16 +95,18 @@ each one means. Copy widgets don't work for him: give copyable text as a plain c
 
 ## RESULTS — read before quoting a level
 
-| Scenario | DNL (was, D-79) | WBC (was, D-79) | CSL AUD (was, D-79) |
+| Scenario | DNL (was, D-80) | WBC (was, D-80) | CSL AUD (unchanged by D-81) |
 |---|---:|---:|---:|
-| Orderly Convergence | 2.46 (2.49) | 45.16 (46.99) | 239.70 (243.91) |
-| Muddle Through | 2.11 (2.14) | 32.27 (33.08) | 203.46 (208.89) |
-| AI Productivity Lag | 2.09 (2.11) | 32.59 (33.09) | 195.24 (198.26) |
-| Fragmentation | 1.42 (1.43) | 28.13 (28.57) | 155.24 (157.45) |
-| Disorderly Climate | 1.06 (1.08) | 23.03 (23.20) | 164.14 (166.51) |
-| Stagflation Persists | 1.12 (1.14) | 15.71 (15.80) | 133.09 (134.74) |
+| Orderly Convergence | 2.35 (2.46) | 45.39 (45.16) | 239.70 |
+| Muddle Through | 2.01 (2.11) | 32.40 (32.27) | 203.46 |
+| AI Productivity Lag | 2.00 (2.09) | 32.73 (32.59) | 195.24 |
+| Fragmentation | 1.36 (1.42) | 28.23 (28.13) | 155.24 |
+| Disorderly Climate | 1.00 (1.06) | 23.08 (23.03) | 164.14 |
+| Stagflation Persists | 1.07 (1.12) | 15.73 (15.71) | 133.09 |
 
-D-80 (fifth sitting) took every level down 0.6-3.9%: lower year-10 CPI lowers the cap and
+D-81 (15 Oct) took every DNL level down 4.3-4.8% (the chain's extras now earn about half
+the explicit period rather than eight full years) and every WBC level up 0.1-0.5% (a drag
+that fades sooner). Before that, D-80 (fifth sitting) took every level down 0.6-3.9%: lower year-10 CPI lowers the cap and
 recalibrates the D-72 paths. (The earlier version of this table had DNL Fragmentation and
 Stagflation at 1.58 / 1.39, which were the pre-step-3 Gordon levels; the D-79 levels were
 1.43 / 1.14.) Before D-80, D-79 moved WBC and CSL (fourth sitting): the typed terminal growth of 3-3.75% gave way to the
@@ -111,14 +130,17 @@ WBC scenario; no terminal share crosses 70% (WBC OC 0.686 the highest).
    sitting):** year-10 advanced CPI lowered in every scenario to where central banks hold
    it over a decade. `tests/dcf/test_terminal_growth_sets.py` now pins the 4.5-5.1% cap
    band and the six caps to the basis point, so the next move is read, not absorbed.
-4. **Next, Stephen to choose.** Candidates, none blocking (Claude's ranking at the end
-   of the fifth sitting: f, then c, then g; b, d, e can wait): (b) bank NIM
+4. **(f) DONE (D-81, 15 Oct).** The fade is retired; see STATE item 7.
+5. **Next, Stephen to choose.** Candidates, none blocking (Claude's ranking: c, then g;
+   b, d, e can wait, though (e) now bites in two WBC scenarios): (b) bank NIM
    pass-through rule; (c) CSL volume/price split + US GDP series; (d) lift level anchors
    from company files to archetypes; (e) bank engine: retained equity earns nothing until
-   the terminal; (f) retire D-36's fade now the chain terms have an equilibrium reading
-   (give each current-cycle term an expiry inside the explicit period); (g) rewrite
-   `CLAUDE.md` "Operational quirks" (stale since the device shell can run git).
-5. Not blocking: DNL and CSL terminal RETURNS (D-76 declared rates) are Stephen's judgement,
+   the terminal (the D-60 payout cut LOWERS value in Disorderly Climate and, since D-81,
+   Stagflation, because of this); (g) rewrite `CLAUDE.md` "Operational quirks" (stale
+   since the device shell can run git). Housekeeping: refresh `design/open_items.json`
+   (stale since 17 Sep; `session_start.py` points new chats at the page built from it)
+   and deal with the untracked `Claude outputs/` folder.
+6. Not blocking: DNL and CSL terminal RETURNS (D-76 declared rates) are Stephen's judgement,
    not yet formed. If he forms one, size it first (`scripts/size_terminal_returns.py`;
    checklist q6).
 
@@ -152,9 +174,11 @@ archetypes; bank engine lets retained equity earn nothing until the terminal.
    permission on the repo folder is granted at the start (the desktop app prompts). No
    container clone, no bundle. Push with the PAT:
    `git push https://stephenreid90:$(cat .github-token)@github.com/stephenreid90/VCC main`.
-   **At the end of the fifth sitting GitHub returned "Bad credentials" for that token**, so
-   D-80 (`2846331`) was left committed on `main` for Stephen to push himself, or for the
-   next chat to push once `.github-token` holds a fresh PAT. Check `git status -sb` first.
+   **GitHub rejects that token ("Bad credentials" on 14 Oct, "Invalid username or token"
+   on 15 Oct)**, so D-80 (`2ab12fc`) and D-81 are committed on `main` and NOT pushed.
+   Stephen to put a fresh PAT in `.github-token`; the next chat pushes. Check
+   `git status -sb` first. A background process in the device shell dies when the call
+   ends; run the suite in halves if it will not fit in one 180-second call.
    `CLAUDE.md` "Operational quirks" is partly stale; rewrite it in a quiet sitting, not mid-task.
 2. **Standing rule 4 bites on every number.** Goldens: `tests/dcf/test_scenario_goldens.py`
    (DNL/WBC/CSL goldens, `dnl_shares`/`wbc_shares`/`csl_shares`), `test_wbc_bank.py`,
@@ -177,5 +201,6 @@ archetypes; bank engine lets retained equity earn nothing until the terminal.
 · D-75 + notes + this bridge note · `aa7e2d3` D-76 (declared rate live; WBC six lifted to the
 matrix; DNL 9.13% removed; notes) · `62ea1ee` D-77 (D-43a roles on WBC's segment moats) · `a718d0e` D-78 (step 4) · `e146c12` step 5
 (`adding_a_company.md`) + this note · `2ba3e3c` D-79 (fourth sitting: derived terminal growth
-for WBC and CSL) + this note · D-80 (fifth sitting: year-10 CPI lowered in every scenario) +
-this note.
+for WBC and CSL) + this note · `2ab12fc` D-80 (fifth sitting: year-10 CPI lowered in every
+scenario) + this note · D-81 (15 Oct: current-cycle chain terms expire inside the explicit
+period, the D-36 fade retired) + this note. **The last two are not on origin.**

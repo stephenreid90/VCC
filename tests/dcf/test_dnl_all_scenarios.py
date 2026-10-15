@@ -107,7 +107,9 @@ def test_muddle_through_is_the_ratified_headline():
     # 2.138 under D-72 (same day): the chain on the scenario's own paths (CPI
     # 3.0% vs the old 2.5% DM-inflation anchor) and a derived 5.27% terminal g.
     # 2.106 under D-80 (14 Oct 2026): year-10 CPI lowered to 2.5%; g is the 4.86% cap.
-    assert round(r.value_per_share, 3) == 2.106
+    # 2.007 under D-81 (15 Oct 2026): the current-cycle chain terms glide to
+    # equilibrium by their expiry years; D-36's fade is retired.
+    assert round(r.value_per_share, 3) == 2.007
 
 
 def test_scenario_asymmetry_is_downside_skewed():

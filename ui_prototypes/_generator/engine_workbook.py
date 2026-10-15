@@ -227,8 +227,6 @@ class Book:
             ("gas_price_growth_anchor", "Gas price growth (transition anchor)", PCT2, lambda s: rgc["by_scenario"][s]["macro"]["gas_price_growth"]),
             ("margin_delta_pp", "Margin shift (pp, shaped by the scenario's phases -- D-72)", PCT2, lambda s: ov["by_scenario"][s].get("margin_delta_pp", 0.0)),
             ("capex_delta_pp", "Capex delta (parallel shift, pp)", PCT2, lambda s: ov["by_scenario"][s].get("capex_delta_pp", 0.0)),
-            # D-70: the fade length behind D-36's revenue-growth fade, below.
-            ("fade_period_length_years", "Fade period length (years, D-70)", "0", lambda s: ov["by_scenario"][s]["fade_period_length_years"]),
             # D-71: the excess-return convergence horizon (five-forces decay
             # horizon midpoint). Blank where none is declared -> the DCF sheet
             # falls back to Gordon, exactly as the translator does.
@@ -347,12 +345,13 @@ class Book:
             "company_offset.five_forces_offset.new_entrants_pipeline_uplift": "ff_ent",
             "company_offset.five_forces_offset.buyer_supplier_substitutes": "ff_bss",
         }
-        ws.cell(r[0], 1, "Equilibrium chain terms (D-78: archetype declaration; current-cycle terms switch off at Y{})".format(H)); ws.cell(r[0], 1).font = SUB; r[0] += 1
-        ws.cell(r[0], 1, "Chain term"); ws.cell(r[0], 2, "Equilibrium value"); ws.cell(r[0], 3, "Role")
-        for cc in (1, 2, 3):
+        ws.cell(r[0], 1, "Equilibrium chain terms (D-78 declaration; D-81: each current-cycle term glides linearly from its typed value at Y0 to its equilibrium value by its expiry year)"); ws.cell(r[0], 1).font = SUB; r[0] += 1
+        ws.cell(r[0], 1, "Chain term"); ws.cell(r[0], 2, "Equilibrium value"); ws.cell(r[0], 3, "Role"); ws.cell(r[0], 4, "Expires by year (D-81)")
+        for cc in (1, 2, 3, 4):
             ws.cell(r[0], cc).font = BOLD
         r[0] += 1
         eq_ref = {}
+        exp_ref = {}
         for t in inp["archetype"].growth_chain_terms:
             key = TERM_REF[t.path]
             ws.cell(r[0], 1, t.path)
@@ -360,12 +359,19 @@ class Book:
                 c = ws.cell(r[0], 2, t.equilibrium_value); c.fill = YELLOW; c.font = BLUEFONT
                 c.number_format = PCT2 if key in ("b", "prod") or key.startswith("ff_") else NUM1 + "00"
                 eq_ref[key] = f"'Assumptions'!$B${r[0]}"
+                c = ws.cell(r[0], 4, t.expires_by_year); c.fill = YELLOW; c.font = BLUEFONT; c.number_format = "0"
+                exp_ref[key] = f"'Assumptions'!$D${r[0]}"
             else:
                 ws.cell(r[0], 2, "(typed value persists)").font = NOTE
                 eq_ref[key] = self.ref[key]
             ws.cell(r[0], 3, t.role.value)
             r[0] += 1
         blank()
+        # The DCF sheet's per-year growth formula reads these (D-81).
+        self.eq_ref = eq_ref
+        self.exp_ref = exp_ref
+        self.geo_names_dm = geo_names_dm
+        self.geo_names_em = geo_names_em
 
         # derived terminal growth, per scenario, as a formula (D-72 decision 1):
         # the FULL chain at year H with each term at its equilibrium reading
@@ -613,28 +619,37 @@ class Book:
                     c.font = BOLD
             rmap[key] = rr[0]; rr[0] += 1
 
-        # D-35/D-36: horizon and revenue-growth path.
+        # D-71/D-72/D-81: horizon and revenue-growth path.
         H = self.horizon
         periods = ["Stub"] + [f"Y{i}" for i in range(1, H + 1)]
-        # Revenue growth, per year: the chain rate holds flat, then fades
-        # linearly to g over the declared fade length (D-70), landing on g in
-        # the final explicit year (D-36). Both g and the fade length are
-        # per-scenario; the horizon is shared across scenarios (D-35).
-        section("Revenue growth (D-72: chain on the year's macro path, then D-36 glide onto g)")
+        # Revenue growth, per year (D-72, D-81): the FULL chain on the year's
+        # macro path, with each current-cycle term part-way along its own
+        # linear glide from its typed value (Y0) to its equilibrium value at
+        # its declared expiry year (Assumptions, D-78/D-81 block), then held.
+        # By Y{H} every term has expired, so the path ends on the equilibrium
+        # chain; where the nominal-GDP cap binds, g sits below the final year
+        # and the step is disclosed, not bridged. The same declaration the
+        # engine reads (translator.chain_terms_at_year).
+        section("Revenue growth (D-72: chain on the year's macro path; D-81: current-cycle terms glide to equilibrium by their expiry year)")
+        dm_sum = "+".join(R[f"geo_w:{g}"] for g in self.geo_names_dm) or "0"
+        em_sum = "+".join(R[f"geo_w:{g}"] for g in self.geo_names_em) or "0"
+
+        def term_at(key, p):
+            if key in self.exp_ref:
+                return (f"({R[key]}+({self.eq_ref[key]}-{R[key]})"
+                        f"*MIN(1,{p}/{self.exp_ref[key]}))")
+            return R[key]
+
         for p in range(1, H + 1):
             def f_g(s, c, j, p=p):
                 m = R[f"path:global_mining_real_growth:{s}:{p}"]
                 ci = R[f"path:cpi_inflation_advanced:{s}:{p}"]
                 ga = R[f"path:gas_price_growth:{s}:{p}"]
-                geo = f"'Revenue growth'!{c}{self.rev_rows['B36']}"
-                off = f"'Revenue growth'!{c}{self.rev_rows['B41']}"
-                chain = (f"(((1+{R['a']}*{m}+{R['b']})*(1+{R['w_infl']}*{ci}+{R['w_gas']}*{ga}+{R['prod']})-1)"
-                         f"*{geo}+{off})")
-                g = R[f"macro:terminal_growth:{s}"]
-                fade = R[f"macro:fade_period_length_years:{s}"]
-                flat = f"({R['horizon']}-{fade})"
-                return (f"=IF({p}<={flat},{chain},"
-                        f"{chain}+({g}-{chain})*({p}-{flat})/{fade})")
+                T = {k: term_at(k, p) for k in ("a", "b", "w_infl", "w_gas", "prod", "em_prem",
+                                                 "ff_riv", "ff_mix", "ff_ent", "ff_bss")}
+                return (f"=(((1+{T['a']}*{m}+{T['b']})*(1+{T['w_infl']}*{ci}+{T['w_gas']}*{ga}+{T['prod']})-1)"
+                        f"*(({dm_sum})+({em_sum})*{T['em_prem']})"
+                        f"+{T['ff_riv']}+{T['ff_mix']}+{T['ff_ent']}+{T['ff_bss']})")
             prow(f"g_rev{p}", f"  {periods[p]} revenue growth", PCT3, f_g)
         # Revenue rows: stub, then each year off the prior year's full-year
         # revenue at that year's own growth rate (not a single compounded rate).

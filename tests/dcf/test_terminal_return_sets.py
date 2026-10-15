@@ -185,7 +185,7 @@ def test_dnl_declares_no_terminal_rate_and_the_earned_return_governs(rows):
     assert all(r.declared_return is None for r in dnl_rows), [
         (r.scenario_id, r.declared_return) for r in dnl_rows if r.declared_return is not None]
     oc = next(r for r in dnl_rows if r.scenario_id == "orderly_convergence")
-    assert oc.return_on_whole_capital == pytest.approx(0.1538, abs=5e-4)   # 0.1552 before D-80 (lower year-10 CPI)
+    assert oc.return_on_whole_capital == pytest.approx(0.1481, abs=5e-4)   # 0.1538 before D-81 (slower explicit growth); 0.1552 before D-80
     assert oc.declared_versus_whole_capital is None
     assert not any("declares a terminal return" in w for w in oc.warnings)
 

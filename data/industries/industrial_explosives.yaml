@@ -43,6 +43,9 @@ industry_archetype:
   # Paths are under normalised_baseline.revenue_growth_chain.shared. The
   # translator reads this list; nothing is named in code. Ratified by Stephen
   # 14 Oct 2026 as the classification D-72 implemented.
+  # D-81 (15 Oct 2026): each current-cycle term also declares expires_by_year, the
+  # explicit year by which it has glided linearly from its typed value to its
+  # equilibrium value. Stephen's ruling on the years; D-36's fade is retired.
   growth_chain_terms:
     - path: industry_structure.volume_coefficient_a
       role: current_cycle
@@ -51,12 +54,14 @@ industry_archetype:
         Explosives volume outgrowing mining output (beta 1.15) is a current-cycle
         feature of deeper pits and lower grades; in equilibrium volume tracks
         mining one-for-one.
+      expires_by_year: 10   # D-81: deeper pits and lower grades are a slow structural trend; the beta glides to one across the whole explicit period
     - path: industry_structure.volume_constant_b
       role: current_cycle
       equilibrium_value: 0.0
       basis: >
         The ore-grade pickup is a trend of the current mining cycle, not a
         permanent addition to volume growth.
+      expires_by_year: 10   # D-81: the same trend as the beta; glides to zero across the explicit period
     - path: industry_structure.pricing_weight_inflation
       role: equilibrium
     - path: industry_structure.pricing_weight_gas
@@ -67,28 +72,34 @@ industry_archetype:
       basis: >
         Retained productivity gains are competed away; a mature industry does not
         keep 0.5pp of pricing above its input costs forever.
+      expires_by_year: 5   # D-81: retained productivity is competed away over one cycle
     - path: company_offset.em_growth_premium
       role: current_cycle
       equilibrium_value: 1.0
       basis: >
         Emerging markets converge on developed-market growth in every scenario's
         equilibrium phase; the geographic-mix multiplier returns to one.
+      expires_by_year: 10   # D-81: EM converges on DM growth across the explicit period
     - path: company_offset.five_forces_offset.rivalry_competitive_position
       role: current_cycle
       equilibrium_value: 0.0
       basis: Five Forces offsets are time-limited by their own description (D-43a).
+      expires_by_year: 5   # D-81: Five Forces offsets are time-limited (D-43a); one cycle
     - path: company_offset.five_forces_offset.rivalry_product_mix
       role: current_cycle
       equilibrium_value: 0.0
       basis: Five Forces offsets are time-limited by their own description (D-43a).
+      expires_by_year: 5   # D-81: Five Forces offsets are time-limited (D-43a); one cycle
     - path: company_offset.five_forces_offset.new_entrants_pipeline_uplift
       role: current_cycle
       equilibrium_value: 0.0
       basis: Five Forces offsets are time-limited by their own description (D-43a).
+      expires_by_year: 3   # D-81: the DNEL LATAM/Africa ramp is a named project, not a cycle
     - path: company_offset.five_forces_offset.buyer_supplier_substitutes
       role: current_cycle
       equilibrium_value: 0.0
       basis: Five Forces offsets are time-limited by their own description (D-43a).
+      expires_by_year: 5   # D-81: Five Forces offsets are time-limited (D-43a); one cycle
 
   geography: multi_geographic
 

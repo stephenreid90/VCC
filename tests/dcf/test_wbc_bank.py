@@ -113,10 +113,11 @@ def test_at_ten_years_the_constraint_binds_in_muddle_through_too():
     runs at the workbook's own five years; this is the live ten-year level.
     D-79 (14 Oct 2026): 31.0502 -> 33.0779 as terminal growth moves from the typed
     3.5% to the derived 4.5% (the system path at Y10, capped at nominal GDP).
-    D-80 (14 Oct 2026): 33.0779 -> 32.2655 as year-10 CPI falls to 2.5% (derived g 4.14%)."""
+    D-80 (14 Oct 2026): 33.0779 -> 32.2655 as year-10 CPI falls to 2.5% (derived g 4.14%).
+    D-81 (15 Oct 2026): 32.2655 -> 32.3984 as the share-loss offset glides to zero by Y5."""
     r = _run("muddle_through")
     assert len(r.period_labels) == 11   # stub + Y1..Y10
-    assert r.value_per_share == pytest.approx(32.2655, abs=1e-3)
+    assert r.value_per_share == pytest.approx(32.3984, abs=1e-3)
     assert r.capital_constraint_binds_from == "Y6"   # Y7 before D-80; knife-edge, see test_bank_capital
     assert r.dividends_forgone > 0
 
@@ -131,8 +132,9 @@ def test_orderly_convergence_is_the_one_scenario_the_constraint_still_bites():
     """
     r = BankEngine().run(_at_five_years(build_bank_inputs_from_data(
         load_inputs(ROOT, "orderly_convergence", "australian_major_banks", "wbc"), "orderly_convergence")))
-    # 36.1619 before the D-72 bank path; 36.2265 before D-80's lower year-10 CPI (both 14 Oct 2026)
-    assert r.value_per_share == pytest.approx(36.2925, abs=1e-3)
+    # 36.1619 before the D-72 bank path; 36.2265 before D-80's lower year-10 CPI (both 14 Oct 2026);
+    # 36.2925 before D-81's offset glide (15 Oct 2026)
+    assert r.value_per_share == pytest.approx(36.3596, abs=1e-3)
     assert r.capital_constraint_binds_from == "Y4"
     assert r.dividends_forgone > 0
     assert r.cet1_trajectory.operating_target == pytest.approx(0.1125, abs=1e-9)

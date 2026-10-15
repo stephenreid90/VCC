@@ -21,16 +21,61 @@ kept getting reopened.
 It regenerates the two maps, runs the suite and the ratchet, checks the base ties and
 prints git state.
 
-## 🔴 HANDOVER — sittings of 14 October 2026 (read this first)
+## 🔴 HANDOVER — sittings of 14-15 October 2026 (read this first)
 
 **Bridge note: `notes/bridge/bridge_note_2026-10-14.md`.** The five-step repeatable-process
 plan of 2 October is COMPLETE (steps 1-5, D-73 to D-78). The fourth sitting of 14 October
 took the first follow-up item, (a), and closed it as **D-79**. The fifth sitting took the
-question D-79 left open (year-10 CPI) and closed it as **D-80**. This block records all three.
+question D-79 left open (year-10 CPI) and closed it as **D-80**. The sitting of 15 October
+took follow-up (f) and closed it as **D-81** (the D-36 fade retired). This block records all four.
 
-**State:** suite 642 passed / 1 skipped / 2 deselected; SSOT lint 14/14; base ties **DNL
-2.106 / WBC 32.27 / CSL 203.46** (`session_start.py` re-pinned for D-80; were 2.138 / 33.08 /
-208.89 under D-79). Commits on `main` on Stephen's checkout, pushed at the end of each sitting.
+**State:** suite 672 passed / 1 skipped / 2 deselected; SSOT lint 14/14; base ties **DNL
+2.007 / WBC 32.40 / CSL 203.46** (`session_start.py` re-pinned for D-81; were 2.106 / 32.27 /
+203.46 under D-80). Commits on `main` on Stephen's checkout. **D-80 and D-81 are NOT pushed:**
+GitHub rejects the PAT in `.github-token` ("Invalid username or token"). Stephen to mint a
+fresh one; then `git push https://stephenreid90:$(cat .github-token)@github.com/stephenreid90/VCC main`.
+
+### D-81 DONE -- current-cycle chain terms expire inside the explicit period; the D-36 fade is retired
+
+Plain terms: since D-78 the growth chain's current-cycle terms (DNL: mining beta,
+ore-grade pickup, productivity sharing, EM premium, four Five Forces offsets; WBC: the
+-15bp share-loss offset) switched off in the terminal, but inside the ten explicit years
+they ran at full strength and D-36 then glided the total growth rate onto g over the last
+one or two years. That drop had no economics behind it. Now each current-cycle term
+declares `expires_by_year` on the archetype and glides linearly from its typed value
+(year 0) to its equilibrium value by that year, then holds. The path lands on the
+equilibrium chain by construction. Where the nominal-GDP cap binds (DNL OC by about a
+point, MT by 5bp) year 10 sits above g and the step is disclosed, not bridged.
+
+Stephen's rulings: linear glide per term; DNL years 10 / 10 / 5 / 10 / 5 / 5 / 3 / 5
+(beta, ore-grade, productivity, EM premium, rivalry, product mix, DNEL pipeline,
+buyer/supplier); WBC's offset 5, the same as the Five Forces offsets; accept the cap step.
+
+Levels: every DNL level down 4.3-4.8% (MT 2.106 -> 2.007, OC 2.462 -> 2.345, Stag 1.120 ->
+1.072) because the extras now earn about half the period instead of eight full years.
+WBC up 0.1-0.5% (MT 32.27 -> 32.40) because a drag fades sooner. CSL unchanged. Full
+table and the alternatives sized in `DECISIONS.md` D-81. Two side-effects, disclosed
+there: WBC's CET1 erodes faster (MT -174 -> -184bp), so Stagflation now binds the D-60
+payout cut at Y7 and the cut lowers its value by 0.7c (the Disorderly Climate mechanism,
+now in two scenarios -- bridge note item (e) is the fix); WBC Stagflation's terminal share
+is 0.690, the closest to the 70% line in the project.
+
+Done against standing rule 4: `tests/dcf/test_chain_term_glide.py` (new, 30 tests pin the
+mechanism, the ratified years, the cap step and the retired fade); goldens, shares, the
+four sizing sets, both bank-capital drift figures, the generated DNL workbook (expiry
+column; each year's growth is the full chain with every term at its glided value) and its
+LibreOffice oracle; `session_start.py` bases. `fade_period_length_years` left `dnl.yaml`
+and the `fade_period_length` driver left the impact matrix and the translator. D-36 and
+D-70 are marked superseded. `adding_a_company.md` step 4 says to declare and size the
+expiry years.
+
+**Next, Stephen to choose.** Remaining follow-ups: (c) CSL volume/price split + US GDP
+series; (b) bank NIM pass-through rule; (d) lift level anchors to archetypes; (e) bank
+engine lets retained equity earn nothing until the terminal (now bites in two scenarios);
+(g) rewrite `CLAUDE.md` "Operational quirks" (stale: the device shell runs git and
+LibreOffice once delete permission is granted). Housekeeping: `design/open_items.json` is
+stale (17 Sep) and `session_start.py` points new chats at the page built from it; the
+`Claude outputs/` folder holds a pre-shell bundle, delete or ignore it.
 
 ### D-80 DONE -- year-10 CPI lowered in every scenario (the D-79 open item)
 

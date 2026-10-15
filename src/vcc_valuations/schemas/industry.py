@@ -410,6 +410,13 @@ class GrowthChainTerm(BaseModel):
     role: ChainTermRole
     equilibrium_value: Optional[float] = None
     basis: Optional[str] = None
+    # D-81 (15 Oct 2026): the explicit year by which a current-cycle term has
+    # reached its equilibrium value. Inside the explicit period the term glides
+    # LINEARLY from its typed value (year 0, the base year) to its equilibrium
+    # value at this year and holds there, so the growth path lands on the
+    # equilibrium chain by construction and D-36's end-of-period fade is not
+    # needed. Required for a current-cycle term; an equilibrium term has none.
+    expires_by_year: Optional[int] = None
 
     @model_validator(mode="after")
     def _shape_matches_role(self):
@@ -419,10 +426,16 @@ class GrowthChainTerm(BaseModel):
                     f"growth chain term {self.path!r}: a current_cycle term needs an "
                     "equilibrium_value and a basis"
                 )
-        elif self.equilibrium_value is not None or self.basis:
+            if self.expires_by_year is None or self.expires_by_year < 1:
+                raise ValueError(
+                    f"growth chain term {self.path!r}: a current_cycle term needs an "
+                    "expires_by_year >= 1 (D-81), the explicit year by which it has "
+                    "reached its equilibrium value"
+                )
+        elif self.equilibrium_value is not None or self.basis or self.expires_by_year is not None:
             raise ValueError(
                 f"growth chain term {self.path!r}: an equilibrium term carries no "
-                "equilibrium_value or basis (it keeps its typed value)"
+                "equilibrium_value, basis or expires_by_year (it keeps its typed value)"
             )
         return self
 
@@ -485,6 +498,15 @@ class IndustryArchetype(BaseModel):
         """``{path: equilibrium_value}`` for every current-cycle chain term."""
         return {
             t.path: t.equilibrium_value
+            for t in (self.growth_chain_terms or [])
+            if t.role == ChainTermRole.CURRENT_CYCLE
+        }
+
+    @property
+    def chain_term_expiries(self) -> Dict[str, int]:
+        """``{path: expires_by_year}`` for every current-cycle chain term (D-81)."""
+        return {
+            t.path: t.expires_by_year
             for t in (self.growth_chain_terms or [])
             if t.role == ChainTermRole.CURRENT_CYCLE
         }

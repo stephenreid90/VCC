@@ -815,21 +815,17 @@ normalised_baseline:
       # to zero by the final explicit year (cyclical). Stagflation's own
       # 'resolution' phase is the one cyclical case; Fragmentation's duplication
       # costs and Disorderly Climate's carbon cost are structural.
-      # fade_period_length_years (D-70, 25 Sep 2026): D-36's revenue-growth fade
-      # length. Baseline 2 years for a scenario with no declared override.
-      # Disorderly Climate carries the impact matrix's only quantified
-      # fade_period_length driver (direction: negative, magnitude: small --
-      # "faster fade to convergence under transition pressures"), read here as
-      # one year shorter than baseline: small magnitude, one step. No scale
-      # beyond this one small/negative case has been needed yet; extend the
-      # convention (moderate = 2 steps, large = 3) if a future scenario
-      # declares a stronger rating.
-      muddle_through:                     {margin_delta_pp:  0.000, capex_delta_pp: 0.00, fade_period_length_years: 2}
-      orderly_convergence:                {margin_delta_pp:  0.005, capex_delta_pp: 0.00, fade_period_length_years: 2}
-      ai_productivity_lag:                {margin_delta_pp:  0.005, capex_delta_pp: 0.00, fade_period_length_years: 2}
-      fragmentation:                      {margin_delta_pp: -0.030, capex_delta_pp: 0.00, fade_period_length_years: 2, margin_shift_persistence: structural}
-      disorderly_climate_crystallisation: {margin_delta_pp: -0.030, capex_delta_pp: 0.03, fade_period_length_years: 1, margin_shift_persistence: structural}
-      stagflation_persists:               {margin_delta_pp: -0.075, capex_delta_pp: 0.00, fade_period_length_years: 2, margin_shift_persistence: cyclical}
+      # fade_period_length_years was removed 15 Oct 2026 (D-81): the growth path
+      # now lands on the equilibrium chain because each current-cycle chain term
+      # glides to its equilibrium value by the archetype's expires_by_year
+      # (data/industries/industrial_explosives.yaml growth_chain_terms); D-36's
+      # end-of-period fade and D-70's fade length are superseded.
+      muddle_through:                     {margin_delta_pp:  0.000, capex_delta_pp: 0.00}
+      orderly_convergence:                {margin_delta_pp:  0.005, capex_delta_pp: 0.00}
+      ai_productivity_lag:                {margin_delta_pp:  0.005, capex_delta_pp: 0.00}
+      fragmentation:                      {margin_delta_pp: -0.030, capex_delta_pp: 0.00, margin_shift_persistence: structural}
+      disorderly_climate_crystallisation: {margin_delta_pp: -0.030, capex_delta_pp: 0.03, margin_shift_persistence: structural}
+      stagflation_persists:               {margin_delta_pp: -0.075, capex_delta_pp: 0.00, margin_shift_persistence: cyclical}
 
   # --- Tax Bridge (workbook Tax Bridge sheet; migrated 2026-08-12). INPUTS ONLY:
   # the FY26 effective rate (B59), the per-jurisdiction statutory rates (C5-C7,

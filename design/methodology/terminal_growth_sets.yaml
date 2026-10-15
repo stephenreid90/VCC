@@ -23,7 +23,7 @@ terminal_growth_sets:
       g_cap: 0.0455
       g: 0.044584
       capped: false
-      value_per_share: 2.0903
+      value_per_share: 1.9984
       retired_typed_growth: null
       value_per_share_at_typed: null
       level_change: null
@@ -34,7 +34,7 @@ terminal_growth_sets:
       g_cap: 0.04755
       g: 0.045812
       capped: false
-      value_per_share: 1.0629
+      value_per_share: 0.9955
       retired_typed_growth: null
       value_per_share_at_typed: null
       level_change: null
@@ -45,7 +45,7 @@ terminal_growth_sets:
       g_cap: 0.04856
       g: 0.040984
       capped: false
-      value_per_share: 1.4179
+      value_per_share: 1.3576
       retired_typed_growth: null
       value_per_share_at_typed: null
       level_change: null
@@ -56,7 +56,7 @@ terminal_growth_sets:
       g_cap: 0.048575
       g: 0.048575
       capped: true
-      value_per_share: 2.1059
+      value_per_share: 2.0067
       retired_typed_growth: null
       value_per_share_at_typed: null
       level_change: null
@@ -67,7 +67,7 @@ terminal_growth_sets:
       g_cap: 0.0506
       g: 0.0506
       capped: true
-      value_per_share: 2.4619
+      value_per_share: 2.3451
       retired_typed_growth: null
       value_per_share_at_typed: null
       level_change: null
@@ -78,7 +78,7 @@ terminal_growth_sets:
       g_cap: 0.0506
       g: 0.028438
       capped: false
-      value_per_share: 1.1204
+      value_per_share: 1.0724
       retired_typed_growth: null
       value_per_share_at_typed: null
       level_change: null
@@ -89,10 +89,10 @@ terminal_growth_sets:
       g_cap: 0.0455
       g: 0.042
       capped: false
-      value_per_share: 32.5936
+      value_per_share: 32.7288
       retired_typed_growth: 0.0325
-      value_per_share_at_typed: 30.9118
-      level_change: 0.0544
+      value_per_share_at_typed: 31.0274
+      level_change: 0.0548
     - company: wbc
       scenario: disorderly_climate_crystallisation
       horizon_years: 10
@@ -100,9 +100,9 @@ terminal_growth_sets:
       g_cap: 0.04755
       g: 0.031
       capped: false
-      value_per_share: 23.0347
+      value_per_share: 23.0786
       retired_typed_growth: 0.0325
-      value_per_share_at_typed: 23.111
+      value_per_share_at_typed: 23.1558
       level_change: -0.0033
     - company: wbc
       scenario: fragmentation
@@ -111,10 +111,10 @@ terminal_growth_sets:
       g_cap: 0.04856
       g: 0.0356
       capped: false
-      value_per_share: 28.1291
+      value_per_share: 28.2314
       retired_typed_growth: 0.0325
-      value_per_share_at_typed: 27.7721
-      level_change: 0.0129
+      value_per_share_at_typed: 27.8702
+      level_change: 0.013
     - company: wbc
       scenario: muddle_through
       horizon_years: 10
@@ -122,10 +122,10 @@ terminal_growth_sets:
       g_cap: 0.048575
       g: 0.0414
       capped: false
-      value_per_share: 32.2655
+      value_per_share: 32.3984
       retired_typed_growth: 0.035
-      value_per_share_at_typed: 31.0881
-      level_change: 0.0379
+      value_per_share_at_typed: 31.2073
+      level_change: 0.0382
     - company: wbc
       scenario: orderly_convergence
       horizon_years: 10
@@ -133,10 +133,10 @@ terminal_growth_sets:
       g_cap: 0.0506
       g: 0.0506
       capped: true
-      value_per_share: 45.159
+      value_per_share: 45.394
       retired_typed_growth: 0.0375
-      value_per_share_at_typed: 40.2903
-      level_change: 0.1208
+      value_per_share_at_typed: 40.4698
+      level_change: 0.1217
     - company: wbc
       scenario: stagflation_persists
       horizon_years: 10
@@ -144,10 +144,10 @@ terminal_growth_sets:
       g_cap: 0.0506
       g: 0.0154
       capped: false
-      value_per_share: 15.7094
+      value_per_share: 15.7268
       retired_typed_growth: 0.0325
-      value_per_share_at_typed: 16.2769
-      level_change: -0.0349
+      value_per_share_at_typed: 16.3011
+      level_change: -0.0352
     - company: csl
       scenario: ai_productivity_lag
       horizon_years: 10

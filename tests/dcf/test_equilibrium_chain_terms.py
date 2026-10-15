@@ -54,8 +54,11 @@ def test_a_current_cycle_term_needs_its_off_value_and_a_basis():
         GrowthChainTerm(path="x.y", role=ChainTermRole.CURRENT_CYCLE)
     with pytest.raises(ValueError):
         GrowthChainTerm(path="x.y", role=ChainTermRole.EQUILIBRIUM, equilibrium_value=0.0)
-    ok = GrowthChainTerm(path="x.y", role=ChainTermRole.CURRENT_CYCLE, equilibrium_value=1.0, basis="b")
-    assert ok.equilibrium_value == 1.0
+    # D-81: a current-cycle term also needs the year it has expired by.
+    with pytest.raises(ValueError, match="expires_by_year"):
+        GrowthChainTerm(path="x.y", role=ChainTermRole.CURRENT_CYCLE, equilibrium_value=1.0, basis="b")
+    ok = GrowthChainTerm(path="x.y", role=ChainTermRole.CURRENT_CYCLE, equilibrium_value=1.0, basis="b", expires_by_year=5)
+    assert ok.equilibrium_value == 1.0 and ok.expires_by_year == 5
 
 
 def test_an_unclassified_chain_term_raises():

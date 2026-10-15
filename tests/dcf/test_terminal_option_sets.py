@@ -92,8 +92,10 @@ def test_the_other_lever_convention_runs_backwards(by_key):
     backwards = two_stage(e1 / 0.16, 0.16, v.cost_of_capital, v.terminal_growth, n)
     # Re-pinned D-72 (same day, derived g 5.27%): 5698 / 5359 -> 6316 / 6129.
     # Re-pinned D-80 (14 Oct 2026, year-10 CPI lowered; g 4.86% capped): 6316 / 6129 -> 6209 / 6001.
-    assert measured == pytest.approx(6209, abs=1)
-    assert backwards == pytest.approx(6001, abs=1)
+    # Re-pinned D-81 (15 Oct 2026, chain terms glide to equilibrium, fade retired;
+    # a smaller closing capital base): 6209 / 6001 -> 5934 / 5680.
+    assert measured == pytest.approx(5934, abs=1)
+    assert backwards == pytest.approx(5680.5, abs=1)
     assert backwards < measured
 
 
@@ -128,7 +130,9 @@ def test_engine_current_reproduces_every_engine_value_per_share(rows):
     # 186.4975 -> 208.8861).
     # D-80 (same day): year-10 CPI lowered in every scenario (2.1382 -> 2.1059;
     # 33.0779 -> 32.2655; 208.8861 -> 203.4633).
-    pinned = {("dnl", "muddle_through"): 2.1059, ("wbc", "muddle_through"): 32.2655,
+    # D-81 (15 Oct 2026): current-cycle chain terms glide to equilibrium inside the
+    # explicit period (2.1059 -> 2.0067; 32.2655 -> 32.3984; CSL unchanged).
+    pinned = {("dnl", "muddle_through"): 2.0067, ("wbc", "muddle_through"): 32.3984,
               ("csl", "muddle_through"): 203.4633}
     for key, vps in pinned.items():
         v = next(x for x in rows if (x.company_id, x.scenario_id) == key)

@@ -105,7 +105,6 @@ DRIVER_RULE_TABLE = {
     "country_risk_premium": ("rate", RATE_DELTA_BPS),
     "terminal_growth_rate": ("rate", RATE_DELTA_BPS),
     "terminal_roic": ("rate", RATE_DELTA_BPS),
-    "fade_period_length": ("rate", RATE_DELTA_BPS),
 }
 
 
@@ -670,8 +669,36 @@ def equilibrium_chain_terms(inputs: dict) -> Dict[str, float]:
     return dict(archetype.equilibrium_chain_values)
 
 
+def chain_terms_at_year(inputs: dict, year: float) -> Dict[str, float]:
+    """D-81: the value of every current-cycle chain term at explicit ``year``.
+
+    Each term the archetype calls current_cycle glides LINEARLY from its typed
+    value (year 0, the base year) to its ``equilibrium_value`` at its declared
+    ``expires_by_year`` and holds there. Equilibrium terms are absent from the
+    mapping and keep their typed value. At the end of the explicit period every
+    term has expired, so the path lands on the equilibrium chain by
+    construction; this is what retires D-36's end-of-period fade. Nothing in
+    code names a company, a term or a year.
+    """
+    eq = equilibrium_chain_terms(inputs)
+    if not eq:
+        return {}
+    shared = growth_chain_shared_block(inputs)
+    expiries = inputs["archetype"].chain_term_expiries
+    out = {}
+    for path, eq_value in eq.items():
+        node = shared
+        for key in path.split("."):
+            node = node[key]
+        typed = float(node)
+        frac = min(1.0, max(0.0, year / expiries[path]))
+        out[path] = typed + (eq_value - typed) * frac
+    return out
+
+
 def revenue_growth_chain_from_data(inputs: dict, scenario_id: str, year: float = 1,
-                                   equilibrium: bool = False):
+                                   equilibrium: bool = False,
+                                   term_values: Optional[Dict[str, float]] = None):
     """The §11 revenue-growth chain as a fully-traceable :class:`Derivation`.
 
     Reproduces the workbook Assumptions B18-B42 build at full V6 granularity:
@@ -713,7 +740,8 @@ def revenue_growth_chain_from_data(inputs: dict, scenario_id: str, year: float =
     # cpi_inflation_advanced, which closes the 12 Aug 2026 reconciliation note.
     macro = chain_macro_at(inputs, year)
     label = f"revenue_growth_chain[{scenario_id}]" + (
-        "[equilibrium]" if equilibrium else f"[year {year}]")
+        "[equilibrium]" if equilibrium else
+        f"[year {year}, terms gliding]" if term_values is not None else f"[year {year}]")
     b = DerivationBuilder(label)
 
     # In EQUILIBRIUM (D-72) the chain's current-cycle terms are switched off.
@@ -722,7 +750,13 @@ def revenue_growth_chain_from_data(inputs: dict, scenario_id: str, year: float =
     # term the archetype calls current_cycle reads its equilibrium_value, an
     # equilibrium term keeps its typed value. What is left is the growth of
     # the world the scenario ends in.
-    eq = equilibrium_chain_terms(inputs) if equilibrium else {}
+    # D-81: inside the explicit period a caller may pass the terms' values AT
+    # THIS YEAR (``chain_terms_at_year``): each current-cycle term part-way
+    # along its glide to equilibrium. Absent both flags the chain reads its
+    # typed values, which is the base-year chain the v4 workbook types.
+    if equilibrium and term_values is not None:
+        raise ValueError("pass equilibrium=True or term_values, not both")
+    eq = equilibrium_chain_terms(inputs) if equilibrium else (term_values or {})
 
     def term(path: str, typed: float) -> float:
         return eq.get(path, typed)
@@ -920,61 +954,37 @@ def segment_terminal_growth_from_data(inputs: dict, scenario_id: str, horizon_ye
     return b.build(result_key="g")
 
 
-def fade_period_length_from_data(inputs: dict, scenario_id: str) -> Optional[int]:
-    """D-70: the declared length, in years, of D-36's revenue-growth fade.
-
-    A per-scenario field on ``normalised_baseline.engine_overlays.by_scenario``
-    (the same place ``margin_delta_pp`` / ``capex_delta_pp`` live), not inferred
-    at runtime from the impact matrix's qualitative ``fade_period_length``
-    rating -- that rating is direction/magnitude only, and D-70 is the one-off
-    reading of it into a number, done once by whoever wrote the company file,
-    the same way a qualitative moat rating is not auto-converted into a pp
-    delta. ``None`` if the scenario declares no ``engine_overlays`` at all.
-    """
-    company_raw = inputs.get("company_raw") or {}
-    nb = company_raw.get("normalised_baseline") or {}
-    overlays = nb.get("engine_overlays") or {}
-    scen = (overlays.get("by_scenario") or {}).get(scenario_id)
-    if scen is None:
-        return None
-    return scen.get("fade_period_length_years")
-
-
 def revenue_growth_path_from_data(inputs: dict, scenario_id: str,
-                                   horizon_years: int, terminal_growth: float) -> List[float]:
-    """D-72: the per-year revenue-growth path -- the chain each year, then onto g.
+                                   horizon_years: int) -> List[float]:
+    """D-81: the per-year revenue-growth path -- the chain each year, with each
+    current-cycle term part-way along its own glide to equilibrium.
 
     Year k's rate is the §11 chain evaluated on the scenario's own macro series
-    at year k (D-37 anchors, interpolated). Over the final
-    ``fade_period_length_years`` (D-70) the path glides LINEARLY from the chain's
-    own value that year onto ``terminal_growth`` -- D-36's mechanism, now
-    bridging only the chain's current-cycle extras (volume beta, ore-grade
-    pickup, productivity, geo-mix, five-forces offsets) as they expire, rather
-    than a typed number. Lands exactly on g in the final explicit year.
+    at year k (D-37 anchors, interpolated; D-72) with every current-cycle term
+    at its D-81 value for year k (``chain_terms_at_year``: linear from the typed
+    value at year 0 to the archetype's ``equilibrium_value`` at
+    ``expires_by_year``, then held). By the final explicit year every term has
+    expired, so the path ends ON the equilibrium chain -- the uncapped terminal
+    growth. Where D-72's nominal-GDP cap binds, terminal growth sits below the
+    final year's rate and the step is disclosed, not bridged (D-71: cash flows
+    need not be static at year 10). This replaces D-36's fade, which glided the
+    TOTAL rate onto g over the last one or two years with no term behind it.
     """
-    fade_years = fade_period_length_from_data(inputs, scenario_id)
-    if fade_years is None:
+    expiries = (inputs.get("archetype").chain_term_expiries
+                if inputs.get("archetype") is not None else {})
+    late = {p: y for p, y in expiries.items() if y > horizon_years}
+    if late:
         raise ValueError(
-            f"{scenario_id}: no fade_period_length_years declared (D-70) -- required "
-            "to build the D-36 revenue-growth fade."
-        )
-    if fade_years < 1:
-        raise ValueError(f"{scenario_id}: fade_period_length_years must be >= 1, got {fade_years}.")
-    if fade_years > horizon_years:
-        raise ValueError(
-            f"{scenario_id}: fade_period_length_years ({fade_years}) exceeds "
-            f"horizon_years ({horizon_years})."
+            f"{scenario_id}: growth chain terms expire after the explicit period "
+            f"({late}); a current-cycle term must reach equilibrium by year {horizon_years} (D-81)."
         )
     path = []
-    flat_years = horizon_years - fade_years
     for k in range(1, horizon_years + 1):
-        rate = revenue_growth_from_data(inputs, scenario_id, year=k)
-        if rate is None:
+        chain = revenue_growth_chain_from_data(
+            inputs, scenario_id, year=k, term_values=chain_terms_at_year(inputs, k))
+        if chain is None:
             raise ValueError(f"{scenario_id}: no revenue_growth_chain (D-72).")
-        if k > flat_years:
-            j = k - flat_years
-            rate = rate + (terminal_growth - rate) * (j / fade_years)
-        path.append(rate)
+        path.append(chain.result)
     return path
 
 
@@ -1317,9 +1327,15 @@ def bank_aiea_growth_path_from_data(inputs: dict, horizon_years: int) -> List[fl
     layer (standing rule 1). Returns decimals, [Y1..YH].
     """
     shared = inputs["company_raw"]["normalised_baseline"]["bank_build"]["aiea_nim_chain"]["shared"]
-    offset = shared["company_offset"]["aiea_growth_offset"]
-    return [macro_series_at(inputs, "bank_system_aiea_growth", y) + offset
-            for y in range(1, horizon_years + 1)]
+    typed_offset = shared["company_offset"]["aiea_growth_offset"]
+    # D-81: where the archetype calls the company offset current-cycle it glides
+    # to its equilibrium value by its declared expiry year, the same rule as the
+    # industrial chain's terms (chain_terms_at_year); an equilibrium offset holds.
+    path = []
+    for y in range(1, horizon_years + 1):
+        offset = chain_terms_at_year(inputs, y).get("company_offset.aiea_growth_offset", typed_offset)
+        path.append(macro_series_at(inputs, "bank_system_aiea_growth", y) + offset)
+    return path
 
 
 def scenario_equilibrium_year(inputs: dict) -> int:
@@ -1434,15 +1450,13 @@ def build_engine_inputs_from_data(inputs: dict, scenario_id: str):
     stub = nb["stub_years"]
     base_revenue = nb["base_year_revenue"]
 
-    # D-36: revenue_growth is a per-year path, not a constant rate -- the
+    # D-72/D-81: revenue_growth is a per-year path, not a constant rate -- the
     # working-capital build needs the same annualised run-rate the engine's own
     # revenue loop produces, so it is built off the same path rather than a
     # re-derived scalar. Year 1's rate applies fractionally within the stub
     # (which sits inside year 1, before the first FY-end); a whole year k
     # compounds the path's first k entries, matching FcfEngine.run cumulatively.
-    revenue_growth_path = revenue_growth_path_from_data(
-        inputs, scenario_id, horizon, overlays["terminal_growth"]
-    )
+    revenue_growth_path = revenue_growth_path_from_data(inputs, scenario_id, horizon)
     cum_growth = [1.0]
     for g_year in revenue_growth_path:
         cum_growth.append(cum_growth[-1] * (1.0 + g_year))

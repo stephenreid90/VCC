@@ -23,6 +23,7 @@ from vcc_valuations.translator import (
     build_engine_inputs_from_data,
     revenue_growth_from_data,
     revenue_growth_chain_from_data,
+    chain_terms_at_year,
     wacc_build_from_data,
     equity_bridge_from_data,
     tax_bridge_from_data,
@@ -69,8 +70,10 @@ def test_engine_inputs_assembled_from_data_reproduce_ratified_per_share():
     # is derived (5.27%, the equilibrium chain, under the 5.37% nominal-GDP cap).
     # D-80 (14 Oct 2026): EV 5,297.4, 2.106/share -- year-10 CPI lowered to 2.5% in
     # Muddle Through; the chain's paths recalibrate and terminal g is the 4.86% cap.
-    assert round(r.enterprise_value, 1) == 5297.4
-    assert round(r.value_per_share, 3) == 2.106
+    # D-81 (15 Oct 2026): EV 5,121.8, 2.007/share -- the chain's current-cycle
+    # terms glide to equilibrium by their expiry years (D-36's fade retired).
+    assert round(r.enterprise_value, 1) == 5121.8
+    assert round(r.value_per_share, 3) == 2.007
     assert r.value_per_share < r.market_reference_price
 
 
@@ -140,7 +143,14 @@ def test_assembled_inputs_match_the_golden_field_by_field():
     # D-72: year 1 differs from the golden's chain rate by the DM-inflation basis
     # change only (scenario CPI 3.0% vs the frozen 2.5%, at the 0.7 weight and
     # the 1.03 geo-mix multiplier).
-    assert abs(data.revenue_growth[0] - (gold.revenue_growth[0] + 0.7 * 0.005 * (1 + 0.03275) * 1.03)) < 1e-9
+    # D-81: year 1 is the chain with every current-cycle term one year along its
+    # glide to equilibrium (chain_terms_at_year), so it sits BELOW the typed
+    # chain's year-1 rate and equals the translator's own construction exactly.
+    typed_y1 = gold.revenue_growth[0] + 0.7 * 0.005 * (1 + 0.03275) * 1.03
+    assert data.revenue_growth[0] < typed_y1
+    glided_y1 = revenue_growth_chain_from_data(
+        _load(), "muddle_through", year=1, term_values=chain_terms_at_year(_load(), 1)).result
+    assert abs(data.revenue_growth[0] - glided_y1) < 1e-12
     # The operating rates are excepted alongside the WACC half. The golden is
     # frozen at the v6 audit (see its docstring) while the data carries the
     # 14 September 2026 restatement — margin 12.72% against the golden's 14.10%,
@@ -229,7 +239,7 @@ def test_equity_bridge_derivation_traces_walk_and_per_share():
         ["B6", "B7", "B8", "B10", "B11", "B27", "B28", "B29", "B30", "B31", "B33", "B37"]
     assert abs(d["B11"].value - 1224.0329) < 1e-3   # net debt at valuation (golden)
     assert abs(d["B29"].value - (-151.65)) < 1e-2   # adjustments net (§4.2)
-    assert round(d.result, 3) == 2.106              # B33 value per share (D-80, 14 Oct 2026; 2.138 under D-72)
+    assert round(d.result, 3) == 2.007              # B33 value per share (D-81, 15 Oct 2026; 2.106 under D-80)
     # B33 must equal the engine's own value_per_share, not a re-derivation drift.
     inp = build_engine_inputs_from_data(_load(), "muddle_through")
     from vcc_valuations.dcf.fcf_engine import FcfEngine
