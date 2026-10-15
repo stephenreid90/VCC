@@ -602,5 +602,75 @@
     "questions": "Which governs the terminal return: the rate the moat work declares (D-45) or the capital base the explicit period leaves behind (D-49)? And should D-42's obligation carry a materiality floor? DNL Fragmentation triggers it on a 4bp excess, which is the convergence target reached to within rounding rather than a claim about a moat.",
     "status": "NEEDS",
     "batch": "Batch 4"
+  },
+  {
+    "id": "R16-1",
+    "source": "review-2026-10-16",
+    "area": "Methodology",
+    "issue": "<b>Review pass needed.</b> The 59 items above were last reviewed in August and September. They have not been checked against D-79 to D-82.",
+    "treatment": "Check each item against the current decisions and the code. Close or re-word it. Done in a separate pass.",
+    "questions": [],
+    "status": "PLANNED",
+    "batch": "Batch 6"
+  },
+  {
+    "id": "R16-2",
+    "source": "review-2026-10-16",
+    "area": "Methodology",
+    "issue": "<b>CSL healthcare price premium over CPI.</b> The CSL price split (D-82) uses advanced CPI as the price rate. A healthcare premium would change values.",
+    "treatment": "Stephen to set a premium per scenario, with a written reason. Until then the split is for reporting only.",
+    "questions": [],
+    "status": "NEEDS",
+    "batch": "Batch 6"
+  },
+  {
+    "id": "R16-3",
+    "source": "review-2026-10-16",
+    "area": "Methodology",
+    "issue": "<b>Bank retained equity earns nothing until the terminal (bridge item e).</b> This lowers WBC's value in Disorderly Climate and Stagflation, through the dividend cut under the CET1 floor (D-60).",
+    "treatment": "Proposed fix drafted for approval. Serious change: WBC levels move in two scenarios.",
+    "questions": [],
+    "status": "NEEDS",
+    "batch": "Batch 6"
+  },
+  {
+    "id": "R16-4",
+    "source": "review-2026-10-16",
+    "area": "Methodology",
+    "issue": "<b>Bank net interest margin pass-through rule (bridge item b).</b> No written basis for how fast lending margins follow interest rates, so NIM stays on the typed path.",
+    "treatment": "Needs a Five Forces basis from Stephen before it can be built. Serious change.",
+    "questions": [],
+    "status": "NEEDS",
+    "batch": "Batch 6"
+  },
+  {
+    "id": "R16-5",
+    "source": "review-2026-10-16",
+    "area": "Scenarios",
+    "issue": "<b>US real GDP shape in AI Lag and Disorderly Climate.</b> The drafted US paths are flat offsets from the world path, so they have no effect on value (D-82).",
+    "treatment": "Stephen to say whether the US path should change shape over time in those two scenarios.",
+    "questions": [],
+    "status": "NEEDS",
+    "batch": "Batch 6"
+  },
+  {
+    "id": "R16-6",
+    "source": "review-2026-10-16",
+    "area": "Methodology",
+    "issue": "<b>Level anchors still live in company files (bridge item d).</b> The anchors should move to the archetypes. Values should not change.",
+    "treatment": "Tidy-up, medium change. Do it when next touching the archetypes.",
+    "questions": [],
+    "status": "PLANNED",
+    "batch": "Batch 6"
+  },
+  {
+    "id": "R16-7",
+    "source": "review-2026-10-16",
+    "area": "Methodology",
+    "issue": "<b>DNL and CSL terminal returns (D-76 declared rates).</b> Stephen has not formed a view. CSL's stagflation case shows a 61% return on new capital, which needs a defence.",
+    "treatment": "Stephen's judgement. Size first with scripts/size_terminal_returns.py.",
+    "questions": [],
+    "status": "NEEDS",
+    "batch": "Batch 6"
   }
 ]

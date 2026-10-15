@@ -208,45 +208,30 @@ quoted back as live.
 
 ## Operational quirks
 
-**Environment facts, verified 23 August 2026 and re-verified 16 September 2026. Read them
-before planning any git work.**
+**Environment facts, updated 16 October 2026. Read before planning any git work.**
 
-- **The Cowork mount cannot delete or replace ANY file** — not just `.git/*.lock`. `rm`
-  returns "Operation not permitted" and so does git's own unlink, which means `git merge`,
-  `git checkout -- <file>` and `git branch -D` all fail on the mount. `mv` works, and so
-  does plain truncate-and-write, which is how a file gets restored after a failed git
-  operation. A session can only move things aside; Stephen clears them from his own cmd
-  window.
-- **This did NOT change when the device shell came back.** `device_bash` was down from the
-  Windows update of 8 September until 16 September. Its return makes reads, writes and
-  searches on the mount work again, and `git push` from the mount authenticates fine with
-  the PAT at `.github-token` — so it is tempting to conclude the bundle dance is over. It
-  is not. Re-tested 16 September: `git checkout -- README.md` on the mount fails, strands a
-  `.git/index.lock` it cannot unlink, and every subsequent git write in that repo is
-  blocked until the lock is cleared from Windows. Pushing without merging would publish the
-  work while leaving Stephen's working tree behind origin, which is worse than not pushing.
-  **The restriction is on the Cowork mount's view of the folder, not on Stephen's machine**
-  — his own cmd window has full access, which is exactly why `land_vcc.cmd` works and a
-  session's shell does not. Do not re-run this experiment; if you do it anyway, the stranded
-  lock is cleared by step 1 of `land_vcc.cmd`, so the recovery is the landing itself.
-- **`device_commit_files` cannot overwrite an existing file on the mount, and says it
-  did.** Found 22 September 2026: it reported `session.bundle` written, updated the mtime,
-  and left the old bytes in place. This is almost certainly the "vanished bundle" of
-  16 September. Write to a NEW filename, then in `device_bash` truncate-and-write it over
-  the target (`cat new > target`) and `mv` the new file into `.git/_stale_delete_me/`.
-  Always check size or `git bundle list-heads` on the device before fetching.
-- **The cloud container cannot push.** The git proxy allows clone and fetch and refuses
-  push for this repo ("not in this session's authorized repository set", 403). The PAT at
-  `.github-token` is not the constraint and re-trying will not help.
-- **So the working pattern is:** do everything in a cloud-container clone (suite, ratchet,
-  UI build, commits), then hand Stephen a `git bundle` plus a `.cmd` that clears stale
-  locks, fetches from the bundle, fast-forwards, pushes and runs `sandbox_cleanup.cmd`.
-  `land_session.cmd` in the repo root is the worked example.
-- **Cleanup script.** Because the sandbox can't delete, each session orphans `*.bak`
-  backups and `.git/*.lock*` files. `sandbox_cleanup.cmd` (repo root) clears them all,
-  recursing into `.git/refs/` — a stale `.git/refs/heads/incoming.lock` silently defeated
-  `git branch -D` on 24 August 2026 and blocked a landing. `land_vcc.cmd` calls it, so it
-  rarely needs running on its own.
+- **The device shell is the working environment.** `device_bash` runs on Stephen's Windows
+  machine (`C:\Users\steph\vcc-valuations`) and can run git, the test suite and LibreOffice
+  (`/usr/bin/soffice`). The cloud container is not used for this repo.
+- **Two grants at the start of each sitting.** Folder access to the repo, then delete
+  permission on the repo folder (`device_request_delete_permission`). Without delete
+  permission git cannot replace lock files or tracked files.
+- **Git is handled in the background.** Commit finished work with the attribution lines.
+  Push with the PAT in `.github-token`:
+  `git push "https://stephenreid90:$(cat .github-token)@github.com/stephenreid90/VCC" main`.
+  Never print the token. If its output shows it, redact it. Then run
+  `git update-ref refs/remotes/origin/main HEAD`, because a push by URL does not move the
+  tracking pointer.
+- **Test suite limits.** A device call stops after 180 seconds. Run the suite in two halves:
+  `python -m pytest tests/dcf -q` and `python -m pytest tests --ignore=tests/dcf -q`.
+  A background process dies when its call ends.
+- **Python setup.** `python -m pip install pydantic pandas numpy openpyxl scipy pytest pyyaml`,
+  then add `$HOME/.local/bin` to `PATH` so pytest is found.
+- **`scripts/session_start.py` regenerates `REPO_MAP.md`.** Its base-tie check compares numbers
+  at the precision of each expected string.
+- **Retired (14 October 2026).** The bundle and `.cmd` landing flow, the `sandbox_cleanup.cmd`
+  script and the mount-cannot-delete warnings no longer apply. The untracked `Claude outputs/`
+  bundle was deleted on 15 October.
 
 ## Landing a session
 
