@@ -5,6 +5,17 @@ short on purpose. Rewritten 21 August 2026 — it had reached 2,657 lines of
 chronological handovers that nobody read, which is precisely how settled questions
 kept getting reopened.
 
+## Standing instruction: git is handled in the background (set 15 Oct 2026)
+
+- Stephen does not do git work and is not asked to. Claude keeps git up to date in
+  the background: commit finished work with the attribution lines, and push to origin
+  with the PAT in `.github-token`.
+- If a piece of work needs Stephen to act, Claude says whether it is **mild**, **medium**
+  or **serious**, and drafts a short note he can paste into a separate chat. Claude does not
+  stop the current chat to deal with git.
+- Mild: a small check or a re-run. Medium: a choice that changes a result. Serious: a
+  change to method, goldens or workbooks that needs its own sitting.
+
 ## Where things live now
 
 | File | Holds | Read when |

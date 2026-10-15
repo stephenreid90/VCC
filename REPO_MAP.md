@@ -3,10 +3,10 @@
 _Generated 2026-10-15 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `2ab12fc D-80: year-10 advanced CPI lowered in every scenario (central banks do their jobs over ten years); the D-79 open item closed` on `main`
-- Unpushed commits: **1**
-- Tracked files: 361
-- Untracked files: 2
+- HEAD: `83f2902 Notes: D-80 and D-81 are pushed; the PAT works again` on `main`
+- Unpushed commits: **0**
+- Tracked files: 362
+- Untracked files: 1
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -362,5 +362,4 @@ Not in git. Either commit them or clear them — an untracked file is invisible
 to anyone who clones the repo, and is the most common way work gets lost.
 
 - `"Claude outputs/"`
-- `tests/dcf/test_chain_term_glide.py`
 

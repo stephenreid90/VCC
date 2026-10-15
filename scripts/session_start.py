@@ -102,7 +102,10 @@ def main() -> int:
         d = json.loads(cfg.read_text(encoding="utf-8"))
         for k, want in EXPECTED_BASES.items():
             got = d.get(k.lower(), {}).get("cp", {}).get("base")
-            ok = str(got) == want
+            # Compare as numbers at the precision the expected string carries
+            # ("32.40" and 32.4 are the same level).
+            places = len(want.split(".")[1]) if "." in want else 0
+            ok = got is not None and f"{float(got):.{places}f}" == want
             print(f"   {'ok ' if ok else 'FAIL'} {k}  {got}  (expect {want})")
             if not ok:
                 problems.append(f"{k} base tie moved: {got} != {want}")
