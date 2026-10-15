@@ -1,6 +1,6 @@
 # Bridge item (e): bank retained equity earns nothing until the terminal (draft for approval, 16 Oct 2026)
 
-Status: SIZED 16 Oct 2026 (section 6). Recommendation changed to option 1b. Needs Stephen's approval before any build.
+Status: APPROVED AND BUILT 16 Oct 2026 as D-83 (option 1b).
 
 ## 1. The problem
 

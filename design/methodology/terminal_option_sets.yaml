@@ -883,8 +883,8 @@ terminal_option_sets:
       bases:
       - basis: engine_current
         terminal_value: 168224.762
-        value_per_share: 32.7288
-        share_of_value: 0.6254
+        value_per_share: 34.2656
+        share_of_value: 0.5993
         tv_over_capital: 1.6364
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -895,8 +895,8 @@ terminal_option_sets:
         implied_moat_years_total: 43.7
       - basis: simple
         terminal_value: 195531.874
-        value_per_share: 36.317
-        share_of_value: 0.6599
+        value_per_share: 37.8538
+        share_of_value: 0.6349
         tv_over_capital: 1.902
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -907,8 +907,8 @@ terminal_option_sets:
         implied_moat_years_total: null
       - basis: two_stage_plus_0
         terminal_value: 102804.022
-        value_per_share: 24.1323
-        share_of_value: 0.505
+        value_per_share: 25.6691
+        share_of_value: 0.4776
         tv_over_capital: 1.0
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -919,8 +919,8 @@ terminal_option_sets:
         implied_moat_years_total: 10.0
       - basis: two_stage_plus_5
         terminal_value: 118188.175
-        value_per_share: 26.1538
-        share_of_value: 0.5398
+        value_per_share: 27.6906
+        share_of_value: 0.5124
         tv_over_capital: 1.1496
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -931,8 +931,8 @@ terminal_option_sets:
         implied_moat_years_total: 15.0
       - basis: two_stage_plus_10
         terminal_value: 131019.997
-        value_per_share: 27.84
-        share_of_value: 0.5653
+        value_per_share: 29.3768
+        share_of_value: 0.5381
         tv_over_capital: 1.2745
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -943,8 +943,8 @@ terminal_option_sets:
         implied_moat_years_total: 20.0
       - basis: two_stage_plus_20
         terminal_value: 150650.189
-        value_per_share: 30.4195
-        share_of_value: 0.5992
+        value_per_share: 31.9562
+        share_of_value: 0.5726
         tv_over_capital: 1.4654
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -955,8 +955,8 @@ terminal_option_sets:
         implied_moat_years_total: 30.0
       - basis: two_stage_perpetual
         terminal_value: 195531.874
-        value_per_share: 36.317
-        share_of_value: 0.6599
+        value_per_share: 37.8538
+        share_of_value: 0.6349
         tv_over_capital: 1.902
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -976,8 +976,8 @@ terminal_option_sets:
       bases:
       - basis: engine_current
         terminal_value: 116740.409
-        value_per_share: 23.0786
-        share_of_value: 0.597
+        value_per_share: 24.3892
+        share_of_value: 0.568
         tv_over_capital: 1.1919
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -988,8 +988,8 @@ terminal_option_sets:
         implied_moat_years_total: 37.7
       - basis: simple
         terminal_value: 123772.235
-        value_per_share: 24.0026
-        share_of_value: 0.611
+        value_per_share: 25.3132
+        share_of_value: 0.5823
         tv_over_capital: 1.2637
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1000,8 +1000,8 @@ terminal_option_sets:
         implied_moat_years_total: null
       - basis: two_stage_plus_0
         terminal_value: 97943.225
-        value_per_share: 20.6086
-        share_of_value: 0.5541
+        value_per_share: 21.9192
+        share_of_value: 0.5245
         tv_over_capital: 1.0
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1012,8 +1012,8 @@ terminal_option_sets:
         implied_moat_years_total: 10.0
       - basis: two_stage_plus_5
         terminal_value: 103341.818
-        value_per_share: 21.318
-        share_of_value: 0.5674
+        value_per_share: 22.6286
+        share_of_value: 0.5379
         tv_over_capital: 1.0551
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1024,8 +1024,8 @@ terminal_option_sets:
         implied_moat_years_total: 15.0
       - basis: two_stage_plus_10
         terminal_value: 107612.036
-        value_per_share: 21.8791
-        share_of_value: 0.5773
+        value_per_share: 23.1897
+        share_of_value: 0.5479
         tv_over_capital: 1.0987
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1036,8 +1036,8 @@ terminal_option_sets:
         implied_moat_years_total: 20.0
       - basis: two_stage_plus_20
         terminal_value: 113661.432
-        value_per_share: 22.674
-        share_of_value: 0.5906
+        value_per_share: 23.9846
+        share_of_value: 0.5615
         tv_over_capital: 1.1605
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1048,8 +1048,8 @@ terminal_option_sets:
         implied_moat_years_total: 30.0
       - basis: two_stage_perpetual
         terminal_value: 123772.235
-        value_per_share: 24.0026
-        share_of_value: 0.611
+        value_per_share: 25.3132
+        share_of_value: 0.5823
         tv_over_capital: 1.2637
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1069,8 +1069,8 @@ terminal_option_sets:
       bases:
       - basis: engine_current
         terminal_value: 140552.803
-        value_per_share: 28.2314
-        share_of_value: 0.5987
+        value_per_share: 29.5771
+        share_of_value: 0.5737
         tv_over_capital: 1.4343
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1081,8 +1081,8 @@ terminal_option_sets:
         implied_moat_years_total: 41.1
       - basis: simple
         terminal_value: 156056.469
-        value_per_share: 30.2686
-        share_of_value: 0.6236
+        value_per_share: 31.6144
+        share_of_value: 0.5991
         tv_over_capital: 1.5925
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1093,8 +1093,8 @@ terminal_option_sets:
         implied_moat_years_total: null
       - basis: two_stage_plus_0
         terminal_value: 97994.113
-        value_per_share: 22.6391
-        share_of_value: 0.5099
+        value_per_share: 23.9848
+        share_of_value: 0.4841
         tv_over_capital: 1.0
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1105,8 +1105,8 @@ terminal_option_sets:
         implied_moat_years_total: 10.0
       - basis: two_stage_plus_5
         terminal_value: 109096.153
-        value_per_share: 24.0979
-        share_of_value: 0.5366
+        value_per_share: 25.4436
+        share_of_value: 0.5109
         tv_over_capital: 1.1133
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1117,8 +1117,8 @@ terminal_option_sets:
         implied_moat_years_total: 15.0
       - basis: two_stage_plus_10
         terminal_value: 118075.385
-        value_per_share: 25.2778
-        share_of_value: 0.5562
+        value_per_share: 26.6235
+        share_of_value: 0.5306
         tv_over_capital: 1.2049
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1129,8 +1129,8 @@ terminal_option_sets:
         implied_moat_years_total: 20.0
       - basis: two_stage_plus_20
         terminal_value: 131211.408
-        value_per_share: 27.0039
-        share_of_value: 0.5821
+        value_per_share: 28.3496
+        share_of_value: 0.5568
         tv_over_capital: 1.339
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1141,8 +1141,8 @@ terminal_option_sets:
         implied_moat_years_total: 30.0
       - basis: two_stage_perpetual
         terminal_value: 156056.469
-        value_per_share: 30.2686
-        share_of_value: 0.6236
+        value_per_share: 31.6144
+        share_of_value: 0.5991
         tv_over_capital: 1.5925
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1162,8 +1162,8 @@ terminal_option_sets:
       bases:
       - basis: engine_current
         terminal_value: 167284.029
-        value_per_share: 32.3984
-        share_of_value: 0.6278
+        value_per_share: 33.9332
+        share_of_value: 0.6014
         tv_over_capital: 1.6266
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1174,8 +1174,8 @@ terminal_option_sets:
         implied_moat_years_total: 45.9
       - basis: simple
         terminal_value: 190711.522
-        value_per_share: 35.4768
-        share_of_value: 0.6579
+        value_per_share: 37.0117
+        share_of_value: 0.6324
         tv_over_capital: 1.8544
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1186,8 +1186,8 @@ terminal_option_sets:
         implied_moat_years_total: null
       - basis: two_stage_plus_0
         terminal_value: 102842.854
-        value_per_share: 23.9306
-        share_of_value: 0.509
+        value_per_share: 25.4654
+        share_of_value: 0.4812
         tv_over_capital: 1.0
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1198,8 +1198,8 @@ terminal_option_sets:
         implied_moat_years_total: 10.0
       - basis: two_stage_plus_5
         terminal_value: 117631.604
-        value_per_share: 25.8739
-        share_of_value: 0.5425
+        value_per_share: 27.4087
+        share_of_value: 0.5148
         tv_over_capital: 1.1438
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1210,8 +1210,8 @@ terminal_option_sets:
         implied_moat_years_total: 15.0
       - basis: two_stage_plus_10
         terminal_value: 129931.331
-        value_per_share: 27.4901
-        share_of_value: 0.5671
+        value_per_share: 29.025
+        share_of_value: 0.5396
         tv_over_capital: 1.2634
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1222,8 +1222,8 @@ terminal_option_sets:
         implied_moat_years_total: 20.0
       - basis: two_stage_plus_20
         terminal_value: 148668.872
-        value_per_share: 29.9523
-        share_of_value: 0.5998
+        value_per_share: 31.4871
+        share_of_value: 0.5728
         tv_over_capital: 1.4456
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1234,8 +1234,8 @@ terminal_option_sets:
         implied_moat_years_total: 30.0
       - basis: two_stage_perpetual
         terminal_value: 190711.522
-        value_per_share: 35.4768
-        share_of_value: 0.6579
+        value_per_share: 37.0117
+        share_of_value: 0.6324
         tv_over_capital: 1.8544
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1255,8 +1255,8 @@ terminal_option_sets:
       bases:
       - basis: engine_current
         terminal_value: 247682.36
-        value_per_share: 45.394
-        share_of_value: 0.6779
+        value_per_share: 47.9071
+        share_of_value: 0.6442
         tv_over_capital: 1.9866
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1267,8 +1267,8 @@ terminal_option_sets:
         implied_moat_years_total: 35.5
       - basis: simple
         terminal_value: 323639.762
-        value_per_share: 55.375
-        share_of_value: 0.7333
+        value_per_share: 57.8881
+        share_of_value: 0.7029
         tv_over_capital: 2.5959
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1279,8 +1279,8 @@ terminal_option_sets:
         implied_moat_years_total: 72.5
       - basis: two_stage_plus_0
         terminal_value: 124675.127
-        value_per_share: 29.2305
-        share_of_value: 0.5144
+        value_per_share: 31.7436
+        share_of_value: 0.4768
         tv_over_capital: 1.0
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1291,8 +1291,8 @@ terminal_option_sets:
         implied_moat_years_total: 10.0
       - basis: two_stage_plus_5
         terminal_value: 156174.801
-        value_per_share: 33.3696
-        share_of_value: 0.5703
+        value_per_share: 35.8827
+        share_of_value: 0.533
         tv_over_capital: 1.2527
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1303,8 +1303,8 @@ terminal_option_sets:
         implied_moat_years_total: 15.0
       - basis: two_stage_plus_10
         terminal_value: 183550.749
-        value_per_share: 36.9669
-        share_of_value: 0.6093
+        value_per_share: 39.48
+        share_of_value: 0.5729
         tv_over_capital: 1.4722
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1315,8 +1315,8 @@ terminal_option_sets:
         implied_moat_years_total: 20.0
       - basis: two_stage_plus_20
         terminal_value: 228020.199
-        value_per_share: 42.8103
-        share_of_value: 0.6596
+        value_per_share: 45.3234
+        share_of_value: 0.625
         tv_over_capital: 1.8289
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1327,8 +1327,8 @@ terminal_option_sets:
         implied_moat_years_total: 30.0
       - basis: two_stage_perpetual
         terminal_value: 365289.978
-        value_per_share: 60.848
-        share_of_value: 0.7563
+        value_per_share: 63.3611
+        share_of_value: 0.7275
         tv_over_capital: 2.9299
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1348,8 +1348,8 @@ terminal_option_sets:
       bases:
       - basis: engine_current
         terminal_value: 96328.864
-        value_per_share: 15.7268
-        share_of_value: 0.69
+        value_per_share: 16.3524
+        share_of_value: 0.6673
         tv_over_capital: 1.1459
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1360,8 +1360,8 @@ terminal_option_sets:
         implied_moat_years_total: null
       - basis: simple
         terminal_value: 48335.686
-        value_per_share: 9.4204
-        share_of_value: 0.5277
+        value_per_share: 10.0459
+        share_of_value: 0.5016
         tv_over_capital: 0.575
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1372,8 +1372,8 @@ terminal_option_sets:
         implied_moat_years_total: null
       - basis: two_stage_plus_0
         terminal_value: 84061.783
-        value_per_share: 14.1149
-        share_of_value: 0.6602
+        value_per_share: 14.7404
+        share_of_value: 0.6364
         tv_over_capital: 1.0
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1384,8 +1384,8 @@ terminal_option_sets:
         implied_moat_years_total: 10.0
       - basis: two_stage_plus_5
         terminal_value: 74520.381
-        value_per_share: 12.8611
-        share_of_value: 0.6327
+        value_per_share: 13.4867
+        share_of_value: 0.6081
         tv_over_capital: 0.8865
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1396,8 +1396,8 @@ terminal_option_sets:
         implied_moat_years_total: 15.0
       - basis: two_stage_plus_10
         terminal_value: 67527.21
-        value_per_share: 11.9422
-        share_of_value: 0.6095
+        value_per_share: 12.5677
+        share_of_value: 0.5844
         tv_over_capital: 0.8033
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1408,8 +1408,8 @@ terminal_option_sets:
         implied_moat_years_total: 20.0
       - basis: two_stage_plus_20
         terminal_value: 58645.085
-        value_per_share: 10.7751
-        share_of_value: 0.5754
+        value_per_share: 11.4006
+        share_of_value: 0.5498
         tv_over_capital: 0.6976
         forward_ebit_multiple: null
         forward_ebitda_multiple: null
@@ -1420,8 +1420,8 @@ terminal_option_sets:
         implied_moat_years_total: 30.0
       - basis: two_stage_perpetual
         terminal_value: 48335.686
-        value_per_share: 9.4204
-        share_of_value: 0.5277
+        value_per_share: 10.0459
+        share_of_value: 0.5016
         tv_over_capital: 0.575
         forward_ebit_multiple: null
         forward_ebitda_multiple: null

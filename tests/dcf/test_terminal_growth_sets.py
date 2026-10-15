@@ -92,9 +92,11 @@ def test_d79_moved_the_levels_as_disclosed(by_key):
     +3% / -2%. The typed rate's level is re-run on today's paths too, so this is a
     like-for-like reading of the growth judgement alone."""
     want = {
-        ("wbc", "orderly_convergence"): 0.121, ("wbc", "muddle_through"): 0.038,
-        ("wbc", "ai_productivity_lag"): 0.054, ("wbc", "fragmentation"): 0.013,
-        ("wbc", "disorderly_climate_crystallisation"): -0.003, ("wbc", "stagflation_persists"): -0.035,
+        # WBC re-pinned 16 Oct 2026 (option 1b, retained equity earns Ke): OC 0.121 -> 0.1146,
+        # MT 0.038 -> 0.0364, AI 0.054 -> 0.0522, Frag 0.013 -> 0.0124, Stag -0.035 -> -0.0339.
+        ("wbc", "orderly_convergence"): 0.1146, ("wbc", "muddle_through"): 0.0364,
+        ("wbc", "ai_productivity_lag"): 0.0522, ("wbc", "fragmentation"): 0.0124,
+        ("wbc", "disorderly_climate_crystallisation"): -0.0032, ("wbc", "stagflation_persists"): -0.0339,
         # CSL re-pinned 15 Oct 2026 (item (c), US driver): OC 0.095 -> 0.0943, MT 0.090 -> 0.0899,
         # Frag 0.032 -> 0.0294, Stag -0.023 -> -0.011.
         ("csl", "orderly_convergence"): 0.0943, ("csl", "muddle_through"): 0.0899,

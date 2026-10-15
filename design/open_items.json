@@ -628,9 +628,9 @@
     "source": "review-2026-10-16",
     "area": "Methodology",
     "issue": "<b>Bank retained equity earns nothing until the terminal (bridge item e).</b> This lowers WBC's value in Disorderly Climate and Stagflation, through the dividend cut under the CET1 floor (D-60).",
-    "treatment": "Proposed fix drafted for approval. Serious change: WBC levels move in two scenarios.",
+    "treatment": "Built 16 Oct 2026 as D-83 (option 1b): retained equity earns Ke as cash in the explicit years. WBC levels +4 to +6%.",
     "questions": [],
-    "status": "NEEDS",
+    "status": "DONE",
     "batch": "Batch 6"
   },
   {

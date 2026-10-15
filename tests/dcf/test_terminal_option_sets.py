@@ -132,7 +132,7 @@ def test_engine_current_reproduces_every_engine_value_per_share(rows):
     # 33.0779 -> 32.2655; 208.8861 -> 203.4633).
     # D-81 (15 Oct 2026): current-cycle chain terms glide to equilibrium inside the
     # explicit period (2.1059 -> 2.0067; 32.2655 -> 32.3984; CSL unchanged).
-    pinned = {("dnl", "muddle_through"): 2.0067, ("wbc", "muddle_through"): 32.3984,
+    pinned = {("dnl", "muddle_through"): 2.0067, ("wbc", "muddle_through"): 33.9332,  # 16 Oct 2026: option 1b (retained equity earns Ke)
               ("csl", "muddle_through"): 203.5226}  # 15 Oct 2026: US driver (item (c))
     for key, vps in pinned.items():
         v = next(x for x in rows if (x.company_id, x.scenario_id) == key)

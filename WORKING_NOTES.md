@@ -45,6 +45,12 @@ took follow-up (f) and closed it as **D-81** (the D-36 fade retired). This block
 203.46 under D-80). Commits on `main`, pushed to origin at the end of each sitting. The
 PAT in `.github-token` was replaced on 15 Oct and works again (D-80 and D-81 pushed).
 
+### D-83 DONE -- retained bank equity earns Ke as cash (bridge item (e), 16 Oct)
+
+Plain terms: in the bank model, profit kept in the bank used to earn nothing until the terminal. Now it earns the cost of equity, and that income is paid to shareholders. WBC levels rise 4 to 6% in every scenario. The payout cut (D-60) now raises value everywhere. Suite: 700 passed, 1 skipped (incl. one new check); base ties DNL 2.007 / WBC 33.93 / CSL 203.52.
+
+**Still open:** healthcare premium over CPI (CSL); bank NIM rule (b); level anchors (d); the 59 older tracker items need a review pass; AI Lag / Disorderly US shape; DNL and CSL terminal returns (Stephen's judgement).
+
 ### D-82 DONE -- CSL on US real GDP plus advanced CPI; volume/price split (item (c), 15 Oct)
 
 Plain terms: CSL's three segments grew on world real GDP. They now grow on US real GDP, with advanced CPI as the price rate. Volume is the rest. Four US paths were drafted and approved (see DECISIONS.md D-82). Suite: 404 + 293 = 697 passed, 1 skipped. Base ties: DNL 2.007, WBC 32.40, CSL 203.52 (was 203.46). `session_start.py` now compares numbers, not text.

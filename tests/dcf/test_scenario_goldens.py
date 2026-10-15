@@ -149,6 +149,9 @@ DNL_GOLDEN = {
 
 # --- WBC: bank DDM / Ke (§15), AUD per share -----------------------------------
 WBC_GOLDEN = {
+    # Re-pinned 16 Oct 2026 for bridge item (e), option 1b: retained equity earns Ke as cash
+    # in the explicit years (BankInputs.retained_earns_ke). Before: 45.3940 / 32.3984 / 32.7288 /
+    # 28.2314 / 23.0786 / 15.7268. Every level rises 4-6%. The payout cut no longer lowers value.
     # Re-pinned 15 Oct 2026 for D-81: the share-loss offset (-15bp, current-cycle
     # since D-79) glides to zero by Y5 instead of running ten years and vanishing
     # at the terminal. A drag that fades sooner lifts every level 0.1-0.5%:
@@ -200,12 +203,12 @@ WBC_GOLDEN = {
     # the explicit path and the derived g move: g 5.06 (capped) / 4.14 / 4.20 / 3.56 /
     # 3.10 / 1.54%. OC -3.9%, MT -2.5%, AI Lag -1.5%, Frag -1.5%, DCC -0.7%, Stag -0.6%.
     # Before: 46.9911 / 33.0779 / 33.0905 / 28.5658 / 23.2017 / 15.7985.
-    "orderly_convergence": 45.3940,                # binds Y4
-    "muddle_through": 32.3984,                     # binds Y7
-    "ai_productivity_lag": 32.7288,
-    "fragmentation": 28.2314,
-    "disorderly_climate_crystallisation": 23.0786,
-    "stagflation_persists": 15.7268,
+    "orderly_convergence": 47.9071,                # binds Y4
+    "muddle_through": 33.9332,                     # binds Y7
+    "ai_productivity_lag": 34.2656,
+    "fragmentation": 29.5771,
+    "disorderly_climate_crystallisation": 24.3892,
+    "stagflation_persists": 16.3524,
 }
 
 # --- CSL: multi-segment FCFF / Ke (M3), (USD, AUD) per share -------------------
@@ -402,12 +405,13 @@ def test_terminal_shares_are_measured_case_by_case():
     # D-79 (14 Oct 2026): a higher derived g lifts every WBC terminal share (OC
     # 0.6373 -> 0.6864, Stag 0.6926 -> 0.6849 the other way); none crosses 70%.
     wbc_shares = {
+        # Re-pinned 16 Oct 2026 (option 1b): the explicit value rises, so every WBC terminal share falls.
         # D-80 (14 Oct 2026): lower g takes every share down 0.2-1.3pt (OC 0.6864 -> 0.6736).
         # D-81 (15 Oct 2026): the offset glide lifts every share 0.4-0.7pt; Stagflation
         # 0.6826 -> 0.6900 is the closest to the 70% line in the project.
-        "orderly_convergence": 0.6779, "muddle_through": 0.6278, "ai_productivity_lag": 0.6254,
-        "fragmentation": 0.5987, "disorderly_climate_crystallisation": 0.5970,
-        "stagflation_persists": 0.6900,
+        "orderly_convergence": 0.6442, "muddle_through": 0.6014, "ai_productivity_lag": 0.5993,
+        "fragmentation": 0.5737, "disorderly_climate_crystallisation": 0.5680,
+        "stagflation_persists": 0.6673,
     }
     # CSL re-pinned 14 Oct 2026 (step 3): the 20-30 year decay horizon takes every
     # terminal share down 7-8 points. Gordon shares before: 0.5987, 0.5738, 0.5648,

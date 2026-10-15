@@ -288,7 +288,8 @@ def test_the_constraint_is_on_by_default_and_gives_the_ratified_level():
     # 31.0502 -> 33.0779 on the derived terminal growth (4.5%, was typed 3.5%).
     # D-80 (same day): 33.0779 -> 32.2655 on the lower year-10 CPI; binds at Y6 now.
     # D-81 (15 Oct 2026): 32.2655 -> 32.3984 as the share-loss offset glides to zero by Y5.
-    assert r.value_per_share == pytest.approx(32.3984, abs=1e-3)
+    # 16 Oct 2026 (option 1b, retained equity earns Ke as cash): 32.3984 -> 33.9332.
+    assert r.value_per_share == pytest.approx(33.9332, abs=1e-3)
     assert r.capital_constraint_binds_from == "Y6"
     assert r.dividends_forgone > 0
 
@@ -373,7 +374,10 @@ def test_the_constraint_raises_value_which_is_the_retention_trade():
     # per scenario with the arithmetic beside it. Letting retained equity earn
     # inside the explicit period is a modelling gap (bridge note item (e)), not
     # fixed here.
-    falls = {"disorderly_climate_crystallisation", "stagflation_persists"}
+    # 16 Oct 2026 (option 1b): retained equity earns Ke as cash in the explicit years, so the
+    # cut now raises value in every scenario. The 'falls' set that the 15 Oct reading pinned
+    # (Disorderly Climate and Stagflation) is empty.
+    falls = set()
     for s in SCENARIOS:
         inp = _off(s)
         multiple = (inp.terminal_roe - inp.terminal_growth) / (inp.cost_of_equity - inp.terminal_growth)

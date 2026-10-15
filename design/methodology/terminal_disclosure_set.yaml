@@ -174,9 +174,9 @@ terminal_disclosure_set:
 
       '
     terminal_value: 168224.762
-    value_per_share: 32.7288
+    value_per_share: 34.2656
     engine_terminal_value: 168224.762
-    engine_value_per_share: 32.7288
+    engine_value_per_share: 34.2656
   - company: wbc
     scenario: disorderly_climate_crystallisation
     available: true
@@ -197,9 +197,9 @@ terminal_disclosure_set:
 
       '
     terminal_value: 116740.409
-    value_per_share: 23.0786
+    value_per_share: 24.3892
     engine_terminal_value: 116740.409
-    engine_value_per_share: 23.0786
+    engine_value_per_share: 24.3892
   - company: wbc
     scenario: fragmentation
     available: true
@@ -220,9 +220,9 @@ terminal_disclosure_set:
 
       '
     terminal_value: 140552.803
-    value_per_share: 28.2314
+    value_per_share: 29.5771
     engine_terminal_value: 140552.803
-    engine_value_per_share: 28.2314
+    engine_value_per_share: 29.5771
   - company: wbc
     scenario: muddle_through
     available: true
@@ -243,9 +243,9 @@ terminal_disclosure_set:
 
       '
     terminal_value: 167284.029
-    value_per_share: 32.3984
+    value_per_share: 33.9332
     engine_terminal_value: 167284.029
-    engine_value_per_share: 32.3984
+    engine_value_per_share: 33.9332
   - company: wbc
     scenario: orderly_convergence
     available: true
@@ -266,9 +266,9 @@ terminal_disclosure_set:
 
       '
     terminal_value: 247682.36
-    value_per_share: 45.394
+    value_per_share: 47.9071
     engine_terminal_value: 247682.36
-    engine_value_per_share: 45.394
+    engine_value_per_share: 47.9071
   - company: wbc
     scenario: stagflation_persists
     available: true
@@ -289,9 +289,9 @@ terminal_disclosure_set:
 
       '
     terminal_value: 96328.864
-    value_per_share: 15.7268
+    value_per_share: 16.3524
     engine_terminal_value: 96328.864
-    engine_value_per_share: 15.7268
+    engine_value_per_share: 16.3524
   - company: csl
     scenario: ai_productivity_lag
     available: true

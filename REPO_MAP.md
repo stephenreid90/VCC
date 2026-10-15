@@ -3,10 +3,10 @@
 _Generated 2026-10-15 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `35ec07d Item (c): draft CSL volume/price split and US GDP paths for Stephen's approval` on `main`
+- HEAD: `17765d3 Item (e): sizing of retained-equity options for WBC; recommendation revised to option 1b` on `main`
 - Unpushed commits: **0**
-- Tracked files: 363
-- Untracked files: 1
+- Tracked files: 366
+- Untracked files: 0
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -109,7 +109,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `build_plan.html` (15.3KB)
   - `engine_implementation_plan.md` (16.5KB)
   - `open_items.css` (3.5KB)
-  - `open_items.json` (39.3KB)
+  - `open_items.json` (42.3KB)
   - `open_questions.json` (1.2KB)
   - `scenarios_workshop.md` (13.6KB)
   - `scenarios_workshop_prep.md` (19.7KB)
@@ -172,7 +172,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - **dcf/**
       - `__init__.py` (51B)
       - `bank_capital.py` (9.8KB)
-      - `bank_engine.py` (22.1KB)
+      - `bank_engine.py` (23.3KB)
       - `fcf_engine.py` (31.9KB)
       - `fcf_stub.py` (10.1KB)
       - `segment_engine.py` (13.6KB)
@@ -206,7 +206,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `terminal_form_baseline.json` (2.1KB)
   - `test_adjustments.py` (1.6KB)
   - `test_archetypes_validate.py` (10.2KB)
-  - `test_bank_capital.py` (19.5KB)
+  - `test_bank_capital.py` (19.8KB)
   - `test_comps.py` (670B)
   - `test_csl_loads.py` (2.3KB)
   - `test_dcf.py` (1.4KB)
@@ -242,15 +242,15 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `test_horizon_variant_sets.py` (5.1KB)
     - `test_per_year_derivations.py` (3.8KB)
     - `test_replica_ties_engine.py` (6.6KB)
-    - `test_scenario_goldens.py` (25.8KB)
+    - `test_scenario_goldens.py` (26.2KB)
     - `test_terminal_defence.py` (7.0KB)
     - `test_terminal_form.py` (8.8KB)
     - `test_terminal_form_bank_segment.py` (6.8KB)
-    - `test_terminal_growth_sets.py` (4.8KB)
+    - `test_terminal_growth_sets.py` (5.0KB)
     - `test_terminal_option_sets.py` (12.3KB)
     - `test_terminal_return_sets.py` (11.3KB)
     - `test_two_stage_disclosure.py` (7.5KB)
-    - `test_wbc_bank.py` (8.4KB)
+    - `test_wbc_bank.py` (9.3KB)
     - **golden/**
       - `__init__.py` (0B)
       - `_recalc.py` (4.2KB)
@@ -276,7 +276,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `README.md` (893B)
     - `beta_data.py` (10.0KB)
     - `build_cfgs.py` (94.6KB)
-    - `cfgs_gen.json` (246.0KB)
+    - `cfgs_gen.json` (246.1KB)
     - `engine_workbook.py` (114.0KB)
     - `gen_ui.py` (89.4KB)
 
@@ -356,11 +356,4 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `wbc_muddle_through_valuation_v4_formulas.xlsx` (12.5KB)
       - `wbc_scenarios_comparison_v1.xlsx` (11.6KB)
       - `wbc_scenarios_comparison_v2.xlsx` (11.6KB)
-
-## Untracked files
-
-Not in git. Either commit them or clear them — an untracked file is invisible
-to anyone who clones the repo, and is the most common way work gets lost.
-
-- `tests/dcf/test_csl_volume_price_split.py`
 

@@ -52,7 +52,7 @@ def _at_five_years(inp):
     if inp.scenario_id in V4_WORKBOOK_AIEA_G:
         path = [V4_WORKBOOK_AIEA_G[inp.scenario_id]] * 5
     return replace(
-        inp, horizon_years=5,
+        inp, horizon_years=5, retained_earns_ke=False,  # 16 Oct 2026: the v4 workbook has no retained income
         aiea_growth=path,
         nim_applied=inp.nim_applied[:6], cost_to_income=inp.cost_to_income[:6],
         credit_loss_rate=inp.credit_loss_rate[:6],
@@ -117,7 +117,8 @@ def test_at_ten_years_the_constraint_binds_in_muddle_through_too():
     D-81 (15 Oct 2026): 32.2655 -> 32.3984 as the share-loss offset glides to zero by Y5."""
     r = _run("muddle_through")
     assert len(r.period_labels) == 11   # stub + Y1..Y10
-    assert r.value_per_share == pytest.approx(32.3984, abs=1e-3)
+    # 16 Oct 2026 (option 1b, retained equity earns Ke): 32.3984 -> 33.9332.
+    assert r.value_per_share == pytest.approx(33.9332, abs=1e-3)
     assert r.capital_constraint_binds_from == "Y6"   # Y7 before D-80; knife-edge, see test_bank_capital
     assert r.dividends_forgone > 0
 
@@ -161,3 +162,19 @@ def test_derivation_headline_is_value_per_share():
     r = BankEngine().run(bi)
     d = BankEngine().derivation(bi, r)
     assert d.result == pytest.approx(r.value_per_share, abs=1e-9)
+
+
+def test_retained_income_is_the_cost_of_equity_on_the_opening_retained_balance():
+    """16 Oct 2026 (bridge item (e), option 1b). An independent hand computation of the cash
+    earned on retained equity in the explicit years, checked against the engine's line. The
+    audited workbook has no such line, so the workbook ties switch it off and this test is the
+    check on it."""
+    for scen in SCENARIOS:
+        r = _run(scen)
+        ke = r.cost_of_equity
+        bal, pv = 0.0, 0.0
+        for p in range(len(r.retained_by_period)):
+            pv += ke * bal * r.period_length[p] * r.discount_factors[p]
+            bal += r.retained_by_period[p]
+        assert r.pv_retained_income == pytest.approx(pv, rel=1e-12), scen
+        assert r.pv_retained_income > 0.0, scen

@@ -97,6 +97,10 @@ class BankInputs:
     # Switchable because the audited v4 workbook has no capital constraint, so the
     # independent tie is struck on the unconstrained path (tests/dcf/test_wbc_bank).
     constrain_payout_to_capital: bool = True
+    # 16 Oct 2026 (bridge item (e), option 1b). True: retained equity earns Ke as cash in the
+    # explicit years. False: the audited v4 workbook's mechanics (no retained income), used by
+    # the workbook ties only.
+    retained_earns_ke: bool = True
 
 
 @dataclass
@@ -165,6 +169,9 @@ class BankResult:
     payout_applied: List[float] = field(default_factory=list)
     capital_constraint_binds_from: Optional[str] = None
     dividends_forgone: float = 0.0
+    # 16 Oct 2026 (option 1b): the PV of cash earned on retained equity in the explicit years,
+    # already included in pv_explicit_dividends.
+    pv_retained_income: float = 0.0
 
 
 class BankEngine:
@@ -282,7 +289,18 @@ class BankEngine:
         mid_times = [inp.stub_years / 2.0] + [inp.stub_years + (k - 0.5) for k in range(1, H + 1)]  # ssot-allow: structural mid-period offset
         dfs = [1.0 / (1.0 + ke) ** t for t in mid_times]
         pv_div = [dividends[p] * dfs[p] for p in range(n)]
-        pv_explicit = sum(pv_div)
+        # 16 Oct 2026 (bridge item (e), option 1b, approved by Stephen): retained equity earns the
+        # cost of equity as cash in the explicit years, received by shareholders as extra
+        # dividends. The principal stays in book equity and the terminal is unchanged. Before
+        # this, retained equity earned nothing until the terminal. The income is in the explicit
+        # value (pv_explicit_dividends) and reported on its own as pv_retained_income.
+        _bal = 0.0
+        pv_retained_income = 0.0
+        for p in range(n):
+            if inp.retained_earns_ke:
+                pv_retained_income += ke * _bal * period_length[p] * dfs[p]
+            _bal += npat[p] - dividends[p]
+        pv_explicit = sum(pv_div) + pv_retained_income
 
         retained_by_period = [npat[p] - dividends[p] for p in range(n)]
         book_equity_path: List[float] = []
@@ -380,6 +398,7 @@ class BankEngine:
             payout_applied=payout_applied,
             capital_constraint_binds_from=binds_from,
             dividends_forgone=forgone,
+            pv_retained_income=pv_retained_income,
         )
 
     def per_year_derivation(self, result: BankResult):
