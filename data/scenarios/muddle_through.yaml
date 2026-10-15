@@ -56,13 +56,13 @@ scenario:
     - variable: seasonal_vaccines_nominal_growth
       units: percent_yoy
       type: time_series
-      # real_gdp_growth_world + cpi_inflation_advanced plus a fixed gap of -3.16pp (spread, not multiple)
+      # real_gdp_growth_us + cpi_inflation_advanced plus a fixed gap of -3.16pp (spread, not multiple)
       time_series:
-        - {year: 1, value: 2.14}
-        - {year: 3, value: 2.14}
+        - {year: 1, value: 2.24}
+        - {year: 3, value: 2.19}
         - {year: 5, value: 2.14}
-        - {year: 7, value: 1.94}
-        - {year: 10, value: 1.64}
+        - {year: 7, value: 1.9}
+        - {year: 10, value: 1.54}
     # END derived paths
     # BEGIN derived paths (specialty_pharmaceuticals)
     # Written by scripts/derive_macro_driver_paths.py from the derivations declared in
@@ -71,13 +71,13 @@ scenario:
     - variable: specialty_pharma_nominal_growth
       units: percent_yoy
       type: time_series
-      # real_gdp_growth_world + cpi_inflation_advanced plus a fixed gap of +1.84pp (spread, not multiple)
+      # real_gdp_growth_us + cpi_inflation_advanced plus a fixed gap of +1.84pp (spread, not multiple)
       time_series:
-        - {year: 1, value: 7.14}
-        - {year: 3, value: 7.14}
+        - {year: 1, value: 7.24}
+        - {year: 3, value: 7.19}
         - {year: 5, value: 7.14}
-        - {year: 7, value: 6.94}
-        - {year: 10, value: 6.64}
+        - {year: 7, value: 6.9}
+        - {year: 10, value: 6.54}
     # END derived paths
     # BEGIN derived paths (plasma_derived_therapies)
     # Written by scripts/derive_macro_driver_paths.py from the derivations declared in
@@ -86,13 +86,13 @@ scenario:
     - variable: plasma_therapies_nominal_growth
       units: percent_yoy
       type: time_series
-      # real_gdp_growth_world + cpi_inflation_advanced plus a fixed gap of +0.34pp (spread, not multiple)
+      # real_gdp_growth_us + cpi_inflation_advanced plus a fixed gap of +0.34pp (spread, not multiple)
       time_series:
-        - {year: 1, value: 5.64}
-        - {year: 3, value: 5.64}
+        - {year: 1, value: 5.74}
+        - {year: 3, value: 5.69}
         - {year: 5, value: 5.64}
-        - {year: 7, value: 5.44}
-        - {year: 10, value: 5.14}
+        - {year: 7, value: 5.4}
+        - {year: 10, value: 5.04}
     # END derived paths
     # BEGIN derived paths (industrial_explosives)
     # Written by scripts/derive_macro_driver_paths.py from the derivations declared in

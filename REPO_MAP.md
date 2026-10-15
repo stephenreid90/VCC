@@ -3,9 +3,9 @@
 _Generated 2026-10-15 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `83f2902 Notes: D-80 and D-81 are pushed; the PAT works again` on `main`
+- HEAD: `35ec07d Item (c): draft CSL volume/price split and US GDP paths for Stephen's approval` on `main`
 - Unpushed commits: **0**
-- Tracked files: 362
+- Tracked files: 363
 - Untracked files: 1
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
@@ -86,22 +86,22 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `australian_major_banks.yaml` (21.3KB)
     - `industrial_explosives.md` (14.6KB)
     - `industrial_explosives.yaml` (15.0KB)
-    - `plasma_derived_therapies.yaml` (8.9KB)
-    - `specialty_pharmaceuticals.yaml` (4.0KB)
-    - `vaccines.yaml` (4.7KB)
+    - `plasma_derived_therapies.yaml` (9.1KB)
+    - `specialty_pharmaceuticals.yaml` (4.2KB)
+    - `vaccines.yaml` (4.9KB)
   - **scenarios/**
     - `ai_productivity_lag.md` (8.9KB)
-    - `ai_productivity_lag.yaml` (13.1KB)
+    - `ai_productivity_lag.yaml` (13.6KB)
     - `disorderly_climate_crystallisation.md` (8.6KB)
-    - `disorderly_climate_crystallisation.yaml` (13.8KB)
+    - `disorderly_climate_crystallisation.yaml` (14.2KB)
     - `fragmentation.md` (7.9KB)
-    - `fragmentation.yaml` (13.7KB)
+    - `fragmentation.yaml` (14.1KB)
     - `muddle_through.md` (8.2KB)
     - `muddle_through.yaml` (12.3KB)
     - `orderly_convergence.md` (7.0KB)
     - `orderly_convergence.yaml` (12.7KB)
     - `stagflation_persists.md` (6.9KB)
-    - `stagflation_persists.yaml` (13.2KB)
+    - `stagflation_persists.yaml` (13.8KB)
 
 ## Design and methodology
 
@@ -164,7 +164,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **vcc_valuations/**
     - `__init__.py` (667B)
     - `derivation.py` (4.4KB)
-    - `translator.py` (93.1KB)
+    - `translator.py` (94.6KB)
     - **assumptions/**
       - `__init__.py` (775B)
       - `trade_working_capital.py` (5.8KB)
@@ -189,7 +189,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `company.py` (13.4KB)
       - `driver.py` (4.1KB)
       - `frameworks.py` (4.5KB)
-      - `industry.py` (27.6KB)
+      - `industry.py` (28.0KB)
       - `linkage.py` (12.4KB)
       - `scenario.py` (5.0KB)
 
@@ -215,7 +215,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `test_engine_workbook.py` (4.7KB)
   - `test_generator_scripts_parse.py` (4.6KB)
   - `test_implied_emrp.py` (2.2KB)
-  - `test_macro_driver_paths.py` (12.5KB)
+  - `test_macro_driver_paths.py` (12.6KB)
   - `test_moat_source_roles.py` (4.2KB)
   - `test_ssot_lint.py` (31.3KB)
   - `test_three_statement.py` (717B)
@@ -226,11 +226,12 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **dcf/**
     - `__init__.py` (0B)
     - `test_chain_term_glide.py` (9.3KB)
-    - `test_csl_segment.py` (5.3KB)
+    - `test_csl_segment.py` (5.4KB)
+    - `test_csl_volume_price_split.py` (2.3KB)
     - `test_csl_workbook_tie.py` (3.8KB)
     - `test_d72_bank_and_segment_paths.py` (7.0KB)
     - `test_declared_terminal_return.py` (5.7KB)
-    - `test_derived_terminal_growth_bank_segment.py` (6.0KB)
+    - `test_derived_terminal_growth_bank_segment.py` (6.1KB)
     - `test_dnl_all_scenarios.py` (7.6KB)
     - `test_dnl_mt_from_data.py` (14.2KB)
     - `test_dnl_mt_ratified.py` (7.5KB)
@@ -241,11 +242,11 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `test_horizon_variant_sets.py` (5.1KB)
     - `test_per_year_derivations.py` (3.8KB)
     - `test_replica_ties_engine.py` (6.6KB)
-    - `test_scenario_goldens.py` (25.4KB)
+    - `test_scenario_goldens.py` (25.8KB)
     - `test_terminal_defence.py` (7.0KB)
     - `test_terminal_form.py` (8.8KB)
     - `test_terminal_form_bank_segment.py` (6.8KB)
-    - `test_terminal_growth_sets.py` (4.6KB)
+    - `test_terminal_growth_sets.py` (4.8KB)
     - `test_terminal_option_sets.py` (12.3KB)
     - `test_terminal_return_sets.py` (11.3KB)
     - `test_two_stage_disclosure.py` (7.5KB)
@@ -361,5 +362,5 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 Not in git. Either commit them or clear them — an untracked file is invisible
 to anyone who clones the repo, and is the most common way work gets lost.
 
-- `"Claude outputs/"`
+- `tests/dcf/test_csl_volume_price_split.py`
 

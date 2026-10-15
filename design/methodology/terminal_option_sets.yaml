@@ -1693,127 +1693,127 @@ terminal_option_sets:
       construction: segment_roic
       horizon_years: 10
       cost_of_capital: 0.0875
-      terminal_growth: 0.035448
-      capital_at_T: 22612.396
-      earned_return: 0.259107
+      terminal_growth: 0.034848
+      capital_at_T: 22604.166
+      earned_return: 0.258842
       bases:
       - basis: engine_current
-        terminal_value: 66146.008
-        value_per_share: 155.2421
-        share_of_value: 0.4873
-        tv_over_capital: 2.9252
-        forward_ebit_multiple: 9.032
-        forward_ebitda_multiple: 7.6
+        terminal_value: 65827.274
+        value_per_share: 155.0093
+        share_of_value: 0.4855
+        tv_over_capital: 2.9122
+        forward_ebit_multiple: 9.001
+        forward_ebitda_multiple: 7.574
         forward_pe: null
-        implied_perpetual_return: 0.187711
-        implied_return_on_new_capital: 0.085965
+        implied_perpetual_return: 0.188179
+        implied_return_on_new_capital: 0.08549
         implied_moat_status: finite
-        implied_moat_years_total: 27.9
+        implied_moat_years_total: 27.8
       - basis: simple
-        terminal_value: 113909.778
-        value_per_share: 220.5598
-        share_of_value: 0.6207
-        tv_over_capital: 5.0375
-        forward_ebit_multiple: 15.553
-        forward_ebitda_multiple: 13.089
+        terminal_value: 112541.835
+        value_per_share: 218.8922
+        share_of_value: 0.6174
+        tv_over_capital: 4.9788
+        forward_ebit_multiple: 15.388
+        forward_ebitda_multiple: 12.949
         forward_pe: null
-        implied_perpetual_return: 0.297659
+        implied_perpetual_return: 0.296991
         implied_return_on_new_capital: null
         implied_moat_status: perpetual_or_more
         implied_moat_years_total: null
       - basis: two_stage_plus_0
-        terminal_value: 22612.396
-        value_per_share: 95.7091
-        share_of_value: 0.2452
+        terminal_value: 22604.166
+        value_per_share: 95.901
+        share_of_value: 0.2448
         tv_over_capital: 1.0
-        forward_ebit_multiple: 3.088
-        forward_ebitda_multiple: 2.598
+        forward_ebit_multiple: 3.091
+        forward_ebitda_multiple: 2.601
         forward_pe: null
         implied_perpetual_return: 0.0875
         implied_return_on_new_capital: null
         implied_moat_status: finite
         implied_moat_years_total: 10.0
       - basis: two_stage_plus_5
-        terminal_value: 38825.417
-        value_per_share: 117.8807
-        share_of_value: 0.3581
-        tv_over_capital: 1.717
+        terminal_value: 38768.508
+        value_per_share: 118.006
+        share_of_value: 0.3573
+        tv_over_capital: 1.7151
         forward_ebit_multiple: 5.301
         forward_ebitda_multiple: 4.461
         forward_pe: null
-        implied_perpetual_return: 0.124821
+        implied_perpetual_return: 0.125152
         implied_return_on_new_capital: null
         implied_moat_status: finite
         implied_moat_years_total: 15.0
       - basis: two_stage_plus_10
-        terminal_value: 51512.432
-        value_per_share: 135.2304
-        share_of_value: 0.4253
-        tv_over_capital: 2.2781
-        forward_ebit_multiple: 7.034
-        forward_ebitda_multiple: 5.919
+        terminal_value: 51380.829
+        value_per_share: 135.2535
+        share_of_value: 0.4242
+        tv_over_capital: 2.2731
+        forward_ebit_multiple: 7.025
+        forward_ebitda_multiple: 5.912
         forward_pe: null
-        implied_perpetual_return: 0.154025
+        implied_perpetual_return: 0.154529
         implied_return_on_new_capital: null
         implied_moat_status: finite
         implied_moat_years_total: 20.0
       - basis: two_stage_plus_20
-        terminal_value: 69209.015
-        value_per_share: 159.4308
-        share_of_value: 0.4986
-        tv_over_capital: 3.0607
-        forward_ebit_multiple: 9.45
-        forward_ebitda_multiple: 7.952
+        terminal_value: 68900.036
+        value_per_share: 159.2113
+        share_of_value: 0.4969
+        tv_over_capital: 3.0481
+        forward_ebit_multiple: 9.421
+        forward_ebitda_multiple: 7.928
         forward_pe: null
-        implied_perpetual_return: 0.194761
+        implied_perpetual_return: 0.195337
         implied_return_on_new_capital: null
         implied_moat_status: finite
         implied_moat_years_total: 30.0
       - basis: two_stage_perpetual
-        terminal_value: 97161.919
-        value_per_share: 197.6568
-        share_of_value: 0.5826
-        tv_over_capital: 4.2968
-        forward_ebit_multiple: 13.267
-        forward_ebitda_multiple: 11.164
+        terminal_value: 96163.98
+        value_per_share: 196.4952
+        share_of_value: 0.5796
+        tv_over_capital: 4.2543
+        forward_ebit_multiple: 13.149
+        forward_ebitda_multiple: 11.065
         forward_pe: null
-        implied_perpetual_return: 0.259107
+        implied_perpetual_return: 0.258842
         implied_return_on_new_capital: null
         implied_moat_status: perpetual_or_more
         implied_moat_years_total: null
       - basis: exit_8x_ebitda
-        terminal_value: 69623.315
-        value_per_share: 159.9973
-        share_of_value: 0.5001
-        tv_over_capital: 3.079
-        forward_ebit_multiple: 9.506
+        terminal_value: 69529.455
+        value_per_share: 160.0721
+        share_of_value: 0.4992
+        tv_over_capital: 3.076
+        forward_ebit_multiple: 9.507
         forward_ebitda_multiple: 8.0
         forward_pe: null
-        implied_perpetual_return: 0.195715
+        implied_perpetual_return: 0.196803
         implied_return_on_new_capital: null
         implied_moat_status: finite
-        implied_moat_years_total: 30.3
+        implied_moat_years_total: 30.5
       - basis: exit_10x_ebitda
-        terminal_value: 87029.144
-        value_per_share: 183.8001
-        share_of_value: 0.5556
-        tv_over_capital: 3.8487
-        forward_ebit_multiple: 11.883
+        terminal_value: 86911.818
+        value_per_share: 183.8427
+        share_of_value: 0.5548
+        tv_over_capital: 3.8449
+        forward_ebit_multiple: 11.884
         forward_ebitda_multiple: 10.0
         forward_pe: null
-        implied_perpetual_return: 0.235782
+        implied_perpetual_return: 0.237291
         implied_return_on_new_capital: null
         implied_moat_status: finite
-        implied_moat_years_total: 50.7
+        implied_moat_years_total: 51.8
       - basis: exit_12x_ebitda
-        terminal_value: 104434.972
-        value_per_share: 207.6028
-        share_of_value: 0.6001
-        tv_over_capital: 4.6185
+        terminal_value: 104294.182
+        value_per_share: 207.6134
+        share_of_value: 0.5992
+        tv_over_capital: 4.6139
         forward_ebit_multiple: 14.26
         forward_ebitda_multiple: 12.0
         forward_pe: null
-        implied_perpetual_return: 0.275849
+        implied_perpetual_return: 0.27778
         implied_return_on_new_capital: null
         implied_moat_status: perpetual_or_more
         implied_moat_years_total: null
@@ -1823,126 +1823,126 @@ terminal_option_sets:
       horizon_years: 10
       cost_of_capital: 0.0875
       terminal_growth: 0.048575
-      capital_at_T: 23510.004
-      earned_return: 0.319422
+      capital_at_T: 23494.029
+      earned_return: 0.319064
       bases:
       - basis: engine_current
-        terminal_value: 91506.999
-        value_per_share: 203.4633
-        share_of_value: 0.5351
-        tv_over_capital: 3.8923
-        forward_ebit_multiple: 9.87
-        forward_ebitda_multiple: 8.417
+        terminal_value: 91375.534
+        value_per_share: 203.5226
+        share_of_value: 0.5342
+        tv_over_capital: 3.8893
+        forward_ebit_multiple: 9.874
+        forward_ebitda_multiple: 8.419
         forward_pe: null
-        implied_perpetual_return: 0.200081
-        implied_return_on_new_capital: 0.092403
+        implied_perpetual_return: 0.199966
+        implied_return_on_new_capital: 0.092433
         implied_moat_status: finite
         implied_moat_years_total: 28.2
       - basis: simple
-        terminal_value: 191715.798
-        value_per_share: 340.5004
-        share_of_value: 0.7069
-        tv_over_capital: 8.1546
-        forward_ebit_multiple: 20.679
-        forward_ebitda_multiple: 17.634
+        terminal_value: 191587.826
+        value_per_share: 340.5645
+        share_of_value: 0.7063
+        tv_over_capital: 8.1547
+        forward_ebit_multiple: 20.702
+        forward_ebitda_multiple: 17.653
         forward_pe: null
-        implied_perpetual_return: 0.365995
-        implied_return_on_new_capital: 7.749276
+        implied_perpetual_return: 0.365998
+        implied_return_on_new_capital: 9.446031
         implied_moat_status: perpetual_or_more
         implied_moat_years_total: null
       - basis: two_stage_plus_0
-        terminal_value: 23510.004
-        value_per_share: 110.4763
-        share_of_value: 0.2282
+        terminal_value: 23494.029
+        value_per_share: 110.6935
+        share_of_value: 0.2277
         tv_over_capital: 1.0
-        forward_ebit_multiple: 2.536
-        forward_ebitda_multiple: 2.162
+        forward_ebit_multiple: 2.539
+        forward_ebitda_multiple: 2.165
         forward_pe: null
         implied_perpetual_return: 0.0875
         implied_return_on_new_capital: null
         implied_moat_status: finite
         implied_moat_years_total: 10.0
       - basis: two_stage_plus_5
-        terminal_value: 46847.405
-        value_per_share: 142.3906
-        share_of_value: 0.3708
-        tv_over_capital: 1.9927
-        forward_ebit_multiple: 5.053
-        forward_ebitda_multiple: 4.309
+        terminal_value: 46779.604
+        value_per_share: 142.5369
+        share_of_value: 0.3699
+        tv_over_capital: 1.9911
+        forward_ebit_multiple: 5.055
+        forward_ebitda_multiple: 4.31
         forward_pe: null
-        implied_perpetual_return: 0.126139
+        implied_perpetual_return: 0.12608
         implied_return_on_new_capital: null
         implied_moat_status: finite
         implied_moat_years_total: 15.0
       - basis: two_stage_plus_10
-        terminal_value: 66296.691
-        value_per_share: 168.9878
-        share_of_value: 0.4547
-        tv_over_capital: 2.8199
-        forward_ebit_multiple: 7.151
+        terminal_value: 66185.698
+        value_per_share: 169.0751
+        share_of_value: 0.4538
+        tv_over_capital: 2.8171
+        forward_ebit_multiple: 7.152
         forward_ebitda_multiple: 6.098
         forward_pe: null
-        implied_perpetual_return: 0.158341
+        implied_perpetual_return: 0.158232
         implied_return_on_new_capital: null
         implied_moat_status: finite
         implied_moat_years_total: 20.0
       - basis: two_stage_plus_20
-        terminal_value: 96014.103
-        value_per_share: 209.6268
-        share_of_value: 0.547
-        tv_over_capital: 4.084
+        terminal_value: 95837.117
+        value_per_share: 209.6239
+        share_of_value: 0.546
+        tv_over_capital: 4.0792
         forward_ebit_multiple: 10.356
-        forward_ebitda_multiple: 8.831
+        forward_ebitda_multiple: 8.83
         forward_pe: null
-        implied_perpetual_return: 0.207543
+        implied_perpetual_return: 0.207358
         implied_return_on_new_capital: null
         implied_moat_status: finite
         implied_moat_years_total: 30.0
       - basis: two_stage_perpetual
-        terminal_value: 163586.684
-        value_per_share: 302.0334
-        share_of_value: 0.6729
-        tv_over_capital: 6.9582
-        forward_ebit_multiple: 17.645
-        forward_ebitda_multiple: 15.047
+        terminal_value: 163259.639
+        value_per_share: 301.8253
+        share_of_value: 0.672
+        tv_over_capital: 6.949
+        forward_ebit_multiple: 17.641
+        forward_ebitda_multiple: 15.043
         forward_pe: null
-        implied_perpetual_return: 0.319422
+        implied_perpetual_return: 0.319064
         implied_return_on_new_capital: null
         implied_moat_status: perpetual_or_more
         implied_moat_years_total: null
       - basis: exit_8x_ebitda
-        terminal_value: 86975.681
-        value_per_share: 197.2666
-        share_of_value: 0.5224
-        tv_over_capital: 3.6995
-        forward_ebit_multiple: 9.381
+        terminal_value: 86824.675
+        value_per_share: 197.2992
+        share_of_value: 0.5215
+        tv_over_capital: 3.6956
+        forward_ebit_multiple: 9.382
         forward_ebitda_multiple: 8.0
         forward_pe: null
-        implied_perpetual_return: 0.192579
+        implied_perpetual_return: 0.192426
         implied_return_on_new_capital: null
         implied_moat_status: finite
         implied_moat_years_total: 26.6
       - basis: exit_10x_ebitda
-        terminal_value: 108719.602
-        value_per_share: 227.0018
-        share_of_value: 0.5776
-        tv_over_capital: 4.6244
+        terminal_value: 108530.844
+        value_per_share: 226.9827
+        share_of_value: 0.5767
+        tv_over_capital: 4.6195
         forward_ebit_multiple: 11.727
         forward_ebitda_multiple: 10.0
         forward_pe: null
-        implied_perpetual_return: 0.22858
+        implied_perpetual_return: 0.228389
         implied_return_on_new_capital: null
         implied_moat_status: finite
         implied_moat_years_total: 35.7
       - basis: exit_12x_ebitda
-        terminal_value: 130463.522
-        value_per_share: 256.737
-        share_of_value: 0.6214
-        tv_over_capital: 5.5493
-        forward_ebit_multiple: 14.072
+        terminal_value: 130237.013
+        value_per_share: 256.6663
+        share_of_value: 0.6204
+        tv_over_capital: 5.5434
+        forward_ebit_multiple: 14.073
         forward_ebitda_multiple: 12.0
         forward_pe: null
-        implied_perpetual_return: 0.264581
+        implied_perpetual_return: 0.264352
         implied_return_on_new_capital: null
         implied_moat_status: finite
         implied_moat_years_total: 49.6
@@ -1952,255 +1952,255 @@ terminal_option_sets:
       horizon_years: 10
       cost_of_capital: 0.0875
       terminal_growth: 0.0506
-      capital_at_T: 24305.695
-      earned_return: 0.36437
+      capital_at_T: 24275.299
+      earned_return: 0.363593
       bases:
       - basis: engine_current
-        terminal_value: 110022.374
-        value_per_share: 239.6958
-        share_of_value: 0.5571
-        tv_over_capital: 4.5266
-        forward_ebit_multiple: 10.063
-        forward_ebitda_multiple: 8.649
+        terminal_value: 109714.975
+        value_per_share: 239.6033
+        share_of_value: 0.5557
+        tv_over_capital: 4.5196
+        forward_ebit_multiple: 10.069
+        forward_ebitda_multiple: 8.654
         forward_pe: null
-        implied_perpetual_return: 0.217632
-        implied_return_on_new_capital: 0.093429
+        implied_perpetual_return: 0.217374
+        implied_return_on_new_capital: 0.093476
         implied_moat_status: finite
         implied_moat_years_total: 28.4
       - basis: simple
-        terminal_value: 235915.496
-        value_per_share: 411.8567
-        share_of_value: 0.7295
-        tv_over_capital: 9.7062
-        forward_ebit_multiple: 21.577
-        forward_ebitda_multiple: 18.546
+        terminal_value: 235365.894
+        value_per_share: 411.433
+        share_of_value: 0.7285
+        tv_over_capital: 9.6957
+        forward_ebit_multiple: 21.6
+        forward_ebitda_multiple: 18.564
         forward_pe: null
-        implied_perpetual_return: 0.408758
-        implied_return_on_new_capital: 2.968224
+        implied_perpetual_return: 0.408371
+        implied_return_on_new_capital: 3.160072
         implied_moat_status: perpetual_or_more
         implied_moat_years_total: null
       - basis: two_stage_plus_0
-        terminal_value: 24305.695
-        value_per_share: 122.4769
-        share_of_value: 0.2174
+        terminal_value: 24275.299
+        value_per_share: 122.7632
+        share_of_value: 0.2167
         tv_over_capital: 1.0
-        forward_ebit_multiple: 2.223
-        forward_ebitda_multiple: 1.911
+        forward_ebit_multiple: 2.228
+        forward_ebitda_multiple: 1.915
         forward_pe: null
         implied_perpetual_return: 0.0875
         implied_return_on_new_capital: null
         implied_moat_status: finite
         implied_moat_years_total: 10.0
       - basis: two_stage_plus_5
-        terminal_value: 53216.335
-        value_per_share: 162.0126
-        share_of_value: 0.3782
-        tv_over_capital: 2.1895
-        forward_ebit_multiple: 4.867
-        forward_ebitda_multiple: 4.184
+        terminal_value: 53068.804
+        value_per_share: 162.1388
+        share_of_value: 0.3769
+        tv_over_capital: 2.1861
+        forward_ebit_multiple: 4.87
+        forward_ebitda_multiple: 4.186
         forward_pe: null
-        implied_perpetual_return: 0.131391
+        implied_perpetual_return: 0.131268
         implied_return_on_new_capital: null
         implied_moat_status: finite
         implied_moat_years_total: 15.0
       - basis: two_stage_plus_10
-        terminal_value: 77543.885
-        value_per_share: 195.2809
-        share_of_value: 0.4699
-        tv_over_capital: 3.1904
-        forward_ebit_multiple: 7.092
-        forward_ebitda_multiple: 6.096
+        terminal_value: 77297.787
+        value_per_share: 195.2723
+        share_of_value: 0.4684
+        tv_over_capital: 3.1842
+        forward_ebit_multiple: 7.094
+        forward_ebitda_multiple: 6.097
         forward_pe: null
-        implied_perpetual_return: 0.168324
+        implied_perpetual_return: 0.168098
         implied_return_on_new_capital: null
         implied_moat_status: finite
         implied_moat_years_total: 20.0
       - basis: two_stage_plus_20
-        terminal_value: 115240.694
-        value_per_share: 246.8319
-        share_of_value: 0.5685
-        tv_over_capital: 4.7413
-        forward_ebit_multiple: 10.54
-        forward_ebitda_multiple: 9.06
+        terminal_value: 114841.862
+        value_per_share: 246.6144
+        share_of_value: 0.5669
+        tv_over_capital: 4.7308
+        forward_ebit_multiple: 10.539
+        forward_ebitda_multiple: 9.058
         forward_pe: null
-        implied_perpetual_return: 0.225554
+        implied_perpetual_return: 0.225167
         implied_return_on_new_capital: null
         implied_moat_status: finite
         implied_moat_years_total: 30.0
       - basis: two_stage_perpetual
-        terminal_value: 206677.19
-        value_per_share: 371.8728
-        share_of_value: 0.7026
-        tv_over_capital: 8.5032
-        forward_ebit_multiple: 18.903
-        forward_ebitda_multiple: 16.248
+        terminal_value: 205907.891
+        value_per_share: 371.1487
+        share_of_value: 0.7012
+        tv_over_capital: 8.4822
+        forward_ebit_multiple: 18.896
+        forward_ebitda_multiple: 16.241
         forward_pe: null
-        implied_perpetual_return: 0.36437
+        implied_perpetual_return: 0.363593
         implied_return_on_new_capital: null
         implied_moat_status: perpetual_or_more
         implied_moat_years_total: null
       - basis: exit_8x_ebitda
-        terminal_value: 101762.849
-        value_per_share: 228.4008
-        share_of_value: 0.5377
-        tv_over_capital: 4.1868
-        forward_ebit_multiple: 9.307
+        terminal_value: 101429.027
+        value_per_share: 228.2722
+        share_of_value: 0.5362
+        tv_over_capital: 4.1783
+        forward_ebit_multiple: 9.308
         forward_ebitda_multiple: 8.0
         forward_pe: null
-        implied_perpetual_return: 0.205093
+        implied_perpetual_return: 0.204779
         implied_return_on_new_capital: null
         implied_moat_status: finite
         implied_moat_years_total: 26.0
       - basis: exit_10x_ebitda
-        terminal_value: 127203.562
-        value_per_share: 263.1914
-        share_of_value: 0.5925
-        tv_over_capital: 5.2335
-        forward_ebit_multiple: 11.634
+        terminal_value: 126786.283
+        value_per_share: 262.9486
+        share_of_value: 0.5911
+        tv_over_capital: 5.2229
+        forward_ebit_multiple: 11.635
         forward_ebitda_multiple: 10.0
         forward_pe: null
-        implied_perpetual_return: 0.243716
+        implied_perpetual_return: 0.243323
         implied_return_on_new_capital: null
         implied_moat_status: finite
         implied_moat_years_total: 34.1
       - basis: exit_12x_ebitda
-        terminal_value: 152644.274
-        value_per_share: 297.9819
-        share_of_value: 0.6357
-        tv_over_capital: 6.2802
-        forward_ebit_multiple: 13.961
+        terminal_value: 152143.54
+        value_per_share: 297.6251
+        share_of_value: 0.6343
+        tv_over_capital: 6.2674
+        forward_ebit_multiple: 13.962
         forward_ebitda_multiple: 12.0
         forward_pe: null
-        implied_perpetual_return: 0.282339
+        implied_perpetual_return: 0.281868
         implied_return_on_new_capital: null
         implied_moat_status: finite
-        implied_moat_years_total: 45.2
+        implied_moat_years_total: 45.3
     - company: csl
       scenario: stagflation_persists
       construction: segment_roic
       horizon_years: 10
       cost_of_capital: 0.0875
-      terminal_growth: 0.023328
-      capital_at_T: 22110.691
-      earned_return: 0.227013
+      terminal_growth: 0.026927
+      capital_at_T: 22176.633
+      earned_return: 0.22938
       bases:
       - basis: engine_current
-        terminal_value: 53389.959
-        value_per_share: 133.0949
-        share_of_value: 0.4466
-        tv_over_capital: 2.4147
-        forward_ebit_multiple: 8.616
-        forward_ebitda_multiple: 7.161
+        terminal_value: 54978.144
+        value_per_share: 134.1886
+        share_of_value: 0.4568
+        tv_over_capital: 2.4791
+        forward_ebit_multiple: 8.754
+        forward_ebitda_multiple: 7.28
         forward_pe: null
-        implied_perpetual_return: 0.178281
-        implied_return_on_new_capital: 0.073493
+        implied_perpetual_return: 0.177093
+        implied_return_on_new_capital: 0.077974
         implied_moat_status: finite
-        implied_moat_years_total: 27.3
+        implied_moat_years_total: 27.4
       - basis: simple
-        terminal_value: 80521.815
-        value_per_share: 170.1981
-        share_of_value: 0.5489
-        tv_over_capital: 3.6418
-        forward_ebit_multiple: 12.994
-        forward_ebitda_multiple: 10.8
+        terminal_value: 86025.581
+        value_per_share: 176.6465
+        share_of_value: 0.5682
+        tv_over_capital: 3.8791
+        forward_ebit_multiple: 13.698
+        forward_ebitda_multiple: 11.391
         forward_pe: null
-        implied_perpetual_return: 0.257026
+        implied_perpetual_return: 0.261895
         implied_return_on_new_capital: null
         implied_moat_status: perpetual_or_more
         implied_moat_years_total: null
       - basis: two_stage_plus_0
-        terminal_value: 22110.691
-        value_per_share: 90.3199
-        share_of_value: 0.2505
+        terminal_value: 22176.633
+        value_per_share: 89.332
+        share_of_value: 0.2533
         tv_over_capital: 1.0
-        forward_ebit_multiple: 3.568
-        forward_ebitda_multiple: 2.966
+        forward_ebit_multiple: 3.531
+        forward_ebitda_multiple: 2.937
         forward_pe: null
         implied_perpetual_return: 0.0875
         implied_return_on_new_capital: null
         implied_moat_status: finite
         implied_moat_years_total: 10.0
       - basis: two_stage_plus_5
-        terminal_value: 34715.405
-        value_per_share: 107.5571
-        share_of_value: 0.3441
-        tv_over_capital: 1.5701
-        forward_ebit_multiple: 5.602
-        forward_ebitda_multiple: 4.656
+        terminal_value: 35118.669
+        value_per_share: 107.0305
+        share_of_value: 0.3495
+        tv_over_capital: 1.5836
+        forward_ebit_multiple: 5.592
+        forward_ebitda_multiple: 4.65
         forward_pe: null
-        implied_perpetual_return: 0.124083
+        implied_perpetual_return: 0.12285
         implied_return_on_new_capital: null
         implied_moat_status: finite
         implied_moat_years_total: 15.0
       - basis: two_stage_plus_10
-        terminal_value: 44014.951
-        value_per_share: 120.2744
-        share_of_value: 0.3995
-        tv_over_capital: 1.9907
-        forward_ebit_multiple: 7.103
-        forward_ebitda_multiple: 5.904
+        terminal_value: 44836.177
+        value_per_share: 120.3193
+        share_of_value: 0.4068
+        tv_over_capital: 2.0218
+        forward_ebit_multiple: 7.139
+        forward_ebitda_multiple: 5.937
         forward_pe: null
-        implied_perpetual_return: 0.151073
+        implied_perpetual_return: 0.149392
         implied_return_on_new_capital: null
         implied_moat_status: finite
         implied_moat_years_total: 20.0
       - basis: two_stage_plus_20
-        terminal_value: 55937.966
-        value_per_share: 136.5793
-        share_of_value: 0.4581
-        tv_over_capital: 2.5299
-        forward_ebit_multiple: 9.027
-        forward_ebitda_multiple: 7.503
+        terminal_value: 57611.024
+        value_per_share: 137.7891
+        share_of_value: 0.4684
+        tv_over_capital: 2.5978
+        forward_ebit_multiple: 9.174
+        forward_ebitda_multiple: 7.629
         forward_pe: null
-        implied_perpetual_return: 0.185677
+        implied_perpetual_return: 0.184285
         implied_return_on_new_capital: null
         implied_moat_status: finite
         implied_moat_years_total: 30.0
       - basis: two_stage_perpetual
-        terminal_value: 70180.507
-        value_per_share: 156.0562
-        share_of_value: 0.5147
-        tv_over_capital: 3.1741
-        forward_ebit_multiple: 11.325
-        forward_ebitda_multiple: 9.413
+        terminal_value: 74121.064
+        value_per_share: 160.3669
+        share_of_value: 0.5314
+        tv_over_capital: 3.3423
+        forward_ebit_multiple: 11.803
+        forward_ebitda_multiple: 9.815
         forward_pe: null
-        implied_perpetual_return: 0.227013
+        implied_perpetual_return: 0.22938
         implied_return_on_new_capital: null
         implied_moat_status: perpetual_or_more
         implied_moat_years_total: null
       - basis: exit_8x_ebitda
-        terminal_value: 59644.967
-        value_per_share: 141.6487
-        share_of_value: 0.4741
-        tv_over_capital: 2.6976
-        forward_ebit_multiple: 9.625
+        terminal_value: 60415.651
+        value_per_share: 141.6245
+        share_of_value: 0.4803
+        tv_over_capital: 2.7243
+        forward_ebit_multiple: 9.62
         forward_ebitda_multiple: 8.0
         forward_pe: null
-        implied_perpetual_return: 0.196435
+        implied_perpetual_return: 0.191945
         implied_return_on_new_capital: null
         implied_moat_status: finite
-        implied_moat_years_total: 35.0
+        implied_moat_years_total: 33.2
       - basis: exit_10x_ebitda
-        terminal_value: 74556.209
-        value_per_share: 162.04
-        share_of_value: 0.5298
-        tv_over_capital: 3.372
-        forward_ebit_multiple: 12.031
+        terminal_value: 75519.564
+        value_per_share: 162.2793
+        share_of_value: 0.536
+        tv_over_capital: 3.4054
+        forward_ebit_multiple: 12.025
         forward_ebitda_multiple: 10.0
         forward_pe: null
-        implied_perpetual_return: 0.239712
+        implied_perpetual_return: 0.233199
         implied_return_on_new_capital: null
         implied_moat_status: perpetual_or_more
         implied_moat_years_total: null
       - basis: exit_12x_ebitda
-        terminal_value: 89467.451
-        value_per_share: 182.4314
-        share_of_value: 0.5749
-        tv_over_capital: 4.0463
-        forward_ebit_multiple: 14.438
+        terminal_value: 90623.477
+        value_per_share: 182.9342
+        share_of_value: 0.5809
+        tv_over_capital: 4.0864
+        forward_ebit_multiple: 14.43
         forward_ebitda_multiple: 12.0
         forward_pe: null
-        implied_perpetual_return: 0.282989
+        implied_perpetual_return: 0.274454
         implied_return_on_new_capital: null
         implied_moat_status: perpetual_or_more
         implied_moat_years_total: null

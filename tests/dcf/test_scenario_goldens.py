@@ -255,12 +255,15 @@ CSL_GOLDEN = {
     # 2.33% (c = capped). AUD: OC -1.7%, MT -2.6%, AI Lag -1.5%, Frag -1.4%, DCC -1.4%,
     # Stag -1.2%. Before (USD, AUD): 160.9749/243.9092, 137.8604/208.8861,
     # 130.8477/198.2605, 103.9154/157.4527, 109.8907/166.5064, 88.9258/134.7404.
-    "orderly_convergence": (158.1942, 239.6958),
-    "muddle_through": (134.2815, 203.4633),       # generated workbook ties (LibreOffice recalc, all six)
+    # CSL re-pinned 15 Oct 2026 (item (c)): segment driver now US real GDP + advanced CPI
+    # (approved paths). AI Lag and Disorderly Climate are unchanged: a flat offset is absorbed
+    # by the calibrated gap.
+    "orderly_convergence": (158.1331, 239.6033),
+    "muddle_through": (134.3206, 203.5226),       # generated workbook ties (LibreOffice recalc, all six)
     "ai_productivity_lag": (128.8557, 195.2421),
-    "fragmentation": (102.4565, 155.2421),
+    "fragmentation": (102.3028, 155.0093),
     "disorderly_climate_crystallisation": (108.3302, 164.1419),
-    "stagflation_persists": (87.8398, 133.0949),
+    "stagflation_persists": (88.5616, 134.1886),
 }
 
 
@@ -412,9 +415,11 @@ def test_terminal_shares_are_measured_case_by_case():
     # D-79 (14 Oct 2026): derived g lifts every CSL share 2-5 points; Stag -0.4.
     csl_shares = {
         # D-80 (14 Oct 2026): lower g takes every share down 0.8-1.3pt.
-        "orderly_convergence": 0.5571, "muddle_through": 0.5351, "ai_productivity_lag": 0.5252,
-        "fragmentation": 0.4873, "disorderly_climate_crystallisation": 0.4875,
-        "stagflation_persists": 0.4466,
+        # CSL re-pinned 15 Oct 2026 (item (c), US driver): 0.5571 -> 0.5557, 0.5351 -> 0.5342,
+        # 0.4873 -> 0.4855, 0.4466 -> 0.4568. AI Lag and Disorderly unchanged.
+        "orderly_convergence": 0.5557, "muddle_through": 0.5342, "ai_productivity_lag": 0.5252,
+        "fragmentation": 0.4855, "disorderly_climate_crystallisation": 0.4875,
+        "stagflation_persists": 0.4568,
     }
     for scenario in SCENARIOS:
         assert _dnl(scenario).terminal_share_of_ev == pytest.approx(

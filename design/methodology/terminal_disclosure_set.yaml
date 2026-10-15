@@ -347,11 +347,11 @@ terminal_disclosure_set:
     available: true
     reason: null
     cost_of_capital: 0.0875
-    terminal_growth: 0.035448
-    capital: 22612.396
-    earned_return: 0.259107
+    terminal_growth: 0.034848
+    capital: 22604.166
+    earned_return: 0.258842
     declared_return: null
-    convergence_return: 0.259107
+    convergence_return: 0.258842
     moat_years: 25.0
     moat_band: 20-30
     moat_basis: 'Threat of new entrants LOW (a collection network takes 5+ years of
@@ -363,20 +363,20 @@ terminal_disclosure_set:
       six scenarios; the named threat is what changes.
 
       '
-    terminal_value: 75288.209
-    value_per_share: 167.7442
-    engine_terminal_value: 66146.008
-    engine_value_per_share: 155.2421
+    terminal_value: 74891.129
+    value_per_share: 167.4042
+    engine_terminal_value: 65827.274
+    engine_value_per_share: 155.0093
   - company: csl
     scenario: muddle_through
     available: true
     reason: null
     cost_of_capital: 0.0875
     terminal_growth: 0.048575
-    capital: 23510.004
-    earned_return: 0.319422
+    capital: 23494.029
+    earned_return: 0.319064
     declared_return: null
-    convergence_return: 0.319422
+    convergence_return: 0.319064
     moat_years: 25.0
     moat_band: 20-30
     moat_basis: 'Threat of new entrants LOW (a collection network takes 5+ years of
@@ -388,20 +388,20 @@ terminal_disclosure_set:
       six scenarios; the named threat is what changes.
 
       '
-    terminal_value: 107271.997
-    value_per_share: 225.0222
-    engine_terminal_value: 91506.999
-    engine_value_per_share: 203.4633
+    terminal_value: 107070.01
+    value_per_share: 224.985
+    engine_terminal_value: 91375.534
+    engine_value_per_share: 203.5226
   - company: csl
     scenario: orderly_convergence
     available: true
     reason: null
     cost_of_capital: 0.0875
     terminal_growth: 0.0506
-    capital: 24305.695
-    earned_return: 0.36437
+    capital: 24275.299
+    earned_return: 0.363593
     declared_return: null
-    convergence_return: 0.36437
+    convergence_return: 0.363593
     moat_years: 25.0
     moat_band: 20-30
     moat_basis: 'Threat of new entrants LOW (a collection network takes 5+ years of
@@ -413,20 +413,20 @@ terminal_disclosure_set:
       six scenarios; the named threat is what changes.
 
       '
-    terminal_value: 129735.764
-    value_per_share: 266.6542
-    engine_terminal_value: 110022.374
-    engine_value_per_share: 239.6958
+    terminal_value: 129278.204
+    value_per_share: 266.3564
+    engine_terminal_value: 109714.975
+    engine_value_per_share: 239.6033
   - company: csl
     scenario: stagflation_persists
     available: true
     reason: null
     cost_of_capital: 0.0875
-    terminal_growth: 0.023328
-    capital: 22110.691
-    earned_return: 0.227013
+    terminal_growth: 0.026927
+    capital: 22176.633
+    earned_return: 0.22938
     declared_return: null
-    convergence_return: 0.227013
+    convergence_return: 0.22938
     moat_years: 25.0
     moat_band: 20-30
     moat_basis: 'Threat of new entrants LOW (a collection network takes 5+ years of
@@ -438,7 +438,7 @@ terminal_disclosure_set:
       six scenarios; the named threat is what changes.
 
       '
-    terminal_value: 59672.6
-    value_per_share: 141.6865
-    engine_terminal_value: 53389.959
-    engine_value_per_share: 133.0949
+    terminal_value: 61724.527
+    value_per_share: 143.4144
+    engine_terminal_value: 54978.144
+    engine_value_per_share: 134.1886

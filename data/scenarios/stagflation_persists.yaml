@@ -71,13 +71,13 @@ scenario:
     - variable: seasonal_vaccines_nominal_growth
       units: percent_yoy
       type: time_series
-      # real_gdp_growth_world + cpi_inflation_advanced plus a fixed gap of -4.96pp (spread, not multiple)
+      # real_gdp_growth_us + cpi_inflation_advanced plus a fixed gap of -4.10pp (spread, not multiple)
       time_series:
-        - {year: 1, value: 2.04}
-        - {year: 3, value: 1.54}
-        - {year: 5, value: 0.84}
-        - {year: 7, value: 0.54}
-        - {year: 10, value: 0.04}
+        - {year: 1, value: 1.7}
+        - {year: 3, value: 0.9}
+        - {year: 5, value: 1.1}
+        - {year: 7, value: 0.9}
+        - {year: 10, value: 0.4}
     # END derived paths
     # BEGIN derived paths (specialty_pharmaceuticals)
     # Written by scripts/derive_macro_driver_paths.py from the derivations declared in
@@ -86,13 +86,13 @@ scenario:
     - variable: specialty_pharma_nominal_growth
       units: percent_yoy
       type: time_series
-      # real_gdp_growth_world + cpi_inflation_advanced plus a fixed gap of -1.96pp (spread, not multiple)
+      # real_gdp_growth_us + cpi_inflation_advanced plus a fixed gap of -1.10pp (spread, not multiple)
       time_series:
-        - {year: 1, value: 5.04}
-        - {year: 3, value: 4.54}
-        - {year: 5, value: 3.84}
-        - {year: 7, value: 3.54}
-        - {year: 10, value: 3.04}
+        - {year: 1, value: 4.7}
+        - {year: 3, value: 3.9}
+        - {year: 5, value: 4.1}
+        - {year: 7, value: 3.9}
+        - {year: 10, value: 3.4}
     # END derived paths
     # BEGIN derived paths (plasma_derived_therapies)
     # Written by scripts/derive_macro_driver_paths.py from the derivations declared in
@@ -101,13 +101,13 @@ scenario:
     - variable: plasma_therapies_nominal_growth
       units: percent_yoy
       type: time_series
-      # real_gdp_growth_world + cpi_inflation_advanced plus a fixed gap of -2.46pp (spread, not multiple)
+      # real_gdp_growth_us + cpi_inflation_advanced plus a fixed gap of -1.60pp (spread, not multiple)
       time_series:
-        - {year: 1, value: 4.54}
-        - {year: 3, value: 4.04}
-        - {year: 5, value: 3.34}
-        - {year: 7, value: 3.04}
-        - {year: 10, value: 2.54}
+        - {year: 1, value: 4.2}
+        - {year: 3, value: 3.4}
+        - {year: 5, value: 3.6}
+        - {year: 7, value: 3.4}
+        - {year: 10, value: 2.9}
     # END derived paths
     # BEGIN derived paths (industrial_explosives)
     # Written by scripts/derive_macro_driver_paths.py from the derivations declared in
@@ -149,6 +149,18 @@ scenario:
         - {year: 7, value: 2.04}
         - {year: 10, value: 1.54}
     # END derived paths
+    - variable: real_gdp_growth_us
+      units: percent_yoy
+      type: time_series
+      # 15 Oct 2026 (Stephen approved): proxy = the advanced-economy real GDP series in this file.
+      time_series:
+        - {year: 1, value: 0.8, confidence_low: 0.0, confidence_high: 1.5}
+        - {year: 2, value: -0.5, confidence_low: -1.5, confidence_high: 0.5}
+        - {year: 3, value: 0.0, confidence_low: -1.0, confidence_high: 1.0}
+        - {year: 5, value: 1.2, confidence_low: 0.5, confidence_high: 1.8}
+        - {year: 7, value: 1.5, confidence_low: 0.8, confidence_high: 2.0}
+        - {year: 10, value: 1.5, confidence_low: 0.8, confidence_high: 2.0}
+
     - variable: real_gdp_growth_world
       units: percent_yoy
       type: time_series

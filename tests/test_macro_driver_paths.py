@@ -232,8 +232,9 @@ def test_each_csl_segment_archetype_declares_one_nominal_growth_path():
                       ("specialty_pharmaceuticals", "specialty_pharma_nominal_growth")]:
         a = ARCHETYPES[arch]
         assert a.required_macro_driver_names == [var], arch
-        # one NOMINAL series, not a typed volume/price split (archetype comment)
-        assert a.required_macro_drivers[0].derivation.series == ["real_gdp_growth_world", "cpi_inflation_advanced"]
+        # one NOMINAL series, not a typed volume/price split (archetype comment).
+        # 15 Oct 2026 (item (c)): the volume driver is US real GDP.
+        assert a.required_macro_drivers[0].derivation.series == ["real_gdp_growth_us", "cpi_inflation_advanced"]
 
 
 def test_muddle_through_paths_average_to_the_typed_steady_states():

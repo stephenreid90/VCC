@@ -76,7 +76,7 @@ scenario:
     - variable: seasonal_vaccines_nominal_growth
       units: percent_yoy
       type: time_series
-      # real_gdp_growth_world + cpi_inflation_advanced plus a fixed gap of -2.60pp (spread, not multiple)
+      # real_gdp_growth_us + cpi_inflation_advanced plus a fixed gap of -2.30pp (spread, not multiple)
       time_series:
         - {year: 1, value: 2.9}
         - {year: 3, value: 3.7}
@@ -91,7 +91,7 @@ scenario:
     - variable: specialty_pharma_nominal_growth
       units: percent_yoy
       type: time_series
-      # real_gdp_growth_world + cpi_inflation_advanced plus a fixed gap of -0.60pp (spread, not multiple)
+      # real_gdp_growth_us + cpi_inflation_advanced plus a fixed gap of -0.30pp (spread, not multiple)
       time_series:
         - {year: 1, value: 4.9}
         - {year: 3, value: 5.7}
@@ -106,7 +106,7 @@ scenario:
     - variable: plasma_therapies_nominal_growth
       units: percent_yoy
       type: time_series
-      # real_gdp_growth_world + cpi_inflation_advanced plus a fixed gap of -1.10pp (spread, not multiple)
+      # real_gdp_growth_us + cpi_inflation_advanced plus a fixed gap of -0.80pp (spread, not multiple)
       time_series:
         - {year: 1, value: 4.4}
         - {year: 3, value: 5.2}
@@ -154,6 +154,16 @@ scenario:
         - {year: 7, value: 3.88}
         - {year: 10, value: 3.1}
     # END derived paths
+    - variable: real_gdp_growth_us
+      units: percent_yoy
+      type: time_series
+      # 15 Oct 2026 (Stephen approved): world path - 0.3pp; carbon and stranded-asset drag.
+      time_series:
+        - {year: 1, value: 1.7, confidence_low: 1.1, confidence_high: 2.3}
+        - {year: 3, value: 1.5, confidence_low: 0.7, confidence_high: 2.2}
+        - {year: 5, value: 1.7, confidence_low: 1.0, confidence_high: 2.4}
+        - {year: 10, value: 1.9, confidence_low: 1.2, confidence_high: 2.6}
+
     - variable: real_gdp_growth_world
       units: percent_yoy
       type: time_series

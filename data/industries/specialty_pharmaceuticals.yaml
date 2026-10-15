@@ -18,11 +18,14 @@ industry_archetype:
     - variable: specialty_pharma_nominal_growth
       derivation:
         method: spread
-        series: [real_gdp_growth_world, cpi_inflation_advanced]
+        series: [real_gdp_growth_us, cpi_inflation_advanced]
         anchor:
           company: csl
           path: normalised_baseline.segment_fcff.by_scenario.{scenario}.vifor_cagr
   archetype_class: biopharmaceutical_specialty
+  # 15 Oct 2026 (item (c), step 1): price rate = advanced CPI (Stephen's ruling). Volume
+  # is the nominal driver less this. A healthcare premium over CPI is a later decision.
+  segment_price_series: cpi_inflation_advanced
 
   # D-78 / D-79 (14 Oct 2026): declared EMPTY, and that is the answer, not a gap.
   # A segment-valued company's growth chain has no scenario-invariant terms: the

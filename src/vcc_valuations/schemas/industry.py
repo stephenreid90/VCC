@@ -475,6 +475,11 @@ class IndustryArchetype(BaseModel):
     # Empty by default: most archetypes read a company's own scenario overlay
     # directly rather than a shared macro chain, so there is nothing to check.
     required_macro_drivers: List[RequiredMacroDriver] = Field(default_factory=list)
+    # 15 Oct 2026 (item (c), step 1). The scenario series that is the PRICE rate of a
+    # segment's nominal growth. The nominal driver is split as volume = nominal - price.
+    # Reporting only: the engine still runs on the nominal driver, so this moves no level.
+    # None means the archetype has not declared a price rate.
+    segment_price_series: Optional[str] = None
 
     @field_validator("required_macro_drivers", mode="before")
     @classmethod

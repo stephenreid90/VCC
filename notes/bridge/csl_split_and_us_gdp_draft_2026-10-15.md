@@ -1,6 +1,6 @@
 # Item (c): CSL volume/price split and US real GDP: draft for approval (15 Oct 2026)
 
-Status: DRAFT. Nothing in the model has changed. Stephen has said yes to the
+Status: APPROVED and WIRED 15 Oct 2026 (DECISIONS.md D-82). Correction below. Stephen has said yes to the
 recommendations below. Each US path still needs his approval before it is wired in.
 
 ## 1. The problem
@@ -28,7 +28,7 @@ Type of change: medium. Code and tests change. No goldens move.
 | Disorderly Climate | world (2.0, 2.0, 2.2) | world - 0.3 = 1.7, 1.7, 1.9 | Carbon and stranded-asset drag on a large emitter. The size of the gap is my judgement |
 | Stagflation Persists | world (2.0, 1.8, 2.0) | advanced real GDP in file = 0.8, 1.2, 1.5 (Year 10 held at 1.5) | US is the largest advanced economy. The file has no US series |
 
-Muddle Through and Orderly Convergence already carry a US series. Nothing changes there.
+Correction (15 Oct): Muddle Through and Orderly Convergence already carry a US series, but it is not flat, so both levels DO move slightly (MT +0.03%, OC -0.04%).
 
 Type of change: serious. Moving CSL to a US driver changes its levels in four
 scenarios. The goldens, workbooks and sizing sets must be re-pinned with reasons.

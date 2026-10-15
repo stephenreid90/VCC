@@ -95,9 +95,11 @@ def test_d79_moved_the_levels_as_disclosed(by_key):
         ("wbc", "orderly_convergence"): 0.121, ("wbc", "muddle_through"): 0.038,
         ("wbc", "ai_productivity_lag"): 0.054, ("wbc", "fragmentation"): 0.013,
         ("wbc", "disorderly_climate_crystallisation"): -0.003, ("wbc", "stagflation_persists"): -0.035,
-        ("csl", "orderly_convergence"): 0.095, ("csl", "muddle_through"): 0.090,
-        ("csl", "ai_productivity_lag"): 0.078, ("csl", "fragmentation"): 0.032,
-        ("csl", "disorderly_climate_crystallisation"): 0.030, ("csl", "stagflation_persists"): -0.023,
+        # CSL re-pinned 15 Oct 2026 (item (c), US driver): OC 0.095 -> 0.0943, MT 0.090 -> 0.0899,
+        # Frag 0.032 -> 0.0294, Stag -0.023 -> -0.011.
+        ("csl", "orderly_convergence"): 0.0943, ("csl", "muddle_through"): 0.0899,
+        ("csl", "ai_productivity_lag"): 0.078, ("csl", "fragmentation"): 0.0294,
+        ("csl", "disorderly_climate_crystallisation"): 0.030, ("csl", "stagflation_persists"): -0.011,
     }
     for k, pct in want.items():
         assert by_key[k].level_change == pytest.approx(pct, abs=0.0015), (k, by_key[k].level_change)

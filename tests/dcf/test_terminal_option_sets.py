@@ -133,7 +133,7 @@ def test_engine_current_reproduces_every_engine_value_per_share(rows):
     # D-81 (15 Oct 2026): current-cycle chain terms glide to equilibrium inside the
     # explicit period (2.1059 -> 2.0067; 32.2655 -> 32.3984; CSL unchanged).
     pinned = {("dnl", "muddle_through"): 2.0067, ("wbc", "muddle_through"): 32.3984,
-              ("csl", "muddle_through"): 203.4633}
+              ("csl", "muddle_through"): 203.5226}  # 15 Oct 2026: US driver (item (c))
     for key, vps in pinned.items():
         v = next(x for x in rows if (x.company_id, x.scenario_id) == key)
         assert _basis(v, "engine_current").value_per_share == pytest.approx(vps, abs=1e-4)

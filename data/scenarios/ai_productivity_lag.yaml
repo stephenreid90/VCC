@@ -80,7 +80,7 @@ scenario:
     - variable: seasonal_vaccines_nominal_growth
       units: percent_yoy
       type: time_series
-      # real_gdp_growth_world + cpi_inflation_advanced plus a fixed gap of -2.80pp (spread, not multiple)
+      # real_gdp_growth_us + cpi_inflation_advanced plus a fixed gap of -3.00pp (spread, not multiple)
       time_series:
         - {year: 1, value: 2.2}
         - {year: 3, value: 2.1}
@@ -95,7 +95,7 @@ scenario:
     - variable: specialty_pharma_nominal_growth
       units: percent_yoy
       type: time_series
-      # real_gdp_growth_world + cpi_inflation_advanced plus a fixed gap of +1.70pp (spread, not multiple)
+      # real_gdp_growth_us + cpi_inflation_advanced plus a fixed gap of +1.50pp (spread, not multiple)
       time_series:
         - {year: 1, value: 6.7}
         - {year: 3, value: 6.6}
@@ -110,7 +110,7 @@ scenario:
     - variable: plasma_therapies_nominal_growth
       units: percent_yoy
       type: time_series
-      # real_gdp_growth_world + cpi_inflation_advanced plus a fixed gap of +0.20pp (spread, not multiple)
+      # real_gdp_growth_us + cpi_inflation_advanced plus a fixed gap of +0.00pp (spread, not multiple)
       time_series:
         - {year: 1, value: 5.2}
         - {year: 3, value: 5.1}
@@ -158,6 +158,17 @@ scenario:
         - {year: 7, value: 4.4}
         - {year: 10, value: 4.2}
     # END derived paths
+    - variable: real_gdp_growth_us
+      units: percent_yoy
+      type: time_series
+      # 15 Oct 2026 (Stephen approved): world path + 0.2pp; AI investment is US-led.
+      time_series:
+        - {year: 1, value: 2.2, confidence_low: 1.7, confidence_high: 2.7}
+        - {year: 3, value: 2.1, confidence_low: 1.6, confidence_high: 2.6}
+        - {year: 5, value: 2.1, confidence_low: 1.5, confidence_high: 2.7}
+        - {year: 7, value: 2.1, confidence_low: 1.5, confidence_high: 2.7}
+        - {year: 10, value: 2.2, confidence_low: 1.5, confidence_high: 2.8}
+
     - variable: real_gdp_growth_world
       units: percent_yoy
       type: time_series

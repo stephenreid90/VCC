@@ -77,7 +77,8 @@ def test_at_ten_years_the_live_level_is_the_golden():
     # D-79 (same day): 186.4975 -> 208.8861 as terminal growth moves from the typed
     # 3.0% to the derived 5.37% (segment series at Y10, capped at nominal GDP).
     # D-80 (same day): 208.8861 -> 203.4633 as year-10 CPI falls to 2.5% (the cap, 4.86%).
-    assert r.value_per_share_aud == pytest.approx(203.4633, abs=1e-3)
+    # 15 Oct 2026 (item (c)): 203.4633 -> 203.5226 with the US real GDP driver.
+    assert r.value_per_share_aud == pytest.approx(203.5226, abs=1e-3)
     assert r.terminal_form == "excess_return_convergence" and r.convergence_years == 25
 
 

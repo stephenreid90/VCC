@@ -1893,6 +1893,32 @@ def segment_growth_path_from_data(inputs: dict, scenario_id: str, seg_name: str,
     return [macro_series_at(inputs, variable, t + 1) + (g - steady) for t, g in enumerate(typed)]
 
 
+def segment_volume_price_split(inputs: dict, scenario_id: str, seg_name: str, horizon: int) -> dict:
+    """Item (c), step 1 (15 Oct 2026): a segment's nominal growth split into volume and price.
+
+    price[t]  = the archetype's declared price series at year t+1 (advanced CPI for the three
+                CSL segments, ruled 15 Oct 2026)
+    volume[t] = nominal[t] - price[t]
+    nominal   = segment_growth_path_from_data, unchanged, so the split moves no level.
+    Decimals, as the engine works in. Raises if the archetype declares no price rate.
+    """
+    from vcc_valuations.schemas.industry import IndustryArchetypeFile
+    company_raw = inputs.get("company_raw") or {}
+    by_seg = (company_raw.get("company_position") or {}).get("industry_archetype_by_segment") or {}
+    archetype_id = by_seg.get(seg_name)
+    if archetype_id is None:
+        raise ValueError(f"{seg_name}: no industry_archetype_by_segment entry")
+    arch = IndustryArchetypeFile.model_validate(
+        _load(inputs["repo_root"] / "data" / "industries" / f"{archetype_id}.yaml")
+    ).industry_archetype
+    if arch.segment_price_series is None:
+        raise ValueError(f"{archetype_id}: no segment_price_series declared")
+    nominal = segment_growth_path_from_data(inputs, scenario_id, seg_name, horizon)
+    price = [macro_series_at(inputs, arch.segment_price_series, t + 1) for t in range(horizon)]
+    volume = [n - p for n, p in zip(nominal, price)]
+    return {"nominal": nominal, "price": price, "volume": volume}
+
+
 def _seg_key(segment_name: str) -> str:
     """Map a segment id (``csl_behring``) to its driver key stem (``behring``)."""
     return segment_name.split("_")[-1]

@@ -124,5 +124,6 @@ def test_csl_derived_rates():
     got = {s: round(segment_terminal_growth_from_data(_csl(s), s, H).result * 100, 2) for s in SCENARIOS}
     assert got == {
         "orderly_convergence": 5.06, "muddle_through": 4.86, "ai_productivity_lag": 4.55,
-        "fragmentation": 3.54, "disorderly_climate_crystallisation": 3.49, "stagflation_persists": 2.33,
+        # 15 Oct 2026 (item (c), US driver): Fragmentation 3.54 -> 3.48, Stagflation 2.33 -> 2.69.
+        "fragmentation": 3.48, "disorderly_climate_crystallisation": 3.49, "stagflation_persists": 2.69,
     }
