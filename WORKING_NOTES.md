@@ -31,9 +31,8 @@ took follow-up (f) and closed it as **D-81** (the D-36 fade retired). This block
 
 **State:** suite 672 passed / 1 skipped / 2 deselected; SSOT lint 14/14; base ties **DNL
 2.007 / WBC 32.40 / CSL 203.46** (`session_start.py` re-pinned for D-81; were 2.106 / 32.27 /
-203.46 under D-80). Commits on `main` on Stephen's checkout. **D-80 and D-81 are NOT pushed:**
-GitHub rejects the PAT in `.github-token` ("Invalid username or token"). Stephen to mint a
-fresh one; then `git push https://stephenreid90:$(cat .github-token)@github.com/stephenreid90/VCC main`.
+203.46 under D-80). Commits on `main`, pushed to origin at the end of each sitting. The
+PAT in `.github-token` was replaced on 15 Oct and works again (D-80 and D-81 pushed).
 
 ### D-81 DONE -- current-cycle chain terms expire inside the explicit period; the D-36 fade is retired
 

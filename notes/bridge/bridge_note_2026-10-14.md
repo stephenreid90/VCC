@@ -174,10 +174,8 @@ archetypes; bank engine lets retained equity earn nothing until the terminal.
    permission on the repo folder is granted at the start (the desktop app prompts). No
    container clone, no bundle. Push with the PAT:
    `git push https://stephenreid90:$(cat .github-token)@github.com/stephenreid90/VCC main`.
-   **GitHub rejects that token ("Bad credentials" on 14 Oct, "Invalid username or token"
-   on 15 Oct)**, so D-80 (`2ab12fc`) and D-81 are committed on `main` and NOT pushed.
-   Stephen to put a fresh PAT in `.github-token`; the next chat pushes. Check
-   `git status -sb` first. A background process in the device shell dies when the call
+   The PAT was replaced on 15 Oct and works (D-80 and D-81 pushed that afternoon). Check
+   `git status -sb` first anyway. A background process in the device shell dies when the call
    ends; run the suite in halves if it will not fit in one 180-second call.
    `CLAUDE.md` "Operational quirks" is partly stale; rewrite it in a quiet sitting, not mid-task.
 2. **Standing rule 4 bites on every number.** Goldens: `tests/dcf/test_scenario_goldens.py`
@@ -202,5 +200,5 @@ archetypes; bank engine lets retained equity earn nothing until the terminal.
 matrix; DNL 9.13% removed; notes) · `62ea1ee` D-77 (D-43a roles on WBC's segment moats) · `a718d0e` D-78 (step 4) · `e146c12` step 5
 (`adding_a_company.md`) + this note · `2ba3e3c` D-79 (fourth sitting: derived terminal growth
 for WBC and CSL) + this note · `2ab12fc` D-80 (fifth sitting: year-10 CPI lowered in every
-scenario) + this note · D-81 (15 Oct: current-cycle chain terms expire inside the explicit
-period, the D-36 fade retired) + this note. **The last two are not on origin.**
+scenario) + this note · `a2485e9` D-81 (15 Oct: current-cycle chain terms expire inside the
+explicit period, the D-36 fade retired) + this note. All on origin/main.
