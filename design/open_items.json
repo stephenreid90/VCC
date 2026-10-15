@@ -4,7 +4,7 @@
     "source": "fable-2026-08-13",
     "area": "Correctness",
     "issue": "<b>CSL valuation-date mismatch.</b> Discounting anchors the valuation at 30 Jun 2026; net debt and share count are struck at 31 Dec 2025. Six months apart. Fable valued this at AUD 5–6/share; re-derived it is ±2%.",
-    "treatment": "Two self-consistent repairs: (a) roll net debt forward, <b>+1.7%</b>; or (b) move the valuation date back with an H2-FY26 stub, <b>−1.9%</b>. (a) matches how DNL already does it.",
+    "treatment": "Two self-consistent repairs: (a) roll net debt forward, <b>+1.7%</b>; or (b) move the valuation date back with an H2-FY26 stub, <b>−1.9%</b>. (a) matches how DNL already does it. [Reviewed 16 Oct 2026: Still open. Not re-verified against the CSL data this pass.]",
     "questions": [
       "Q1"
     ],
@@ -86,7 +86,7 @@
     "source": "fable-2026-08-13",
     "area": "Methodology",
     "issue": "<b>CSL discounts unlevered FCFF at the cost of equity, then deducts net debt</b> — charges for the debt twice. Fable estimated +8–15% on EV; re-derived it is <b>+21.5% to +26.6%</b> on the per-share value, and it pushes CSL <b>up</b>, not down as the review's fix-order assumed. The largest open item in the project.",
-    "treatment": "<b>DECIDED 20 Aug 2026 (D-05):</b> build a WACC on a <b>target</b> capital structure. Parameters proposed in <code>csl_cost_of_debt_and_target_structure.md</code>, awaiting confirmation (Q9).",
+    "treatment": "<b>DECIDED 20 Aug 2026 (D-05):</b> build a WACC on a <b>target</b> capital structure. Parameters proposed in <code>csl_cost_of_debt_and_target_structure.md</code>, awaiting confirmation (Q9). [Reviewed 16 Oct 2026: Still open. CSL is still discounted at its cost of equity (translator: cost_of_equity_build). D-05 is decided but not built.]",
     "questions": [
       "Q9"
     ],
@@ -110,7 +110,7 @@
     "source": "fable-2026-08-13",
     "area": "Methodology",
     "issue": "<b>Bank engine has no §15.5 CET1 constraint.</b> Flat 0.75 payout in every world; book equity compounds at 2.6% p.a. against AIEA at 4.35%, so the implied capital ratio falls every year and the model never notices. Stagflation NPAT falls 57.5% with payout unchanged.",
-    "treatment": "<b>Step 1 IMPLEMENTED 16 Sep 2026 — warn-only, no level moved.</b> <code>src/vcc_valuations/dcf/bank_capital.py</code> projects the CET1 path and the engine appends its warnings. The ratio is anchored on WBC's reported CET1 and rolled forward on the model's own implied rates: equity growth from retained earnings over opening equity, RWA growth from AIEA times a density derived from reported RWA. CET1 is not book equity and the data carries no bridge, so the level is anchored on the observable rather than reconstructed — the diagnostic is therefore exact on direction and rate of drift and indicative on the level at which a threshold is crossed, which is the right trade for a warning. It reproduces the finding: equity compounds at 2.5–2.8% against RWA at 4.35%, and CET1 erodes in <i>every</i> scenario — 97bp on Muddle Through (12.42% to 11.45%, crossing the 11.50% operating target at Y5), 165bp on Orderly Convergence (crossing at Y3), 71bp on Stagflation. None breaches the 10.25% APRA floor inside the explicit period, so this is a board event rather than a regulator event. Zero base-tie risk is structural, not asserted: book equity is a pure accumulator in the §15 build (NII comes from AIEA, never from equity), so the per-period roll-forward sums to the closing figure the terminal value already used. Tested both ways — the same inputs with the capital block stripped give an identical share price. Thresholds come from D-59. <b>Step 2, the forced payout cut, is the outstanding part and needs a ruling</b> — it is the step that moves all six WBC levels. <b>Step 2 RULED, BUILT and SWITCHED ON 16 Sep 2026 as D-60.</b> The payout is cut to hold CET1 on the operating target, one-sided. It raises the valuation rather than lowering it — retention capitalises in the terminal at (ROE-g)/(Ke-g) = 1.54x against a forgone dividend worth about 0.7x, so +0.04 on Muddle Through and +0.66 on Orderly Convergence. That means the model has no interior optimum on payout, which collides with D-45: retention is the derived third of growth, return and reinvestment, and here it moves while terminal ROE and g stay fixed. Left off rather than re-pinning six levels on the artefact. Switched on after Stephen ruled that the rise in value is the retention trade rather than an artefact — lower dividends now for higher dividends later, which the justified P/B form already embeds via g = ROE x b. WBC re-pinned; Fragmentation and Stagflation unchanged because the rule never binds there. Item closed.",
+    "treatment": "<b>Step 1 IMPLEMENTED 16 Sep 2026 — warn-only, no level moved.</b> <code>src/vcc_valuations/dcf/bank_capital.py</code> projects the CET1 path and the engine appends its warnings. The ratio is anchored on WBC's reported CET1 and rolled forward on the model's own implied rates: equity growth from retained earnings over opening equity, RWA growth from AIEA times a density derived from reported RWA. CET1 is not book equity and the data carries no bridge, so the level is anchored on the observable rather than reconstructed — the diagnostic is therefore exact on direction and rate of drift and indicative on the level at which a threshold is crossed, which is the right trade for a warning. It reproduces the finding: equity compounds at 2.5–2.8% against RWA at 4.35%, and CET1 erodes in <i>every</i> scenario — 97bp on Muddle Through (12.42% to 11.45%, crossing the 11.50% operating target at Y5), 165bp on Orderly Convergence (crossing at Y3), 71bp on Stagflation. None breaches the 10.25% APRA floor inside the explicit period, so this is a board event rather than a regulator event. Zero base-tie risk is structural, not asserted: book equity is a pure accumulator in the §15 build (NII comes from AIEA, never from equity), so the per-period roll-forward sums to the closing figure the terminal value already used. Tested both ways — the same inputs with the capital block stripped give an identical share price. Thresholds come from D-59. <b>Step 2, the forced payout cut, is the outstanding part and needs a ruling</b> — it is the step that moves all six WBC levels. <b>Step 2 RULED, BUILT and SWITCHED ON 16 Sep 2026 as D-60.</b> The payout is cut to hold CET1 on the operating target, one-sided. It raises the valuation rather than lowering it — retention capitalises in the terminal at (ROE-g)/(Ke-g) = 1.54x against a forgone dividend worth about 0.7x, so +0.04 on Muddle Through and +0.66 on Orderly Convergence. That means the model has no interior optimum on payout, which collides with D-45: retention is the derived third of growth, return and reinvestment, and here it moves while terminal ROE and g stay fixed. Left off rather than re-pinning six levels on the artefact. Switched on after Stephen ruled that the rise in value is the retention trade rather than an artefact — lower dividends now for higher dividends later, which the justified P/B form already embeds via g = ROE x b. WBC re-pinned; Fragmentation and Stagflation unchanged because the rule never binds there. Item closed. [Reviewed 16 Oct 2026: Done. The CET1 constraint is on by default (D-60), so the warn-only step is superseded.]",
     "questions": "",
     "status": "DONE",
     "batch": "Batch 4"
@@ -130,7 +130,7 @@
     "source": "fable-2026-08-13",
     "area": "Methodology",
     "issue": "<b>CSL sits 93% above market</b> — §16.3 requires the structural-reason treatment.",
-    "treatment": "Price staleness parked by owner decision (D-19) &mdash; 15 June 2026 snapshot stands until Ben's feed returns. The &sect;16.3 write-up follows once item 6 lands.",
+    "treatment": "Price staleness parked by owner decision (D-19) &mdash; 15 June 2026 snapshot stands until Ben's feed returns. The &sect;16.3 write-up follows once item 6 lands. [Reviewed 16 Oct 2026: Still open. CSL market_reference_date is still 2026-06-15 (csl.yaml).]",
     "questions": [],
     "status": "PLANNED",
     "batch": "Batch 4"
@@ -252,7 +252,7 @@
     "source": "fable-2026-08-13",
     "area": "UI arch",
     "issue": "Standalone UI + base64 workbook architecture is sound; the \"no JS engine port\" decision held. One gap: no \"reset all\" for localStorage user scenarios.",
-    "treatment": "Agreed PASS on the architecture. Add a reset-all control.",
+    "treatment": "Agreed PASS on the architecture. Add a reset-all control. [Reviewed 16 Oct 2026: Still open. No reset-all control in ui_prototypes/*.html (files dated 13 Aug).]",
     "questions": [],
     "status": "PLANNED",
     "batch": "Batch 5"
@@ -262,7 +262,7 @@
     "source": "fable-2026-08-13",
     "area": "UI arch",
     "issue": "<b>Workbook discipline honoured with exceptions.</b> DNL Equity bridge carries 14 literals (styled as inputs but off Assumptions); WBC Multiples!B3 hard-codes the market price.",
-    "treatment": "Move the DNL bridge inputs onto Assumptions. For WBC the fix needs a step Fable missed: <b>WBC's Assumptions sheet has no market-price row at all</b>, so one must be added first.",
+    "treatment": "Move the DNL bridge inputs onto Assumptions. For WBC the fix needs a step Fable missed: <b>WBC's Assumptions sheet has no market-price row at all</b>, so one must be added first. [Reviewed 16 Oct 2026: Still open. No market-price row on the WBC Assumptions sheet (engine_workbook.py). DNL bridge not re-checked.]",
     "questions": [],
     "status": "PLANNED",
     "batch": "Batch 5"
@@ -272,7 +272,7 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "Headline sub-caption pvsub unused — the punchline isn't landed in 5 seconds.",
-    "treatment": "<b>Partly wrong</b> — CSL's <i>is</i> populated. Do it for DNL and WBC: engine-sourced gap sentence.",
+    "treatment": "<b>Partly wrong</b> — CSL's <i>is</i> populated. Do it for DNL and WBC: engine-sourced gap sentence. [Reviewed 16 Oct 2026: Not verified. pvsub appears in the prototypes; check it is populated for DNL and WBC.]",
     "questions": [],
     "status": "PLANNED",
     "batch": "Batch 5"
@@ -282,7 +282,7 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "Metric card 4 is inconsistent — asymmetry for DNL/WBC, terminal share for CSL.",
-    "treatment": "Show asymmetry for all three; move terminal share into the discount-rate panel beside the §11.4.2 warning.",
+    "treatment": "Show asymmetry for all three; move terminal share into the discount-rate panel beside the §11.4.2 warning. [Reviewed 16 Oct 2026: Not verified. Needs a look at the metric cards in the prototypes.]",
     "questions": [
       "Q6"
     ],
@@ -304,7 +304,7 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "Bar values show only the per-share number, no \"% vs MT\".",
-    "treatment": "Add the delta beside each bar value — already computed for the narrative.",
+    "treatment": "Add the delta beside each bar value — already computed for the narrative. [Reviewed 16 Oct 2026: Probably partly done. '% vs MT' appears in the WBC prototype. Check CSL and DNL bars.]",
     "questions": [],
     "status": "PLANNED",
     "batch": "Batch 5"
@@ -314,7 +314,7 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "The download button lives only inside detail panels, so the most persuasive traceability artefact is invisible until a reviewer drills down.",
-    "treatment": "Persistent \"Download audited workbook\" in the header, sheet count from cfg.",
+    "treatment": "Persistent \"Download audited workbook\" in the header, sheet count from cfg. [Reviewed 16 Oct 2026: Still open. No download button in the header of any prototype.]",
     "questions": [],
     "status": "PLANNED",
     "batch": "Batch 5"
@@ -324,7 +324,7 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "No provenance chip — the topnote reads as a disclaimer rather than a feature.",
-    "treatment": "One-line engine/commit/data provenance under the header. Sell the one-source-of-truth story.",
+    "treatment": "One-line engine/commit/data provenance under the header. Sell the one-source-of-truth story. [Reviewed 16 Oct 2026: Still open. No provenance text in any prototype.]",
     "questions": [],
     "status": "PLANNED",
     "batch": "Batch 5"
@@ -334,7 +334,7 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "<b>Bars are click-only divs; the whole file has one aria-label; tab selection is border-colour only</b> (WCAG 1.4.1 failure). The file is currently unusable by keyboard.",
-    "treatment": "role/tabindex/Enter-Space/aria-label on bars; aria-pressed and a non-colour cue on tabs.",
+    "treatment": "role/tabindex/Enter-Space/aria-label on bars; aria-pressed and a non-colour cue on tabs. [Reviewed 16 Oct 2026: Still open. One aria-label per file, and no role or tabindex on the bars.]",
     "questions": [],
     "status": "PLANNED",
     "batch": "Batch 5"
@@ -344,7 +344,7 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "Narrow-width overflow: fixed 122px label column, value label at calc(w% + 6px).",
-    "treatment": "Move the value inside the bar above ~80% width. <b>Partly wrong</b> — the DCF workings table is already wrapped; the unwrapped one is the transitory-forces table.",
+    "treatment": "Move the value inside the bar above ~80% width. <b>Partly wrong</b> — the DCF workings table is already wrapped; the unwrapped one is the transitory-forces table. [Reviewed 16 Oct 2026: Not verified at narrow widths.]",
     "questions": [],
     "status": "PLANNED",
     "batch": "Batch 5"
@@ -354,7 +354,7 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "Slider moves silently swap the engine value for the reduced form.",
-    "treatment": "<b>Partly wrong</b> — the override note already shows both values; the missing word is \"approximation\". The real problem Fable missed is bigger (see M5): the DCF panel is static but captioned as live.",
+    "treatment": "<b>Partly wrong</b> — the override note already shows both values; the missing word is \"approximation\". The real problem Fable missed is bigger (see M5): the DCF panel is static but captioned as live. [Reviewed 16 Oct 2026: Still open in part. The caption 'straight from the production engine' is still in all three prototypes (see M5).]",
     "questions": [],
     "status": "PLANNED",
     "batch": "Batch 5"
@@ -364,7 +364,7 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "DNL has 8 explore tabs, WBC/CSL have 6 — reads as unfinished rather than data-blocked.",
-    "treatment": "Add the missing tabs with an explicit \"awaiting peer feed (Ben)\" placeholder, which also advertises the dependency. Fable's five-forces cross-reference claim is <b>wrong as stated</b> — no company's UI panel has one; CSL's <i>workbook</i> has no five-forces sheet at all.",
+    "treatment": "Add the missing tabs with an explicit \"awaiting peer feed (Ben)\" placeholder, which also advertises the dependency. Fable's five-forces cross-reference claim is <b>wrong as stated</b> — no company's UI panel has one; CSL's <i>workbook</i> has no five-forces sheet at all. [Reviewed 16 Oct 2026: Still open. Depends on the peer feed from Ben.]",
     "questions": [
       "Q7"
     ],
@@ -376,7 +376,7 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "Scenario narratives are buried one click deep.",
-    "treatment": "Show the first sentence + \"why it lands here\" under the chart on bar selection.",
+    "treatment": "Show the first sentence + \"why it lands here\" under the chart on bar selection. [Reviewed 16 Oct 2026: Not verified.]",
     "questions": [],
     "status": "PLANNED",
     "batch": "Batch 5"
@@ -386,7 +386,7 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "No onboarding for first-time reviewers.",
-    "treatment": "Dismissible 3-step \"how to read this\" strip aimed at the feedback ask.",
+    "treatment": "Dismissible 3-step \"how to read this\" strip aimed at the feedback ask. [Reviewed 16 Oct 2026: Still open. No 'how to read' onboarding in any prototype.]",
     "questions": [],
     "status": "PLANNED",
     "batch": "Batch 5"
@@ -396,7 +396,7 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "No dedicated CSL market-gap panel.",
-    "treatment": "Build it — but <b>after</b> items 6 and 10 land. Writing \"why we differ\" before knowing whether the gap is 93% or 140% is wasted work.",
+    "treatment": "Build it — but <b>after</b> items 6 and 10 land. Writing \"why we differ\" before knowing whether the gap is 93% or 140% is wasted work. [Reviewed 16 Oct 2026: Still open. Depends on items 6 and 10.]",
     "questions": [],
     "status": "NEEDS",
     "batch": "Batch 5"
@@ -406,7 +406,7 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "No print/PDF stylesheet; the file prints poorly.",
-    "treatment": "Worth doing if the prototype graduates.",
+    "treatment": "Worth doing if the prototype graduates. [Reviewed 16 Oct 2026: Still open. No print stylesheet in any prototype.]",
     "questions": [],
     "status": "BACKLOG",
     "batch": ""
@@ -416,7 +416,7 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "No side-by-side scenario comparison.",
-    "treatment": "All the data is already in cfg. Nice-to-have.",
+    "treatment": "All the data is already in cfg. Nice-to-have. [Reviewed 16 Oct 2026: Not verified. The word 'compare' appears in the prototypes; check whether a side-by-side view exists.]",
     "questions": [],
     "status": "BACKLOG",
     "batch": ""
@@ -478,7 +478,7 @@
     "source": "triage-2026-08-13",
     "area": "Missed",
     "issue": "<b>The DCF panel is static but captioned \"straight from the production engine\"</b> — after any slider move the headline is the reduced form while the build-up still shows the engine path.",
-    "treatment": "Fix the caption first, the behaviour second. This is the real version of item 31.",
+    "treatment": "Fix the caption first, the behaviour second. This is the real version of item 31. [Reviewed 16 Oct 2026: Still open. The 'straight from the production engine' caption is still in all three prototypes.]",
     "questions": [],
     "status": "PLANNED",
     "batch": "Batch 5"
@@ -488,7 +488,7 @@
     "source": "triage-2026-08-13",
     "area": "Missed",
     "issue": "<b>DNL's two DCF views disagree by AUD 154m of EV</b> (7,009 vs 6,855 — the table view omits the equity-bridge adjustment), and its \"tie check\" is tautological because the reconstruction is back-solved from the answer.",
-    "treatment": "Reconcile the two views; make the tie check real or remove it.",
+    "treatment": "Reconcile the two views; make the tie check real or remove it. [Reviewed 16 Oct 2026: Not verified. DNL's two DCF views were not re-checked.]",
     "questions": [],
     "status": "PLANNED",
     "batch": "Batch 5"
@@ -498,7 +498,7 @@
     "source": "triage-2026-08-13",
     "area": "Missed",
     "issue": "<b>Cross-company text leak</b> — CSL's β workbench says \"re-lever at <b>DNL</b> gearing D/E\". Present in all three generated files.",
-    "treatment": "Parameterise the label.",
+    "treatment": "Parameterise the label. [Reviewed 16 Oct 2026: Not verified.]",
     "questions": [],
     "status": "PLANNED",
     "batch": "Batch 5"
@@ -528,7 +528,7 @@
     "source": "triage-2026-08-13",
     "area": "Missed",
     "issue": "<b>All three market prices are struck at 2026-06-15</b> — two months stale, not just CSL's.",
-    "treatment": "See Q2.",
+    "treatment": "See Q2. [Reviewed 16 Oct 2026: Still open. market_reference_date is still 2026-06-15 for all three companies.]",
     "questions": [],
     "status": "NEEDS",
     "batch": "Batch 4"
@@ -538,7 +538,7 @@
     "source": "triage-2026-08-13",
     "area": "Missed",
     "issue": "<b>WBC's Assumptions sheet has no market-price row</b>, which is why Multiples!B3 hard-codes it.",
-    "treatment": "Add the row, then link. Prerequisite for item 22.",
+    "treatment": "Add the row, then link. Prerequisite for item 22. [Reviewed 16 Oct 2026: Still open. No market-price row on the WBC Assumptions sheet.]",
     "questions": [],
     "status": "PLANNED",
     "batch": "Batch 5"
@@ -578,7 +578,7 @@
     "source": "D-60 work, 16 Sep 2026",
     "area": "Methodology",
     "issue": "<b>The declared terminal ROE bears no tested relationship to the ROE the explicit period actually earns.</b> Measured on the final explicit year's NPAT over closing book equity, the gap runs from -0.03pp to -3.00pp on five scenarios (declared below earned, i.e. a conservative fade) — but on <b>Stagflation the declared 9.00% sits 4.01pp ABOVE the 4.99% the final year earns</b>. That is a perpetual recovery assumption, and nothing declares it as one. It matters most precisely there: Stagflation's terminal is <b>84.45% of the equity claim</b>, the highest in the project, so the worst-case valuation is five-sixths driven by a terminal that assumes ROE almost doubles from where the explicit period leaves it.",
-    "treatment": "<b>Diagnostic BUILT 16 Sep 2026.</b> <code>src/vcc_valuations/dcf/terminal_return.py</code> computes the terminal return on NEW capital from the growth identity g = return x reinvestment_rate on production engine output, against two benchmarks: the cost of capital (D-42) and the return the final explicit year actually earns (M14). <code>scripts/size_terminal_returns.py</code> regenerates <code>design/methodology/terminal_return_sets.yaml</code> for all 18 valuations and <code>tests/dcf/test_terminal_return_sets.py</code> asserts it, per standing rule 4. The two constructions were lifted from <code>tests/dcf/harness/replica.py</code> rather than reinvented, and moved into the engine path because a number that reaches a document cannot come from a harness (D-51). <b>The M14 finding is confirmed and isolated:</b> WBC Stagflation's declared terminal ROE sits 401bp above the 4.99% its final explicit year earns. Every other WBC scenario is conservative or flat against earned, so this is one scenario's recovery assumption rather than a systemic bias. Still needs Stephen's ruling on whether it is intended and where it should be declared. <b>Return on the WHOLE capital base is not yet reported</b> — FcfEngine carries no invested-capital roll-forward, so it cannot be struck from engine output; that is the natural next step and D-44 already defines the opening base for DNL. <b>D-42 ratified and implemented 17 Sep 2026</b>, and the structured <code>excess_return_defence</code> it introduced is where M14's answer belongs: the decay_horizon basis field is the place to declare a recovery assumption. WBC is baselined for a structural reason rather than an omission — the bank matrix carries no terminal_roic driver for any scenario, because in the §15 fork the terminal return is a declared input on the scenario overlay rather than a matrix cell, so there is nowhere for a bank defence to live until that is decided. <b>17 Sep:</b> the whole-capital reading is now reported for DNL and the declared rate is reconcilable, which surfaced M16. WBC still cannot report it — the §15 fork has no invested-capital construction at all.",
+    "treatment": "<b>Diagnostic BUILT 16 Sep 2026.</b> <code>src/vcc_valuations/dcf/terminal_return.py</code> computes the terminal return on NEW capital from the growth identity g = return x reinvestment_rate on production engine output, against two benchmarks: the cost of capital (D-42) and the return the final explicit year actually earns (M14). <code>scripts/size_terminal_returns.py</code> regenerates <code>design/methodology/terminal_return_sets.yaml</code> for all 18 valuations and <code>tests/dcf/test_terminal_return_sets.py</code> asserts it, per standing rule 4. The two constructions were lifted from <code>tests/dcf/harness/replica.py</code> rather than reinvented, and moved into the engine path because a number that reaches a document cannot come from a harness (D-51). <b>The M14 finding is confirmed and isolated:</b> WBC Stagflation's declared terminal ROE sits 401bp above the 4.99% its final explicit year earns. Every other WBC scenario is conservative or flat against earned, so this is one scenario's recovery assumption rather than a systemic bias. Still needs Stephen's ruling on whether it is intended and where it should be declared. <b>Return on the WHOLE capital base is not yet reported</b> — FcfEngine carries no invested-capital roll-forward, so it cannot be struck from engine output; that is the natural next step and D-44 already defines the opening base for DNL. <b>D-42 ratified and implemented 17 Sep 2026</b>, and the structured <code>excess_return_defence</code> it introduced is where M14's answer belongs: the decay_horizon basis field is the place to declare a recovery assumption. WBC is baselined for a structural reason rather than an omission — the bank matrix carries no terminal_roic driver for any scenario, because in the §15 fork the terminal return is a declared input on the scenario overlay rather than a matrix cell, so there is nowhere for a bank defence to live until that is decided. <b>17 Sep:</b> the whole-capital reading is now reported for DNL and the declared rate is reconcilable, which surfaced M16. WBC still cannot report it — the §15 fork has no invested-capital construction at all. [Reviewed 16 Oct 2026: Diagnostic built (dcf/terminal_return.py). The decision on the terminal return is still open.]",
     "questions": "Two now. (1) Is Stagflation's terminal ROE 4pp above its final earned year intended as a recovery, and what is its basis? (2) Where does a BANK's terminal-return defence live, given the terminal ROE is a scenario-overlay input rather than an impact-matrix driver?",
     "status": "NEEDS",
     "batch": "Batch 4"
@@ -588,7 +588,7 @@
     "source": "D-42 diagnostic, 16 Sep 2026",
     "area": "Correctness",
     "issue": "<b>CSL's terminal asserts a 61-73% return on new capital, and that is D-53 unimplemented.</b> The segment terminal declares <code>terminal_capex_pct_revenue: 0.06</code> equal to <code>da_pct_revenue: 0.06</code>, so net capex in the terminal is exactly zero and the only reinvestment left is working capital at g x 0.35, about 1.05% of revenue. A perpetuity growing at 3% while reinvesting roughly 4% of its earnings is asserting a return on new capital in the high sixties against a discount rate of 8.75% — an excess of 5,258 to 6,415bp depending on scenario. For comparison, DNL now runs 4.85% to 12.13% against a WACC of 8.88%, which is the range a real business occupies.",
-    "treatment": "This is not a new defect — it is the quantification D-53 was missing. D-49 retired <code>capex_rule: equals_da</code> as a house rule on the argument that capex equal to depreciation holds the asset base flat in nominal dollars while revenue compounds; D-53 ruled that argument general and therefore applicable to CSL. Implementing D-53 raises CSL's terminal capex above D&A, cuts terminal FCFF and lowers all six CSL levels, and should drop the implied return into the range DNL occupies. The diagnostic gives that implementation a target to land in and a before-figure to cite. Take with D-55, which also moves all six CSL levels.",
+    "treatment": "This is not a new defect — it is the quantification D-53 was missing. D-49 retired <code>capex_rule: equals_da</code> as a house rule on the argument that capex equal to depreciation holds the asset base flat in nominal dollars while revenue compounds; D-53 ruled that argument general and therefore applicable to CSL. Implementing D-53 raises CSL's terminal capex above D&A, cuts terminal FCFF and lowers all six CSL levels, and should drop the implied return into the range DNL occupies. The diagnostic gives that implementation a target to land in and a before-figure to cite. Take with D-55, which also moves all six CSL levels. [Reviewed 16 Oct 2026: Still open. CSL terminal capex equals D&A at 6% of revenue (csl.yaml), so net terminal capex is zero.]",
     "questions": "",
     "status": "PLANNED",
     "batch": "Batch 4"
@@ -598,7 +598,7 @@
     "source": "D-42 step 2, 17 Sep 2026",
     "area": "Methodology",
     "issue": "<b>D-45 and D-49 both derive reinvestment, from different things, and they do not agree.</b> D-45 says that of terminal growth, terminal return and reinvestment only two are free: g from the macro work, ROIC from the Porter and moat work, and reinvestment derived from them. D-49 says terminal capex is depreciation plus g times the capital base — which derives reinvestment from the balance sheet and leaves the return to emerge. They are consistent only where the declared terminal return equals terminal earnings over the rolled-forward capital base. <b>Now measured for the first time:</b> DNL Orderly Convergence declares 9.13% and the capital build produces 12.46% on the whole base — a gap of <b>333bp</b>. The declared figure is not an invention: the impact matrix declares terminal_roic as direction positive, magnitude small, and the project's own translation table maps positive-small on a rate driver to +25bp over the convergence target named in the same rationale. So the moat work's view is +25bp and the model delivers +358bp.",
-    "treatment": "The engine implements D-49, which is why this went unnoticed: <code>terminal_roic</code> existed as a driver with its own basis-point delta convention and <b>no engine ever read it</b>, so the moat work's view was recorded and discarded. The diagnostic now reports both readings and warns on the gap, so it cannot be discarded again. Resolving it is a ruling: either the declared return governs and reinvestment is derived from it (D-45, which makes the moat analysis load-bearing and a defended exception a precondition rather than an audit), or the capital construction governs and the declared return is a cross-check that must be corrected to match (D-49, which keeps the balance-sheet discipline and demotes the Porter work to commentary). Either way the other decision needs amending, and on the central case the choice is worth a large part of the terminal — 70% of DNL's EV sits behind it.",
+    "treatment": "The engine implements D-49, which is why this went unnoticed: <code>terminal_roic</code> existed as a driver with its own basis-point delta convention and <b>no engine ever read it</b>, so the moat work's view was recorded and discarded. The diagnostic now reports both readings and warns on the gap, so it cannot be discarded again. Resolving it is a ruling: either the declared return governs and reinvestment is derived from it (D-45, which makes the moat analysis load-bearing and a defended exception a precondition rather than an audit), or the capital construction governs and the declared return is a cross-check that must be corrected to match (D-49, which keeps the balance-sheet discipline and demotes the Porter work to commentary). Either way the other decision needs amending, and on the central case the choice is worth a large part of the terminal — 70% of DNL's EV sits behind it. [Reviewed 16 Oct 2026: Still open. The engine follows D-49. D-45 disagrees.]",
     "questions": "Which governs the terminal return: the rate the moat work declares (D-45) or the capital base the explicit period leaves behind (D-49)? And should D-42's obligation carry a materiality floor? DNL Fragmentation triggers it on a 4bp excess, which is the convergence target reached to within rounding rather than a claim about a moat.",
     "status": "NEEDS",
     "batch": "Batch 4"
@@ -608,9 +608,9 @@
     "source": "review-2026-10-16",
     "area": "Methodology",
     "issue": "<b>Review pass needed.</b> The 59 items above were last reviewed in August and September. They have not been checked against D-79 to D-82.",
-    "treatment": "Check each item against the current decisions and the code. Close or re-word it. Done in a separate pass.",
+    "treatment": "Done 16 Oct 2026. Each older item was checked against the code, data and prototypes. Notes sit on each item. Items with no note were not re-checked.",
     "questions": [],
-    "status": "PLANNED",
+    "status": "DONE",
     "batch": "Batch 6"
   },
   {
