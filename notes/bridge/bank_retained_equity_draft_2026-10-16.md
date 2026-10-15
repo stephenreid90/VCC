@@ -1,6 +1,6 @@
 # Bridge item (e): bank retained equity earns nothing until the terminal (draft for approval, 16 Oct 2026)
 
-Status: DRAFT. No model change yet. Needs Stephen's choice of rule (section 3) before any build.
+Status: SIZED 16 Oct 2026 (section 6). Recommendation changed to option 1b. Needs Stephen's approval before any build.
 
 ## 1. The problem
 
@@ -19,17 +19,42 @@ Result: when the payout falls, the withheld cash sits idle. The model pays for t
 2. **Retained equity earns the bank's own ROE.** This is the most generous option. It assumes all retained capital is deployed at full ROE. I do not recommend it.
 3. **Surplus equity above the CET1 target is paid out.** Under D-60, retention is already held to the target. This option changes the D-60 rule itself, so it is a bigger change. It is not needed to fix the idle-cash problem.
 
-## 3. Recommendation
+## 3. Recommendation (revised after sizing)
 
-Option 1. It is the standard treatment, it needs no new number, and it makes the terminal and the explicit years agree.
+Option 1b, the cash version (section 6). Option 1 as first written grows book equity at Ke, but
+that income never reaches shareholders in the explicit years. It counts the same income twice.
+Option 1b pays the income out as cash, so it appears in NPAT and in dividends. It is the
+consistent version.
 
-Before any build, size it. The sizing run will show the change in WBC's value in all six scenarios, and whether the direction of the D-60 effect changes. Sizing is the first step of the serious piece of work. It does not change the model.
+Sizing shows option 1b raises WBC's value by about 4 to 6% in every scenario. Option 1 as first
+written raised it by 4 to 11%, which was overstated.
 
 ## 4. What I need from you
 
-1. Choose option 1, 2 or 3. My recommendation is option 1.
-2. Confirm that a change in direction for the D-60 effect (where it appears) is acceptable. It will be stated in the decision record.
+1. Choose option 1b (recommended), 1, 2 or 3.
+2. Accept a 4 to 6% rise in WBC's value in every scenario. This is a serious change. It moves WBC's levels in all six scenarios.
+3. Accept that the payout cut's effect turns positive in Disorderly Climate and Stagflation, and is positive in every scenario. The comparison with no cut is itself a simplification (no cut overpays capital), so state it that way in the decision record.
 
 ## 5. What is not changed
 
 Dividends, CET1 path and terminal form stay as they are. Only the treatment of retained equity in the explicit years changes, under option 1.
+
+## 6. Sizing (16 Oct 2026)
+
+Script: `scripts/size_bank_retained_equity.py`. It reproduces the WBC base values in the goldens.
+The "D-60 effect" is the value with the payout cut minus the value without it.
+
+| Scenario | Base | Option 1 (as first written) | Option 1b (cash, recommended) | D-60 effect base | D-60 effect 1b |
+|---|---:|---:|---:|---:|---:|
+| Orderly Convergence | 45.39 | 50.20 (+10.6%) | 47.91 (+5.5%) | +1.73 | +2.41 |
+| Muddle Through | 32.40 | 34.80 (+7.4%) | 33.93 (+4.7%) | +0.34 | +0.47 |
+| AI Productivity Lag | 32.73 | 35.15 (+7.4%) | 34.27 (+4.7%) | +0.33 | +0.45 |
+| Fragmentation | 28.23 | 30.09 (+6.6%) | 29.58 (+4.8%) | +0.12 | +0.17 |
+| Disorderly Climate | 23.08 | 24.58 (+6.5%) | 24.39 (+5.7%) | -0.06 | +0.12 |
+| Stagflation Persists | 15.73 | 16.42 (+4.4%) | 16.35 (+4.0%) | -0.01 | +0.02 |
+
+Values are AUD per share for WBC.
+
+Option 1b, in plain terms: each year, the retained balance earns Ke. That income is paid to shareholders as extra dividends. The principal stays in book equity. The terminal value is unchanged.
+
+Simplifications: annual periods; the stub period is handled as a fraction of a year; the terminal is unchanged in 1b. The payout rule itself is not changed.
