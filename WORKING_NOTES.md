@@ -64,6 +64,22 @@ working capital confirmations; UI design choices 32, 35, Q6, Q7.
 
 ### Batch 1 progress
 
+**Batch 1 (items 1 to 4) landed and pushed, 16 Oct 2026 evening:** 4364b21 (R16-6), 83dbda1 (D-86
+reporting, R16-9), dd57e5f (Q5), 707aa49 (M6, M7, M11). Base ties unchanged DNL 2.006 / WBC 33.93 /
+CSL 226.66. DCF 425 passed / 1 skipped; other 331; lint 14/14.
+
+**Decision list put to Stephen (items 8 to 12 plus two raised by the batch):**
+1. R16-6 leftover: CSL's three segment steady states (seqirus_cagr, vifor_cagr, behring_growth) stay in csl.yaml as a declared exception. Move them or leave them.
+2. R16-7: close as superseded by D-86, after a tidy: terminal_return_sets.yaml still reports CSL on the new-capital identity (governing_return about 70%, cost_of_capital_name Ke) rather than the D-86 earned return; also confirm declared rates are retired for DNL.
+3. Q4: confirm DNL 13.76% (D-57 already kept it). Q8: confirm CSL 35% (D-30/D-34). Neither value effect is sized.
+4. Item 10 (CSL 115% above the June price): reconcile before writing the 16.3 note. Checks in order: fade/start (pinned), price refresh, D-84 gap (+10% built vs +21 to 27% expected), terminal growth and FX date, margin uplifts and working capital. No haircut.
+5. M10 price refresh: refresh by hand to one dated close after the UI work, separate DNL's "Wall St target" 3.61 from a market price, add a date test; staleness warning later.
+6. UI: 32/Q7 placeholder tabs (after Ben's feed); 35 after item 10; Q6 option (b).
+
+**New defects found by the batch, not yet in the tracker:** CSL prototype DCF build-up rows are hand-typed
+old figures (EV 74,029, AUD 203.83 vs engine 80,512 / 226.66) -- belongs with item 5 (UI integrity).
+DNL market price 3.61 has no reference date. CSL prose hard-codes 105.53 (csl.yaml ~line 629).
+
 - 16 Oct 2026: **Q5 closed.** Answered by D-60 (forced payout cut on the operating target; D-61 set 11.25%).
 
 - 16 Oct 2026: **D-86 reporting rules (a) and (b) done (R16-9), values unchanged.** The
