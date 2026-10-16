@@ -85,12 +85,15 @@ def test_csl_workbook_returns_and_band_tie_the_committed_sets(built):
         sens = {(b["fade_years"], b["starting_return"]): b["aud_per_share"] for b in sc["sensitivity"]}
         sens[(sc["fade_years"], "earned")] = sc["aud_per_share_model"]
         starts = sorted({k[1] for k in sens if k[1] != "earned"}, reverse=True)
-        for j, fade in enumerate((sc["fade_years"], min(k[0] for k in sens))):
-            r = 5 + 2 * i + j
+        # One row per fade in the set: the model's own first, then the others longest
+        # first (D-93: band ends 25 and 15, then the 10-year short line).
+        fades = [sc["fade_years"]] + sorted({k[0] for k in sens if k[0] != sc["fade_years"]}, reverse=True)
+        for j, fade in enumerate(fades):
+            r = 5 + len(fades) * i + j
             assert band.cell(r, 2).value == fade
             for c, key in enumerate(["earned"] + starts):
                 assert band.cell(r, 3 + c).value == pytest.approx(sens[(fade, key)], abs=0.006), (sc["scenario"], fade, key)
-        assert abs(band.cell(5 + 2 * i, 3 + 1 + len(starts)).value) < 1e-6   # model-fade check row
+        assert abs(band.cell(5 + len(fades) * i, 3 + 1 + len(starts)).value) < 1e-6   # model-fade check row
         # headline unchanged
         assert s.cell(4 + i, 3).value == pytest.approx(sc["aud_per_share_model"], abs=0.006)
         assert s.cell(4 + i, 8).value == pytest.approx(min(sens.values()), abs=0.006)

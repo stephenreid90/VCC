@@ -279,12 +279,17 @@ CSL_GOLDEN = {
     # CSL re-pinned 15 Oct 2026 (item (c)): segment driver now US real GDP + advanced CPI
     # (approved paths). AI Lag and Disorderly Climate are unchanged: a flat offset is absorbed
     # by the calibrated gap.
-    "orderly_convergence": (175.7751, 266.3344),
-    "muddle_through": (149.5929, 226.6631),       # generated workbook ties (LibreOffice recalc, all six)
-    "ai_productivity_lag": (143.4283, 217.3226),
-    "fragmentation": (113.9995, 172.7321),
-    "disorderly_climate_crystallisation": (120.4883, 182.5639),
-    "stagflation_persists": (98.7475, 149.6222),
+    # Re-pinned 16 Oct 2026 (D-93, Stephen's ruling): the CSL decay band is 15-25 years
+    # (midpoint 20), from 20-30 (midpoint 25). The convergence terminal fades the earned
+    # return over N = 20. AUD: OC -7.5%, MT -6.8%, AI Lag -6.4%, Frag -4.9%, DCC -5.0%,
+    # Stag -4.0%. Before (USD, AUD): 175.7751/266.3344, 149.5929/226.6631,
+    # 143.4283/217.3226, 113.9995/172.7321, 120.4883/182.5639, 98.7475/149.6222.
+    "orderly_convergence": (162.6659, 246.4714),
+    "muddle_through": (139.3574, 211.1543),       # generated workbook ties (LibreOffice recalc, all six)
+    "ai_productivity_lag": (134.1865, 203.3193),
+    "fragmentation": (108.3851, 164.2252),
+    "disorderly_climate_crystallisation": (114.4601, 173.4300),
+    "stagflation_persists": (94.8465, 143.7115),
 }
 
 
@@ -442,9 +447,11 @@ def test_terminal_shares_are_measured_case_by_case():
         # D-80 (14 Oct 2026): lower g takes every share down 0.8-1.3pt.
         # CSL re-pinned 15 Oct 2026 (item (c), US driver): 0.5571 -> 0.5557, 0.5351 -> 0.5342,
         # 0.4873 -> 0.4855, 0.4466 -> 0.4568. AI Lag and Disorderly unchanged.
-        "orderly_convergence": 0.5809, "muddle_through": 0.5599, "ai_productivity_lag": 0.5508,
-        "fragmentation": 0.5107, "disorderly_climate_crystallisation": 0.5126,
-        "stagflation_persists": 0.4815,
+        # Re-pinned 16 Oct 2026 (D-93, 20-year fade): every share down 1.8-3.1 points.
+        # Before: 0.5809, 0.5599, 0.5508, 0.5107, 0.5126, 0.4815.
+        "orderly_convergence": 0.5504, "muddle_through": 0.5311, "ai_productivity_lag": 0.5234,
+        "fragmentation": 0.4889, "disorderly_climate_crystallisation": 0.4903,
+        "stagflation_persists": 0.4635,
     }
     for scenario in SCENARIOS:
         assert _dnl(scenario).terminal_share_of_ev == pytest.approx(

@@ -84,8 +84,9 @@ def test_at_ten_years_the_live_level_is_the_golden():
     # 15 Oct 2026 (item (c)): 203.4633 -> 203.5226 with the US real GDP driver.
     # 16 Oct 2026 (D-06): 203.5226 -> 224.3367 as the discount rate moves from Ke (8.75%) to the WACC (8.12%).
     # 16 Oct 2026 (D-87, Q1, refined): 224.3367 -> 226.6631 (net debt 7,881.41; 482.13m shares at 31 Dec 2025).
-    assert r.value_per_share_aud == pytest.approx(226.6631, abs=1e-3)
-    assert r.terminal_form == "excess_return_convergence" and r.convergence_years == 25
+    # 16 Oct 2026 (D-93): 226.6631 -> 211.1543 as the decay band moves to 15-25 (midpoint 20, N = 20).
+    assert r.value_per_share_aud == pytest.approx(211.1543, abs=1e-3)
+    assert r.terminal_form == "excess_return_convergence" and r.convergence_years == 20
 
 
 def test_all_six_scenarios_value_and_downside_skewed():

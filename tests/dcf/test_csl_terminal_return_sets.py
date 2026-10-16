@@ -47,17 +47,18 @@ def test_goodwill_barely_moves_value():
 
 def test_model_values_are_the_pinned_base_values():
     # Pinned 16 Oct 2026 (D-87, refined): net debt on the agreed convention, 482.13m shares at 31 Dec 2025.
-    pinned = {"orderly_convergence": 266.33, "muddle_through": 226.66,
-              "ai_productivity_lag": 217.32, "fragmentation": 172.73,
-              "disorderly_climate_crystallisation": 182.56, "stagflation_persists": 149.62}
+    # Re-pinned 16 Oct 2026 (D-93): 20-year fade. Before: 266.33, 226.66, 217.32, 172.73, 182.56, 149.62.
+    pinned = {"orderly_convergence": 246.47, "muddle_through": 211.15,
+              "ai_productivity_lag": 203.32, "fragmentation": 164.23,
+              "disorderly_climate_crystallisation": 173.43, "stagflation_persists": 143.71}
     for s in _committed()["scenarios"]:
         assert s["aud_per_share_model"] == pinned[s["scenario"]], s["scenario"]
 
 
 def test_each_scenario_carries_the_sensitivity_band():
     for s in _committed()["scenarios"]:
-        # 2 fades x 4 starts, minus the model row itself (earned start at 25 years).
-        assert len(s["sensitivity"]) == 7, s["scenario"]
+        # 4 fades x 4 starts, minus the model row itself (earned start at 20 years, D-93).
+        assert len(s["sensitivity"]) == 15, s["scenario"]
 
 
 def test_csl_goodwill_return_agrees_with_the_general_terminal_return_set():
@@ -94,4 +95,4 @@ def test_the_sensitivity_paper_is_the_committed_set():
         by[(s["fade_years"], "earned")] = s["aud_per_share_model"]
         assert vals == [by[(fade, k)] for k in ("earned", 0.2, 0.15, 0.12)], line
         checked += 1
-    assert checked == 12
+    assert checked == 24  # 6 scenarios x 4 fades (D-93)

@@ -302,21 +302,24 @@ terminal_disclosure_set:
     earned_return: 0.30862
     declared_return: null
     convergence_return: 0.30862
-    moat_years: 25.0
-    moat_band: 20-30
+    moat_years: 20.0
+    moat_band: 15-25
     moat_basis: 'Threat of new entrants LOW (a collection network takes 5+ years of
       capex and FDA/EMA licensing to replicate, and fractionation scale is a second
       gate behind it), rivalry MODERATE in a three-firm plasma oligopoly (CSL, Grifols,
       Takeda), substitutes MODERATE and rising (recombinants, FcRn inhibitors). Section
       12 reads this as the long band: barrier high and slow to assemble, erosion path
       real but a generation away. Archetype-level, so the band is the same in all
-      six scenarios; the named threat is what changes.
+      six scenarios; the named threat is what changes. Band set 15-25 (midpoint 20)
+      by Stephen, 16 Oct 2026 (D-93): the plasma-collection barrier is long, but a
+      25-year fade on a 27% earned return was judged generous (D-86); the band ends
+      remain the sensitivity.
 
       '
-    terminal_value: 107390.278
-    value_per_share: 237.7127
-    engine_terminal_value: 93226.661
-    engine_value_per_share: 217.3226
+    terminal_value: 95694.273
+    value_per_share: 220.875
+    engine_terminal_value: 83499.53
+    engine_value_per_share: 203.3193
   - company: csl
     scenario: disorderly_climate_crystallisation
     available: true
@@ -327,21 +330,24 @@ terminal_disclosure_set:
     earned_return: 0.272545
     declared_return: null
     convergence_return: 0.272545
-    moat_years: 25.0
-    moat_band: 20-30
+    moat_years: 20.0
+    moat_band: 15-25
     moat_basis: 'Threat of new entrants LOW (a collection network takes 5+ years of
       capex and FDA/EMA licensing to replicate, and fractionation scale is a second
       gate behind it), rivalry MODERATE in a three-firm plasma oligopoly (CSL, Grifols,
       Takeda), substitutes MODERATE and rising (recombinants, FcRn inhibitors). Section
       12 reads this as the long band: barrier high and slow to assemble, erosion path
       real but a generation away. Archetype-level, so the band is the same in all
-      six scenarios; the named threat is what changes.
+      six scenarios; the named threat is what changes. Band set 15-25 (midpoint 20)
+      by Stephen, 16 Oct 2026 (D-93): the plasma-collection barrier is long, but a
+      25-year fade on a 27% earned return was judged generous (D-86); the band ends
+      remain the sensitivity.
 
       '
-    terminal_value: 85680.8
-    value_per_share: 198.824
-    engine_terminal_value: 74385.986
-    engine_value_per_share: 182.5639
+    terminal_value: 77945.453
+    value_per_share: 187.6881
+    engine_terminal_value: 68041.301
+    engine_value_per_share: 173.43
   - company: csl
     scenario: fragmentation
     available: true
@@ -352,21 +358,24 @@ terminal_disclosure_set:
     earned_return: 0.258842
     declared_return: null
     convergence_return: 0.258842
-    moat_years: 25.0
-    moat_band: 20-30
+    moat_years: 20.0
+    moat_band: 15-25
     moat_basis: 'Threat of new entrants LOW (a collection network takes 5+ years of
       capex and FDA/EMA licensing to replicate, and fractionation scale is a second
       gate behind it), rivalry MODERATE in a three-firm plasma oligopoly (CSL, Grifols,
       Takeda), substitutes MODERATE and rising (recombinants, FcRn inhibitors). Section
       12 reads this as the long band: barrier high and slow to assemble, erosion path
       real but a generation away. Archetype-level, so the band is the same in all
-      six scenarios; the named threat is what changes.
+      six scenarios; the named threat is what changes. Band set 15-25 (midpoint 20)
+      by Stephen, 16 Oct 2026 (D-93): the plasma-collection barrier is long, but a
+      25-year fade on a 27% earned return was judged generous (D-86); the band ends
+      remain the sensitivity.
 
       '
-    terminal_value: 80265.228
-    value_per_share: 186.6113
-    engine_terminal_value: 70624.265
-    engine_value_per_share: 172.7321
+    terminal_value: 73169.67
+    value_per_share: 176.3965
+    engine_terminal_value: 64715.088
+    engine_value_per_share: 164.2252
   - company: csl
     scenario: muddle_through
     available: true
@@ -377,21 +386,24 @@ terminal_disclosure_set:
     earned_return: 0.319064
     declared_return: null
     convergence_return: 0.319064
-    moat_years: 25.0
-    moat_band: 20-30
+    moat_years: 20.0
+    moat_band: 15-25
     moat_basis: 'Threat of new entrants LOW (a collection network takes 5+ years of
       capex and FDA/EMA licensing to replicate, and fractionation scale is a second
       gate behind it), rivalry MODERATE in a three-firm plasma oligopoly (CSL, Grifols,
       Takeda), substitutes MODERATE and rising (recombinants, FcRn inhibitors). Section
       12 reads this as the long band: barrier high and slow to assemble, erosion path
       real but a generation away. Archetype-level, so the band is the same in all
-      six scenarios; the named threat is what changes.
+      six scenarios; the named threat is what changes. Band set 15-25 (midpoint 20)
+      by Stephen, 16 Oct 2026 (D-93): the plasma-collection barrier is long, but a
+      25-year fade on a 27% earned return was judged generous (D-86); the band ends
+      remain the sensitivity.
 
       '
-    terminal_value: 115156.385
-    value_per_share: 250.7868
-    engine_terminal_value: 98399.291
-    engine_value_per_share: 226.6631
+    terminal_value: 101973.382
+    value_per_share: 231.8084
+    engine_terminal_value: 87626.316
+    engine_value_per_share: 211.1543
   - company: csl
     scenario: orderly_convergence
     available: true
@@ -402,21 +414,24 @@ terminal_disclosure_set:
     earned_return: 0.363593
     declared_return: null
     convergence_return: 0.363593
-    moat_years: 25.0
-    moat_band: 20-30
+    moat_years: 20.0
+    moat_band: 15-25
     moat_basis: 'Threat of new entrants LOW (a collection network takes 5+ years of
       capex and FDA/EMA licensing to replicate, and fractionation scale is a second
       gate behind it), rivalry MODERATE in a three-firm plasma oligopoly (CSL, Grifols,
       Takeda), substitutes MODERATE and rising (recombinants, FcRn inhibitors). Section
       12 reads this as the long band: barrier high and slow to assemble, erosion path
       real but a generation away. Archetype-level, so the band is the same in all
-      six scenarios; the named threat is what changes.
+      six scenarios; the named threat is what changes. Band set 15-25 (midpoint 20)
+      by Stephen, 16 Oct 2026 (D-93): the plasma-collection barrier is long, but a
+      25-year fade on a 27% earned return was judged generous (D-86); the band ends
+      remain the sensitivity.
 
       '
-    terminal_value: 139010.489
-    value_per_share: 296.4217
-    engine_terminal_value: 118110.92
-    engine_value_per_share: 266.3344
+    terminal_value: 122139.891
+    value_per_share: 272.1346
+    engine_terminal_value: 104313.383
+    engine_value_per_share: 246.4714
   - company: csl
     scenario: stagflation_persists
     available: true
@@ -427,18 +442,21 @@ terminal_disclosure_set:
     earned_return: 0.22938
     declared_return: null
     convergence_return: 0.22938
-    moat_years: 25.0
-    moat_band: 20-30
+    moat_years: 20.0
+    moat_band: 15-25
     moat_basis: 'Threat of new entrants LOW (a collection network takes 5+ years of
       capex and FDA/EMA licensing to replicate, and fractionation scale is a second
       gate behind it), rivalry MODERATE in a three-firm plasma oligopoly (CSL, Grifols,
       Takeda), substitutes MODERATE and rising (recombinants, FcRn inhibitors). Section
       12 reads this as the long band: barrier high and slow to assemble, erosion path
       real but a generation away. Archetype-level, so the band is the same in all
-      six scenarios; the named threat is what changes.
+      six scenarios; the named threat is what changes. Band set 15-25 (midpoint 20)
+      by Stephen, 16 Oct 2026 (D-93): the plasma-collection barrier is long, but a
+      25-year fade on a 27% earned return was judged generous (D-86); the band ends
+      remain the sensitivity.
 
       '
-    terminal_value: 66016.285
-    value_per_share: 159.9306
-    engine_terminal_value: 58855.737
-    engine_value_per_share: 149.6222
+    terminal_value: 61109.011
+    value_per_share: 152.866
+    engine_terminal_value: 54749.993
+    engine_value_per_share: 143.7115

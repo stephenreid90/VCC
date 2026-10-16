@@ -3,7 +3,7 @@
 _Generated 2026-10-16 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `c597145 Stephen's rulings 16 Oct evening: R16-6 CSL exception, Q4 and Q8 confirmed, Q6 and Q7 decided, items 32 and 35 sequenced` on `main`
+- HEAD: `4636acb R16-7 closed: terminal_return_sets.yaml reports CSL on whole capital under D-86 (earned return, WACC); new-capital identity kept as a diagnostic` on `main`
 - Unpushed commits: **0**
 - Tracked files: 378
 - Untracked files: 0
@@ -76,7 +76,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **impact_matrix/**
     - **by_industry/**
       - `australian_major_banks.yaml` (37.0KB)
-      - `biopharmaceuticals.yaml` (14.7KB)
+      - `biopharmaceuticals.yaml` (16.4KB)
       - `industrial_explosives.yaml` (40.8KB)
       - `plasma_derived_therapies.yaml` (11.2KB)
       - `specialty_pharmaceuticals.yaml` (5.1KB)
@@ -111,7 +111,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `build_plan.html` (15.3KB)
   - `engine_implementation_plan.md` (16.5KB)
   - `open_items.css` (3.5KB)
-  - `open_items.json` (51.1KB)
+  - `open_items.json` (51.3KB)
   - `open_questions.json` (2.2KB)
   - `scenarios_workshop.md` (13.6KB)
   - `scenarios_workshop_prep.md` (19.7KB)
@@ -127,14 +127,14 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `bank_nim_pass_through_set.yaml` (2.0KB)
     - `csl_cost_of_debt_and_target_structure.md` (13.4KB)
     - `csl_discount_rate_fork.md` (11.0KB)
-    - `csl_terminal_return_sensitivity_2026-10-16.md` (3.0KB)
-    - `csl_terminal_return_sets.yaml` (4.8KB)
+    - `csl_terminal_return_sensitivity_2026-10-16.md` (4.4KB)
+    - `csl_terminal_return_sets.yaml` (8.2KB)
     - `dnl_working_capital_derivation.md` (12.4KB)
     - `driver_path_translation_proposal.md` (8.2KB)
     - `equity_bridge_and_valuation_mechanics.md` (71.8KB)
     - `horizon_and_terminal_convergence.md` (47.2KB)
     - `horizon_variant_sets.yaml` (12.0KB)
-    - `terminal_disclosure_set.yaml` (16.2KB)
+    - `terminal_disclosure_set.yaml` (17.5KB)
     - `terminal_growth_sets.yaml` (6.0KB)
     - `terminal_moat_fade_evidence.md` (6.9KB)
     - `terminal_option_sets.yaml` (75.4KB)
@@ -233,8 +233,8 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `__init__.py` (0B)
     - `test_bank_nim_pass_through.py` (1.9KB)
     - `test_chain_term_glide.py` (9.3KB)
-    - `test_csl_segment.py` (6.2KB)
-    - `test_csl_terminal_return_sets.py` (4.1KB)
+    - `test_csl_segment.py` (6.3KB)
+    - `test_csl_terminal_return_sets.py` (4.3KB)
     - `test_csl_volume_price_split.py` (2.3KB)
     - `test_csl_wacc.py` (1.1KB)
     - `test_csl_workbook_tie.py` (3.8KB)
@@ -248,16 +248,16 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `test_e2e_dnl_mt.py` (4.3KB)
     - `test_engine_input_validation.py` (3.5KB)
     - `test_equilibrium_chain_terms.py` (6.6KB)
-    - `test_goodwill_band_workbook.py` (4.9KB)
+    - `test_goodwill_band_workbook.py` (5.1KB)
     - `test_horizon_variant_sets.py` (5.1KB)
     - `test_per_year_derivations.py` (3.8KB)
     - `test_replica_ties_engine.py` (6.6KB)
-    - `test_scenario_goldens.py` (28.0KB)
+    - `test_scenario_goldens.py` (28.6KB)
     - `test_terminal_defence.py` (7.0KB)
-    - `test_terminal_form.py` (8.8KB)
-    - `test_terminal_form_bank_segment.py` (6.8KB)
-    - `test_terminal_growth_sets.py` (5.3KB)
-    - `test_terminal_option_sets.py` (12.4KB)
+    - `test_terminal_form.py` (8.9KB)
+    - `test_terminal_form_bank_segment.py` (6.9KB)
+    - `test_terminal_growth_sets.py` (5.5KB)
+    - `test_terminal_option_sets.py` (12.5KB)
     - `test_terminal_return_sets.py` (16.9KB)
     - `test_two_stage_disclosure.py` (7.5KB)
     - `test_wbc_bank.py` (9.4KB)
@@ -286,8 +286,8 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `README.md` (893B)
     - `beta_data.py` (10.0KB)
     - `build_cfgs.py` (94.3KB)
-    - `cfgs_gen.json` (251.4KB)
-    - `engine_workbook.py` (124.3KB)
+    - `cfgs_gen.json` (252.4KB)
+    - `engine_workbook.py` (124.7KB)
     - `gen_ui.py` (89.8KB)
 
 ## Analyses (workbooks)

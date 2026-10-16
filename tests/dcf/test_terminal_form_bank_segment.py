@@ -96,10 +96,11 @@ def test_bank_convergence_inputs_are_validated():
 # --------------------------------------------------------------- segment
 def test_segment_data_path_is_convergence_at_the_declared_long_band():
     """14 Oct 2026 step 3: CSL declares 20-30 years (midpoint 25) on the
-    biopharmaceuticals matrix, so the data path is convergence at N = 25."""
+    biopharmaceuticals matrix, so the data path is convergence at N = 25.
+    16 Oct 2026 (D-93): band 15-25, midpoint 20, so N = 20."""
     si, _ = _seg()
     r = SegmentEngine().run(si)
-    assert r.terminal_form == "excess_return_convergence" and r.convergence_years == 25
+    assert r.terminal_form == "excess_return_convergence" and r.convergence_years == 20
     assert r.terminal_earned_return is not None and r.terminal_earned_return > si.cost_of_equity
 
 

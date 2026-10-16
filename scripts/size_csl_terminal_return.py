@@ -45,8 +45,9 @@ SCENARIOS = [
     "orderly_convergence", "muddle_through", "ai_productivity_lag",
     "fragmentation", "disorderly_climate_crystallisation", "stagflation_persists",
 ]
-# Fade lengths: the matrix midpoint (25, the model's own) and a shorter line.
-FADES = (25.0, 10.0)
+# Fade lengths: the matrix midpoint (20, the model's own, D-93), the band ends
+# (25 and 15, the D-63 sensitivity) and a shorter line.
+FADES = (20.0, 25.0, 15.0, 10.0)
 # Starting returns: None is the model's earned return; the rest are fixed lines.
 STARTS = (None, 0.20, 0.15, 0.12)  # ssot-allow: sensitivity grid, not a register value
 

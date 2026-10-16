@@ -57,12 +57,12 @@
     "scalars": {
       "pv_explicit": 39039.5366233068,
       "terminal_fcff": 7051.66341125788,
-      "terminal_value": 118110.919712962,
-      "pv_terminal": 54104.0381994877,
-      "enterprise_value": 93143.5748227945,
-      "equity_value": 84746.5969671945,
-      "value_per_share_usd": 175.775110940627,
-      "value_per_share_aud": 266.334448097238
+      "terminal_value": 104313.383078542,
+      "pv_terminal": 47783.6873721329,
+      "enterprise_value": 86823.2239954397,
+      "equity_value": 78426.2461398397,
+      "value_per_share_usd": 162.665907649644,
+      "value_per_share_aud": 246.47138327074
     }
   },
   "muddle_through": {
@@ -123,12 +123,12 @@
     "scalars": {
       "pv_explicit": 35437.173823795,
       "terminal_fcff": 6021.49242291525,
-      "terminal_value": 98399.2914751632,
-      "pv_terminal": 45074.57090092,
-      "enterprise_value": 80511.744724715,
-      "equity_value": 72123.339669115,
-      "value_per_share_usd": 149.592886150398,
-      "value_per_share_aud": 226.663141095083
+      "terminal_value": 87626.3157694055,
+      "pv_terminal": 40139.7055174062,
+      "enterprise_value": 75576.8793412012,
+      "equity_value": 67188.4742856012,
+      "value_per_share_usd": 139.357354090037,
+      "value_per_share_aud": 211.154262917225
     }
   },
   "ai_productivity_lag": {
@@ -189,12 +189,12 @@
     "scalars": {
       "pv_explicit": 34833.6046332923,
       "terminal_fcff": 5877.31799274176,
-      "terminal_value": 93226.6611079341,
-      "pv_terminal": 42705.1016625081,
-      "enterprise_value": 77538.7062958004,
-      "equity_value": 69151.2125402004,
-      "value_per_share_usd": 143.428320321084,
-      "value_per_share_aud": 217.322590950507
+      "terminal_value": 83499.5303788259,
+      "pv_terminal": 38249.315069549,
+      "enterprise_value": 73082.9197028413,
+      "equity_value": 64695.4259472413,
+      "value_per_share_usd": 134.186457984024,
+      "value_per_share_aud": 203.319321137393
     }
   },
   "fragmentation": {
@@ -255,12 +255,12 @@
     "scalars": {
       "pv_explicit": 30993.2284476661,
       "terminal_fcff": 4899.50330989759,
-      "terminal_value": 70624.2646675231,
-      "pv_terminal": 32351.4364520105,
-      "enterprise_value": 63344.6648996767,
-      "equity_value": 54962.6845440767,
-      "value_per_share_usd": 113.999527049677,
-      "value_per_share_aud": 172.73208338567
+      "terminal_value": 64715.0881241117,
+      "pv_terminal": 29644.5714626495,
+      "enterprise_value": 60637.7999103156,
+      "equity_value": 52255.8195547156,
+      "value_per_share_usd": 108.385148291903,
+      "value_per_share_aud": 164.225176691892
     }
   },
   "disorderly_climate_crystallisation": {
@@ -321,12 +321,12 @@
     "scalars": {
       "pv_explicit": 32401.6171021183,
       "terminal_fcff": 5149.71427435815,
-      "terminal_value": 74385.9863496769,
-      "pv_terminal": 34074.5991712723,
-      "enterprise_value": 66476.2162733906,
-      "equity_value": 58091.1163177906,
-      "value_per_share_usd": 120.488288389647,
-      "value_per_share_aud": 182.563854567993
+      "terminal_value": 68041.3007430976,
+      "pv_terminal": 31168.2369716015,
+      "enterprise_value": 63569.8540737198,
+      "equity_value": 55184.7541181198,
+      "value_per_share_usd": 114.460127302795,
+      "value_per_share_aud": 173.429984889195
     }
   },
   "stagflation_persists": {
@@ -387,12 +387,12 @@
     "scalars": {
       "pv_explicit": 29029.817438174,
       "terminal_fcff": 4350.34692395387,
-      "terminal_value": 58855.7372255338,
-      "pv_terminal": 26960.5305152817,
-      "enterprise_value": 55990.3479534557,
-      "equity_value": 47609.1954978557,
-      "value_per_share_usd": 98.7474650300005,
-      "value_per_share_aud": 149.622159013457
+      "terminal_value": 54749.9931120611,
+      "pv_terminal": 25079.7786178916,
+      "enterprise_value": 54109.5960560656,
+      "equity_value": 45728.4436004656,
+      "value_per_share_usd": 94.8465488251466,
+      "value_per_share_aud": 143.711490779862
     }
   }
 }

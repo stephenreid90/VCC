@@ -102,9 +102,12 @@ def test_d79_moved_the_levels_as_disclosed(by_key):
         # CSL re-pinned 15 Oct 2026 (item (c), US driver): OC 0.095 -> 0.0943, MT 0.090 -> 0.0899,
         # Frag 0.032 -> 0.0294, Stag -0.023 -> -0.011.
         # 16 Oct 2026 (D-87, Q1): net debt rolled to 30 Jun 2026 moves the level-change base.
-        ("csl", "orderly_convergence"): 0.0998, ("csl", "muddle_through"): 0.0952,
-        ("csl", "ai_productivity_lag"): 0.0828, ("csl", "fragmentation"): 0.0311,
-        ("csl", "disorderly_climate_crystallisation"): 0.0318, ("csl", "stagflation_persists"): -0.0116,
+        # 16 Oct 2026 (D-93, 20-year fade): a shorter fade gives growth less room to work, so
+        # the derived-g movement shrinks: OC 0.0998 -> 0.0776, MT 0.0952 -> 0.0742, AI 0.0828 -> 0.0649,
+        # Frag 0.0311 -> 0.0248, DCC 0.0318 -> 0.0252, Stag -0.0116 -> -0.0093.
+        ("csl", "orderly_convergence"): 0.0776, ("csl", "muddle_through"): 0.0742,
+        ("csl", "ai_productivity_lag"): 0.0649, ("csl", "fragmentation"): 0.0248,
+        ("csl", "disorderly_climate_crystallisation"): 0.0252, ("csl", "stagflation_persists"): -0.0093,
     }
     for k, pct in want.items():
         assert by_key[k].level_change == pytest.approx(pct, abs=0.0015), (k, by_key[k].level_change)

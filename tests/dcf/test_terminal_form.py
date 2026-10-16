@@ -156,13 +156,13 @@ def test_the_simpler_option_is_selectable(results):
 def test_the_form_is_declared_not_defaulted_on_the_data_path():
     # 14 Oct 2026: all eighteen company x scenario pairs declare a horizon, so the
     # Gordon-fallback reading is checked on a copy of CSL's inputs with the matrix
-    # removed, the long-band reading (25) on CSL, the indefinite reading (inf) on
-    # WBC and the medium-band reading (12.5) on DNL.
+    # removed, the long-band reading (20 since D-93, 16 Oct 2026; was 25) on CSL, the
+    # indefinite reading (inf) on WBC and the medium-band reading (12.5) on DNL.
     c = load_inputs(ROOT, "fragmentation", "biopharmaceuticals", "csl")
     form, years, note = terminal_form_from_data({**c, "matrix": None}, "fragmentation", 10)
     assert form == "gordon" and years is None and "no decay_horizon" in note
     form, years, note = terminal_form_from_data(c, "fragmentation", 10)
-    assert form == "excess_return_convergence" and years == 25 and note is None
+    assert form == "excess_return_convergence" and years == 20 and note is None
     w = load_inputs(ROOT, "fragmentation", "australian_major_banks", "wbc")
     form, years, note = terminal_form_from_data(w, "fragmentation", 10)
     assert form == "excess_return_convergence" and years == math.inf and note is None

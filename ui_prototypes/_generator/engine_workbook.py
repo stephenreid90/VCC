@@ -1784,10 +1784,14 @@ def build_csl_workbook_bytes(cfg=None):
     _set = _yaml.safe_load((_ROOT / "design" / "methodology" / "csl_terminal_return_sets.yaml").read_text(encoding="utf-8"))
     _grid = _set["scenarios"][0]["sensitivity"]
     _starts = sorted({b["starting_return"] for b in _grid if b["starting_return"] != "earned"}, reverse=True)
-    _short_fade = min(b["fade_years"] for b in _grid)
+    # Fades other than the model's own, longest first (D-93: the band ends 25 and 15,
+    # then the 10-year short line). The model fade is the declared convergence N.
+    _other_fades = sorted({b["fade_years"] for b in _grid
+                           if b["fade_years"] != _set["scenarios"][0]["fade_years"]}, reverse=True)
     for _i, _v in enumerate(_starts):
         line(f"Terminal band: fixed starting return {_i + 1} (D-86b, reporting only)", _v, f"bs{_i}", PCT2)
-    line("Terminal band: short fade, years (D-86b, reporting only)", _short_fade, "bn", NUM1)
+    for _i, _v in enumerate(_other_fades):
+        line(f"Terminal band: alternative fade {_i + 1}, years (D-86b, reporting only)", _v, f"bn{_i}", NUM1)
     line("Shares outstanding (m)", anch["shares_outstanding_m"], "shares", NUM1)
     line("FX (AUD per USD)", sf["fx_aud_per_usd"], "fx", NUM1 + "000")
     _mkt_px, _mkt_dt = _market_reference(inp["company_raw"])
@@ -1857,6 +1861,7 @@ def build_csl_workbook_bytes(cfg=None):
     scen_row("Effective tax rate", "tax", lambda sid: SC[sid]["tax_rate"], PCT2)
     # D-71: the decay horizon declared on the biopharmaceuticals matrix (D-42,
     # D-58); blank means the Gordon fallback. 14 Oct 2026: 25 (long band 20-30).
+    # 16 Oct 2026 (D-93): 20 (band 15-25).
     scen_row("Convergence years N (D-71; blank = Gordon fallback)", "cyrs",
              lambda sid: _convergence_years_for(sid, "biopharmaceuticals", "csl"), "0.0")
     # D-76: declared terminal return, blank -> the earned return R starts the convergence.
@@ -2087,8 +2092,8 @@ def build_csl_workbook_bytes(cfg=None):
         _tv = f"'Segment FCFF'!{_col_s}{m['tv']}"
         _va = f"'Segment FCFF'!{_col_s}{m['vaud']}"
         _tr = f"'Segment FCFF'!{_col_s}{m['t_ret']}"
-        _band[sid] = (_br, _br + 1)
-        for fi, nref in enumerate((R[f'cyrs:{sid}'], R['bn'])):
+        _band[sid] = (_br, _br + len(_other_fades))
+        for fi, nref in enumerate([R[f'cyrs:{sid}']] + [R[f'bn{_i}'] for _i in range(len(_other_fades))]):
             wsb.cell(_br, 1, dict(SCEN)[sid])
             wsb.cell(_br, 2, f"={nref}").number_format = NUM1
             for si_, rs in enumerate([_tr] + [R[f'bs{i}'] for i in range(_nst)]):

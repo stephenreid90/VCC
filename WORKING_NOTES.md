@@ -39,8 +39,8 @@ on reported figures (D-88), the CSL price premium (D-89, none), the two flat-off
 (D-90, produced from the world series) and the bank NIM rule (D-91, pass-through zero, typed
 shifts retired). M14, M16, R16-2, R16-4, R16-5 closed in the tracker.
 
-**State:** DCF folder 415 passed / 1 skipped; other tests 304 passed; SSOT lint 17/17; base ties
-**DNL 2.006 / WBC 33.93 / CSL 226.66** (`session_start.py`). Last commit `d97ed0a`, pushed. Working
+**State:** DCF folder 428 passed / 1 skipped; other tests 331 passed; SSOT lint 14/14; base ties
+**DNL 2.006 / WBC 33.93 / CSL 211.15** (`session_start.py`; CSL was 226.66 before D-93). Last commit `d97ed0a`, pushed. Working
 tree clean. Git is handled in the background; the PAT in `.github-token` works.
 
 **Stephen's decisions this sitting (plain terms):**
@@ -64,6 +64,13 @@ working capital confirmations; UI design choices 32, 35, Q6, Q7.
 
 ### Batch 1 progress
 
+- 16 Oct 2026: **CSL decay band 15-25 years, midpoint 20 (D-93, Stephen's ruling, serious).** The six CSL
+  `decay_horizon` entries in `biopharmaceuticals.yaml` moved from 20-30 to 15-25; the engine fades the earned
+  return over 20 years instead of 25. New CSL base tie **211.15** (was 226.66, -6.8%); the six scenarios fell
+  4.0% to 7.5%. DNL 2.006 and WBC 33.93 unchanged. Goldens, terminal shares, `session_start.py`, the CSL
+  sensitivity set and paper (now four fades: 20, 25, 15, 10), the option, growth and disclosure sets, the CSL
+  workbook oracle and the goodwill-band workbook test are re-pinned. Open item 10 updated: no reconciliation
+  to market; the section 16.3 note is the remaining work.
 - 16 Oct 2026: **Terminal-return set tidied, R16-7 closed (D-86).** `terminal_return_sets.yaml` now reports CSL on whole capital (governing 20.5% to 31.2%, WACC 8.12%); the 61% to 73% new-capital figure is kept as a diagnostic only. Values unchanged: DNL 2.006 / WBC 33.93 / CSL 226.66.
 
 **Batch 1 (items 1 to 4) landed and pushed, 16 Oct 2026 evening:** 4364b21 (R16-6), 83dbda1 (D-86
@@ -82,6 +89,10 @@ CSL 226.66. DCF 425 passed / 1 skipped; other 331; lint 14/14.
 ruled). 2 = tidy the terminal-return set, then close R16-7. 3 = Q4 (DNL 13.76%) and Q8 (CSL 35%) confirmed
 and closed. 4 = asked for a suggestion (see below). 5 = asked for the M10 paragraph in clear language. 6 = agreed
 (32/Q7 placeholder tabs after Ben's feed; 35 after item 10; Q6 option b).
+
+**Stephen's rulings 20:06:** item 10 and M10 = no price refresh, the gap is disclosed not reconciled (D-92);
+fade 20 years (D-93, CSL base 226.66 -> 211.15). Still open from this sitting: the D-42 warning wording
+(quote the governing return instead of the new-capital figure) -- wording only, batch 2.
 
 **New defects found by the batch, not yet in the tracker:** CSL prototype DCF build-up rows are hand-typed
 old figures (EV 74,029, AUD 203.83 vs engine 80,512 / 226.66) -- belongs with item 5 (UI integrity).
