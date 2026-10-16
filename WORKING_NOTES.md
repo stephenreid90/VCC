@@ -64,6 +64,8 @@ working capital confirmations; UI design choices 32, 35, Q6, Q7.
 
 ### Batch 1 progress
 
+- 16 Oct 2026: **Q5 closed.** Answered by D-60 (forced payout cut on the operating target; D-61 set 11.25%).
+
 - 16 Oct 2026: **D-86 reporting rules (a) and (b) done (R16-9), values unchanged.** The
   goodwill-inclusive earned return is one general function (`terminal_return.goodwill_inclusive_return`)
   applied to every company with a capital base. Figures are pinned in

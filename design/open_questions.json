@@ -13,7 +13,8 @@
   {
     "id": "Q5",
     "question": "WBC CET1: warn-only feasibility check first, or go straight to a forced payout cut under stress?",
-    "blocks": "Item 8"
+    "blocks": "Item 8",
+    "answer": "Answered by D-60 (16 Sep 2026): a forced payout cut that holds CET1 on the operating target, one-sided, inside the engine loop. D-61 set the level to WBC's declared 11.25%. Closed 16 Oct 2026."
   },
   {
     "id": "Q6",
