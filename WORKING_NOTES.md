@@ -34,7 +34,7 @@ prints git state.
 
 ## 🔴 HANDOVER — sitting of 16 October 2026, evening (read this first)
 
-**Bridge note: `notes/bridge/bridge_note_2026-10-16.md`.** This sitting closed the DNL equity bridge
+**Bridge notes: `notes/bridge/bridge_note_2026-10-16.md` (evening) and `bridge_note_2026-10-16b.md` (late evening, batch 2 plan).** This sitting closed the DNL equity bridge
 on reported figures (D-88), the CSL price premium (D-89, none), the two flat-offset US paths
 (D-90, produced from the world series) and the bank NIM rule (D-91, pass-through zero, typed
 shifts retired). M14, M16, R16-2, R16-4, R16-5 closed in the tracker.
