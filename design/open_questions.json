@@ -8,7 +8,8 @@
   {
     "id": "Q4",
     "question": "DNL working-capital intensity: confirm 13.76% on the broad definition (paper argues for it). Terminal capex = D&amp;A is already agreed.",
-    "blocks": "Items 7, M1"
+    "blocks": "Items 7, M1",
+    "answer": "Confirmed by Stephen 16 Oct 2026: 13.76% on the broad definition stays (D-57). Closed."
   },
   {
     "id": "Q5",
@@ -19,17 +20,20 @@
   {
     "id": "Q6",
     "question": "Metric card 4: show asymmetry for all three companies and move terminal share into the discount-rate panel?",
-    "blocks": "Item 24"
+    "blocks": "Item 24",
+    "answer": "Decided 16 Oct 2026: option (b), same metric card for all three companies; terminal share moves to the discount-rate panel. Build with item 24."
   },
   {
     "id": "Q7",
     "question": "Tab parity: add placeholder tabs to WBC/CSL advertising the Ben dependency, or trim DNL to six?",
-    "blocks": "Item 32"
+    "blocks": "Item 32",
+    "answer": "Decided 16 Oct 2026: add placeholder tabs to WBC and CSL marked \"awaiting peer feed (Ben)\". Build when the feed lands."
   },
   {
     "id": "Q8",
     "question": "CSL working-capital intensity: confirm ~35% (six years, 27.6&ndash;46.6%, clean post-Vifor 34.8/36.8) against the assumed 10%.",
-    "blocks": "WC implementation"
+    "blocks": "WC implementation",
+    "answer": "Confirmed by Stephen 16 Oct 2026: 35% stays (D-30, D-34). Closed."
   },
   {
     "id": "Q9",

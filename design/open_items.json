@@ -364,7 +364,7 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "DNL has 8 explore tabs, WBC/CSL have 6 — reads as unfinished rather than data-blocked.",
-    "treatment": "Add the missing tabs with an explicit \"awaiting peer feed (Ben)\" placeholder, which also advertises the dependency. Fable's five-forces cross-reference claim is <b>wrong as stated</b> — no company's UI panel has one; CSL's <i>workbook</i> has no five-forces sheet at all. [Reviewed 16 Oct 2026: Still open. Depends on the peer feed from Ben.]",
+    "treatment": "Add the missing tabs with an explicit \"awaiting peer feed (Ben)\" placeholder, which also advertises the dependency. Fable's five-forces cross-reference claim is <b>wrong as stated</b> — no company's UI panel has one; CSL's <i>workbook</i> has no five-forces sheet at all. [Reviewed 16 Oct 2026: Still open. Depends on the peer feed from Ben.] [Decided 16 Oct 2026 (Q7): placeholder tabs. Waits on the peer feed.]",
     "questions": [
       "Q7"
     ],
@@ -396,7 +396,7 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "No dedicated CSL market-gap panel.",
-    "treatment": "Build it — but <b>after</b> items 6 and 10 land. Writing \"why we differ\" before knowing whether the gap is 93% or 140% is wasted work. [Reviewed 16 Oct 2026: Still open. Depends on items 6 and 10.]",
+    "treatment": "Build it — but <b>after</b> items 6 and 10 land. Writing \"why we differ\" before knowing whether the gap is 93% or 140% is wasted work. [Reviewed 16 Oct 2026: Still open. Depends on items 6 and 10.] [Decided 16 Oct 2026: build after item 10.]",
     "questions": [],
     "status": "NEEDS",
     "batch": "Batch 5"
@@ -658,7 +658,7 @@
     "source": "review-2026-10-16",
     "area": "Methodology",
     "issue": "<b>Level anchors still live in company files (bridge item d).</b> The anchors should move to the archetypes. Values should not change.",
-    "treatment": "Schema today allows only company-file anchors (LevelAnchor, schemas/industry.py). The DNL, bank and CSL anchor values are also read by the workbook generator (ui_prototypes/_generator/engine_workbook.py) and by five test files, so moving them touches the schema, the derivation script, the generator and those tests. Values must not change: the derived scenario files should match byte for byte. Do as its own change, after the Batch 6 decisions. [Done 16 Oct 2026: anchors moved to archetypes; values unchanged; DNL (mining growth, gas price) and WBC (system AIEA growth plus scenario shift) now sit in data/industries/industrial_explosives.yaml and australian_major_banks.yaml; schemas/industry.py (AnchorTerm value/by_scenario, LevelAnchor.company optional, IndustryArchetype.driver_anchor); scripts/derive_macro_driver_paths.py; ui_prototypes/_generator/engine_workbook.py; tests/test_macro_driver_paths.py; tests/dcf/test_d72_bank_and_segment_paths.py; data/companies/dnl.yaml and wbc.yaml. Scenario files byte-identical. CSL's three segment steady states stay in csl.yaml by declaration: they are the company's own typed paths, also read by its segment engine, so moving them is an owner decision.]",
+    "treatment": "Schema today allows only company-file anchors (LevelAnchor, schemas/industry.py). The DNL, bank and CSL anchor values are also read by the workbook generator (ui_prototypes/_generator/engine_workbook.py) and by five test files, so moving them touches the schema, the derivation script, the generator and those tests. Values must not change: the derived scenario files should match byte for byte. Do as its own change, after the Batch 6 decisions. [Done 16 Oct 2026: anchors moved to archetypes; values unchanged; DNL (mining growth, gas price) and WBC (system AIEA growth plus scenario shift) now sit in data/industries/industrial_explosives.yaml and australian_major_banks.yaml; schemas/industry.py (AnchorTerm value/by_scenario, LevelAnchor.company optional, IndustryArchetype.driver_anchor); scripts/derive_macro_driver_paths.py; ui_prototypes/_generator/engine_workbook.py; tests/test_macro_driver_paths.py; tests/dcf/test_d72_bank_and_segment_paths.py; data/companies/dnl.yaml and wbc.yaml. Scenario files byte-identical. CSL's three segment steady states stay in csl.yaml by declaration: they are the company's own typed paths, also read by its segment engine, so moving them is an owner decision.] [Ruled 16 Oct 2026: CSL segment anchors stay in csl.yaml as the declared exception.]",
     "questions": [],
     "status": "DONE",
     "batch": "Batch 6"

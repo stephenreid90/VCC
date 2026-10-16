@@ -76,6 +76,11 @@ CSL 226.66. DCF 425 passed / 1 skipped; other 331; lint 14/14.
 5. M10 price refresh: refresh by hand to one dated close after the UI work, separate DNL's "Wall St target" 3.61 from a market price, add a date test; staleness warning later.
 6. UI: 32/Q7 placeholder tabs (after Ben's feed); 35 after item 10; Q6 option (b).
 
+**Stephen's answers, 16 Oct 2026 19:49:** 1 = a (CSL anchors stay in csl.yaml as a declared exception,
+ruled). 2 = tidy the terminal-return set, then close R16-7. 3 = Q4 (DNL 13.76%) and Q8 (CSL 35%) confirmed
+and closed. 4 = asked for a suggestion (see below). 5 = asked for the M10 paragraph in clear language. 6 = agreed
+(32/Q7 placeholder tabs after Ben's feed; 35 after item 10; Q6 option b).
+
 **New defects found by the batch, not yet in the tracker:** CSL prototype DCF build-up rows are hand-typed
 old figures (EV 74,029, AUD 203.83 vs engine 80,512 / 226.66) -- belongs with item 5 (UI integrity).
 DNL market price 3.61 has no reference date. CSL prose hard-codes 105.53 (csl.yaml ~line 629).
