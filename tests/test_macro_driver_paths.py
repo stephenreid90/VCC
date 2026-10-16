@@ -171,11 +171,13 @@ def test_spread_over_a_sum_of_series_is_the_sum_of_the_bases_plus_one_gap():
 
 def test_anchor_terms_are_summed_in_percent_with_their_declared_units():
     """decimal 0.045 + bps 50 = 5.0 percent; a list index picks one element of a typed path."""
+    # D-91 (16 Oct 2026): nim_delta_bps is zero everywhere, so the bps term here is the
+    # credit-loss shift (+50bp in Stagflation); the arithmetic under test is the same.
     bank = LevelAnchor(company="wbc", terms=[
         AnchorTerm(path="normalised_baseline.bank_build.aiea_nim_chain.shared.industry.nim_anchor"),
-        AnchorTerm(path="normalised_baseline.bank_build.aiea_nim_chain.by_scenario.{scenario}.nim_delta_bps", units="bps"),
+        AnchorTerm(path="normalised_baseline.bank_build.overlays.by_scenario.{scenario}.credit_loss_delta_bps", units="bps"),
     ])
-    assert level_anchor(bank, "stagflation_persists") == pytest.approx(1.86 - 0.20)
+    assert level_anchor(bank, "stagflation_persists") == pytest.approx(1.86 + 0.50)
     assert level_anchor(bank, "muddle_through") == pytest.approx(1.86)
     behring = LevelAnchor(company="csl", path="normalised_baseline.segment_fcff.by_scenario.{scenario}.behring_growth[-1]")
     assert level_anchor(behring, "muddle_through") == pytest.approx(5.5)

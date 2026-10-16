@@ -213,9 +213,11 @@ def test_the_cited_drift_figures_come_from_here():
     # -97 / -165 / -71 (and -93 for Stagflation on the D-72 path at five years).
     # D-81 (15 Oct 2026): the share-loss offset glides to zero by Y5, so AIEA grows
     # faster and CET1 erodes further: -174 / -284 / -122 -> -184 / -292 / -134.
+    # D-91 (16 Oct 2026): the NIM shifts are zeroed. Orderly earns 5bp less and erodes
+    # further (-292 -> -298); Stagflation earns 20bp more and erodes less (-134 -> -106).
     assert drift_bps("muddle_through") == pytest.approx(-184, abs=5)
-    assert drift_bps("orderly_convergence") == pytest.approx(-292, abs=5)
-    assert drift_bps("stagflation_persists") == pytest.approx(-134, abs=5)
+    assert drift_bps("orderly_convergence") == pytest.approx(-298, abs=5)
+    assert drift_bps("stagflation_persists") == pytest.approx(-106, abs=5)
 
     central = BankEngine().run(_off("muddle_through")).cet1_trajectory
     assert central.anchor_ratio == pytest.approx(0.1242, abs=1e-6)
@@ -343,7 +345,11 @@ def test_a_scenario_that_never_reaches_the_target_is_untouched():
     # with the drift unchanged (-121bp), a knife-edge on a ratio that closes at 11.21%.
     # D-81 (15 Oct 2026): the offset glide adds balance-sheet growth, so the drift is
     # -134bp, the ratio closes at 11.08% and the crossing moves to Y7.
-    assert BankEngine().run(_on("stagflation_persists")).capital_constraint_binds_from == "Y7"
+    # D-91 (16 Oct 2026): with the -20bp NIM shift retired Stagflation earns more, the
+    # drift is -106bp and the ratio never reaches the operating target inside ten years,
+    # so the rule does not bite there. It still bites in Fragmentation (Y7).
+    assert BankEngine().run(_on("stagflation_persists")).capital_constraint_binds_from is None
+    assert BankEngine().run(_on("fragmentation")).capital_constraint_binds_from == "Y7"
 
 
 def test_the_constraint_raises_value_which_is_the_retention_trade():

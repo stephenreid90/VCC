@@ -105,12 +105,18 @@ normalised_baseline:
           aiea_growth_offset: -0.0015
           nim_offset: 0.0008
       by_scenario:              # parallel shifts to the industry anchors
-        orderly_convergence: {aiea_growth_delta: 0.02, nim_delta_bps: 5}
+        # D-91 (16 Oct 2026, Stephen): nim_delta_bps is ZERO in every scenario. The cash-rate
+        # pass-through to WBC's NIM was measured at about -1.5bp per 100bp (se 0.9) over the
+        # 1H21-1H26 cycle (design/methodology/bank_nim_pass_through_set.yaml), so a rate story
+        # moves no margin; and the typed Orderly +5bp and Stagflation -20bp had no written basis.
+        # Stagflation stress is carried by aiea_growth_delta, credit losses and the terminal.
+        # A non-zero value here needs a written basis and a decision.
+        orderly_convergence: {aiea_growth_delta: 0.02, nim_delta_bps: 0}
         muddle_through: {aiea_growth_delta: 0.0, nim_delta_bps: 0}
         ai_productivity_lag: {aiea_growth_delta: 0.0, nim_delta_bps: 0}
         fragmentation: {aiea_growth_delta: -0.005, nim_delta_bps: 0}
         disorderly_climate_crystallisation: {aiea_growth_delta: -0.005, nim_delta_bps: 0}
-        stagflation_persists: {aiea_growth_delta: -0.02, nim_delta_bps: -20}
+        stagflation_persists: {aiea_growth_delta: -0.02, nim_delta_bps: 0}
     overlays:
       baseline:                 # per-year glides: [stub, Y1..Y5] (Muddle Through)
         cost_to_income: [0.516, 0.515, 0.51, 0.495, 0.485, 0.48]

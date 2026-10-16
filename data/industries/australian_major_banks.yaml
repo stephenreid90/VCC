@@ -12,7 +12,10 @@ industry_archetype:
   # rate + CPI) one-for-one swings 0.8-3.0% inside a scenario, because the only
   # method available has a pass-through of 1 and bank NIMs have a rate beta well
   # below that. Declaring a beta would type a number with no Five Forces basis, so
-  # NIM stays on the typed per-scenario shift until a pass-through rule is ruled.
+  # RULED 16 Oct 2026 (D-91): the pass-through is zero. Measured on WBC's half-year NIM
+  # against the RBA cash rate, 1H21-1H26: about -1.5bp per 100bp (se 0.9), -0.3bp without
+  # the pre-cycle point. scripts/size_bank_nim_pass_through.py; the set is pinned by
+  # tests/dcf/test_bank_nim_pass_through.py. The per-scenario NIM shift is zero everywhere.
   # The company offset (WBC's aiea_growth_offset / nim_offset) is NOT in the
   # anchor -- it stays in the company layer (standing rule 1).
   # Written into data/scenarios/*.yaml by scripts/derive_macro_driver_paths.py.

@@ -207,8 +207,8 @@ terminal_return_sets:
       reinvestment_rate: 0.46
       return_on_new_capital: 0.11
       excess_over_cost_of_capital: 0.0295
-      earned_final_explicit: 0.131549
-      step_from_earned: -0.021549
+      earned_final_explicit: 0.128583
+      step_from_earned: -0.018583
       return_on_whole_capital: null
       terminal_invested_capital: null
       governing_return: 0.11
@@ -225,8 +225,8 @@ terminal_return_sets:
       reinvestment_rate: 0.171111
       return_on_new_capital: 0.09
       excess_over_cost_of_capital: 0.0095
-      earned_final_explicit: 0.052031
-      step_from_earned: 0.037969
+      earned_final_explicit: 0.062178
+      step_from_earned: 0.027822
       return_on_whole_capital: null
       terminal_invested_capital: null
       governing_return: 0.09

@@ -92,9 +92,11 @@ def test_wbc_stagflation_terminal_roe_is_a_recovery_assumption(rows):
 
     # Ten-year figures (D-71, 14 Oct 2026); at five years they were 0.0401 / 0.0499.
     # Five more years of the Stagflation glides (CTI 51%, +50bp losses) earn 5.2% on
-    # the closing equity against a declared 9%: the recovery step is 3.8pp.
-    assert stag.step_from_earned == pytest.approx(0.0378, abs=0.002)
-    assert stag.earned_final_explicit == pytest.approx(0.0522, abs=0.002)
+    # the closing equity against a declared 9%: the recovery step was 3.8pp.
+    # D-91 (16 Oct 2026): with the -20bp Stagflation NIM shift retired the glides earn
+    # more, so the final year earns 6.2% (was 5.2%) and the step shrinks to 2.8pp. Still a recovery assumption, still disclosed.
+    assert stag.step_from_earned == pytest.approx(0.0278, abs=0.002)
+    assert stag.earned_final_explicit == pytest.approx(0.0622, abs=0.002)
     assert any("recovery assumption" in w for w in stag.warnings)
 
     # Every other scenario is conservative or flat, which is what makes the

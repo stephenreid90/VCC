@@ -638,9 +638,9 @@
     "source": "review-2026-10-16",
     "area": "Methodology",
     "issue": "<b>Bank net interest margin pass-through rule (bridge item b).</b> No written basis for how fast lending margins follow interest rates, so NIM stays on the typed path.",
-    "treatment": "MEASURED 16 Oct 2026 (scripts/size_bank_nim_pass_through.py; design/methodology/bank_nim_pass_through_set.yaml; pinned by tests/dcf/test_bank_nim_pass_through.py). WBC group NIM against the half-year average RBA cash rate, 1H21 to 1H26: -1.5bp of NIM per 100bp of cash rate (se 0.9); -0.3bp (se 0.9) without the pre-cycle 1H21 point; -2.1bp over the whole 425bp cycle. Not distinct from zero. The 14 Oct one-for-one sizing is ruled out by the data. Decision for Stephen: A rule the pass-through zero and retire the typed per-scenario NIM shift (only Orderly Convergence is non-zero, +5bp, worth about 1.2% of its value); B apply the measured -1.5bp per 100bp to each scenario's policy-rate gap; C keep the typed shift.",
+    "treatment": "Ruled 16 Oct 2026 (D-91): pass-through zero on the measured basis; typed Orderly +5bp and Stagflation -20bp retired (no written basis). Orderly -1.2%, Stagflation +10.2%.",
     "questions": [],
-    "status": "NEEDS",
+    "status": "DONE",
     "batch": "Batch 6"
   },
   {

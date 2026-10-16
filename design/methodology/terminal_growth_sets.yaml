@@ -133,10 +133,10 @@ terminal_growth_sets:
       g_cap: 0.0506
       g: 0.0506
       capped: true
-      value_per_share: 47.9071
+      value_per_share: 47.3545
       retired_typed_growth: 0.0375
-      value_per_share_at_typed: 42.9829
-      level_change: 0.1146
+      value_per_share_at_typed: 42.4303
+      level_change: 0.1161
     - company: wbc
       scenario: stagflation_persists
       horizon_years: 10
@@ -144,10 +144,10 @@ terminal_growth_sets:
       g_cap: 0.0506
       g: 0.0154
       capped: false
-      value_per_share: 16.3524
+      value_per_share: 18.0193
       retired_typed_growth: 0.0325
-      value_per_share_at_typed: 16.9266
-      level_change: -0.0339
+      value_per_share_at_typed: 18.5993
+      level_change: -0.0312
     - company: csl
       scenario: ai_productivity_lag
       horizon_years: 10

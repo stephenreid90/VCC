@@ -253,7 +253,7 @@ terminal_disclosure_set:
     cost_of_capital: 0.0805
     terminal_growth: 0.0506
     capital: 124675.127
-    earned_return: 0.138205
+    earned_return: 0.135089
     declared_return: 0.11
     convergence_return: 0.11
     moat_years: .inf
@@ -266,17 +266,17 @@ terminal_disclosure_set:
 
       '
     terminal_value: 247682.36
-    value_per_share: 47.9071
+    value_per_share: 47.3545
     engine_terminal_value: 247682.36
-    engine_value_per_share: 47.9071
+    engine_value_per_share: 47.3545
   - company: wbc
     scenario: stagflation_persists
     available: true
     reason: null
     cost_of_capital: 0.0805
     terminal_growth: 0.0154
-    capital: 84061.783
-    earned_return: 0.052833
+    capital: 84899.025
+    earned_return: 0.063135
     declared_return: 0.09
     convergence_return: 0.09
     moat_years: .inf
@@ -288,10 +288,10 @@ terminal_disclosure_set:
       table).
 
       '
-    terminal_value: 96328.864
-    value_per_share: 16.3524
-    engine_terminal_value: 96328.864
-    engine_value_per_share: 16.3524
+    terminal_value: 97288.283
+    value_per_share: 18.0193
+    engine_terminal_value: 97288.283
+    engine_value_per_share: 18.0193
   - company: csl
     scenario: ai_productivity_lag
     available: true

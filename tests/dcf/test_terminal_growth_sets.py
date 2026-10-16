@@ -94,9 +94,10 @@ def test_d79_moved_the_levels_as_disclosed(by_key):
     want = {
         # WBC re-pinned 16 Oct 2026 (option 1b, retained equity earns Ke): OC 0.121 -> 0.1146,
         # MT 0.038 -> 0.0364, AI 0.054 -> 0.0522, Frag 0.013 -> 0.0124, Stag -0.035 -> -0.0339.
-        ("wbc", "orderly_convergence"): 0.1146, ("wbc", "muddle_through"): 0.0364,
+        # D-91 (16 Oct 2026, NIM shifts zeroed): OC 0.1146 -> 0.1161, Stag -0.0339 -> -0.0312.
+        ("wbc", "orderly_convergence"): 0.1161, ("wbc", "muddle_through"): 0.0364,
         ("wbc", "ai_productivity_lag"): 0.0522, ("wbc", "fragmentation"): 0.0124,
-        ("wbc", "disorderly_climate_crystallisation"): -0.0032, ("wbc", "stagflation_persists"): -0.0339,
+        ("wbc", "disorderly_climate_crystallisation"): -0.0032, ("wbc", "stagflation_persists"): -0.0312,
         # CSL re-pinned 16 Oct 2026 (D-06, WACC): the level changes now read against the WACC level.
         # CSL re-pinned 15 Oct 2026 (item (c), US driver): OC 0.095 -> 0.0943, MT 0.090 -> 0.0899,
         # Frag 0.032 -> 0.0294, Stag -0.023 -> -0.011.

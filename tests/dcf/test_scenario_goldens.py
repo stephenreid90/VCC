@@ -208,12 +208,15 @@ WBC_GOLDEN = {
     # the explicit path and the derived g move: g 5.06 (capped) / 4.14 / 4.20 / 3.56 /
     # 3.10 / 1.54%. OC -3.9%, MT -2.5%, AI Lag -1.5%, Frag -1.5%, DCC -0.7%, Stag -0.6%.
     # Before: 46.9911 / 33.0779 / 33.0905 / 28.5658 / 23.2017 / 15.7985.
-    "orderly_convergence": 47.9071,                # binds Y4
+    # D-91 (16 Oct 2026): per-scenario NIM shift zeroed on the measured pass-through
+    # (about -1.5bp per 100bp, not distinct from zero) and no written basis for the typed
+    # Orderly +5bp / Stagflation -20bp. OC 47.9071 -> 47.3545; Stag 16.3524 -> 18.0193.
+    "orderly_convergence": 47.3545,                # binds Y4
     "muddle_through": 33.9332,                     # binds Y7
     "ai_productivity_lag": 34.2656,
     "fragmentation": 29.5771,
     "disorderly_climate_crystallisation": 24.3892,
-    "stagflation_persists": 16.3524,
+    "stagflation_persists": 18.0193,
 }
 
 # --- CSL: multi-segment FCFF / Ke (M3), (USD, AUD) per share -------------------
@@ -424,9 +427,11 @@ def test_terminal_shares_are_measured_case_by_case():
         # D-80 (14 Oct 2026): lower g takes every share down 0.2-1.3pt (OC 0.6864 -> 0.6736).
         # D-81 (15 Oct 2026): the offset glide lifts every share 0.4-0.7pt; Stagflation
         # 0.6826 -> 0.6900 is the closest to the 70% line in the project.
-        "orderly_convergence": 0.6442, "muddle_through": 0.6014, "ai_productivity_lag": 0.5993,
+        # D-91 (16 Oct 2026): NIM shifts zeroed. OC 0.6442 -> 0.6513 (lower explicit value);
+        # Stagflation 0.6673 -> 0.6195 (higher explicit value); the other four unchanged.
+        "orderly_convergence": 0.6513, "muddle_through": 0.6014, "ai_productivity_lag": 0.5993,
         "fragmentation": 0.5737, "disorderly_climate_crystallisation": 0.5680,
-        "stagflation_persists": 0.6673,
+        "stagflation_persists": 0.6195,
     }
     # CSL re-pinned 14 Oct 2026 (step 3): the 20-30 year decay horizon takes every
     # terminal share down 7-8 points. Gordon shares before: 0.5987, 0.5738, 0.5648,
