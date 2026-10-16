@@ -56,12 +56,13 @@ def test_muddle_through_ties_workbook():
     r = _run_at_five_years("muddle_through")
     # 16 Oct 2026 (D-06): discounted at the WACC (8.12%), not Ke (8.75%). Was 129.2130 / 195.78 /
     # 71487.10 / 17586.26 / 81986.40 / 61880.10.
-    assert r.value_per_share_usd == pytest.approx(147.3215, abs=1e-3)
-    assert r.value_per_share_aud == pytest.approx(223.22, abs=0.02)
+    # 16 Oct 2026 (D-87, Q1): net debt rolled to 30 Jun 2026 (7,232.5, was 9,100): 147.3215 -> 151.2210.
+    assert r.value_per_share_usd == pytest.approx(151.2210, abs=1e-3)
+    assert r.value_per_share_aud == pytest.approx(229.13, abs=0.02)
     assert r.enterprise_value == pytest.approx(80159.26, abs=1.0)
     assert r.pv_explicit == pytest.approx(17841.83, abs=1.0)
     assert r.terminal_value == pytest.approx(92074.57, abs=2.0)
-    assert r.equity_value == pytest.approx(70552.26, abs=1.0)
+    assert r.equity_value == pytest.approx(72419.76, abs=1.0)  # 80,159.26 less net debt 7,232.5 less restructuring 507
     # cost of equity Rf + beta*ERP = 4.5% + 0.85*5.0%
     assert r.value_per_share_aud == pytest.approx(r.value_per_share_usd * 1.5152, abs=1e-6)
 
@@ -81,7 +82,8 @@ def test_at_ten_years_the_live_level_is_the_golden():
     # D-80 (same day): 208.8861 -> 203.4633 as year-10 CPI falls to 2.5% (the cap, 4.86%).
     # 15 Oct 2026 (item (c)): 203.4633 -> 203.5226 with the US real GDP driver.
     # 16 Oct 2026 (D-06): 203.5226 -> 224.3367 as the discount rate moves from Ke (8.75%) to the WACC (8.12%).
-    assert r.value_per_share_aud == pytest.approx(224.3367, abs=1e-3)  # D-06 WACC (16 Oct 2026)
+    # 16 Oct 2026 (D-87, Q1): 224.3367 -> 230.2454 as net debt rolls to 30 Jun 2026 (7,232.5).
+    assert r.value_per_share_aud == pytest.approx(230.2454, abs=1e-3)
     assert r.terminal_form == "excess_return_convergence" and r.convergence_years == 25
 
 

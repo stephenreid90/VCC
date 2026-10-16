@@ -3,10 +3,10 @@
 _Generated 2026-10-16 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `d9e4de2 Tracker review: older open items checked against code, data and prototypes` on `main`
+- HEAD: `c41767c Q1 decided: CSL net debt rolled forward to 30 Jun 2026, matching DNL. Implementation pending.` on `main`
 - Unpushed commits: **0**
-- Tracked files: 366
-- Untracked files: 1
+- Tracked files: 371
+- Untracked files: 0
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -43,7 +43,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
 | Path | Present | What it is |
 |---|---|---|
-| `data/companies/csl.yaml` | yes (35.9KB) | company position + layer-2 method (judgement) |
+| `data/companies/csl.yaml` | yes (36.7KB) | company position + layer-2 method (judgement) |
 | `data/companies/csl.md` | **NO** | company narrative |
 | `data/companies/csl_documents.yaml` | yes (8.5KB) | document register |
 | `data/financials/csl.yaml` | yes (10.1KB) | curated layer-1 financials (a SUMMARY — check for raw sources too) |
@@ -54,7 +54,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 ## Data directory
 
   - **companies/**
-    - `csl.yaml` (35.9KB)
+    - `csl.yaml` (36.7KB)
     - `csl_documents.yaml` (8.5KB)
     - `dnl.md` (13.7KB)
     - `dnl.yaml` (45.4KB)
@@ -109,8 +109,8 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `build_plan.html` (15.3KB)
   - `engine_implementation_plan.md` (16.5KB)
   - `open_items.css` (3.5KB)
-  - `open_items.json` (44.8KB)
-  - `open_questions.json` (1.2KB)
+  - `open_items.json` (46.0KB)
+  - `open_questions.json` (1.5KB)
   - `scenarios_workshop.md` (13.6KB)
   - `scenarios_workshop_prep.md` (19.7KB)
   - `single_source_of_truth.md` (16.7KB)
@@ -124,6 +124,8 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `adding_a_company.md` (8.6KB)
     - `csl_cost_of_debt_and_target_structure.md` (13.4KB)
     - `csl_discount_rate_fork.md` (11.0KB)
+    - `csl_terminal_return_sensitivity_2026-10-16.md` (2.6KB)
+    - `csl_terminal_return_sets.yaml` (4.8KB)
     - `dnl_working_capital_derivation.md` (12.4KB)
     - `driver_path_translation_proposal.md` (8.2KB)
     - `equity_bridge_and_valuation_mechanics.md` (71.8KB)
@@ -164,7 +166,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **vcc_valuations/**
     - `__init__.py` (667B)
     - `derivation.py` (4.4KB)
-    - `translator.py` (96.1KB)
+    - `translator.py` (96.8KB)
     - **assumptions/**
       - `__init__.py` (775B)
       - `trade_working_capital.py` (5.8KB)
@@ -226,7 +228,8 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **dcf/**
     - `__init__.py` (0B)
     - `test_chain_term_glide.py` (9.3KB)
-    - `test_csl_segment.py` (5.9KB)
+    - `test_csl_segment.py` (6.1KB)
+    - `test_csl_terminal_return_sets.py` (2.1KB)
     - `test_csl_volume_price_split.py` (2.3KB)
     - `test_csl_wacc.py` (1.1KB)
     - `test_csl_workbook_tie.py` (3.8KB)
@@ -243,11 +246,11 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `test_horizon_variant_sets.py` (5.1KB)
     - `test_per_year_derivations.py` (3.8KB)
     - `test_replica_ties_engine.py` (6.6KB)
-    - `test_scenario_goldens.py` (26.6KB)
+    - `test_scenario_goldens.py` (27.0KB)
     - `test_terminal_defence.py` (7.0KB)
     - `test_terminal_form.py` (8.8KB)
     - `test_terminal_form_bank_segment.py` (6.8KB)
-    - `test_terminal_growth_sets.py` (5.1KB)
+    - `test_terminal_growth_sets.py` (5.2KB)
     - `test_terminal_option_sets.py` (12.4KB)
     - `test_terminal_return_sets.py` (11.3KB)
     - `test_two_stage_disclosure.py` (7.5KB)
@@ -277,8 +280,8 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `README.md` (893B)
     - `beta_data.py` (10.0KB)
     - `build_cfgs.py` (94.6KB)
-    - `cfgs_gen.json` (246.1KB)
-    - `engine_workbook.py` (114.9KB)
+    - `cfgs_gen.json` (246.5KB)
+    - `engine_workbook.py` (115.6KB)
     - `gen_ui.py` (89.4KB)
 
 ## Analyses (workbooks)
@@ -357,11 +360,4 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `wbc_muddle_through_valuation_v4_formulas.xlsx` (12.5KB)
       - `wbc_scenarios_comparison_v1.xlsx` (11.6KB)
       - `wbc_scenarios_comparison_v2.xlsx` (11.6KB)
-
-## Untracked files
-
-Not in git. Either commit them or clear them — an untracked file is invisible
-to anyone who clones the repo, and is the most common way work gets lost.
-
-- `tests/dcf/test_csl_wacc.py`
 

@@ -23,7 +23,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_BASES = {"DNL": "2.007", "WBC": "33.93", "CSL": "224.34"}  # 16 Oct D-06: CSL discounted at the WACC (8.12%); was 203.52 (15 Oct item (c))  # 16 Oct item (e) option 1b: retained equity earns Ke (was 32.40)  # 15 Oct item (c): CSL driver is US real GDP + advanced CPI (was 203.46). 15 Oct D-81 (current-cycle chain terms glide to equilibrium by their expiry years, D-36 fade retired; were 2.106 / 32.27 / 203.46 under D-80, 2.138 / 33.08 / 208.89 under D-79)
+EXPECTED_BASES = {"DNL": "2.007", "WBC": "33.93", "CSL": "230.25"}  # 16 Oct D-06: CSL discounted at the WACC (8.12%); was 203.52 (15 Oct item (c))  # 16 Oct item (e) option 1b: retained equity earns Ke (was 32.40)  # 15 Oct item (c): CSL driver is US real GDP + advanced CPI (was 203.46). 15 Oct D-81 (current-cycle chain terms glide to equilibrium by their expiry years, D-36 fade retired; were 2.106 / 32.27 / 203.46 under D-80, 2.138 / 33.08 / 208.89 under D-79)
 
 
 def run(cmd: list[str], timeout: int = 900, cwd: Path | None = None) -> tuple[int, str]:

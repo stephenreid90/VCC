@@ -1760,6 +1760,21 @@ def segment_wacc_from_data(inputs: dict, ke: float) -> dict:
             "target_ev_ebitda": wts["target_ev_ebitda"], "dv": dv, "wacc": wacc}
 
 
+def csl_net_debt_at_valuation(anch: dict) -> float:
+    """CSL's net debt at the valuation date (D-87, decision Q1).
+
+    The same walk DNL uses (``EquityBridge.from_anchor``): net debt falls by the
+    operating cash flow generated over the period and rises by the capex paid.
+    It is a walk from the 1H26 close to the valuation date. It leaves out cash paid
+    to shareholders in the period (dividends and buybacks), as DNL does. D-87 notes
+    that this overstates the uplift; see the tracker.
+    """
+    rf = anch["net_debt_roll_forward"]
+    return (float(anch["net_debt"])
+            - float(rf["operating_cash_flow_period_a"])
+            + float(rf["capex_period_a"]))
+
+
 def build_segment_inputs_from_data(inputs: dict, scenario_id: str, route_terminal_form: bool = True):
     """Assemble ``SegmentInputs`` for one segment-level company x scenario (M3).
 
@@ -1840,7 +1855,7 @@ def build_segment_inputs_from_data(inputs: dict, scenario_id: str, route_termina
         # csl.yaml 14 Oct 2026.
         terminal_growth=segment_terminal_growth_from_data(inputs, scenario_id, horizon).result,
         tax_rate=scen["tax_rate"], cost_of_equity=wacc_parts["wacc"],  # D-06: the WACC, not Ke
-        net_debt=anch["net_debt"], restructuring_cash_to_come=anch["restructuring_cash_to_come"],
+        net_debt=csl_net_debt_at_valuation(anch), restructuring_cash_to_come=anch["restructuring_cash_to_come"],
         shares_outstanding_m=anch["shares_outstanding_m"], fx_aud_per_usd=sf["fx_aud_per_usd"],
         terminal_form=terminal_form, convergence_years=convergence_years,
         terminal_invested_capital=terminal_capital,

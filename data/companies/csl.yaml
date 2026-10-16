@@ -734,7 +734,20 @@ normalised_baseline:
       # working_capital_intensity_from_data().
       terminal_capex_pct_revenue: 0.06   # = D&A in steady state
     anchors:
+      # Net debt at the 1H26 close (31 Dec 2025), USD m. Rolled forward to the
+      # valuation date (30 Jun 2026) below, the same walk DNL uses (D-87, Q1).
       net_debt: 9100
+      # Period A walk, USD m. The period totals are sourced, not estimated, except
+      # capex (see capex_period_a_source).
+      net_debt_roll_forward:
+        period_a_days: 181
+        # FY26 operating cash flow 3,512 less 1H26 operating cash flow 1,302
+        # (ASX FY26 results, 18 Aug 2026; ASX 1H26 results, 11 Feb 2026).
+        operating_cash_flow_period_a: 2210.0
+        # Approximation: half of FY26 PP&E additions 685 (CSL Annual Report 2026,
+        # note 9). The model's capex driver (4.5% of revenue) gives a similar figure.
+        capex_period_a: 342.5
+        capex_period_a_source: half of FY26 PP&E additions, approximation
       restructuring_cash_to_come: 507
       shares_outstanding_m: 478.9
     by_scenario:

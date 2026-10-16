@@ -1690,7 +1690,17 @@ def build_csl_workbook_bytes(cfg=None):
     R["wc"] = R.pop("wc_int")
     line("Corporate / unallocated FY25", corp["unallocated_fy25"], "corp0", NUM0)
     line("Corporate growth p.a.", corp["unallocated_growth"], "corpg", PCT2)
-    line("Net debt at anchor", anch["net_debt"], "nd", NUM0)
+    # D-87 (Q1): net debt is rolled from the 1H26 close to the valuation date on the
+    # same walk as DNL (EquityBridge): less operating cash flow, plus capex.
+    _rf = anch["net_debt_roll_forward"]
+    _anchor_row = r[0]
+    line("Net debt at 1H26 close, 31 Dec 2025 (USD m)", anch["net_debt"], "nd_anchor", NUM0)
+    line("Operating cash flow, period A (USD m)", _rf["operating_cash_flow_period_a"], "ocf_a", NUM0)
+    line("Capex, period A (USD m, approximation)", _rf["capex_period_a"], "capex_a", NUM1)
+    ws.cell(r[0], 1, "Net debt at valuation date, 30 Jun 2026 (USD m)")
+    ws.cell(r[0], 2, f"=B{_anchor_row}-B{_anchor_row + 1}+B{_anchor_row + 2}").number_format = NUM0
+    R["nd"] = f"'Assumptions'!$B${r[0]}"
+    r[0] += 1
     line("Restructuring cash to come", anch["restructuring_cash_to_come"], "restr", NUM0)
     # D-44/D-62: the opening invested-capital stock the two-stage terminal rolls
     # forward (translator.csl_terminal_invested_capital). Goodwill excluded.

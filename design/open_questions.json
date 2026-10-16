@@ -3,7 +3,7 @@
     "id": "Q1",
     "question": "CSL valuation-date anchoring: roll net debt forward to 30 Jun 2026 (+1.7%), or move the valuation date back to 31 Dec 2025 with a stub (&minus;1.9%)?",
     "blocks": "Items 1, 13",
-    "answer": "Decided 16 Oct 2026 by Stephen: roll net debt forward to 30 Jun 2026 (+1.7%), matching DNL. Implementation pending (medium: model change, re-pins and workbook)."
+    "answer": "Decided 16 Oct 2026 by Stephen: roll net debt forward to 30 Jun 2026, matching DNL. Built as D-87: net debt 7,232.5 (USD m); CSL values rise 2.2% to 4.0%."
   },
   {
     "id": "Q4",

@@ -60,9 +60,9 @@
       "terminal_value": 118110.919712962,
       "pv_terminal": 54104.0381994877,
       "enterprise_value": 93143.5748227945,
-      "equity_value": 83536.5748227945,
-      "value_per_share_usd": 174.434276096877,
-      "value_per_share_aud": 264.302815141988
+      "equity_value": 85404.0748227945,
+      "value_per_share_usd": 178.33383759197,
+      "value_per_share_aud": 270.211430719353
     }
   },
   "muddle_through": {
@@ -126,9 +126,9 @@
       "terminal_value": 98399.2914751632,
       "pv_terminal": 45074.57090092,
       "enterprise_value": 80511.744724715,
-      "equity_value": 70904.744724715,
-      "value_per_share_usd": 148.057516652151,
-      "value_per_share_aud": 224.336749231339
+      "equity_value": 72772.244724715,
+      "value_per_share_usd": 151.957078147244,
+      "value_per_share_aud": 230.245364808704
     }
   },
   "ai_productivity_lag": {
@@ -192,9 +192,9 @@
       "terminal_value": 93226.6611079341,
       "pv_terminal": 42705.1016625081,
       "enterprise_value": 77538.7062958004,
-      "equity_value": 67931.7062958004,
-      "value_per_share_usd": 141.849459794948,
-      "value_per_share_aud": 214.930301481305
+      "equity_value": 69799.2062958004,
+      "value_per_share_usd": 145.74902129004,
+      "value_per_share_aud": 220.838917058669
     }
   },
   "fragmentation": {
@@ -258,9 +258,9 @@
       "terminal_value": 70624.2646675231,
       "pv_terminal": 32351.4364520105,
       "enterprise_value": 63344.6648996767,
-      "equity_value": 53737.6648996767,
-      "value_per_share_usd": 112.21061787362,
-      "value_per_share_aud": 170.021528202109
+      "equity_value": 55605.1648996767,
+      "value_per_share_usd": 116.110179368713,
+      "value_per_share_aud": 175.930143779474
     }
   },
   "disorderly_climate_crystallisation": {
@@ -324,9 +324,9 @@
       "terminal_value": 74385.9863496769,
       "pv_terminal": 34074.5991712723,
       "enterprise_value": 66476.2162733906,
-      "equity_value": 56869.2162733906,
-      "value_per_share_usd": 118.749668560014,
-      "value_per_share_aud": 179.929497802133
+      "equity_value": 58736.7162733906,
+      "value_per_share_usd": 122.649230055107,
+      "value_per_share_aud": 185.838113379498
     }
   },
   "stagflation_persists": {
@@ -390,9 +390,9 @@
       "terminal_value": 58855.7372255338,
       "pv_terminal": 26960.5305152817,
       "enterprise_value": 55990.3479534557,
-      "equity_value": 46383.3479534557,
-      "value_per_share_usd": 96.8539318301435,
-      "value_per_share_aud": 146.753077509033
+      "equity_value": 48250.8479534557,
+      "value_per_share_usd": 100.753493325236,
+      "value_per_share_aud": 152.661693086398
     }
   }
 }

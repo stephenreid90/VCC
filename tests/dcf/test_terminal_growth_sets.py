@@ -100,9 +100,10 @@ def test_d79_moved_the_levels_as_disclosed(by_key):
         # CSL re-pinned 16 Oct 2026 (D-06, WACC): the level changes now read against the WACC level.
         # CSL re-pinned 15 Oct 2026 (item (c), US driver): OC 0.095 -> 0.0943, MT 0.090 -> 0.0899,
         # Frag 0.032 -> 0.0294, Stag -0.023 -> -0.011.
-        ("csl", "orderly_convergence"): 0.1023, ("csl", "muddle_through"): 0.0979,
-        ("csl", "ai_productivity_lag"): 0.0853, ("csl", "fragmentation"): 0.0323,
-        ("csl", "disorderly_climate_crystallisation"): 0.0328, ("csl", "stagflation_persists"): -0.0121,
+        # 16 Oct 2026 (D-87, Q1): net debt rolled to 30 Jun 2026 moves the level-change base.
+        ("csl", "orderly_convergence"): 0.0998, ("csl", "muddle_through"): 0.0952,
+        ("csl", "ai_productivity_lag"): 0.0828, ("csl", "fragmentation"): 0.0311,
+        ("csl", "disorderly_climate_crystallisation"): 0.0318, ("csl", "stagflation_persists"): -0.0116,
     }
     for k, pct in want.items():
         assert by_key[k].level_change == pytest.approx(pct, abs=0.0015), (k, by_key[k].level_change)
