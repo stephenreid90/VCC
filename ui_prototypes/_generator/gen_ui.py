@@ -46,9 +46,9 @@ details.thy .thybody{padding:2px 12px 11px 22px; font-size:12.5px;}
 </div>
 <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1.5rem; margin-bottom:1.5rem;">
   <div><div class="hd">Top 5 value drivers <span style="font-weight:400; color:var(--text3); font-size:12px;">— flex to see impact</span></div>
-    <div class="sub" style="margin-bottom:6px;">illustrative response · full set under Assumptions</div>
+    <div class="sub" style="margin-bottom:6px;">illustrative reduced-form approximation of the engine · full set under Assumptions</div>
     <div id="sliders"></div>
-    <div style="display:flex; gap:8px; margin-top:8px;"><button id="reset">↻ reset</button><button id="allassum">all assumptions &amp; rationale</button></div>
+    <div style="display:flex; gap:8px; margin-top:8px;"><button id="reset">↻ reset</button><button id="resetall" title="Clear your saved scenarios and edits in this browser">reset all</button><span class="sub" id="resetnote" style="align-self:center;"></span><button id="allassum">all assumptions &amp; rationale</button></div>
     <label style="display:flex; align-items:center; gap:6px; margin-top:8px; font-size:12px; color:var(--text2); cursor:pointer;"><input type="checkbox" id="applyall" style="accent-color:var(--bdinfo);"> apply input changes to <b>&nbsp;all editable scenarios&nbsp;</b> (global), not just this one</label></div>
   <div><div class="hd">Outcomes across scenarios <span style="font-weight:400; color:var(--text3); font-size:12px;">(__CCY__/share)</span></div>
     <div class="sub" style="margin-bottom:6px;">click a scenario to explore its build-up</div>
@@ -155,7 +155,7 @@ function vccDownload(){ try{
     CFG.scenarios.forEach(function(s,i){ var w=Math.max(0,Math.min(100,s.v/CFG.scale*100)), sel=(i===CFG.activeIdx);
       var od=(s.kind!=='broker'&&isOverridden(s))?'<span title="adjusted from the assessed case" style="color:var(--user-tx);"> ✎</span>':'';
       var del=(s.kind==='user')?'<span class="delu" data-uid="'+s.uid+'" title="delete scenario" style="cursor:pointer; color:var(--text3); padding:0 3px;">×</span>':'';
-      var wr=(s.kind!=='broker'&&s.vals&&Math.abs((s.vals.re!=null?s.vals.re:singleWacc)-singleWacc)>1e-9)?'<span title="per-scenario discount-rate override — differs from the single WACC" style="color:var(--warning-tx); font-weight:500; font-size:11px;"> · r '+s.vals.re.toFixed(2)+'%</span>':'';
+      var wr=(s.kind!=='broker'&&s.vals&&Math.abs((s.vals.re!=null?s.vals.re:singleWacc)-singleWacc)>1e-9)?'<span title="per-scenario discount-rate override — differs from the single WACC; this bar is the reduced-form approximation, not the engine value" style="color:var(--warning-tx); font-weight:500; font-size:11px;"> · r '+s.vals.re.toFixed(2)+'%</span>':'';
       h+='<div class="scbar" data-i="'+i+'" style="display:flex; align-items:center; gap:8px; margin-bottom:5px; cursor:pointer; border-radius:5px; padding:1px 2px; '+(sel?'background:var(--secondary);':'')+'">'
        +'<div style="width:122px; font-size:12px; color:'+(sel?'var(--text)':'var(--text2)')+'; font-weight:'+(sel?'500':'400')+'; text-align:right; flex:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">'+del+esc(s.n)+od+'</div>'
        +'<div style="flex:1; position:relative; height:19px;"><div style="height:19px; width:'+w+'%; background:'+barColor(s.kind)+'; border-radius:4px; '+(sel?'outline:1.5px solid var(--bdinfo);':'')+'"></div>'
@@ -189,6 +189,15 @@ function vccDownload(){ try{
     else e.innerHTML='editing <b>'+esc(sc.n)+'</b> (our assessed case) — flex any input; ↻ reset restores it'; }
 
   document.getElementById('reset').addEventListener('click',function(){ var a=activeScen(); if(a.kind==='broker') return; a.vals=defaultVals(); a.forces={}; a.v=scVal(a); st=a.vals; saveLS(); syncSliders(); updateCards(a.v); drawBars(); });
+  document.getElementById('resetall').addEventListener('click',function(){
+    try{ localStorage.removeItem(LS); }catch(e){}
+    CFG.scenarios=CFG.scenarios.filter(function(sc){ return sc.kind!=='user'; });
+    singleWacc=CFG.cp.re0*100;
+    CFG.scenarios.forEach(function(sc){ if(sc.kind==='broker') return; sc.vals=defaultVals(); sc.forces={}; sc.v=scVal(sc); });
+    CFG.activeIdx=(CFG.liveIdx!=null?CFG.liveIdx:0); if(CFG.activeIdx>=CFG.scenarios.length) CFG.activeIdx=0;
+    selectScenario(CFG.activeIdx);
+    var n=document.getElementById('resetnote'); if(n) n.textContent='Reset done';
+  });
   document.getElementById('allassum').addEventListener('click',function(){ setPanel('assum'); markExplore('assum'); openDetail('assum'); });
   document.getElementById('applyall').addEventListener('change',function(){ applyGlobal=this.checked; });
   document.getElementById('addscen').addEventListener('click',function(){ var name=prompt('Name your scenario (starts from Muddle Through, then flex any input):','My scenario '+(CFG.scenarios.filter(function(s){return s.kind==='user';}).length+1));
@@ -261,7 +270,7 @@ function vccDownload(){ try{
     w.rows.forEach(function(r){
       h+='<tr style="border-top:0.5px solid var(--bd2);"><td style="padding:4px 8px 4px 0; position:sticky; left:0; background:var(--primary);">'+r.label+'</td>'+r.vals.map(function(v){return '<td style="padding:4px 8px; text-align:right;">'+(r.pct?(v*100).toFixed(1)+'%':Math.round(v).toLocaleString())+'</td>';}).join('')+'</tr>';
     });
-    h+='</table></div><div class="sub" style="margin-top:6px;">Straight from the production engine \u2014 the same per-year build behind the headline and the downloadable workbook.</div></div>';
+    h+='</table></div><div class="sub" style="margin-top:6px;">The engine&#39;s central case (does not move with the sliders); the same per-year build behind the downloadable workbook.</div></div>';
     return h;
   }
   function detailHTML(k){

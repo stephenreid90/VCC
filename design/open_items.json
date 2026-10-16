@@ -252,9 +252,9 @@
     "source": "fable-2026-08-13",
     "area": "UI arch",
     "issue": "Standalone UI + base64 workbook architecture is sound; the \"no JS engine port\" decision held. One gap: no \"reset all\" for localStorage user scenarios.",
-    "treatment": "Agreed PASS on the architecture. Add a reset-all control. [Reviewed 16 Oct 2026: Still open. No reset-all control in ui_prototypes/*.html (files dated 13 Aug).]",
+    "treatment": "Agreed PASS on the architecture. Add a reset-all control. [Reviewed 16 Oct 2026: Still open. No reset-all control in ui_prototypes/*.html (files dated 13 Aug).] [Done 16 Oct 2026: 'reset all' button added in gen_ui.py; clears saved scenarios and overrides, re-renders, shows 'Reset done'; test tests/test_ui_integrity_m5_21_22_31.py]",
     "questions": [],
-    "status": "PLANNED",
+    "status": "DONE",
     "batch": "Batch 5"
   },
   {
@@ -262,9 +262,9 @@
     "source": "fable-2026-08-13",
     "area": "UI arch",
     "issue": "<b>Workbook discipline honoured with exceptions.</b> DNL Equity bridge carries 14 literals (styled as inputs but off Assumptions); WBC Multiples!B3 hard-codes the market price.",
-    "treatment": "Move the DNL bridge inputs onto Assumptions. For WBC the fix needs a step Fable missed: <b>WBC's Assumptions sheet has no market-price row at all</b>, so one must be added first. [Reviewed 16 Oct 2026: Still open. No market-price row on the WBC Assumptions sheet (engine_workbook.py). DNL bridge not re-checked.]",
+    "treatment": "Move the DNL bridge inputs onto Assumptions. For WBC the fix needs a step Fable missed: <b>WBC's Assumptions sheet has no market-price row at all</b>, so one must be added first. [Reviewed 16 Oct 2026: Still open. No market-price row on the WBC Assumptions sheet (engine_workbook.py). DNL bridge not re-checked.] [Done 16 Oct 2026: DNL equity-bridge adjustment inputs moved to the Assumptions sheet, Equity bridge now links by formula (WBC market-price row not part of this change); test tests/test_ui_integrity_m5_21_22_31.py]",
     "questions": [],
-    "status": "PLANNED",
+    "status": "DONE",
     "batch": "Batch 5"
   },
   {
@@ -354,9 +354,9 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "Slider moves silently swap the engine value for the reduced form.",
-    "treatment": "<b>Partly wrong</b> — the override note already shows both values; the missing word is \"approximation\". The real problem Fable missed is bigger (see M5): the DCF panel is static but captioned as live. [Reviewed 16 Oct 2026: Still open in part. The caption 'straight from the production engine' is still in all three prototypes (see M5).]",
+    "treatment": "<b>Partly wrong</b> — the override note already shows both values; the missing word is \"approximation\". The real problem Fable missed is bigger (see M5): the DCF panel is static but captioned as live. [Reviewed 16 Oct 2026: Still open in part. The caption 'straight from the production engine' is still in all three prototypes (see M5).] [Done 16 Oct 2026: override note and slider caption now say the headline is a reduced-form approximation; test tests/test_ui_integrity_m5_21_22_31.py]",
     "questions": [],
-    "status": "PLANNED",
+    "status": "DONE",
     "batch": "Batch 5"
   },
   {
@@ -478,9 +478,9 @@
     "source": "triage-2026-08-13",
     "area": "Missed",
     "issue": "<b>The DCF panel is static but captioned \"straight from the production engine\"</b> — after any slider move the headline is the reduced form while the build-up still shows the engine path.",
-    "treatment": "Fix the caption first, the behaviour second. This is the real version of item 31. [Reviewed 16 Oct 2026: Still open. The 'straight from the production engine' caption is still in all three prototypes.]",
+    "treatment": "Fix the caption first, the behaviour second. This is the real version of item 31. [Reviewed 16 Oct 2026: Still open. The 'straight from the production engine' caption is still in all three prototypes.] [Done 16 Oct 2026: all three build-up intros now say the panel is the engine's central case and does not move with the sliders; 'straight from the production engine' captions removed; CSL rows engine-sourced; test tests/test_ui_integrity_m5_21_22_31.py]",
     "questions": [],
-    "status": "PLANNED",
+    "status": "DONE",
     "batch": "Batch 5"
   },
   {

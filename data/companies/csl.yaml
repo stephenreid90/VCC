@@ -626,10 +626,12 @@ normalised_baseline:
       output, NOT tuned away. See beta_market_implied_note.
 
     beta_market_implied_note: >
-      §3.5.7 single-lever reverse-DCF on the AUD 105.53 price implies a cost of
+      §3.5.7 single-lever reverse-DCF on the market reference price
+      (market_reference_price_aud, dated market_reference_date) implies a cost of
       equity ~13% (beta ~1.7) OR a terminal margin ~13.5% OR perpetual
-      contraction — none plausible alone. Reporting diagnostic only; beta is
-      not adjusted toward it.
+      contraction — none plausible alone. Diagnostic struck 25 June 2026 at the
+      cost of equity; not rerun under the D-84 WACC. Reporting diagnostic only;
+      beta is not adjusted toward it.
 
     beta: 0.85
     beta_rationale: >

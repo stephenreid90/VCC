@@ -24,6 +24,10 @@ def bridge(rows, intro):
         h+='<tr><td style="padding:3px 0; %s">%s</td><td style="text-align:right; %s">%s</td></tr>'%('font-weight:500;' if bold else 'color:var(--text2);', r[0], 'font-weight:500;' if bold else '', r[1])
     return h+'</table>'
 
+# One plain caption for all three build-up panels (open items M5 / 31).
+_BUILDUP_NOTE = ("The build-up is the engine&rsquo;s central case and does not move with the sliders; "
+    "after a slider move the headline is a reduced-form approximation of the engine.")
+
 # ---- Shared world-scenario descriptions (from data/scenarios/*.md) ----
 WORLD_DESC = {
  "Muddle Through":'<p>Post-2022 friction proves persistent rather than transitional: inflation cools but lands above target (2.5–3.5%) and central banks tacitly accept the overshoot rather than crush demand. Real rates settle structurally higher than the 2010s (~1.0%). The US keeps outperforming on fiscal expansion, AI investment and immigration, but the lift doesn&rsquo;t propagate to Europe or EM. Climate policy stays patchy and AI&rsquo;s productivity transmission is slow, with rents concentrating in platform owners. No crisis, no resolution — a grinding extension of present conditions. Global growth ~2.3%.</p><p><b>Macro picture.</b> Global growth ~2.3% (US ~2.4% leads; advanced-economy aggregate 1.5–2.0%; EM bifurcating by commodity exposure). Headline inflation settles ~3.0% — above target but tacitly accepted rather than fought; real policy rates ~1.0%, materially above the 2010s zero-bound. USD firm but range-bound.</p><p><b>What would move the world elsewhere.</b> Sustained inflation re-anchoring at target → Orderly Convergence; expectations breaking above 3% with second-round wage dynamics → Stagflation Persists; any regime-changing shock in energy, markets, climate or geopolitics → one of the boundary scenarios.</p>',
@@ -386,6 +390,13 @@ def _data(rel):
     with open(_ROOT / rel, encoding="utf-8") as _f:
         return _yaml.safe_load(_f) or {}
 
+# Market reference price for CSL and WBC comes from the company register, formatted here.
+# DNL stays typed: its only price is a "Wall St target" run-rate field with no reference date.
+for _mc, _mcfg in (("csl", csl), ("wbc", wbc)):
+    _mpx = _data("data/companies/%s.yaml" % _mc)["company_position"]["share_statistics"]["market_reference_price_aud"]
+    _mcfg["market"] = _mpx
+    _mcfg["mklab"] = "vs market (%.2f)" % _mpx
+
 
 def _point_active_at_live(cfg):
     """Open the page on the central case, whatever index it landed at.
@@ -497,7 +508,10 @@ def segment_pack(company_id, archetype_id, scen, broker_price, market_price):
             "ev": {nm: res[sid].enterprise_value for sid, nm, _k in scen},
             "pv_explicit": {nm: res[sid].pv_explicit for sid, nm, _k in scen},
             "pv_terminal": {nm: res[sid].pv_terminal for sid, nm, _k in scen},
-            "equity": {nm: res[sid].equity_value for sid, nm, _k in scen}}
+            "equity": {nm: res[sid].equity_value for sid, nm, _k in scen},
+            "net_debt": r0.net_debt, "restructuring": r0.restructuring_cash_to_come,
+            "shares": r0.shares_outstanding_m, "fx": inps[live[0]].fx_aud_per_usd,
+            "conv_years": r0.convergence_years, "terminal_growth": inps[live[0]].terminal_growth, "years": r0.year_labels}
 
 _DNL_SCEN = [
     ("orderly_convergence", "Orderly Convergence", "up"),
@@ -571,10 +585,10 @@ dnl["dcf"] = bridge([
     "AUD m. Five-year FCFF (stub + FY27–FY31) from the production engine, single WACC %.2f%%, terminal g 2.5%%; the gas roll-off is in the margin path. Per-scenario detail across all six worlds." % (_cr.wacc * 100))
 
 dnl["dcfIntro"] = ("AUD m. Click any line to see its make-up. Stub + five explicit years of FCFF "
-    "(FY27–FY31) from the production engine, single WACC %.2f%%, terminal g 2.5%%; gas roll-off in the margin path." % (_cr.wacc * 100))
+    "(FY27–FY31) from the production engine, single WACC %.2f%%, terminal g 2.5%%; gas roll-off in the margin path. " % (_cr.wacc * 100)) + _BUILDUP_NOTE
 
 dnl["dcfRows"] = [
-    ["Enterprise value (DCF)", _cm(_EV), "Stub + five explicit years of FCFF discounted at the single WACC %.2f%%, plus a Gordon-growth terminal at g 2.5%% (terminal ~%.0f%% of EV). Straight from the production engine — the same number the headline uses." % (_cr.wacc * 100, _cr.terminal_share_of_ev * 100)],
+    ["Enterprise value (DCF)", _cm(_EV), "Stub + five explicit years of FCFF discounted at the single WACC %.2f%%, plus a Gordon-growth terminal at g 2.5%% (terminal ~%.0f%% of EV). The engine&rsquo;s central case; it does not move with the sliders." % (_cr.wacc * 100, _cr.terminal_share_of_ev * 100)],
     ["Less: net debt at valuation date", _pr(_NDv), "Net debt at the 31 Mar 2026 anchor (%s) walked to the 25 May 2026 valuation date over Period A — less operating cash flow generated, plus capex paid (methodology §7). Ex-leases; leases are the next line." % _cm(_ANCH)],
     ["Less: equity-bridge adjustments (net)", _pr(_ADJ), "Fertilisers-separation one-offs sitting outside net debt (methodology §4.2): declared dividend, Phosphate Hill ARO/inventory, Geelong and Gibson Island remediation, transaction costs — less the probability-weighted receivables (Perdaman, IPF, PH contingent). Net %s. Previously folded into the net-debt anchor; now shown explicitly." % _cm(_ADJ)],
     ["Less: AASB 16 lease liabilities", _pr(_LEAS), "AASB 16 lease liability treated as debt (Approach A), consistent with the post-AASB 16 EBITDA used above."],
@@ -610,7 +624,7 @@ _dd["mt"]["taxGlide"] = [round(x * 100, 2) for x in _cr.applied_tax_rate[1:]]
 _dd["mt"]["baseMargin"] = round(_cbuilt.base_ebit_margin * 100, 1)
 _dd["mt"]["peerGap"] = [round(x * 10000) for x in _cbuilt.margin_transformation]
 _dd["mt"]["gasRolloff"] = [round(x * 10000) for x in _cbuilt.margin_gas_rolloff]
-_dd["mt"]["note"] = ("Muddle Through operating build, straight from the production engine (methodology §11: "
+_dd["mt"]["note"] = ("Muddle Through operating build, the engine&rsquo;s central case (methodology §11: "
     "industry baseline + company offset shown explicitly). Revenue is on the ratified FY26 continuing-ops "
     "base of AUD 3,400m (excludes the discontinued Phosphate Hill revenue in the reported ~3,905 TTM; "
     "methodology §5), growing at the chain-derived ~6.2%% p.a. EBIT margin is the 14.1%% FY26 base plus the "
@@ -679,7 +693,7 @@ _word_s = "{:,.0f}".format(round(_wp["ordinary_equity"]["Muddle Through"]))
 def _wfix(x):
     return x.replace("102,960", _word_s).replace("30.15", "%.2f" % _wbase) if isinstance(x, str) else x
 wbc["dcf"] = _wfix(wbc["dcf"])
-wbc["dcfIntro"] = _wfix(wbc["dcfIntro"])
+wbc["dcfIntro"] = _wfix(wbc["dcfIntro"]) + " " + _BUILDUP_NOTE
 wbc["dcfRows"] = [[_wfix(c) for c in row] for row in wbc["dcfRows"]]
 wbc["footnote"] = wbc["footnote"].replace(
     "Calibrated central case: WBC Muddle Through AUD 30.15",
@@ -736,17 +750,54 @@ _point_active_at_live(csl)
 _cmt = "Muddle Through"
 _eUSD = _sp["usd"][_cmt]; _eEV = _sp["ev"][_cmt]; _ePVx = _sp["pv_explicit"][_cmt]
 _ePVt = _sp["pv_terminal"][_cmt]; _eEq = _sp["equity"][_cmt]
+_cwacc = "%.2f%%" % (_ske * 100)                      # engine discount rate (D-84 WACC)
+_cyrs = "%s\u2013%s" % (_sp["years"][2], _sp["years"][-1])  # explicit window, from the engine
+_cnd = _sp["net_debt"]; _crc = _sp["restructuring"]; _csh = _sp["shares"]; _cfx = _sp["fx"]
+_cterm = ("The terminal is an excess-return convergence (D-62/D-71): the earned return fades to the cost of "
+    "capital over %.0f years." % _sp["conv_years"])
+def _cneg(v): return "(%s)" % _sm(v)
 csl["dcf"] = bridge([
-    ["Sum PV explicit FCFF (FY27\u2013FY31)", _sm(_ePVx)],
+    ["Sum PV explicit FCFF (%s)" % _cyrs, _sm(_ePVx)],
     ["PV of terminal value", _sm(_ePVt)],
     ["Enterprise value", _sm(_eEV)],
-    ["Less: net debt", "(9,100)"],
-    ["Less: restructuring PV", "(507)"],
+    ["Less: net debt", _cneg(_cnd)],
+    ["Less: restructuring PV", _cneg(_crc)],
     ["Equity value", _sm(_eEq)],
-    ["\u00f7 shares (m)", "478.9"],
+    ["\u00f7 shares (m)", "%.1f" % _csh],
     ["Value per share USD", "%.2f" % _eUSD],
     ["Value per share AUD", "%.2f" % _sbase]],
-    "USD m. Five-year FCFF (FY27\u2013FY31) plus terminal, discounted at the %.2f%% cost of equity with mid-period discounting. Terminal binds to a 30%% EBIT margin with terminal capex = D&amp;A (%.0f%% of value). Engine-computed; per-scenario detail in csl_scenarios_comparison_v2." % (_ske * 100, _sp["terminal_share"] * 100))
+    "USD m. FCFF (%s) plus terminal, discounted at the engine WACC of %s with mid-period discounting. %s Terminal is %.0f%% of enterprise value. Engine-computed; per-scenario detail in csl_scenarios_comparison_v2." % (_cyrs, _cwacc, _cterm, _sp["terminal_share"] * 100))
+csl["dcfIntro"] = ("USD m. Click any line to see its make-up. FCFF (%s) plus terminal, discounted at the engine WACC of %s. %s %s"
+    % (_cyrs, _cwacc, _cterm, _BUILDUP_NOTE))
+csl["dcfRows"] = [
+    ["Sum PV explicit FCFF (%s)" % _cyrs, _sm(_ePVx), "FCFF for %s discounted at the engine WACC of %s with mid-period discounting." % (_cyrs, _cwacc)],
+    ["PV of terminal value", _sm(_ePVt), "%s Discounted at %s; about %.0f%% of enterprise value." % (_cterm, _cwacc, _sp["terminal_share"] * 100)],
+    ["Enterprise value", _sm(_eEV), "PV of explicit FCFF %s + PV of terminal value %s." % (_sm(_ePVx), _sm(_ePVt))],
+    ["Less: net debt", _cneg(_cnd), "Net debt as carried in the engine inputs (USD m)."],
+    ["Less: restructuring PV", _cneg(_crc), "Restructuring cash to come, as carried in the engine inputs (USD m)."],
+    ["Equity value", _sm(_eEq), "Enterprise value %s less net debt %s less restructuring %s." % (_sm(_eEV), _sm(_cnd), _sm(_crc))],
+    ["\u00f7 shares (m)", "%.1f" % _csh, "Shares outstanding as carried in the engine inputs."],
+    ["Value per share USD", "%.2f" % _eUSD, ""],
+    ["Value per share AUD (\u00d7%.4f)" % _cfx, "%.2f" % _sbase, "USD %.2f \u00d7 %.4f (AUD per USD)." % (_eUSD, _cfx)]]
+CSL_DID["debt"] = "Built on the target capital structure since D-84; the engine WACC of %s weights equity and debt." % _cwacc
+CSL_DID["gearing"] = "Target gearing from the capital-structure inputs, used in the engine WACC of %s." % _cwacc
+CSL_DID["wacc"] = "The engine discounts CSL FCFF at a <b>WACC of %s</b> (D-84), held constant across scenarios." % _cwacc
+csl["_drtheory"] = drtheory(CSL_DID)
+csl["snap"]["discount"] = ('<b>WACC %s</b> from the engine (D-84), held across scenarios. <span class="more" data-k="discount">See the build-up \u2192</span>' % _cwacc)
+csl["snap"]["dcf"] = ('<b>FCFF \u2192 per share</b> \u2014 excess-return convergence terminal, discounted at %s. <span class="more" data-k="dcf">Open the build-up \u2192</span>' % _cwacc)
+csl["_discount"] = csl["_discount"].replace(
+    "<p>Cost of equity applied directly to FCFF \u2014 CSL&rsquo;s workbook discounts at Re rather than a blended WACC (a simplification; see the theory panels below).</p>",
+    "<p>Since D-84 the engine discounts CSL FCFF at a WACC of %s, built from the cost of equity below and the target capital structure.</p>" % _cwacc)
+for _r in csl["_assum"]:
+    if _r[0] == "Terminal EBIT margin":
+        _r[1:] = ["Not an input", "derived", "Terminal is the excess-return convergence (D-62/D-71): earned return fades to the WACC over %.0f years (D-93)." % _sp["conv_years"]]
+    elif _r[0] == "Terminal growth g":
+        _r[1:] = ["%.1f%% (MT)" % (_sp["terminal_growth"] * 100), "derived", "Per scenario, from the engine (D-79)."]
+    elif _r[0] == "Terminal capex":
+        _r[1:] = ["Diagnostic only", "derived", "Does not drive the convergence terminal (D-85)."]
+    if _r[0].startswith("Net debt"): _r[1] = "USD %sm" % _sm(_cnd)
+    elif _r[0].startswith("Restructuring PV"): _r[1] = "USD %sm" % _sm(_crc)
+    elif _r[0] == "Shares": _r[1] = "%.1fm" % _csh
 
 csl["footnote"] = csl["footnote"].replace(
     "Calibrated central case: CSL Muddle Through USD 134.52 / AUD 203.83",

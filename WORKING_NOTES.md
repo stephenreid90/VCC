@@ -77,6 +77,20 @@ working capital confirmations; UI design choices 32, 35, Q6, Q7.
   (`scripts/size_csl_market_gap.py`), pinned cell by cell by `tests/dcf/test_csl_market_gap_set.py`. Item 10 DONE in the
   tracker; item 35 (the UI market-gap panel) is now unblocked. DCF 439 passed / 1 skipped; other 331; lint 14/14.
 
+- 16 Oct 2026: **UI integrity M5, 21, 22, 31 done, plus the CSL build-up and the 105.53 prose (batch 2 item 3, Sonnet, mild).**
+  Values unchanged. (a) The CSL prototype's DCF build-up detail rows now come from the segment engine (EV 75,577, equity
+  67,188, USD 139.36, AUD 211.15; net debt 7,881, restructuring 507, shares 482.1 as the engine carries them, not the old
+  typed 9,100 / 478.9); captions say WACC 8.12% (D-84) and the convergence terminal (D-62/D-71/D-93), not "8.75% cost of
+  equity" and Gordon growth. (b) M5/31: all three build-up intros say the build-up is the engine's central case and does
+  not move with the sliders; the override and slider notes say "approximation". (c) 21: a "reset all" control clears the
+  company's saved user scenarios and overrides, no browser dialogs. (d) 22: the DNL equity-bridge adjustment inputs
+  (amount, provided-for, probability) sit on Assumptions as yellow inputs; the Equity bridge sheet links to them. (e) CSL
+  and WBC `market` in the prototypes now read `market_reference_price_aud` from the company yaml; DNL's 3.61 stays typed
+  (a "Wall St target" with no reference date; still a known gap). `beta_market_implied_note` in csl.yaml no longer types
+  the price and dates its diagnostic (25 June 2026, at Ke, not rerun under the WACC). Test:
+  `tests/test_ui_integrity_m5_21_22_31.py` (8 tests). Left alone: the CSL slider defaults (`cp`, `sliders`), and
+  "Implied price AUD 105.53" in `data/companies/csl_documents.yaml`. DCF 439 / 1 skipped; other 340; LibreOffice 2; lint 14/14.
+
 ### Batch 1 progress
 
 - 16 Oct 2026: **CSL decay band 15-25 years, midpoint 20 (D-93, Stephen's ruling, serious).** The six CSL

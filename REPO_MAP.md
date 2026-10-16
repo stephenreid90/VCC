@@ -3,10 +3,10 @@
 _Generated 2026-10-16 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `2cbcc9b Bridge note for batch 2 (16 Oct late evening)` on `main`
+- HEAD: `7f3ca16 Batch 2 item 1: CSL section 16.3 market-gap note (item 10, D-92), set, sizing script and test` on `main`
 - Unpushed commits: **0**
-- Tracked files: 379
-- Untracked files: 0
+- Tracked files: 383
+- Untracked files: 1
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -43,7 +43,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
 | Path | Present | What it is |
 |---|---|---|
-| `data/companies/csl.yaml` | yes (37.4KB) | company position + layer-2 method (judgement) |
+| `data/companies/csl.yaml` | yes (37.6KB) | company position + layer-2 method (judgement) |
 | `data/companies/csl.md` | **NO** | company narrative |
 | `data/companies/csl_documents.yaml` | yes (8.5KB) | document register |
 | `data/financials/csl.yaml` | yes (10.1KB) | curated layer-1 financials (a SUMMARY — check for raw sources too) |
@@ -54,7 +54,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 ## Data directory
 
   - **companies/**
-    - `csl.yaml` (37.4KB)
+    - `csl.yaml` (37.6KB)
     - `csl_documents.yaml` (8.5KB)
     - `dnl.md` (13.7KB)
     - `dnl.yaml` (45.3KB)
@@ -111,7 +111,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `build_plan.html` (15.3KB)
   - `engine_implementation_plan.md` (16.5KB)
   - `open_items.css` (3.5KB)
-  - `open_items.json` (51.5KB)
+  - `open_items.json` (52.5KB)
   - `open_questions.json` (2.2KB)
   - `scenarios_workshop.md` (13.6KB)
   - `scenarios_workshop_prep.md` (19.7KB)
@@ -127,6 +127,8 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `bank_nim_pass_through_set.yaml` (2.0KB)
     - `csl_cost_of_debt_and_target_structure.md` (13.4KB)
     - `csl_discount_rate_fork.md` (11.0KB)
+    - `csl_market_gap_note_2026-10-16.md` (3.2KB)
+    - `csl_market_gap_set.yaml` (2.3KB)
     - `csl_terminal_return_sensitivity_2026-10-16.md` (4.4KB)
     - `csl_terminal_return_sets.yaml` (8.2KB)
     - `dnl_working_capital_derivation.md` (12.4KB)
@@ -181,7 +183,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `fcf_engine.py` (31.9KB)
       - `fcf_stub.py` (10.1KB)
       - `segment_engine.py` (13.6KB)
-      - `terminal_return.py` (18.9KB)
+      - `terminal_return.py` (19.1KB)
       - `terminal_value.py` (12.8KB)
     - **market/**
       - `__init__.py` (629B)
@@ -225,6 +227,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `test_ssot_lint.py` (31.3KB)
   - `test_three_statement.py` (717B)
   - `test_trade_working_capital_intensity.py` (3.3KB)
+  - `test_ui_integrity_m5_21_22_31.py` (4.8KB)
   - `test_wbc_loads.py` (2.1KB)
   - `test_workbook_defects_m6_m7_m11.py` (9.2KB)
   - `test_workbook_recalc_live.py` (3.4KB)
@@ -233,6 +236,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `__init__.py` (0B)
     - `test_bank_nim_pass_through.py` (1.9KB)
     - `test_chain_term_glide.py` (9.3KB)
+    - `test_csl_market_gap_set.py` (4.3KB)
     - `test_csl_segment.py` (6.3KB)
     - `test_csl_terminal_return_sets.py` (4.3KB)
     - `test_csl_volume_price_split.py` (2.3KB)
@@ -258,7 +262,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `test_terminal_form_bank_segment.py` (6.9KB)
     - `test_terminal_growth_sets.py` (5.5KB)
     - `test_terminal_option_sets.py` (12.5KB)
-    - `test_terminal_return_sets.py` (16.9KB)
+    - `test_terminal_return_sets.py` (18.2KB)
     - `test_two_stage_disclosure.py` (7.5KB)
     - `test_wbc_bank.py` (9.4KB)
     - **golden/**
@@ -279,16 +283,16 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
 ## UI generator
 
-  - `csl_scenario_interface.html` (179.4KB)
-  - `dnl_scenario_interface.html` (225.9KB)
-  - `wbc_scenario_interface.html` (166.8KB)
+  - `csl_scenario_interface.html` (181.0KB)
+  - `dnl_scenario_interface.html` (227.6KB)
+  - `wbc_scenario_interface.html` (167.9KB)
   - **_generator/**
     - `README.md` (893B)
     - `beta_data.py` (10.0KB)
-    - `build_cfgs.py` (94.3KB)
-    - `cfgs_gen.json` (252.4KB)
-    - `engine_workbook.py` (124.7KB)
-    - `gen_ui.py` (89.8KB)
+    - `build_cfgs.py` (98.7KB)
+    - `cfgs_gen.json` (253.3KB)
+    - `engine_workbook.py` (125.3KB)
+    - `gen_ui.py` (90.6KB)
 
 ## Analyses (workbooks)
 
@@ -366,4 +370,11 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `wbc_muddle_through_valuation_v4_formulas.xlsx` (12.5KB)
       - `wbc_scenarios_comparison_v1.xlsx` (11.6KB)
       - `wbc_scenarios_comparison_v2.xlsx` (11.6KB)
+
+## Untracked files
+
+Not in git. Either commit them or clear them — an untracked file is invisible
+to anyone who clones the repo, and is the most common way work gets lost.
+
+- `tests/test_ui_integrity_m5_21_22_31.py`
 

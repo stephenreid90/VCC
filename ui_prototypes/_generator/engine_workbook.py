@@ -520,6 +520,17 @@ class Book:
             line("Market reference date", _mkt_dt, "mkt_date", "d mmm yyyy")
         # equity-bridge adjustments net (derived elsewhere; here as one audited input line with detail on its own sheet)
         blank()
+        # Open item 22: the adjustment inputs live here, not as literals on the Equity bridge sheet.
+        ws.cell(r[0], 1, "Equity-bridge adjustments (Fertilisers separation, methodology §4.2)"); ws.cell(r[0], 1).font = SUB; r[0] += 1
+        for _i, _a in enumerate(nb["equity_bridge_adjustments"]):
+            _d = _a.get("description", _a["id"])[:60]
+            line(f"{_d} — amount", _a["amount_aud_m"], f"eqadj:{_i}:amt", NUM1)
+            _t = _a.get("treatment")
+            if _t == "add_back_gap_only":
+                line(f"{_d} — provided for at anchor", _a.get("provided_for_at_anchor_aud_m", 0.0), f"eqadj:{_i}:prov", NUM1)
+            elif _t == "probability_weighted":
+                line(f"{_d} — probability", _a["probability"], f"eqadj:{_i}:prob", NUM1 + "00")
+        blank()
 
         ws.column_dimensions["A"].width = 44
         for cc in "BCDEFGH":
@@ -888,20 +899,18 @@ class Book:
         rr += 1
         nb = inp["company_raw"]["normalised_baseline"]
         adj_cells = []
-        for a in nb["equity_bridge_adjustments"]:
+        for _ai, a in enumerate(nb["equity_bridge_adjustments"]):
             ws.cell(rr, 1, a.get("description", a["id"])[:70])
-            camt = ws.cell(rr, 2, a["amount_aud_m"]); camt.fill = YELLOW; camt.font = BLUEFONT; camt.number_format = NUM1
+            camt = ws.cell(rr, 2, f"={R[f'eqadj:{_ai}:amt']}"); camt.number_format = NUM1
             treat = a.get("treatment"); ws.cell(rr, 3, treat)
             sign = 1.0 if a["direction"] == "subtract_from_equity" else -1.0
             if treat == "add_back_in_full":
                 netf = f"={sign}*B{rr}"
             elif treat == "add_back_gap_only":
-                prov = a.get("provided_for_at_anchor_aud_m", 0.0)
-                cprov = ws.cell(rr, 5, prov); cprov.fill = YELLOW; cprov.font = BLUEFONT; cprov.number_format = NUM1
+                cprov = ws.cell(rr, 5, f"={R[f'eqadj:{_ai}:prov']}"); cprov.number_format = NUM1
                 netf = f"={sign}*(B{rr}-E{rr})"
             elif treat == "probability_weighted":
-                prob = a["probability"]
-                cprob = ws.cell(rr, 6, prob); cprob.fill = YELLOW; cprob.font = BLUEFONT; cprob.number_format = NUM1 + "00"
+                cprob = ws.cell(rr, 6, f"={R[f'eqadj:{_ai}:prob']}"); cprob.number_format = NUM1 + "00"
                 netf = f"={sign}*B{rr}*F{rr}"
             else:
                 netf = "=0"
