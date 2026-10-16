@@ -130,9 +130,9 @@
     "source": "fable-2026-08-13",
     "area": "Methodology",
     "issue": "<b>CSL sits 93% above market</b> — §16.3 requires the structural-reason treatment.",
-    "treatment": "Price staleness parked by owner decision (D-19) &mdash; 15 June 2026 snapshot stands until Ben's feed returns. The &sect;16.3 write-up follows once item 6 lands. [Reviewed 16 Oct 2026: Still open. CSL market_reference_date is still 2026-06-15 (csl.yaml).] [Ruled 16 Oct 2026: no reconciliation to market. The gap is disclosed, the assumptions are transparent and a user can change them. Fade set to 20 years (D-93). Remaining work: the section 16.3 note stating the assumptions that differ, with the band.]",
+    "treatment": "Price staleness parked by owner decision (D-19) &mdash; 15 June 2026 snapshot stands until Ben's feed returns. The &sect;16.3 write-up follows once item 6 lands. [Reviewed 16 Oct 2026: Still open. CSL market_reference_date is still 2026-06-15 (csl.yaml).] [Ruled 16 Oct 2026: no reconciliation to market. The gap is disclosed, the assumptions are transparent and a user can change them. Fade set to 20 years (D-93). Remaining work: the section 16.3 note stating the assumptions that differ, with the band.] [Done 16 Oct 2026: section 16.3 note written, design/methodology/csl_market_gap_note_2026-10-16.md, set csl_market_gap_set.yaml, test tests/dcf/test_csl_market_gap_set.py. No reconciliation (D-92).]",
     "questions": [],
-    "status": "PLANNED",
+    "status": "DONE",
     "batch": "Batch 4"
   },
   {

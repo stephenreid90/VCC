@@ -69,6 +69,14 @@ working capital confirmations; UI design choices 32, 35, Q6, Q7.
   base exists, else new capital) and says which reading it is. Two tests pin both branches
   (`tests/dcf/test_terminal_return_sets.py`). No number moved. DCF 430 passed / 1 skipped; other 331; lint 14/14.
 
+- 16 Oct 2026: **Item 10 done: the section 16.3 note for CSL (batch 2 item 1, Sonnet, mild).** `design/methodology/csl_market_gap_note_2026-10-16.md`
+  states the gap to the 15 June 2026 price (OC +134%, MT +100%, AI Lag +93%, Frag +56%, DCC +64%, Stag +36%; closest to
+  market is Stagflation), the assumptions that differ (WACC 8.12% D-84/D-06, 20-year fade D-62/D-71/D-93, earned starting
+  returns, terminal growth, price date D-92) and the 15/20/25-year band (lowest 136.06, still above the price). No
+  reconciliation, no haircut, no price refresh (D-92). Numbers come from `design/methodology/csl_market_gap_set.yaml`
+  (`scripts/size_csl_market_gap.py`), pinned cell by cell by `tests/dcf/test_csl_market_gap_set.py`. Item 10 DONE in the
+  tracker; item 35 (the UI market-gap panel) is now unblocked. DCF 439 passed / 1 skipped; other 331; lint 14/14.
+
 ### Batch 1 progress
 
 - 16 Oct 2026: **CSL decay band 15-25 years, midpoint 20 (D-93, Stephen's ruling, serious).** The six CSL

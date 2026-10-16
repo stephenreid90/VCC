@@ -1,0 +1,92 @@
+set: csl_market_gap_current
+decision: D-92
+discount_rate:
+  risk_free_rate: 0.045
+  beta: 0.85
+  equity_risk_premium: 0.05
+  cost_of_equity: 0.0875
+  cost_of_debt_pretax: 0.055
+  tax_rate: 0.3
+  cost_of_debt_after_tax: 0.0385
+  net_debt_ebitda: 1.8
+  target_ev_ebitda: 14.0
+  debt_weight: 0.1286
+  wacc: 0.0812
+decay_band_years:
+  low: 15
+  high: 25
+  midpoint: 20
+closest_to_market: stagflation_persists
+scenarios:
+- scenario: orderly_convergence
+  aud_per_share_model: 246.47
+  market_price_aud: 105.53
+  market_price_date: '2026-06-15'
+  gap_to_market: 1.3355
+  fade_years_model: 20.0
+  terminal_growth: 0.0506
+  earned_starting_return: 0.3122
+  fade_band_aud_per_share:
+    fade_15: 223.54
+    fade_20: 246.47
+    fade_25: 266.33
+- scenario: muddle_through
+  aud_per_share_model: 211.15
+  market_price_aud: 105.53
+  market_price_date: '2026-06-15'
+  gap_to_market: 1.0009
+  fade_years_model: 20.0
+  terminal_growth: 0.0486
+  earned_starting_return: 0.2756
+  fade_band_aud_per_share:
+    fade_15: 193.08
+    fade_20: 211.15
+    fade_25: 226.66
+- scenario: ai_productivity_lag
+  aud_per_share_model: 203.32
+  market_price_aud: 105.53
+  market_price_date: '2026-06-15'
+  gap_to_market: 0.9267
+  fade_years_model: 20.0
+  terminal_growth: 0.0455
+  earned_starting_return: 0.2703
+  fade_band_aud_per_share:
+    fade_15: 186.76
+    fade_20: 203.32
+    fade_25: 217.32
+- scenario: fragmentation
+  aud_per_share_model: 164.23
+  market_price_aud: 105.53
+  market_price_date: '2026-06-15'
+  gap_to_market: 0.5562
+  fade_years_model: 20.0
+  terminal_growth: 0.0348
+  earned_starting_return: 0.2291
+  fade_band_aud_per_share:
+    fade_15: 153.63
+    fade_20: 164.23
+    fade_25: 172.73
+- scenario: disorderly_climate_crystallisation
+  aud_per_share_model: 173.43
+  market_price_aud: 105.53
+  market_price_date: '2026-06-15'
+  gap_to_market: 0.6434
+  fade_years_model: 20.0
+  terminal_growth: 0.0349
+  earned_starting_return: 0.2381
+  fade_band_aud_per_share:
+    fade_15: 162.06
+    fade_20: 173.43
+    fade_25: 182.56
+- scenario: stagflation_persists
+  aud_per_share_model: 143.71
+  market_price_aud: 105.53
+  market_price_date: '2026-06-15'
+  gap_to_market: 0.3618
+  fade_years_model: 20.0
+  terminal_growth: 0.0269
+  earned_starting_return: 0.2052
+  fade_band_aud_per_share:
+    fade_15: 136.06
+    fade_20: 143.71
+    fade_25: 149.62
