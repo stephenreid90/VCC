@@ -8,177 +8,177 @@ scenarios:
   starting_return_ex_goodwill: 0.3122
   invested_capital_incl_goodwill: 32340.0
   starting_return_incl_goodwill: 0.2343
-  aud_per_share_model: 268.14
-  aud_per_share_incl_goodwill: 263.95
+  aud_per_share_model: 266.33
+  aud_per_share_incl_goodwill: 262.17
   sensitivity:
   - fade_years: 25.0
     starting_return: 0.2
-    aud_per_share: 202.1
+    aud_per_share: 200.73
   - fade_years: 25.0
     starting_return: 0.15
-    aud_per_share: 172.66
+    aud_per_share: 171.49
   - fade_years: 25.0
     starting_return: 0.12
-    aud_per_share: 154.99
+    aud_per_share: 153.94
   - fade_years: 10.0
     starting_return: earned
-    aud_per_share: 198.42
+    aud_per_share: 197.07
   - fade_years: 10.0
     starting_return: 0.2
-    aud_per_share: 166.23
+    aud_per_share: 165.11
   - fade_years: 10.0
     starting_return: 0.15
-    aud_per_share: 151.89
+    aud_per_share: 150.86
   - fade_years: 10.0
     starting_return: 0.12
-    aud_per_share: 143.28
+    aud_per_share: 142.31
 - scenario: muddle_through
   fade_years: 25.0
   invested_capital_ex_goodwill: 23494.0
   starting_return_ex_goodwill: 0.2756
   invested_capital_incl_goodwill: 31559.0
   starting_return_incl_goodwill: 0.2052
-  aud_per_share_model: 228.21
-  aud_per_share_incl_goodwill: 224.33
+  aud_per_share_model: 226.66
+  aud_per_share_incl_goodwill: 222.81
   sensitivity:
   - fade_years: 25.0
     starting_return: 0.2
-    aud_per_share: 185.99
+    aud_per_share: 184.73
   - fade_years: 25.0
     starting_return: 0.15
-    aud_per_share: 158.07
+    aud_per_share: 157.0
   - fade_years: 25.0
     starting_return: 0.12
-    aud_per_share: 141.31
+    aud_per_share: 140.35
   - fade_years: 10.0
     starting_return: earned
-    aud_per_share: 173.18
+    aud_per_share: 172.01
   - fade_years: 10.0
     starting_return: 0.2
-    aud_per_share: 152.37
+    aud_per_share: 151.33
   - fade_years: 10.0
     starting_return: 0.15
-    aud_per_share: 138.59
+    aud_per_share: 137.65
   - fade_years: 10.0
     starting_return: 0.12
-    aud_per_share: 130.33
+    aud_per_share: 129.44
 - scenario: ai_productivity_lag
   fade_years: 25.0
   invested_capital_ex_goodwill: 23252.0
   starting_return_ex_goodwill: 0.2703
   invested_capital_incl_goodwill: 31317.0
   starting_return_incl_goodwill: 0.2007
-  aud_per_share_model: 218.8
-  aud_per_share_incl_goodwill: 215.39
+  aud_per_share_model: 217.32
+  aud_per_share_incl_goodwill: 213.93
   sensitivity:
   - fade_years: 25.0
     starting_return: 0.2
-    aud_per_share: 181.09
+    aud_per_share: 179.86
   - fade_years: 25.0
     starting_return: 0.15
-    aud_per_share: 154.28
+    aud_per_share: 153.23
   - fade_years: 25.0
     starting_return: 0.12
-    aud_per_share: 138.19
+    aud_per_share: 137.25
   - fade_years: 10.0
     starting_return: earned
-    aud_per_share: 168.31
+    aud_per_share: 167.17
   - fade_years: 10.0
     starting_return: 0.2
-    aud_per_share: 149.37
+    aud_per_share: 148.36
   - fade_years: 10.0
     starting_return: 0.15
-    aud_per_share: 135.91
+    aud_per_share: 134.98
   - fade_years: 10.0
     starting_return: 0.12
-    aud_per_share: 127.83
+    aud_per_share: 126.96
 - scenario: fragmentation
   fade_years: 25.0
   invested_capital_ex_goodwill: 22604.0
   starting_return_ex_goodwill: 0.2291
   invested_capital_incl_goodwill: 30669.0
   starting_return_incl_goodwill: 0.1689
-  aud_per_share_model: 173.91
-  aud_per_share_incl_goodwill: 171.97
+  aud_per_share_model: 172.73
+  aud_per_share_incl_goodwill: 170.8
   sensitivity:
   - fade_years: 25.0
     starting_return: 0.2
-    aud_per_share: 160.2
+    aud_per_share: 159.12
   - fade_years: 25.0
     starting_return: 0.15
-    aud_per_share: 136.68
+    aud_per_share: 135.75
   - fade_years: 25.0
     starting_return: 0.12
-    aud_per_share: 122.57
+    aud_per_share: 121.73
   - fade_years: 10.0
     starting_return: earned
-    aud_per_share: 141.41
+    aud_per_share: 140.45
   - fade_years: 10.0
     starting_return: 0.2
-    aud_per_share: 134.1
+    aud_per_share: 133.19
   - fade_years: 10.0
     starting_return: 0.15
-    aud_per_share: 121.57
+    aud_per_share: 120.74
   - fade_years: 10.0
     starting_return: 0.12
-    aud_per_share: 114.04
+    aud_per_share: 113.27
 - scenario: disorderly_climate_crystallisation
   fade_years: 25.0
   invested_capital_ex_goodwill: 22855.0
   starting_return_ex_goodwill: 0.2381
   invested_capital_incl_goodwill: 30920.0
   starting_return_incl_goodwill: 0.176
-  aud_per_share_model: 183.81
-  aud_per_share_incl_goodwill: 181.86
+  aud_per_share_model: 182.56
+  aud_per_share_incl_goodwill: 180.63
   sensitivity:
   - fade_years: 25.0
     starting_return: 0.2
-    aud_per_share: 165.66
+    aud_per_share: 164.53
   - fade_years: 25.0
     starting_return: 0.15
-    aud_per_share: 141.86
+    aud_per_share: 140.9
   - fade_years: 25.0
     starting_return: 0.12
-    aud_per_share: 127.59
+    aud_per_share: 126.72
   - fade_years: 10.0
     starting_return: earned
-    aud_per_share: 148.92
+    aud_per_share: 147.91
   - fade_years: 10.0
     starting_return: 0.2
-    aud_per_share: 139.25
+    aud_per_share: 138.3
   - fade_years: 10.0
     starting_return: 0.15
-    aud_per_share: 126.57
+    aud_per_share: 125.71
   - fade_years: 10.0
     starting_return: 0.12
-    aud_per_share: 118.96
+    aud_per_share: 118.15
 - scenario: stagflation_persists
   fade_years: 25.0
   invested_capital_ex_goodwill: 22177.0
   starting_return_ex_goodwill: 0.2052
   invested_capital_incl_goodwill: 30242.0
   starting_return_incl_goodwill: 0.1505
-  aud_per_share_model: 150.64
-  aud_per_share_incl_goodwill: 149.67
+  aud_per_share_model: 149.62
+  aud_per_share_incl_goodwill: 148.66
   sensitivity:
   - fade_years: 25.0
     starting_return: 0.2
-    aud_per_share: 148.43
+    aud_per_share: 147.42
   - fade_years: 25.0
     starting_return: 0.15
-    aud_per_share: 126.99
+    aud_per_share: 126.12
   - fade_years: 25.0
     starting_return: 0.12
-    aud_per_share: 114.12
+    aud_per_share: 113.34
   - fade_years: 10.0
     starting_return: earned
-    aud_per_share: 127.04
+    aud_per_share: 126.17
   - fade_years: 10.0
     starting_return: 0.2
-    aud_per_share: 125.8
+    aud_per_share: 124.95
   - fade_years: 10.0
     starting_return: 0.15
-    aud_per_share: 113.88
+    aud_per_share: 113.11
   - fade_years: 10.0
     starting_return: 0.12
-    aud_per_share: 106.73
+    aud_per_share: 106.01

@@ -3,7 +3,7 @@
 _Generated 2026-10-16 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `c41767c Q1 decided: CSL net debt rolled forward to 30 Jun 2026, matching DNL. Implementation pending.` on `main`
+- HEAD: `348650d D-87 refined: CSL net debt on the agreed convention (declared dividends only, engine FY26 capex for the half)` on `main`
 - Unpushed commits: **0**
 - Tracked files: 371
 - Untracked files: 0
@@ -43,7 +43,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
 | Path | Present | What it is |
 |---|---|---|
-| `data/companies/csl.yaml` | yes (36.7KB) | company position + layer-2 method (judgement) |
+| `data/companies/csl.yaml` | yes (37.3KB) | company position + layer-2 method (judgement) |
 | `data/companies/csl.md` | **NO** | company narrative |
 | `data/companies/csl_documents.yaml` | yes (8.5KB) | document register |
 | `data/financials/csl.yaml` | yes (10.1KB) | curated layer-1 financials (a SUMMARY — check for raw sources too) |
@@ -54,7 +54,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 ## Data directory
 
   - **companies/**
-    - `csl.yaml` (36.7KB)
+    - `csl.yaml` (37.3KB)
     - `csl_documents.yaml` (8.5KB)
     - `dnl.md` (13.7KB)
     - `dnl.yaml` (45.4KB)
@@ -109,8 +109,8 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `build_plan.html` (15.3KB)
   - `engine_implementation_plan.md` (16.5KB)
   - `open_items.css` (3.5KB)
-  - `open_items.json` (46.0KB)
-  - `open_questions.json` (1.5KB)
+  - `open_items.json` (46.1KB)
+  - `open_questions.json` (1.6KB)
   - `scenarios_workshop.md` (13.6KB)
   - `scenarios_workshop_prep.md` (19.7KB)
   - `single_source_of_truth.md` (16.7KB)
@@ -166,7 +166,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **vcc_valuations/**
     - `__init__.py` (667B)
     - `derivation.py` (4.4KB)
-    - `translator.py` (96.8KB)
+    - `translator.py` (97.3KB)
     - **assumptions/**
       - `__init__.py` (775B)
       - `trade_working_capital.py` (5.8KB)
@@ -201,7 +201,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `conftest.py` (1.3KB)
   - `moat_role_baseline.json` (895B)
   - `ssot_basis_baseline.json` (494B)
-  - `ssot_intra_file_baseline.json` (558B)
+  - `ssot_intra_file_baseline.json` (523B)
   - `ssot_lint_baseline.json` (6.2KB)
   - `ssot_macro_driver_baseline.json` (3B)
   - `terminal_defence_baseline.json` (3.4KB)
@@ -228,7 +228,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **dcf/**
     - `__init__.py` (0B)
     - `test_chain_term_glide.py` (9.3KB)
-    - `test_csl_segment.py` (6.1KB)
+    - `test_csl_segment.py` (6.2KB)
     - `test_csl_terminal_return_sets.py` (2.1KB)
     - `test_csl_volume_price_split.py` (2.3KB)
     - `test_csl_wacc.py` (1.1KB)
@@ -246,7 +246,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `test_horizon_variant_sets.py` (5.1KB)
     - `test_per_year_derivations.py` (3.8KB)
     - `test_replica_ties_engine.py` (6.6KB)
-    - `test_scenario_goldens.py` (27.0KB)
+    - `test_scenario_goldens.py` (27.2KB)
     - `test_terminal_defence.py` (7.0KB)
     - `test_terminal_form.py` (8.8KB)
     - `test_terminal_form_bank_segment.py` (6.8KB)
@@ -281,7 +281,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `beta_data.py` (10.0KB)
     - `build_cfgs.py` (94.6KB)
     - `cfgs_gen.json` (246.5KB)
-    - `engine_workbook.py` (115.6KB)
+    - `engine_workbook.py` (116.5KB)
     - `gen_ui.py` (89.4KB)
 
 ## Analyses (workbooks)

@@ -155,9 +155,9 @@ terminal_growth_sets:
       g_cap: 0.0455
       g: 0.0455
       capped: true
-      value_per_share: 218.802
+      value_per_share: 217.3226
       retired_typed_growth: 0.0288
-      value_per_share_at_typed: 201.9179
+      value_per_share_at_typed: 200.5516
       level_change: 0.0836
     - company: csl
       scenario: disorderly_climate_crystallisation
@@ -166,9 +166,9 @@ terminal_growth_sets:
       g_cap: 0.04755
       g: 0.034895
       capped: false
-      value_per_share: 183.8088
+      value_per_share: 182.5639
       retired_typed_growth: 0.0275
-      value_per_share_at_typed: 178.0875
+      value_per_share_at_typed: 176.8809
       level_change: 0.0321
     - company: csl
       scenario: fragmentation
@@ -177,9 +177,9 @@ terminal_growth_sets:
       g_cap: 0.04856
       g: 0.034848
       capped: false
-      value_per_share: 173.9107
+      value_per_share: 172.7321
       retired_typed_growth: 0.0275
-      value_per_share_at_typed: 168.5974
+      value_per_share_at_typed: 167.4544
       level_change: 0.0315
     - company: csl
       scenario: muddle_through
@@ -188,9 +188,9 @@ terminal_growth_sets:
       g_cap: 0.048575
       g: 0.048575
       capped: true
-      value_per_share: 228.2056
+      value_per_share: 226.6631
       retired_typed_growth: 0.03
-      value_per_share_at_typed: 208.1941
+      value_per_share_at_typed: 206.7858
       level_change: 0.0961
     - company: csl
       scenario: orderly_convergence
@@ -199,10 +199,10 @@ terminal_growth_sets:
       g_cap: 0.0506
       g: 0.0506
       capped: true
-      value_per_share: 268.1445
+      value_per_share: 266.3344
       retired_typed_growth: 0.0325
-      value_per_share_at_typed: 243.6246
-      level_change: 0.1006
+      value_per_share_at_typed: 241.9788
+      level_change: 0.1007
     - company: csl
       scenario: stagflation_persists
       horizon_years: 10
@@ -210,7 +210,7 @@ terminal_growth_sets:
       g_cap: 0.0506
       g: 0.026927
       capped: false
-      value_per_share: 150.6448
+      value_per_share: 149.6222
       retired_typed_growth: 0.03
-      value_per_share_at_typed: 152.4403
+      value_per_share_at_typed: 151.4056
       level_change: -0.0118

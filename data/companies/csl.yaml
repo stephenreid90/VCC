@@ -754,7 +754,10 @@ normalised_baseline:
         # The final FY26 dividend was declared after 30 June 2026 and is excluded.
         dividend_per_share_declared: 1.30
       restructuring_cash_to_come: 507
-      shares_outstanding_m: 478.9
+      # Issued capital at the 1H26 close (31 Dec 2025), the same date as net debt:
+      # 482,130,812 shares, Note 6(c) Contributed Equity, CSL statutory accounts for the half
+      # year ended 31 Dec 2025 (ASX, 11 Feb 2026). Replaces the FY25 close count of 478.9m (D-87).
+      shares_outstanding_m: 482.130812
     by_scenario:
       orderly_convergence:
         behring_growth: [-0.005, 0.04, 0.055, 0.065, 0.065, 0.065]

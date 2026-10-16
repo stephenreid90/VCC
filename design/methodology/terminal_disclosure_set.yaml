@@ -314,9 +314,9 @@ terminal_disclosure_set:
 
       '
     terminal_value: 107390.278
-    value_per_share: 239.3296
+    value_per_share: 237.7127
     engine_terminal_value: 93226.661
-    engine_value_per_share: 218.802
+    engine_value_per_share: 217.3226
   - company: csl
     scenario: disorderly_climate_crystallisation
     available: true
@@ -339,9 +339,9 @@ terminal_disclosure_set:
 
       '
     terminal_value: 85680.8
-    value_per_share: 200.1786
+    value_per_share: 198.824
     engine_terminal_value: 74385.986
-    engine_value_per_share: 183.8088
+    engine_value_per_share: 182.5639
   - company: csl
     scenario: fragmentation
     available: true
@@ -364,9 +364,9 @@ terminal_disclosure_set:
 
       '
     terminal_value: 80265.228
-    value_per_share: 187.8835
+    value_per_share: 186.6113
     engine_terminal_value: 70624.265
-    engine_value_per_share: 173.9107
+    engine_value_per_share: 172.7321
   - company: csl
     scenario: muddle_through
     available: true
@@ -389,9 +389,9 @@ terminal_disclosure_set:
 
       '
     terminal_value: 115156.385
-    value_per_share: 252.492
+    value_per_share: 250.7868
     engine_terminal_value: 98399.291
-    engine_value_per_share: 228.2056
+    engine_value_per_share: 226.6631
   - company: csl
     scenario: orderly_convergence
     available: true
@@ -414,9 +414,9 @@ terminal_disclosure_set:
 
       '
     terminal_value: 139010.489
-    value_per_share: 298.4347
+    value_per_share: 296.4217
     engine_terminal_value: 118110.92
-    engine_value_per_share: 268.1445
+    engine_value_per_share: 266.3344
   - company: csl
     scenario: stagflation_persists
     available: true
@@ -439,6 +439,6 @@ terminal_disclosure_set:
 
       '
     terminal_value: 66016.285
-    value_per_share: 161.0228
+    value_per_share: 159.9306
     engine_terminal_value: 58855.737
-    engine_value_per_share: 150.6448
+    engine_value_per_share: 149.6222

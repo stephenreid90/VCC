@@ -56,14 +56,14 @@ def test_muddle_through_ties_workbook():
     r = _run_at_five_years("muddle_through")
     # 16 Oct 2026 (D-06): discounted at the WACC (8.12%), not Ke (8.75%). Was 129.2130 / 195.78 /
     # 71487.10 / 17586.26 / 81986.40 / 61880.10.
-    # 16 Oct 2026 (D-87, Q1): net debt rolled to 30 Jun 2026 on the agreed convention
-    # (1H26 close, part-year operating cash flow and capex, declared dividends): 147.3215 -> 149.8748.
-    assert r.value_per_share_usd == pytest.approx(149.8748, abs=1e-3)
-    assert r.value_per_share_aud == pytest.approx(227.09, abs=0.02)
+    # 16 Oct 2026 (D-87, Q1, refined): net debt rolled to 30 Jun 2026 on the agreed
+    # convention, and issued capital at 31 Dec 2025 (482.13m): 147.3215 -> 148.8618.
+    assert r.value_per_share_usd == pytest.approx(148.8618, abs=1e-3)
+    assert r.value_per_share_aud == pytest.approx(225.56, abs=0.02)
     assert r.enterprise_value == pytest.approx(80159.26, abs=1.0)
     assert r.pv_explicit == pytest.approx(17841.83, abs=1.0)
     assert r.terminal_value == pytest.approx(92074.57, abs=2.0)
-    assert r.equity_value == pytest.approx(71775.05, abs=1.0)  # 80,159.26 less net debt 7,877.21 less restructuring 507
+    assert r.equity_value == pytest.approx(71770.85, abs=1.0)  # 80,159.26 less net debt 7,881.41 less restructuring 507
     # cost of equity Rf + beta*ERP = 4.5% + 0.85*5.0%
     assert r.value_per_share_aud == pytest.approx(r.value_per_share_usd * 1.5152, abs=1e-6)
 
@@ -83,8 +83,8 @@ def test_at_ten_years_the_live_level_is_the_golden():
     # D-80 (same day): 208.8861 -> 203.4633 as year-10 CPI falls to 2.5% (the cap, 4.86%).
     # 15 Oct 2026 (item (c)): 203.4633 -> 203.5226 with the US real GDP driver.
     # 16 Oct 2026 (D-06): 203.5226 -> 224.3367 as the discount rate moves from Ke (8.75%) to the WACC (8.12%).
-    # 16 Oct 2026 (D-87, Q1): 224.3367 -> 228.2056 as net debt rolls to 30 Jun 2026 (7,877.21: part-year OCF, capex, declared dividend).
-    assert r.value_per_share_aud == pytest.approx(228.2056, abs=1e-3)
+    # 16 Oct 2026 (D-87, Q1, refined): 224.3367 -> 226.6631 (net debt 7,881.41; 482.13m shares at 31 Dec 2025).
+    assert r.value_per_share_aud == pytest.approx(226.6631, abs=1e-3)
     assert r.terminal_form == "excess_return_convergence" and r.convergence_years == 25
 
 

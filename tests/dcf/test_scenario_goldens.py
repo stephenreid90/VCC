@@ -216,7 +216,8 @@ CSL_GOLDEN = {
     # Re-pinned 16 Oct 2026 (D-87, decision Q1): CSL net debt rolled from the 1H26 close
     # (USD 9,100m, 31 Dec 2025) to the valuation date (30 Jun 2026) on the agreed convention:
     # part-year operating cash flow, each scenario's own FY26 capex for the half, and declared
-    # dividends only (no buyback guess). Net debt 7,870 to 7,886. Values rise 1.8% to 3.9%.
+    # dividends only (no buyback guess). Issued capital at 31 Dec 2025 (482.13m shares, Note 6(c)).
+    # Net debt 7,874 to 7,890. Values move from the FY25 share count: a 0.7% fall per share.
     # Before (USD, AUD): OC 174.4343/264.3028, MT 148.0575/224.3367, AI 141.8495/214.9303,
     # Frag 112.2106/170.0215, DCC 118.7497/179.9295, Stag 96.8539/146.7531.
     # Re-pinned 16 Oct 2026 for D-06: discounted at the WACC (8.12%), not Ke (8.75%). Before (USD, AUD):
@@ -270,12 +271,12 @@ CSL_GOLDEN = {
     # CSL re-pinned 15 Oct 2026 (item (c)): segment driver now US real GDP + advanced CPI
     # (approved paths). AI Lag and Disorderly Climate are unchanged: a flat offset is absorbed
     # by the calibrated gap.
-    "orderly_convergence": (176.9697, 268.1445),
-    "muddle_through": (150.6109, 228.2056),       # generated workbook ties (LibreOffice recalc, all six)
-    "ai_productivity_lag": (144.4047, 218.802),
-    "fragmentation": (114.7774, 173.9107),
-    "disorderly_climate_crystallisation": (121.3099, 183.8088),
-    "stagflation_persists": (99.4224, 150.6448),
+    "orderly_convergence": (175.7751, 266.3344),
+    "muddle_through": (149.5929, 226.6631),       # generated workbook ties (LibreOffice recalc, all six)
+    "ai_productivity_lag": (143.4283, 217.3226),
+    "fragmentation": (113.9995, 172.7321),
+    "disorderly_climate_crystallisation": (120.4883, 182.5639),
+    "stagflation_persists": (98.7475, 149.6222),
 }
 
 
