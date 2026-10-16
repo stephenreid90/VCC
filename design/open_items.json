@@ -658,7 +658,7 @@
     "source": "review-2026-10-16",
     "area": "Methodology",
     "issue": "<b>Level anchors still live in company files (bridge item d).</b> The anchors should move to the archetypes. Values should not change.",
-    "treatment": "Schema today allows only company anchors (LevelAnchor, schemas/industry.py). DNL and bank anchors can move cleanly. The CSL anchors (behring_growth, vifor_cagr, seqirus_cagr) may also be engine inputs, so they need a decision before they move. Values must not change.",
+    "treatment": "Schema today allows only company-file anchors (LevelAnchor, schemas/industry.py). The DNL, bank and CSL anchor values are also read by the workbook generator (ui_prototypes/_generator/engine_workbook.py) and by five test files, so moving them touches the schema, the derivation script, the generator and those tests. Values must not change: the derived scenario files should match byte for byte. Do as its own change, after the Batch 6 decisions.",
     "questions": [],
     "status": "PLANNED",
     "batch": "Batch 6"
