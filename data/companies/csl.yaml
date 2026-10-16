@@ -482,7 +482,9 @@ company_position:
   # ---- Share statistics ----
 
   share_statistics:
-    shares_outstanding_anchor_date: 2025-12-31
+    # Market-data share count at 15 June 2026, used for the market capitalisation only.
+    # The valuation anchor is the 31 Dec 2025 count in normalised_baseline.anchors (D-87).
+    shares_outstanding_date: 2026-06-15
     shares_outstanding_millions: 478.9
       # 478,911,979 per EODHD verified 15 June 2026
     shares_outstanding_exact: 478911979

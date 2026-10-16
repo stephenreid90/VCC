@@ -22,28 +22,30 @@ inputs overridden. Everything else is as in the model.
 
 | Scenario | Model start return | Fade | Model (earned start) | Start 20% | Start 15% | Start 12% |
 |---|---|---|---|---|---|---|
-| Orderly convergence | 31.2% | 25 yrs | 264.30 | 198.26 | 168.82 | 151.15 |
-| Orderly convergence | 31.2% | 10 yrs | 194.57 | 162.39 | 148.05 | 139.44 |
-| Muddle through | 27.6% | 25 yrs | 224.34 | 182.13 | 154.20 | 137.44 |
-| Muddle through | 27.6% | 10 yrs | 169.31 | 148.50 | 134.72 | 126.46 |
-| AI productivity lag | 27.0% | 25 yrs | 214.93 | 177.22 | 150.41 | 134.32 |
-| AI productivity lag | 27.0% | 10 yrs | 164.43 | 145.50 | 132.04 | 123.96 |
-| Fragmentation | 22.9% | 25 yrs | 170.02 | 156.31 | 132.79 | 118.68 |
-| Fragmentation | 22.9% | 10 yrs | 137.52 | 130.21 | 117.68 | 110.15 |
-| Disorderly climate | 23.8% | 25 yrs | 179.93 | 161.78 | 137.98 | 123.71 |
-| Disorderly climate | 23.8% | 10 yrs | 145.04 | 135.37 | 122.69 | 115.08 |
-| Stagflation persists | 20.5% | 25 yrs | 146.75 | 144.53 | 123.09 | 110.23 |
-| Stagflation persists | 20.5% | 10 yrs | 123.15 | 121.91 | 109.99 | 102.84 |
+| Orderly convergence | 31.2% | 25 yrs | 266.33 | 200.73 | 171.49 | 153.94 |
+| Orderly convergence | 31.2% | 10 yrs | 197.07 | 165.11 | 150.86 | 142.31 |
+| Muddle through | 27.6% | 25 yrs | 226.66 | 184.73 | 157.00 | 140.35 |
+| Muddle through | 27.6% | 10 yrs | 172.01 | 151.33 | 137.65 | 129.44 |
+| AI productivity lag | 27.0% | 25 yrs | 217.32 | 179.86 | 153.23 | 137.25 |
+| AI productivity lag | 27.0% | 10 yrs | 167.17 | 148.36 | 134.98 | 126.96 |
+| Fragmentation | 22.9% | 25 yrs | 172.73 | 159.12 | 135.75 | 121.73 |
+| Fragmentation | 22.9% | 10 yrs | 140.45 | 133.19 | 120.74 | 113.27 |
+| Disorderly climate | 23.8% | 25 yrs | 182.56 | 164.53 | 140.90 | 126.72 |
+| Disorderly climate | 23.8% | 10 yrs | 147.91 | 138.30 | 125.71 | 118.15 |
+| Stagflation persists | 20.5% | 25 yrs | 149.62 | 147.42 | 126.12 | 113.34 |
+| Stagflation persists | 20.5% | 10 yrs | 126.17 | 124.95 | 113.11 | 106.01 |
 
 The "Model (earned start)" column is the current model. It ties to the
-six base values: 264.30, 224.34, 214.93, 170.02, 179.93 and 146.75.
+six base values: 266.33, 226.66, 217.32, 172.73, 182.56, 149.62.
+These values reflect D-87 as refined (net debt on the agreed convention, and issued capital
+of 482.13m shares at 31 December 2025).
 
 ## Reading the table
 
 1. The starting return and the fade both matter a lot. A 10-year fade cuts
-   orderly convergence from 264.30 to 194.57.
+   orderly convergence from 266.33 to 197.07.
 2. A starting return of 20% cuts orderly convergence by about a quarter
-   (264.30 to 198.26), and stagflation by almost nothing (146.75 to 144.53).
+   (266.33 to 200.73), and stagflation by almost nothing (149.62 to 147.42).
 3. The fade and the starting return interact. The gap between the models is
    widest in the strongest scenarios.
 
