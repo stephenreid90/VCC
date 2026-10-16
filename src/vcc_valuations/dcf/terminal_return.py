@@ -221,11 +221,17 @@ def _warnings_for(t: TerminalReturn) -> List[str]:
             f"to report and the terminal cannot be defended on a moat."
         )
 
-    excess = t.excess_over_cost_of_capital
+    # D-86: judged on the governing return, so the figure quoted is the one the defence is owed on.
+    excess = t.excess_on_governing_return
     if excess is not None and excess > 0:
+        reading = (
+            "terminal return on whole capital"
+            if t.return_on_whole_capital is not None
+            else "terminal return on new capital"
+        )
         out.append(
-            f"{t.company_id}/{t.scenario_id}: terminal return on new capital "
-            f"{t.return_on_new_capital:.2%} exceeds {t.cost_of_capital_name} "  # ssot-allow: display format
+            f"{t.company_id}/{t.scenario_id}: {reading} "
+            f"{t.governing_return:.2%} exceeds {t.cost_of_capital_name} "  # ssot-allow: display format
             f"{t.cost_of_capital:.2%} by {excess * 10000:.0f}bp. The valuation is "  # ssot-allow: display format
             f"claiming reinvestment above the cost of capital in perpetuity, which "
             f"§11.4.2 check 2 requires be defended under §10.6: name the moat "

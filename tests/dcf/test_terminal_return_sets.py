@@ -341,3 +341,32 @@ def test_bank_has_no_goodwill_disclosure(committed):
     for r in committed["terminal_return_sets"]["current"]["rows"]:
         if r["company"] == "wbc":
             assert r["goodwill"] is None and r["earned_return_incl_goodwill"] is None
+
+
+# ------------------------------------------- D-86: the warning quotes the governing return
+def _tr(**kw):
+    from vcc_valuations.dcf.terminal_return import TerminalReturn
+    base = dict(company_id="x", scenario_id="s", construction="fcff_roic",
+                cost_of_capital=0.09, cost_of_capital_name="WACC",
+                terminal_growth=0.02, terminal_earnings=10.0, reinvestment_rate=0.5,
+                return_on_new_capital=0.05)
+    base.update(kw)
+    return TerminalReturn(**base)
+
+
+def test_warning_quotes_whole_capital_when_it_governs():
+    from vcc_valuations.dcf.terminal_return import _warnings_for
+    # New-capital return sits below WACC; whole-capital return (10/100) sits above it.
+    t = _tr(terminal_invested_capital=100.0)
+    warns = [w for w in _warnings_for(t) if "exceeds" in w]
+    assert len(warns) == 1
+    assert "terminal return on whole capital 10.00% exceeds WACC 9.00% by 100bp" in warns[0]
+
+
+def test_warning_falls_back_to_new_capital_without_a_capital_base():
+    from vcc_valuations.dcf.terminal_return import _warnings_for
+    t = _tr(return_on_new_capital=0.12)
+    warns = [w for w in _warnings_for(t) if "exceeds" in w]
+    assert len(warns) == 1
+    assert "terminal return on new capital 12.00% exceeds WACC 9.00% by 300bp" in warns[0]
+    assert "whole capital" not in warns[0]

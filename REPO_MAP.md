@@ -3,9 +3,9 @@
 _Generated 2026-10-16 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `4636acb R16-7 closed: terminal_return_sets.yaml reports CSL on whole capital under D-86 (earned return, WACC); new-capital identity kept as a diagnostic` on `main`
+- HEAD: `2cbcc9b Bridge note for batch 2 (16 Oct late evening)` on `main`
 - Unpushed commits: **0**
-- Tracked files: 378
+- Tracked files: 379
 - Untracked files: 0
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
@@ -111,7 +111,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `build_plan.html` (15.3KB)
   - `engine_implementation_plan.md` (16.5KB)
   - `open_items.css` (3.5KB)
-  - `open_items.json` (51.3KB)
+  - `open_items.json` (51.5KB)
   - `open_questions.json` (2.2KB)
   - `scenarios_workshop.md` (13.6KB)
   - `scenarios_workshop_prep.md` (19.7KB)

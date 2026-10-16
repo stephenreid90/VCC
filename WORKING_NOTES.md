@@ -62,6 +62,13 @@ Q5 close; M6, M7, M11 workbook defects. Decisions still needed from Stephen: R16
 D-86; item 10 (CSL 93% above market, structural reason); M10 market price refresh (when); Q4/Q8
 working capital confirmations; UI design choices 32, 35, Q6, Q7.
 
+### Batch 2 progress
+
+- 16 Oct 2026: **D-42 warning wording done (batch 2 item 2, Haiku, mild).** The "exceeds the cost of capital"
+  warning in `terminal_return.py` now triggers on and quotes the governing return (whole capital where a capital
+  base exists, else new capital) and says which reading it is. Two tests pin both branches
+  (`tests/dcf/test_terminal_return_sets.py`). No number moved. DCF 430 passed / 1 skipped; other 331; lint 14/14.
+
 ### Batch 1 progress
 
 - 16 Oct 2026: **CSL decay band 15-25 years, midpoint 20 (D-93, Stephen's ruling, serious).** The six CSL
