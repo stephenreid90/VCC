@@ -62,6 +62,14 @@ Q5 close; M6, M7, M11 workbook defects. Decisions still needed from Stephen: R16
 D-86; item 10 (CSL 93% above market, structural reason); M10 market price refresh (when); Q4/Q8
 working capital confirmations; UI design choices 32, 35, Q6, Q7.
 
+### Batch 1 progress
+
+- 16 Oct 2026: **R16-6 done, values unchanged.** The DNL and bank level anchors now sit in
+  their archetypes (`data/industries/industrial_explosives.yaml`, `australian_major_banks.yaml`).
+  Derived scenario files are byte-identical, the three workbooks are cell-identical, goldens
+  untouched. CSL's three segment steady states stay in `csl.yaml` by declaration (the company's
+  own typed paths, also read by its segment engine); moving them is an owner decision.
+
 **Correction made this sitting, for the record:** I first said only Orderly carried a typed NIM
 shift. Stagflation carried -20bp too. Both were sized before Stephen decided.
 

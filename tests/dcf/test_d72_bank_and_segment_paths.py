@@ -44,8 +44,9 @@ def test_bank_muddle_through_path_averages_to_the_old_flat_rate():
     no longer flat; the D-72 gap keeps its mean over the anchor years (1, 3, 5, 7, 10)
     at the typed industry rate plus the company offset."""
     inp = _wbc("muddle_through")
-    shared = inp["company_raw"]["normalised_baseline"]["bank_build"]["aiea_nim_chain"]["shared"]
-    flat = shared["industry"]["aiea_growth"]
+    # R16-6: the industry anchor sits in the bank archetype, not in WBC's file; Muddle
+    # Through's own shift is zero, so the anchor IS the old flat rate.
+    flat = sum(t.archetype_value("muddle_through") for t in inp["archetype"].driver_anchor("bank_system_aiea_growth").terms)
     # D-81: the company offset now glides to zero by its expiry year, so the
     # identity is struck on the INDUSTRY series alone (path minus the year's offset).
     path = bank_aiea_growth_path_from_data(inp, 10)

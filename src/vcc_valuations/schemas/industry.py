@@ -287,11 +287,23 @@ class DerivationMethod(str, Enum):
 
 
 class AnchorTerm(BaseModel):
-    """One addend of a level anchor: a dotted path into the company file and its units."""
+    """One addend of a level anchor, in its own units.
+
+    Exactly one source (R16-6, 16 Oct 2026):
+
+    * ``by_scenario`` -- a value per world scenario, typed in the ARCHETYPE file. This is
+      where level anchors live.
+    * ``value`` -- one value for every scenario, typed in the archetype file.
+    * ``path`` -- a dotted path into a company file (``{scenario}`` substituted,
+      ``name[-1]`` indexes a list). Kept only where the number is the company's own
+      typed input that its engine also reads (CSL's segment steady states).
+    """
 
     model_config = ConfigDict(extra="forbid")
 
-    path: str = Field(..., description="Dotted path; ``{scenario}`` substituted; ``name[-1]`` indexes a list.")
+    path: Optional[str] = Field(None, description="Dotted path into the company file; ``{scenario}`` substituted; ``name[-1]`` indexes a list.")
+    value: Optional[float] = Field(None, description="One value for every scenario, in ``units``.")
+    by_scenario: Optional[Dict[str, float]] = Field(None, description="Scenario id to value, in ``units``.")
     units: str = Field("decimal", description="'decimal' (0.0123), 'percent' (1.23) or 'bps' (123).")
 
     @field_validator("units")
@@ -301,22 +313,43 @@ class AnchorTerm(BaseModel):
             raise ValueError(f"anchor units must be decimal, percent or bps, got {v!r}")
         return v
 
+    @model_validator(mode="after")
+    def _one_source(self):
+        given = [k for k in ("path", "value", "by_scenario") if getattr(self, k) is not None]
+        if len(given) != 1:
+            raise ValueError(f"an anchor term needs exactly one of path, value or by_scenario, got {given}")
+        return self
+
+    @property
+    def in_archetype(self) -> bool:
+        return self.path is None
+
+    def archetype_value(self, scenario_id: str) -> float:
+        """The stored number for ``scenario_id``, in this term's own units (archetype-sourced terms only)."""
+        if self.path is not None:
+            raise ValueError("this term reads a company file, not the archetype")
+        if self.value is not None:
+            return self.value
+        if scenario_id not in self.by_scenario:
+            raise KeyError(f"anchor term has no value for scenario {scenario_id!r}")
+        return self.by_scenario[scenario_id]
+
 
 class LevelAnchor(BaseModel):
-    """Where a derivation's level anchor lives: one or more terms in a company file, summed.
+    """The level a derivation's path is calibrated to: one or more terms, summed.
 
-    ``path`` alone is shorthand for a single decimal term. Today the anchors sit in
-    each first company's own baseline block (DNL's chain macro, WBC's industry
-    anchor plus scenario delta, CSL's segment steady-state rates); lifting them to
-    the archetype is a follow-up, not a prerequisite -- this field says where they
-    are rather than pretending they are elsewhere. The company OFFSET is never part
-    of the anchor: the derived path is the industry's, and the offset stays in the
+    R16-6 (16 Oct 2026): the anchors live in the ARCHETYPE file, as ``by_scenario`` /
+    ``value`` terms. ``company`` and ``path`` remain for the one case where the level is
+    the company's own typed input that its engine also reads (CSL's three segment
+    steady states); ``company`` is then required, and only then. ``path`` alone is
+    shorthand for a single decimal company term. The company OFFSET is never part of
+    the anchor: the derived path is the industry's, and the offset stays in the
     company layer (standing rule 1).
     """
 
     model_config = ConfigDict(extra="forbid")
 
-    company: str = Field(..., description="Company id; ``data/companies/<company>.yaml``.")
+    company: Optional[str] = Field(None, description="Company id for ``path`` terms; ``data/companies/<company>.yaml``.")
     path: Optional[str] = None
     terms: Optional[List[AnchorTerm]] = None
 
@@ -327,7 +360,16 @@ class LevelAnchor(BaseModel):
         if self.path is not None:
             self.terms = [AnchorTerm(path=self.path)]
             self.path = None
+        reads_company = any(not t.in_archetype for t in self.terms)
+        if reads_company and not self.company:
+            raise ValueError("an anchor term with a `path` needs the anchor's `company`")
+        if self.company and not reads_company:
+            raise ValueError("`company` is only for anchors that read a company file; this one is archetype-sourced")
         return self
+
+    @property
+    def in_archetype(self) -> bool:
+        return all(t.in_archetype for t in self.terms)
 
 
 class MacroDriverDerivation(BaseModel):
@@ -497,6 +539,13 @@ class IndustryArchetype(BaseModel):
     @property
     def required_macro_driver_names(self) -> List[str]:
         return [d.variable for d in self.required_macro_drivers]
+
+    def driver_anchor(self, variable: str) -> LevelAnchor:
+        """The level anchor the archetype declares for a derived macro driver (R16-6)."""
+        for d in self.required_macro_drivers:
+            if d.variable == variable and d.derivation.anchor is not None:
+                return d.derivation.anchor
+        raise KeyError(f"{self.id}: no level anchor declared for {variable!r}")
 
     @property
     def equilibrium_chain_values(self) -> Dict[str, float]:

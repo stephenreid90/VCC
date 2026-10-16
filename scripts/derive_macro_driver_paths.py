@@ -91,13 +91,22 @@ def _walk(node, dotted):
 
 
 def level_anchor(anchor, scenario_id) -> float:
-    """Resolve a ``LevelAnchor`` for one scenario: its terms summed, returned in PERCENT."""
-    if anchor.company not in _company_cache:
-        _company_cache[anchor.company] = yaml.safe_load(
-            (ROOT / "data" / "companies" / f"{anchor.company}.yaml").read_text(encoding="utf-8"))
-    doc = _company_cache[anchor.company]
-    return sum(float(_walk(doc, t.path.format(scenario=scenario_id))) * _UNIT_TO_PERCENT[t.units]
-               for t in anchor.terms)
+    """Resolve a ``LevelAnchor`` for one scenario: its terms summed, returned in PERCENT.
+
+    R16-6: a term is read from the archetype (``value`` / ``by_scenario``, where the
+    anchors live) or, for the declared company-sourced exception, from the company file.
+    """
+    total = 0.0
+    for t in anchor.terms:
+        if t.in_archetype:
+            raw = t.archetype_value(scenario_id)
+        else:
+            if anchor.company not in _company_cache:
+                _company_cache[anchor.company] = yaml.safe_load(
+                    (ROOT / "data" / "companies" / f"{anchor.company}.yaml").read_text(encoding="utf-8"))
+            raw = float(_walk(_company_cache[anchor.company], t.path.format(scenario=scenario_id)))
+        total += raw * _UNIT_TO_PERCENT[t.units]
+    return total
 
 
 def archetypes():

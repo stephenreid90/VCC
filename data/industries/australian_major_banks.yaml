@@ -25,10 +25,21 @@ industry_archetype:
         method: spread
         series: [real_gdp_growth_world, cpi_inflation_advanced]
         anchor:
-          company: wbc
+          # R16-6 (16 Oct 2026): the level anchor lives here, not in WBC's file. Two terms,
+          # summed: the Big Four system AIEA growth (the same in every scenario) plus the
+          # scenario's own parallel shift. Values moved unchanged from WBC's
+          # aiea_nim_chain (shared.industry.aiea_growth and by_scenario.*.aiea_growth_delta).
           terms:
-            - path: normalised_baseline.bank_build.aiea_nim_chain.shared.industry.aiea_growth
-            - path: normalised_baseline.bank_build.aiea_nim_chain.by_scenario.{scenario}.aiea_growth_delta
+            - units: decimal
+              value: 0.045
+            - units: decimal
+              by_scenario:
+                muddle_through: 0.0
+                orderly_convergence: 0.02
+                ai_productivity_lag: 0.0
+                fragmentation: -0.005
+                disorderly_climate_crystallisation: -0.005
+                stagflation_persists: -0.02
   archetype_class: bank
 
   # D-78 / D-79 (14 Oct 2026). The bank chain's scenario-invariant terms, under
@@ -43,8 +54,9 @@ industry_archetype:
   # persist through the explicit period and the terminal RETURN they feed is
   # the declared rate on the impact matrix (D-76), so neither is current-cycle.
   growth_chain_terms:
-    - path: industry.aiea_growth
-      role: equilibrium
+    # industry.aiea_growth (D-78 equilibrium term) is not in the company chain any more:
+    # R16-6 moved it to this archetype's bank_system_aiea_growth anchor, where it already
+    # persisted into the equilibrium reading through the derived series.
     - path: industry.nim_anchor
       role: equilibrium
     - path: company_offset.aiea_growth_offset

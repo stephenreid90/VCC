@@ -151,6 +151,14 @@ def _declared_terminal_return_for(scenario_id, archetype="industrial_explosives"
     return declared_terminal_return_from_matrix(inp, scenario_id)
 
 
+def _anchor_term(inp, variable, index):
+    """R16-6: one term of the level anchor the ARCHETYPE declares for a derived macro driver.
+
+    The anchors no longer sit in the company file; the memo rows on the Assumptions
+    sheet read them from where the derivation does."""
+    return inp["archetype"].driver_anchor(variable).terms[index]
+
+
 def _col(i):  # 1-based -> letter
     return get_column_letter(i)
 
@@ -223,8 +231,8 @@ class Book:
             # D-72: the chain's macro inputs are year-anchored paths (the block
             # below), not scalars; these two rows are the LEVEL anchors the
             # derived paths are calibrated to, shown for the audit trail.
-            ("global_mining_real_growth_anchor", "Global mining real growth (level anchor)", PCT2, lambda s: rgc["by_scenario"][s]["macro"]["global_mining_real_growth"]),
-            ("gas_price_growth_anchor", "Gas price growth (transition anchor)", PCT2, lambda s: rgc["by_scenario"][s]["macro"]["gas_price_growth"]),
+            ("global_mining_real_growth_anchor", "Global mining real growth (level anchor)", PCT2, lambda s: _anchor_term(inp, "global_mining_real_growth", 0).archetype_value(s)),
+            ("gas_price_growth_anchor", "Gas price growth (transition anchor)", PCT2, lambda s: _anchor_term(inp, "gas_price_growth", 0).archetype_value(s)),
             ("margin_delta_pp", "Margin shift (pp, shaped by the scenario's phases -- D-72)", PCT2, lambda s: ov["by_scenario"][s].get("margin_delta_pp", 0.0)),
             ("capex_delta_pp", "Capex delta (parallel shift, pp)", PCT2, lambda s: ov["by_scenario"][s].get("capex_delta_pp", 0.0)),
             # D-71: the excess-return convergence horizon (five-forces decay
@@ -1268,7 +1276,7 @@ def build_wbc_workbook_bytes(cfg=None):
     line("Beta (peer-triangulated)", coe["beta"], "beta", NUM1 + "0")
     r[0] += 1
     sub("AIEA / NIM chain (industry anchor + company Five-Forces offset; standing rule 1)")
-    line("Industry AIEA growth (level anchor the scenario path is calibrated to; memo)", shared["industry"]["aiea_growth"], "ind_aiea", PCT2)
+    line("Industry AIEA growth (level anchor the scenario path is calibrated to; memo)", _anchor_term(inp, "bank_system_aiea_growth", 0).archetype_value("muddle_through"), "ind_aiea", PCT2)
     line("Industry NIM anchor", shared["industry"]["nim_anchor"], "ind_nim", PCT3)
     line("WBC AIEA growth offset", shared["company_offset"]["aiea_growth_offset"], "off_aiea", PCT2)
     line("WBC NIM offset", shared["company_offset"]["nim_offset"], "off_nim", PCT3)
@@ -1307,7 +1315,7 @@ def build_wbc_workbook_bytes(cfg=None):
             c = ws.cell(r[0], 3 + j, fn(sid)); c.fill = YELLOW; c.font = BLUEFONT; c.number_format = fmt
             R[f"{key}:{sid}"] = f"'Assumptions'!${_col(3 + j)}${r[0]}"
         r[0] += 1
-    scen_row("AIEA growth delta (level anchor; memo)", "d_aiea", lambda s: chain["by_scenario"][s]["aiea_growth_delta"], PCT2)
+    scen_row("AIEA growth delta (level anchor; memo)", "d_aiea", lambda s: _anchor_term(inp, "bank_system_aiea_growth", 1).archetype_value(s), PCT2)
     scen_row("NIM delta (bps)", "d_nimbps", lambda s: chain["by_scenario"][s]["nim_delta_bps"], "0")
     scen_row("Y5 cost-to-income", "y5cti", lambda s: ov["by_scenario"][s]["y5_cost_to_income"], PCT2)
     scen_row("Credit-loss delta (bps)", "d_clbps", lambda s: ov["by_scenario"][s]["credit_loss_delta_bps"], "0")

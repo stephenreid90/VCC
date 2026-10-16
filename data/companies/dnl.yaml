@@ -490,13 +490,15 @@ normalised_baseline:
           new_entrants_pipeline_uplift: 0.0015   # B39: DNEL LATAM/Africa ramp (time-limited). +15bps
           buyer_supplier_substitutes: 0.0        # B40: at industry average. net 0
     by_scenario:
-      # D-72 (2 Oct 2026): these are LEVEL ANCHORS now, not the engine's inputs.
-      # The chain reads the scenario's own year-anchored series
+      # D-72 (2 Oct 2026): the chain reads the scenario's own year-anchored series
       # (data/scenarios/<id>.yaml: global_mining_real_growth, gas_price_growth --
-      # both derived FROM these anchors by scripts/derive_macro_driver_paths.py --
-      # and cpi_inflation_advanced for DM inflation). dm_inflation was removed
+      # both derived by scripts/derive_macro_driver_paths.py -- and
+      # cpi_inflation_advanced for DM inflation). dm_inflation was removed
       # here the same day: the scenario CPI series replaces it, which closes the
       # 12 Aug 2026 reconciliation note below.
+      # R16-6 (16 Oct 2026): the LEVEL ANCHORS those two series are calibrated to
+      # (global_mining_real_growth, gas_price_growth per scenario) moved to the
+      # archetype, data/industries/industrial_explosives.yaml, values unchanged.
       # Per-scenario macro (B18/B19/B20 + B17 context memo). dm_real_gdp_growth is
       # carried for traceability but NOT consumed (the chain keys off mining real
       # growth + DM inflation). Values are the dnl_scenarios_comparison_v4 Inputs sheet.
@@ -513,17 +515,17 @@ normalised_baseline:
       # NOT wired together today; formally deriving the chain input from the scenario CPI is a macro-
       # layer decision that WOULD move the valuation, so it is deferred to Stephen (methodology owner).
       muddle_through:
-        macro: {dm_real_gdp_growth: 0.020, global_mining_real_growth: 0.025, gas_price_growth: 0.020}
+        macro: {dm_real_gdp_growth: 0.020}
       orderly_convergence:
-        macro: {dm_real_gdp_growth: 0.025, global_mining_real_growth: 0.040, gas_price_growth: 0.015}
+        macro: {dm_real_gdp_growth: 0.025}
       ai_productivity_lag:
-        macro: {dm_real_gdp_growth: 0.017, global_mining_real_growth: 0.020, gas_price_growth: 0.020}
+        macro: {dm_real_gdp_growth: 0.017}
       fragmentation:
-        macro: {dm_real_gdp_growth: 0.010, global_mining_real_growth: 0.015, gas_price_growth: 0.040}
+        macro: {dm_real_gdp_growth: 0.010}
       disorderly_climate_crystallisation:
-        macro: {dm_real_gdp_growth: 0.015, global_mining_real_growth: 0.020, gas_price_growth: 0.060}
+        macro: {dm_real_gdp_growth: 0.015}
       stagflation_persists:
-        macro: {dm_real_gdp_growth: 0.005, global_mining_real_growth: 0.000, gas_price_growth: 0.050}
+        macro: {dm_real_gdp_growth: 0.005}
 
   # Net-debt override
   net_debt: 1300.0

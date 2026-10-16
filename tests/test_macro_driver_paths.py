@@ -46,6 +46,13 @@ def _committed(scenario_id, variable):
 ARCHETYPES = {a.id: a for a in archetypes()}
 DERIVING = sorted(a for a in ARCHETYPES if derived_variables(ARCHETYPES[a]))
 PAIRS = [(a, v) for a in DERIVING for v in derived_variables(ARCHETYPES[a])]
+EXPLOSIVES = "industrial_explosives"
+BANKS = "australian_major_banks"
+
+
+def _declared_anchor(archetype_id, variable):
+    """R16-6: the level anchor the ARCHETYPE declares for a derived driver."""
+    return ARCHETYPES[archetype_id].driver_anchor(variable)
 
 
 # ------------------------------------------------------------ (a) generic ratchet
@@ -95,8 +102,7 @@ def _synthetic(method, **kw):
 
 
 def test_spread_adds_a_fixed_gap_whose_mean_hits_the_anchor():
-    anchor = LevelAnchor(company="dnl",
-                         path="normalised_baseline.revenue_growth_chain.by_scenario.{scenario}.macro.global_mining_real_growth")
+    anchor = _declared_anchor(EXPLOSIVES, "global_mining_real_growth")
     decl = _synthetic(DerivationMethod.SPREAD, series="real_gdp_growth_world", anchor=anchor)
     for s in SCENARIOS:
         series, _ = METHODS[DerivationMethod.SPREAD](decl, s)
@@ -109,8 +115,7 @@ def test_spread_adds_a_fixed_gap_whose_mean_hits_the_anchor():
 
 
 def test_transition_then_baseline_switches_at_the_equilibrium_year():
-    anchor = LevelAnchor(company="dnl",
-                         path="normalised_baseline.revenue_growth_chain.by_scenario.{scenario}.macro.gas_price_growth")
+    anchor = _declared_anchor(EXPLOSIVES, "gas_price_growth")
     decl = _synthetic(DerivationMethod.TRANSITION_THEN_BASELINE, anchor=anchor, baseline_scenario="muddle_through")
     for s in SCENARIOS:
         doc = yaml.safe_load((ROOT / "data" / "scenarios" / f"{s}.yaml").read_text(encoding="utf-8"))["scenario"]
@@ -154,10 +159,7 @@ def test_a_declaration_missing_or_carrying_the_wrong_fields_is_rejected(bad):
 
 def test_spread_over_a_sum_of_series_is_the_sum_of_the_bases_plus_one_gap():
     """A list of base series is summed (real GDP + CPI = nominal GDP) before the gap is added."""
-    anchor = LevelAnchor(company="wbc", terms=[
-        AnchorTerm(path="normalised_baseline.bank_build.aiea_nim_chain.shared.industry.aiea_growth"),
-        AnchorTerm(path="normalised_baseline.bank_build.aiea_nim_chain.by_scenario.{scenario}.aiea_growth_delta"),
-    ])
+    anchor = _declared_anchor(BANKS, "bank_system_aiea_growth")
     decl = _synthetic(DerivationMethod.SPREAD, series=["real_gdp_growth_world", "cpi_inflation_advanced"], anchor=anchor)
     for s in SCENARIOS:
         series, _ = METHODS[DerivationMethod.SPREAD](decl, s)
@@ -181,6 +183,11 @@ def test_anchor_terms_are_summed_in_percent_with_their_declared_units():
     assert level_anchor(bank, "muddle_through") == pytest.approx(1.86)
     behring = LevelAnchor(company="csl", path="normalised_baseline.segment_fcff.by_scenario.{scenario}.behring_growth[-1]")
     assert level_anchor(behring, "muddle_through") == pytest.approx(5.5)
+    # R16-6: an archetype-sourced anchor sums its terms the same way (4.5% system growth + the scenario's shift)
+    system = _declared_anchor(BANKS, "bank_system_aiea_growth")
+    assert level_anchor(system, "muddle_through") == pytest.approx(4.5)
+    assert level_anchor(system, "stagflation_persists") == pytest.approx(4.5 - 2.0)
+    assert level_anchor(system, "orderly_convergence") == pytest.approx(4.5 + 2.0)
 
 
 def test_unknown_anchor_units_are_rejected():
@@ -190,16 +197,19 @@ def test_unknown_anchor_units_are_rejected():
         LevelAnchor(company="x")  # neither path nor terms
     with pytest.raises(Exception):
         LevelAnchor(company="x", path="a", terms=[AnchorTerm(path="b")])  # both
+    with pytest.raises(Exception):
+        AnchorTerm()                                # no source
+    with pytest.raises(Exception):
+        AnchorTerm(path="a", value=1.0)             # two sources
+    with pytest.raises(Exception):
+        LevelAnchor(terms=[AnchorTerm(path="a")])   # a company path needs its company
+    with pytest.raises(Exception):
+        LevelAnchor(company="x", terms=[AnchorTerm(value=0.01)])  # a company named for an archetype-sourced anchor
 
 
 # ------------------------------------------------------------ (c) the DNL rulings of 2 Oct 2026
-EXPLOSIVES = "industrial_explosives"
-
-
 def _dnl_anchor(variable, scenario_id):
-    return level_anchor(LevelAnchor(
-        company="dnl",
-        path=f"normalised_baseline.revenue_growth_chain.by_scenario.{{scenario}}.macro.{variable}"), scenario_id)
+    return level_anchor(_declared_anchor(EXPLOSIVES, variable), scenario_id)
 
 
 def test_explosives_declares_exactly_the_chains_three_drivers():
@@ -291,3 +301,61 @@ def test_a_declared_scenario_series_appears_exactly_once(scenario_id, variable):
     doc = yaml.safe_load((ROOT / "data" / "scenarios" / f"{scenario_id}.yaml").read_text(encoding="utf-8"))
     hits = [mv for mv in doc["scenario"]["macro_variables"] if mv["variable"] == variable]
     assert len(hits) == 1, "a typed copy survives beside the produced one"
+
+
+# ------------------------------------------------- (e) where the anchors live (R16-6, 16 Oct 2026)
+# The level anchors sit in the ARCHETYPE file. One exception is declared and pinned: CSL's three
+# segment steady states are the company's own typed paths, which its segment engine also reads
+# (translator._typed_segment_growth), so they are not a second copy of anything and stay in the
+# company file. Moving them is an owner decision (tracker R16-6 note), not a refactor.
+COMPANY_SOURCED = {
+    ("plasma_derived_therapies", "plasma_therapies_nominal_growth"),
+    ("specialty_pharmaceuticals", "specialty_pharma_nominal_growth"),
+    ("vaccines", "seasonal_vaccines_nominal_growth"),
+}
+
+
+def test_every_level_anchor_is_read_from_its_archetype_except_the_declared_company_sourced_three():
+    company_sourced = {(a, v) for a, v in PAIRS if not _declared_anchor(a, v).in_archetype}
+    assert company_sourced == COMPANY_SOURCED
+    for a, v in PAIRS:
+        anchor = _declared_anchor(a, v)
+        if anchor.in_archetype:
+            assert anchor.company is None, (a, v)
+
+
+@pytest.mark.parametrize("archetype_id,variable", [p for p in PAIRS if p not in COMPANY_SOURCED])
+def test_archetype_anchors_cover_exactly_the_six_scenarios(archetype_id, variable):
+    for term in _declared_anchor(archetype_id, variable).terms:
+        if term.by_scenario is not None:
+            assert sorted(term.by_scenario) == sorted(SCENARIOS), (archetype_id, variable)
+
+
+def _company(cid):
+    return yaml.safe_load((ROOT / "data" / "companies" / f"{cid}.yaml").read_text(encoding="utf-8"))["normalised_baseline"]
+
+
+def test_no_company_file_still_carries_a_moved_anchor():
+    dnl = _company("dnl")["revenue_growth_chain"]["by_scenario"]
+    for s in SCENARIOS:
+        assert set(dnl[s]["macro"]) == {"dm_real_gdp_growth"}, s   # carried for traceability, not an anchor
+    chain = _company("wbc")["bank_build"]["aiea_nim_chain"]
+    assert "aiea_growth" not in chain["shared"]["industry"]
+    for s in SCENARIOS:
+        assert "aiea_growth_delta" not in chain["by_scenario"][s], s
+
+
+def test_moved_anchor_values_are_the_values_they_had_in_the_company_files():
+    """Pins the values at the move. Mean-over-anchor-years tests above pin the derived series."""
+    mining = {s: _dnl_anchor("global_mining_real_growth", s) for s in SCENARIOS}
+    gas = {s: _dnl_anchor("gas_price_growth", s) for s in SCENARIOS}
+    bank = {s: level_anchor(_declared_anchor(BANKS, "bank_system_aiea_growth"), s) for s in SCENARIOS}
+    assert mining == pytest.approx({"muddle_through": 2.5, "orderly_convergence": 4.0, "ai_productivity_lag": 2.0,
+                                    "fragmentation": 1.5, "disorderly_climate_crystallisation": 2.0,
+                                    "stagflation_persists": 0.0})
+    assert gas == pytest.approx({"muddle_through": 2.0, "orderly_convergence": 1.5, "ai_productivity_lag": 2.0,
+                                 "fragmentation": 4.0, "disorderly_climate_crystallisation": 6.0,
+                                 "stagflation_persists": 5.0})
+    assert bank == pytest.approx({"muddle_through": 4.5, "orderly_convergence": 6.5, "ai_productivity_lag": 4.5,
+                                  "fragmentation": 4.0, "disorderly_climate_crystallisation": 4.0,
+                                  "stagflation_persists": 2.5})

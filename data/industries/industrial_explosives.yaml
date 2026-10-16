@@ -22,8 +22,18 @@ industry_archetype:
         method: spread
         series: real_gdp_growth_world
         anchor:
-          company: dnl
-          path: normalised_baseline.revenue_growth_chain.by_scenario.{scenario}.macro.global_mining_real_growth
+          # R16-6 (16 Oct 2026): the level anchors live here, not in DNL's file. Industry volume growth.
+          # Values moved unchanged from DNL's by_scenario macro block (the
+          # dnl_scenarios_comparison_v4 Inputs sheet); decimals, per scenario.
+          terms:
+            - units: decimal
+              by_scenario:
+                muddle_through: 0.025
+                orderly_convergence: 0.040
+                ai_productivity_lag: 0.020
+                fragmentation: 0.015
+                disorderly_climate_crystallisation: 0.020
+                stagflation_persists: 0.000
     # Industry pricing growth (B29): DM inflation is the scenario's own CPI series.
     - cpi_inflation_advanced
     # Industry pricing growth (B29): the scenario's anchor while in transition,
@@ -33,8 +43,18 @@ industry_archetype:
         method: transition_then_baseline
         baseline_scenario: muddle_through
         anchor:
-          company: dnl
-          path: normalised_baseline.revenue_growth_chain.by_scenario.{scenario}.macro.gas_price_growth
+          # R16-6 (16 Oct 2026): the level anchors live here, not in DNL's file. Gas price growth.
+          # Values moved unchanged from DNL's by_scenario macro block (the
+          # dnl_scenarios_comparison_v4 Inputs sheet); decimals, per scenario.
+          terms:
+            - units: decimal
+              by_scenario:
+                muddle_through: 0.020
+                orderly_convergence: 0.015
+                ai_productivity_lag: 0.020
+                fragmentation: 0.040
+                disorderly_climate_crystallisation: 0.060
+                stagflation_persists: 0.050
 
   # D-78 (14 Oct 2026, bridge note step 4). Which terms of the company's
   # revenue_growth_chain (shared block, workbook B18-B42) are CURRENT-CYCLE --
