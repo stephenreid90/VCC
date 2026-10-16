@@ -235,16 +235,15 @@ quoted back as live.
 
 ## Landing a session
 
-The cloud container cannot push and the mount cannot delete, so finished work travels as a
-`git bundle` and Stephen lands it from his own cmd window. **The command never changes:**
+There is no bundle and no landing script. Work is finished in the repo on the device shell,
+then committed and pushed in the background. Stephen does not need to act.
 
-```
-C:\Users\steph\vcc-valuations\land_vcc.cmd
-```
+- **Commit** finished work with the attribution lines in the commit message.
+- **Push** with the PAT in `.github-token`, using the command under "Operational quirks".
+  After the push, run `git update-ref refs/remotes/origin/main HEAD` so the tracking copy
+  matches.
+- **Check** `git status -sb` shows the branch level with origin before the sitting ends.
+- **Stephen acts only** when a change needs a decision from him. Then the note says whether
+  the work is mild, medium or serious, and it is drafted for a separate chat.
 
-`land_vcc.cmd` and `session.bundle` are both gitignored, so they never collide with the
-merge they are carrying. At session end, write the bundle to `session.bundle` in the repo
-root (via `SendUserFile` + `device_commit_files`), refresh `land_vcc.cmd` if it has changed,
-and give Stephen that one line in a copy-button widget. The script clears every stale lock
-under `.git`, deletes leftover scratch branches, fast-forwards from the bundle, pushes,
-removes the bundle and runs `sandbox_cleanup.cmd`. It is safe to re-run.
+The older bundle flow, `land_vcc.cmd` and `session.bundle` are retired (16 October 2026).
