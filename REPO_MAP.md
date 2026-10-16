@@ -3,10 +3,10 @@
 _Generated 2026-10-16 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `dd57e5f Q5 closed: answered by D-60 (payout cut on the operating target; D-61 level)` on `main`
+- HEAD: `c597145 Stephen's rulings 16 Oct evening: R16-6 CSL exception, Q4 and Q8 confirmed, Q6 and Q7 decided, items 32 and 35 sequenced` on `main`
 - Unpushed commits: **0**
-- Tracked files: 377
-- Untracked files: 1
+- Tracked files: 378
+- Untracked files: 0
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -111,8 +111,8 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `build_plan.html` (15.3KB)
   - `engine_implementation_plan.md` (16.5KB)
   - `open_items.css` (3.5KB)
-  - `open_items.json` (50.7KB)
-  - `open_questions.json` (1.8KB)
+  - `open_items.json` (51.1KB)
+  - `open_questions.json` (2.2KB)
   - `scenarios_workshop.md` (13.6KB)
   - `scenarios_workshop_prep.md` (19.7KB)
   - `single_source_of_truth.md` (16.7KB)
@@ -138,7 +138,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `terminal_growth_sets.yaml` (6.0KB)
     - `terminal_moat_fade_evidence.md` (6.9KB)
     - `terminal_option_sets.yaml` (75.4KB)
-    - `terminal_return_sets.yaml` (14.4KB)
+    - `terminal_return_sets.yaml` (14.8KB)
     - `terminal_value.md` (26.0KB)
     - `working_capital_treatment.md` (23.6KB)
   - **reference/**
@@ -181,7 +181,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `fcf_engine.py` (31.9KB)
       - `fcf_stub.py` (10.1KB)
       - `segment_engine.py` (13.6KB)
-      - `terminal_return.py` (17.6KB)
+      - `terminal_return.py` (18.9KB)
       - `terminal_value.py` (12.8KB)
     - **market/**
       - `__init__.py` (629B)
@@ -258,7 +258,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `test_terminal_form_bank_segment.py` (6.8KB)
     - `test_terminal_growth_sets.py` (5.3KB)
     - `test_terminal_option_sets.py` (12.4KB)
-    - `test_terminal_return_sets.py` (14.1KB)
+    - `test_terminal_return_sets.py` (16.9KB)
     - `test_two_stage_disclosure.py` (7.5KB)
     - `test_wbc_bank.py` (9.4KB)
     - **golden/**
@@ -366,11 +366,4 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `wbc_muddle_through_valuation_v4_formulas.xlsx` (12.5KB)
       - `wbc_scenarios_comparison_v1.xlsx` (11.6KB)
       - `wbc_scenarios_comparison_v2.xlsx` (11.6KB)
-
-## Untracked files
-
-Not in git. Either commit them or clear them — an untracked file is invisible
-to anyone who clones the repo, and is the most common way work gets lost.
-
-- `tests/test_workbook_defects_m6_m7_m11.py`
 

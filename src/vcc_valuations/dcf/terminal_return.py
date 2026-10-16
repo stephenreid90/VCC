@@ -117,7 +117,7 @@ class TerminalReturn:
     scenario_id: str
     construction: str                  # "fcff_roic" | "segment_roic" | "bank_roe"
     cost_of_capital: float
-    cost_of_capital_name: str          # "WACC" | "Ke"
+    cost_of_capital_name: str          # "WACC" (industrial, segment: D-06, D-84) | "Ke" (bank)
     terminal_growth: float
     terminal_earnings: float           # NOPAT_T or NPAT_T
     reinvestment_rate: Optional[float]
@@ -175,9 +175,11 @@ class TerminalReturn:
     @property
     def step_from_earned(self) -> Optional[float]:
         """Terminal return less the return the final explicit year earned."""
-        if self.return_on_new_capital is None or self.earned_final_explicit is None:
+        if self.governing_return is None or self.earned_final_explicit is None:
             return None
-        return self.return_on_new_capital - self.earned_final_explicit
+        # D-86: judged on the governing reading, so a company with a capital base
+        # compares like with like (earned on capital, not the g/reinvestment identity).
+        return self.governing_return - self.earned_final_explicit
 
 
 def _reinvestment_and_return(terminal_earnings: float, terminal_free_cash: float,
@@ -246,7 +248,7 @@ def _warnings_for(t: TerminalReturn) -> List[str]:
     if step is not None and step > _MATERIAL_STEP:
         out.append(
             f"{t.company_id}/{t.scenario_id}: the terminal return "
-            f"{t.return_on_new_capital:.2%} sits {step * 10000:.0f}bp ABOVE the "  # ssot-allow: display format
+            f"{t.governing_return:.2%} sits {step * 10000:.0f}bp ABOVE the "  # ssot-allow: display format
             f"{t.earned_final_explicit:.2%} the final explicit year earns. That is a "  # ssot-allow: display format
             f"recovery assumption, and a recovery assumption is a forecast: it "
             f"should be declared with a basis rather than inherited from the "
@@ -300,6 +302,8 @@ def from_fcff_parts(*, company_id: str, scenario_id: str, final_nopat: float,
         cost_of_capital=cost_of_capital, cost_of_capital_name="WACC",
         terminal_growth=terminal_growth, terminal_earnings=terminal_nopat,
         reinvestment_rate=rate, return_on_new_capital=ret,
+        earned_final_explicit=(final_nopat / terminal_invested_capital
+                               if terminal_invested_capital else None),
         terminal_invested_capital=terminal_invested_capital,
         declared_return=declared_return,
     )
@@ -310,16 +314,30 @@ def from_fcff_parts(*, company_id: str, scenario_id: str, final_nopat: float,
 def from_segment_parts(*, company_id: str, scenario_id: str, final_revenue: float,
                        terminal_ebit_margin: float, tax_rate: float,
                        terminal_fcff: float, terminal_growth: float,
-                       cost_of_capital: float) -> TerminalReturn:
-    """Segment fork from primitives. See :func:`from_segment`."""
+                       cost_of_capital: float,
+                       final_nopat: Optional[float] = None,
+                       terminal_invested_capital: Optional[float] = None,
+                       declared_return: Optional[float] = None) -> TerminalReturn:
+    """Segment fork from primitives. See :func:`from_segment`.
+
+    D-86: where the company has a capital base (``terminal_invested_capital``, D-67)
+    the earned return on it is reported, and it governs. The segment engine discounts
+    at the WACC (D-06, D-84), so the cost of capital is named WACC, as in the
+    single-segment fork.
+    """
     terminal_nopat = (final_revenue * terminal_ebit_margin * (1.0 - tax_rate)
                       * (1.0 + terminal_growth))
     rate, ret = _reinvestment_and_return(terminal_nopat, terminal_fcff, terminal_growth)
     t = TerminalReturn(
         company_id=company_id, scenario_id=scenario_id, construction="segment_roic",
-        cost_of_capital=cost_of_capital, cost_of_capital_name="Ke",
+        cost_of_capital=cost_of_capital, cost_of_capital_name="WACC",
         terminal_growth=terminal_growth, terminal_earnings=terminal_nopat,
         reinvestment_rate=rate, return_on_new_capital=ret,
+        earned_final_explicit=(final_nopat / terminal_invested_capital
+                               if final_nopat is not None and terminal_invested_capital
+                               else None),
+        terminal_invested_capital=terminal_invested_capital,
+        declared_return=declared_return,
     )
     t.warnings = _warnings_for(t)
     return t
@@ -372,5 +390,8 @@ def from_segment(result, inputs, *, company_id: str, scenario_id: str) -> Termin
         final_revenue=result.group_revenue[-1],
         terminal_ebit_margin=inputs.terminal_ebit_margin, tax_rate=inputs.tax_rate,
         terminal_fcff=result.terminal_fcff, terminal_growth=inputs.terminal_growth,
-        cost_of_capital=inputs.cost_of_equity,
+        cost_of_capital=inputs.cost_of_equity,   # the WACC since D-84; the field name is older
+        final_nopat=result.nopat[-1],
+        terminal_invested_capital=inputs.terminal_invested_capital,
+        declared_return=inputs.declared_terminal_return,
     )

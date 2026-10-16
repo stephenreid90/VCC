@@ -3,12 +3,14 @@ terminal_return_sets:
     name: current
     basis: 'Two readings, struck on production engine output. Return on NEW capital
       comes from the growth identity g = return x reinvestment_rate. Return on the
-      WHOLE capital base is terminal earnings over invested capital as D-49''s roll-forward
-      leaves it, and is reported wherever a company declares capex_rule grows_capital_base_at_g
-      -- DNL today. The GOVERNING reading, which D-42''s obligation is judged on,
-      is whole-capital where it exists and new-capital otherwise: D-45''s ROIC is
-      a return on capital, not on new capital. The distinction is not cosmetic --
-      DNL Fragmentation sits below its WACC on one reading and above it on the other.
+      WHOLE capital base is terminal earnings over the invested capital base, and
+      is reported for any company with a capital base: DNL from D-49''s roll-forward,
+      CSL from the segment engine''s own base (D-67). It is the EARNED return that
+      D-86 starts the terminal from, and no company declares a rate (D-76). The GOVERNING
+      reading, which D-42''s obligation is judged on, is whole-capital where it exists
+      and new-capital otherwise: D-45''s ROIC is a return on capital, not on new capital.
+      Return on new capital stays as a diagnostic only (D-85): it does not drive value.
+      earned_final_explicit is the final explicit year''s NOPAT over the same base.
       For the bank fork the return is declared (terminal_roe) and the identity derives
       the retention rate instead, so the declared rate is reported.'
     regenerated_by: scripts/size_terminal_returns.py
@@ -17,7 +19,9 @@ terminal_return_sets:
     - D-42 (PROPOSED)
     - M14
     - D-07 non-blocking precedent
-    - D-86a goodwill-inclusive disclosure
+    - D-86 earned-return rule and goodwill-inclusive disclosure
+    - D-85 new-capital return is diagnostic only
+    - D-84 CSL discounted at WACC
     rows:
     - company: dnl
       scenario: ai_productivity_lag
@@ -28,8 +32,8 @@ terminal_return_sets:
       reinvestment_rate: 0.359238
       return_on_new_capital: 0.124108
       excess_over_cost_of_capital: 0.035336
-      earned_final_explicit: null
-      step_from_earned: null
+      earned_final_explicit: 0.124108
+      step_from_earned: 0.005533
       return_on_whole_capital: 0.129641
       terminal_invested_capital: 4419.634
       governing_return: 0.129641
@@ -50,8 +54,8 @@ terminal_return_sets:
       reinvestment_rate: 0.606367
       return_on_new_capital: 0.075552
       excess_over_cost_of_capital: -0.013219
-      earned_final_explicit: null
-      step_from_earned: null
+      earned_final_explicit: 0.075552
+      step_from_earned: 0.003461
       return_on_whole_capital: 0.079013
       terminal_invested_capital: 6041.675
       governing_return: 0.079013
@@ -72,8 +76,8 @@ terminal_return_sets:
       reinvestment_rate: 0.438149
       return_on_new_capital: 0.093539
       excess_over_cost_of_capital: 0.004767
-      earned_final_explicit: null
-      step_from_earned: null
+      earned_final_explicit: 0.093539
+      step_from_earned: 0.003834
       return_on_whole_capital: 0.097372
       terminal_invested_capital: 4443.177
       governing_return: 0.097372
@@ -94,8 +98,8 @@ terminal_return_sets:
       reinvestment_rate: 0.390173
       return_on_new_capital: 0.124496
       excess_over_cost_of_capital: 0.035724
-      earned_final_explicit: null
-      step_from_earned: null
+      earned_final_explicit: 0.124496
+      step_from_earned: 0.006047
       return_on_whole_capital: 0.130543
       terminal_invested_capital: 4475.738
       governing_return: 0.130543
@@ -116,8 +120,8 @@ terminal_return_sets:
       reinvestment_rate: 0.358953
       return_on_new_capital: 0.140965
       excess_over_cost_of_capital: 0.052194
-      earned_final_explicit: null
-      step_from_earned: null
+      earned_final_explicit: 0.140965
+      step_from_earned: 0.007133
       return_on_whole_capital: 0.148098
       terminal_invested_capital: 4606.708
       governing_return: 0.148098
@@ -138,8 +142,8 @@ terminal_return_sets:
       reinvestment_rate: 0.257231
       return_on_new_capital: 0.110553
       excess_over_cost_of_capital: 0.021782
-      earned_final_explicit: null
-      step_from_earned: null
+      earned_final_explicit: 0.110553
+      step_from_earned: 0.003144
       return_on_whole_capital: 0.113697
       terminal_invested_capital: 4330.252
       governing_return: 0.113697
@@ -286,18 +290,18 @@ terminal_return_sets:
     - company: csl
       scenario: ai_productivity_lag
       construction: segment_roic
-      cost_of_capital_name: Ke
+      cost_of_capital_name: WACC
       cost_of_capital: 0.0812
       terminal_growth: 0.0455
       reinvestment_rate: 0.064993
       return_on_new_capital: 0.700071
       excess_over_cost_of_capital: 0.618871
-      earned_final_explicit: null
-      step_from_earned: null
-      return_on_whole_capital: null
-      terminal_invested_capital: null
-      governing_return: 0.700071
-      excess_on_governing_return: 0.618871
+      earned_final_explicit: 0.295189
+      step_from_earned: -0.024852
+      return_on_whole_capital: 0.270337
+      terminal_invested_capital: 23251.956
+      governing_return: 0.270337
+      excess_on_governing_return: 0.189137
       declared_terminal_return: null
       declared_versus_whole_capital: null
       goodwill: 8065.0
@@ -308,18 +312,18 @@ terminal_return_sets:
     - company: csl
       scenario: disorderly_climate_crystallisation
       construction: segment_roic
-      cost_of_capital_name: Ke
+      cost_of_capital_name: WACC
       cost_of_capital: 0.0812
       terminal_growth: 0.034895
       reinvestment_rate: 0.05385
       return_on_new_capital: 0.648
       excess_over_cost_of_capital: 0.5668
-      earned_final_explicit: null
-      step_from_earned: null
-      return_on_whole_capital: null
-      terminal_invested_capital: null
-      governing_return: 0.648
-      excess_on_governing_return: 0.5668
+      earned_final_explicit: 0.263355
+      step_from_earned: -0.02521
+      return_on_whole_capital: 0.238145
+      terminal_invested_capital: 22855.056
+      governing_return: 0.238145
+      excess_on_governing_return: 0.156945
       declared_terminal_return: null
       declared_versus_whole_capital: null
       goodwill: 8065.0
@@ -330,18 +334,18 @@ terminal_return_sets:
     - company: csl
       scenario: fragmentation
       construction: segment_roic
-      cost_of_capital_name: Ke
+      cost_of_capital_name: WACC
       cost_of_capital: 0.0812
       terminal_growth: 0.034848
       reinvestment_rate: 0.054064
       return_on_new_capital: 0.644571
       excess_over_cost_of_capital: 0.563371
-      earned_final_explicit: null
-      step_from_earned: null
-      return_on_whole_capital: null
-      terminal_invested_capital: null
-      governing_return: 0.644571
-      excess_on_governing_return: 0.563371
+      earned_final_explicit: 0.250126
+      step_from_earned: -0.020985
+      return_on_whole_capital: 0.229141
+      terminal_invested_capital: 22604.166
+      governing_return: 0.229141
+      excess_on_governing_return: 0.147941
       declared_terminal_return: null
       declared_versus_whole_capital: null
       goodwill: 8065.0
@@ -352,18 +356,18 @@ terminal_return_sets:
     - company: csl
       scenario: muddle_through
       construction: segment_roic
-      cost_of_capital_name: Ke
+      cost_of_capital_name: WACC
       cost_of_capital: 0.0812
       terminal_growth: 0.048575
       reinvestment_rate: 0.069964
       return_on_new_capital: 0.694286
       excess_over_cost_of_capital: 0.613086
-      earned_final_explicit: null
-      step_from_earned: null
-      return_on_whole_capital: null
-      terminal_invested_capital: null
-      governing_return: 0.694286
-      excess_on_governing_return: 0.613086
+      earned_final_explicit: 0.304284
+      step_from_earned: -0.028704
+      return_on_whole_capital: 0.275579
+      terminal_invested_capital: 23494.029
+      governing_return: 0.275579
+      excess_on_governing_return: 0.194379
       declared_terminal_return: null
       declared_versus_whole_capital: null
       goodwill: 8065.0
@@ -374,18 +378,18 @@ terminal_return_sets:
     - company: csl
       scenario: orderly_convergence
       construction: segment_roic
-      cost_of_capital_name: Ke
+      cost_of_capital_name: WACC
       cost_of_capital: 0.0812
       terminal_growth: 0.0506
       reinvestment_rate: 0.06941
       return_on_new_capital: 0.729
       excess_over_cost_of_capital: 0.6478
-      earned_final_explicit: null
-      step_from_earned: null
-      return_on_whole_capital: null
-      terminal_invested_capital: null
-      governing_return: 0.729
-      excess_on_governing_return: 0.6478
+      earned_final_explicit: 0.346081
+      step_from_earned: -0.033928
+      return_on_whole_capital: 0.312154
+      terminal_invested_capital: 24275.299
+      governing_return: 0.312154
+      excess_on_governing_return: 0.230954
       declared_terminal_return: null
       declared_versus_whole_capital: null
       goodwill: 8065.0
@@ -396,18 +400,18 @@ terminal_return_sets:
     - company: csl
       scenario: stagflation_persists
       construction: segment_roic
-      cost_of_capital_name: Ke
+      cost_of_capital_name: WACC
       cost_of_capital: 0.0812
       terminal_growth: 0.026927
       reinvestment_rate: 0.043907
       return_on_new_capital: 0.613286
       excess_over_cost_of_capital: 0.532086
-      earned_final_explicit: null
-      step_from_earned: null
-      return_on_whole_capital: null
-      terminal_invested_capital: null
-      governing_return: 0.613286
-      excess_on_governing_return: 0.532086
+      earned_final_explicit: 0.223365
+      step_from_earned: -0.018188
+      return_on_whole_capital: 0.205177
+      terminal_invested_capital: 22176.633
+      governing_return: 0.205177
+      excess_on_governing_return: 0.123977
       declared_terminal_return: null
       declared_versus_whole_capital: null
       goodwill: 8065.0

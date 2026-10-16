@@ -668,9 +668,9 @@
     "source": "review-2026-10-16",
     "area": "Methodology",
     "issue": "<b>DNL and CSL terminal returns (D-76 declared rates).</b> Stephen has not formed a view. CSL's stagflation case shows a 61% return on new capital, which needs a defence.",
-    "treatment": "Stephen's judgement. Size first with scripts/size_terminal_returns.py.",
+    "treatment": "Stephen's judgement. Size first with scripts/size_terminal_returns.py. [Closed 16 Oct 2026: superseded by D-86 (earned return, matrix fade, no declared rate for any company); terminal_return_sets.yaml now reports CSL on whole capital. DNL declared rates retired (D-76).]",
     "questions": [],
-    "status": "NEEDS",
+    "status": "DONE",
     "batch": "Batch 6"
   },
   {

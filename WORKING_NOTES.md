@@ -64,6 +64,8 @@ working capital confirmations; UI design choices 32, 35, Q6, Q7.
 
 ### Batch 1 progress
 
+- 16 Oct 2026: **Terminal-return set tidied, R16-7 closed (D-86).** `terminal_return_sets.yaml` now reports CSL on whole capital (governing 20.5% to 31.2%, WACC 8.12%); the 61% to 73% new-capital figure is kept as a diagnostic only. Values unchanged: DNL 2.006 / WBC 33.93 / CSL 226.66.
+
 **Batch 1 (items 1 to 4) landed and pushed, 16 Oct 2026 evening:** 4364b21 (R16-6), 83dbda1 (D-86
 reporting, R16-9), dd57e5f (Q5), 707aa49 (M6, M7, M11). Base ties unchanged DNL 2.006 / WBC 33.93 /
 CSL 226.66. DCF 425 passed / 1 skipped; other 331; lint 14/14.

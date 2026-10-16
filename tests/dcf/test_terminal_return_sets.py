@@ -208,15 +208,68 @@ def test_wbc_declares_its_terminal_roe_on_the_matrix(rows):
         assert wbc[sid].return_on_new_capital == pytest.approx(roe, abs=1e-9), sid
 
 
-def test_only_dnl_reports_a_return_on_the_whole_capital_base(rows):
-    """Because only DNL declares the capex rule that rolls a base forward.
+def test_every_company_with_a_capital_base_reports_the_whole_capital_return(rows):
+    """D-86: the return is general, so any company with a capital base reports it.
 
-    WBC has no invested-capital construction at all and CSL still runs
-    capex = D&A (D-53, unimplemented), so neither can report the better reading.
-    Asserted so that when CSL gains one, this test says so.
+    DNL has the D-49 roll-forward and CSL has the segment engine's base (D-67).
+    The bank has no invested-capital construction, so it reports none.
     """
     have = {r.company_id for r in rows if r.return_on_whole_capital is not None}
-    assert have == {"dnl"}, have
+    assert have == {"dnl", "csl"}, have
+    for r in rows:
+        if r.company_id in have:
+            assert r.terminal_invested_capital > 0, (r.company_id, r.scenario_id)
+            assert r.earned_final_explicit is not None, (r.company_id, r.scenario_id)
+            assert r.governing_return == r.return_on_whole_capital, (r.company_id, r.scenario_id)
+
+
+def test_csl_governing_return_is_the_earned_whole_capital_return(rows):
+    """D-86, D-85: CSL's governing return is what the capital base earns.
+
+    The 61-73% return on new capital (the g/reinvestment identity) stays in the
+    set as a diagnostic only. It does not drive value (D-85) and it no longer
+    governs. The cost of capital is the WACC (D-84), not Ke.
+    """
+    csl = [r for r in rows if r.company_id == "csl"]
+    assert len(csl) == 6
+    for r in csl:
+        assert r.governing_return == r.return_on_whole_capital, r.scenario_id
+        assert 0.19 < r.governing_return < 0.33, (r.scenario_id, r.governing_return)
+        assert r.return_on_new_capital > 0.55, r.scenario_id      # diagnostic only
+        assert r.governing_return < r.return_on_new_capital / 2, r.scenario_id
+        assert r.cost_of_capital_name == "WACC", r.scenario_id
+        assert r.declared_return is None, r.scenario_id           # D-86: no declared rate
+
+
+def test_csl_set_pins_whole_capital_governing_and_diagnostic_new_capital(committed):
+    # Pinned 16 Oct 2026 (D-86). Same numbers as csl_terminal_return_sets.yaml.
+    pinned = {
+        "orderly_convergence": (0.312154, 0.729),
+        "muddle_through": (0.275579, 0.694286),
+        "ai_productivity_lag": (0.270337, 0.700071),
+        "fragmentation": (0.229141, 0.644571),
+        "disorderly_climate_crystallisation": (0.238145, 0.648),
+        "stagflation_persists": (0.205177, 0.613286),
+    }
+    for s, (gov, new) in pinned.items():
+        r = _row(committed, "csl", s)
+        assert r["governing_return"] == gov, s
+        assert r["return_on_whole_capital"] == gov, s
+        assert r["return_on_new_capital"] == new, s               # diagnostic only
+        assert r["terminal_invested_capital"] > 22000, s
+        assert r["cost_of_capital_name"] == "WACC", s
+        assert r["cost_of_capital"] == 0.0812, s                 # D-84 WACC
+        assert r["declared_terminal_return"] is None, s
+
+
+def test_csl_earned_return_is_the_same_number_as_the_csl_return_set(committed):
+    """One source: the general sizer and the CSL sizer must agree to the CSL set's rounding."""
+    csl_set = yaml.safe_load(
+        (ROOT / "design" / "methodology" / "csl_terminal_return_sets.yaml").read_text(encoding="utf-8"))
+    for sc in csl_set["scenarios"]:
+        r = _row(committed, "csl", sc["scenario"])
+        assert round(r["governing_return"], 4) == sc["starting_return_ex_goodwill"], sc["scenario"]
+        assert round(r["terminal_invested_capital"]) == sc["invested_capital_ex_goodwill"], sc["scenario"]
 
 
 def test_the_bank_reports_its_declared_rate_not_an_inverted_one(rows):
@@ -232,7 +285,7 @@ def test_the_bank_reports_its_declared_rate_not_an_inverted_one(rows):
             r.terminal_growth / r.return_on_new_capital, rel=1e-9)
 
 
-# ------------------------------------------- D-86a: goodwill-inclusive disclosure
+# ------------------------------------------- D-86: goodwill-inclusive disclosure
 def _row(committed, company, scenario):
     for r in committed["terminal_return_sets"]["current"]["rows"]:
         if r["company"] == company and r["scenario"] == scenario:
@@ -266,7 +319,7 @@ def test_goodwill_disclosure_is_read_from_the_financials_files(committed):
 
 
 def test_goodwill_inclusive_figures_are_pinned(committed):
-    # Pinned 16 Oct 2026 (D-86a). Disclosure only: goodwill stays out of capital and value.
+    # Pinned 16 Oct 2026 (D-86). Disclosure only: goodwill stays out of capital and value.
     pinned = {
         ("dnl", "muddle_through"): (0.130543, 0.093421),
         ("dnl", "orderly_convergence"): (0.148098, 0.106848),

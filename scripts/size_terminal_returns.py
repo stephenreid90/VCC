@@ -45,7 +45,7 @@ def _scenarios() -> list[str]:
 
 
 def _attach_goodwill(t: tr.TerminalReturn, inputs: dict, capital) -> tr.TerminalReturn:
-    """D-86a: the earned return with goodwill in the base. Disclosure only.
+    """D-86: the earned return with goodwill in the base. Disclosure only.
 
     Applies to any company with a capital base. A company with a base but no
     goodwill figure on its balance sheet is an error, not a zero.
@@ -55,7 +55,7 @@ def _attach_goodwill(t: tr.TerminalReturn, inputs: dict, capital) -> tr.Terminal
     gw = tr.goodwill_from_financials(inputs["financials"])
     if gw is None:
         raise ValueError(f"{t.company_id}: has a capital base but no goodwill figure "
-                         "in its financials file (D-86a)")
+                         "in its financials file (D-86)")
     t.goodwill_return = tr.goodwill_inclusive_return(t.terminal_earnings, capital, gw)
     return t
 
@@ -108,22 +108,27 @@ def as_set(rows: list[tr.TerminalReturn]) -> dict:
                     "Two readings, struck on production engine output. Return on "
                     "NEW capital comes from the growth identity "
                     "g = return x reinvestment_rate. Return on the WHOLE capital "
-                    "base is terminal earnings over invested capital as D-49's "
-                    "roll-forward leaves it, and is reported wherever a company "
-                    "declares capex_rule grows_capital_base_at_g -- DNL today. "
-                    "The GOVERNING reading, which D-42's obligation is judged on, "
-                    "is whole-capital where it exists and new-capital otherwise: "
-                    "D-45's ROIC is a return on capital, not on new capital. The "
-                    "distinction is not cosmetic -- DNL Fragmentation sits below "
-                    "its WACC on one reading and above it on the other. For the "
-                    "bank fork the return is declared (terminal_roe) and the "
-                    "identity derives the retention rate instead, so the declared "
-                    "rate is reported."
+                    "base is terminal earnings over the invested capital base, and "
+                    "is reported for any company with a capital base: DNL from "
+                    "D-49's roll-forward, CSL from the segment engine's own base "
+                    "(D-67). It is the EARNED return that D-86 starts the "
+                    "terminal from, and no company declares a rate (D-76). The "
+                    "GOVERNING reading, which D-42's obligation is judged on, is "
+                    "whole-capital where it exists and new-capital otherwise: "
+                    "D-45's ROIC is a return on capital, not on new capital. "
+                    "Return on new capital stays as a diagnostic only (D-85): it "
+                    "does not drive value. earned_final_explicit is the final "
+                    "explicit year's NOPAT over the same base. For the bank fork "
+                    "the return is declared (terminal_roe) and the identity "
+                    "derives the retention rate instead, so the declared rate is "
+                    "reported."
                 ),
                 "regenerated_by": "scripts/size_terminal_returns.py",
                 "asserted_by": "tests/dcf/test_terminal_return_sets.py",
                 "decisions": ["D-42 (PROPOSED)", "M14", "D-07 non-blocking precedent",
-                              "D-86a goodwill-inclusive disclosure"],
+                              "D-86 earned-return rule and goodwill-inclusive disclosure",
+                              "D-85 new-capital return is diagnostic only",
+                              "D-84 CSL discounted at WACC"],
                 "rows": [
                     {
                         "company": r.company_id,
@@ -160,7 +165,7 @@ def as_set(rows: list[tr.TerminalReturn]) -> dict:
                         "declared_versus_whole_capital": (
                             None if r.declared_versus_whole_capital is None
                             else round(r.declared_versus_whole_capital, 6)),
-                        # D-86a disclosure: goodwill is NOT in capital or value.
+                        # D-86 disclosure: goodwill is NOT in capital or value.
                         "goodwill": _gw(r, "goodwill", 3),
                         "capital_incl_goodwill": _gw(r, "capital_incl_goodwill", 3),
                         "earned_return_ex_goodwill": _gw(r, "return_ex_goodwill", 6),
@@ -184,7 +189,7 @@ def print_table(rows: list[tr.TerminalReturn]) -> None:
               f"{_bp(r.excess_on_governing_return):>8} {_pct(r.declared_return):>9} "
               f"{_bp(r.declared_versus_whole_capital):>8}")
     print("  * excess is on the governing reading: whole capital where it exists.")
-    print("\nD-86a disclosure (goodwill NOT in capital or value):")
+    print("\nD-86 disclosure (goodwill NOT in capital or value):")
     for r in rows:
         g = r.goodwill_return
         if g is not None:
