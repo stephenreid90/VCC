@@ -618,9 +618,9 @@
     "source": "review-2026-10-16",
     "area": "Methodology",
     "issue": "<b>CSL healthcare price premium over CPI.</b> A premium would move only the price/volume split of CSL's revenue growth, not value. Volume is nominal growth less price (D-82), and nominal growth is unchanged.",
-    "treatment": "Porter's payor work points away from a positive premium: buyer power is rated moderate with a zero basis-point impact, and US Medicare negotiation is a price pressure. Recommended: no premium, the split stays for reporting only. Stephen to choose A (no premium) or B (premium with a written reason).",
+    "treatment": "Decided 16 Oct 2026 (D-89, option A): no premium. The split stays a reporting item. Value does not change.",
     "questions": [],
-    "status": "NEEDS",
+    "status": "DONE",
     "batch": "Batch 6"
   },
   {
