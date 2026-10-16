@@ -36,6 +36,8 @@ details.thy .thybody{padding:2px 12px 11px 22px; font-size:12.5px;}
   <div style="font-size:20px; font-weight:600;">VCC scenario valuation</div>
   <div style="font-size:13px; color:var(--text2);">__COMPANY__ · exploring: <span id="selscen" style="color:var(--text); font-weight:500;"></span> · __CCYNOTE__</div>
 </div>
+<div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; margin-bottom:8px;"><button id="hdl" style="font-size:12.5px; font-weight:500;">&#10515; Download audited workbook</button><span class="sub" id="prov" style="background:var(--secondary); border-radius:10px; padding:2px 10px;"></span></div>
+<div id="howto" style="display:none; background:var(--info-bg); color:var(--info-tx); border-radius:var(--rmd); padding:10px 14px; margin-bottom:10px; font-size:13px;"></div>
 <div class="sub" id="topnote" style="margin-bottom:18px;"></div>
 <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:1.5rem;">
   <div class="metric"><div style="font-size:13px; color:var(--text2);">Value per share</div><div style="font-size:24px; font-weight:600;"><span id="pv"></span><span style="font-size:13px; color:var(--text2);"> __CCY__</span></div><div style="font-size:12px; color:var(--text3);" id="pvsub"></div></div>
@@ -54,7 +56,8 @@ details.thy .thybody{padding:2px 12px 11px 22px; font-size:12.5px;}
     <div class="sub" style="margin-bottom:6px;">click a scenario to explore its build-up</div>
     <div id="bars"></div>
     <div style="display:flex; align-items:center; gap:10px; margin-top:8px; flex-wrap:wrap;"><button id="addscen" style="font-size:12px;">+ add your scenario</button><span class="sub" id="editing"></span></div>
-    <div class="sub" style="margin-top:6px;"><span style="color:var(--info-tx);">▮</span> Muddle Through · <span style="color:var(--user-tx);">▮</span> your scenarios · <span style="color:var(--warning-tx);">▮</span> average broker · dashed = market</div></div>
+    <div class="sub" style="margin-top:6px;"><span style="color:var(--info-tx);">▮</span> Muddle Through · <span style="color:var(--user-tx);">▮</span> your scenarios · <span style="color:var(--warning-tx);">▮</span> average broker · dashed = market</div>
+    <div id="barnarr" aria-live="polite" style="margin-top:10px; font-size:13px; line-height:1.55;"></div></div>
 </div>
 <div style="border-top:0.5px solid var(--bd); padding-top:1rem;">
   <div class="hd" style="margin-bottom:8px;">Explore the build-up for the selected scenario</div>
@@ -140,7 +143,7 @@ function vccDownload(){ try{
     var em=document.getElementById('vmkt'); em.textContent=(vm>=0?'+':'')+vm.toFixed(0)+'%'; em.style.color=vm>=0?'var(--success-tx)':'var(--danger-tx)';
     document.getElementById('vbr').textContent=(vb>=0?'+':'')+vb.toFixed(0)+'%'; }
   function render(){ var a=activeScen(); if(a.kind!=='broker') a.v=scVal(a); updateCards(a.v); drawBars(); }
-  function updateWacc(){ var el=document.getElementById('wacchip'); if(el) el.textContent=singleWacc.toFixed(2)+'%'; var sub=document.getElementById('waccsub'); if(sub) sub.textContent='single '+((CFG.beta&&CFG.beta.toDiscount&&CFG.beta.toDiscount.label)||'WACC')+' · all scenarios'; }
+  function updateWacc(){ var el=document.getElementById('wacchip'); if(el) el.textContent=singleWacc.toFixed(2)+'%'; var sub=document.getElementById('waccsub'); if(sub) sub.textContent='single '+(CFG.discLabel||(CFG.beta&&CFG.beta.toDiscount&&CFG.beta.toDiscount.label)||'WACC')+' · all scenarios'; }
 
   // ---- one input change on the active scenario; global => every editable scenario ----
   function setInput(k,v){ var a=activeScen(); if(a.kind==='broker') return;
@@ -151,26 +154,45 @@ function vccDownload(){ try{
 
   function barColor(k){ return k==='live'?'var(--info-bg)':k==='broker'?'var(--warning-bg)':k==='user'?'var(--user-bg)':'var(--tertiary)'; }
   function txtColor(k){ return k==='live'?'var(--info-tx)':k==='broker'?'var(--warning-tx)':k==='user'?'var(--user-tx)':'var(--text)'; }
-  function drawBars(){ var h='<div style="position:relative;">', mkt=CFG.market/CFG.scale*100;
+  function fmtDelta(d){ return (d>=0?'+':'−')+Math.abs(d).toFixed(1)+'%'; }
+  function drawBars(){ var h='<div style="position:relative;">', mkt=Math.max(0,Math.min(100,CFG.market/CFG.scale*100));
+    var mtS=CFG.scenarios[CFG.liveIdx], mtv=mtS?mtS.v:null;
+    var ae=document.activeElement, refocus=(ae&&ae.classList&&ae.classList.contains('scbar'))?ae.getAttribute('data-i'):null;
     CFG.scenarios.forEach(function(s,i){ var w=Math.max(0,Math.min(100,s.v/CFG.scale*100)), sel=(i===CFG.activeIdx);
       var od=(s.kind!=='broker'&&isOverridden(s))?'<span title="adjusted from the assessed case" style="color:var(--user-tx);"> ✎</span>':'';
-      var del=(s.kind==='user')?'<span class="delu" data-uid="'+s.uid+'" title="delete scenario" style="cursor:pointer; color:var(--text3); padding:0 3px;">×</span>':'';
+      var del=(s.kind==='user')?'<span class="delu" data-uid="'+s.uid+'" role="button" aria-label="delete scenario '+esc(s.n)+'" title="delete scenario" style="cursor:pointer; color:var(--text3); padding:0 3px;">×</span>':'';
       var wr=(s.kind!=='broker'&&s.vals&&Math.abs((s.vals.re!=null?s.vals.re:singleWacc)-singleWacc)>1e-9)?'<span title="per-scenario discount-rate override — differs from the single WACC; this bar is the reduced-form approximation, not the engine value" style="color:var(--warning-tx); font-weight:500; font-size:11px;"> · r '+s.vals.re.toFixed(2)+'%</span>':'';
-      h+='<div class="scbar" data-i="'+i+'" style="display:flex; align-items:center; gap:8px; margin-bottom:5px; cursor:pointer; border-radius:5px; padding:1px 2px; '+(sel?'background:var(--secondary);':'')+'">'
-       +'<div style="width:122px; font-size:12px; color:'+(sel?'var(--text)':'var(--text2)')+'; font-weight:'+(sel?'500':'400')+'; text-align:right; flex:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">'+del+esc(s.n)+od+'</div>'
-       +'<div style="flex:1; position:relative; height:19px;"><div style="height:19px; width:'+w+'%; background:'+barColor(s.kind)+'; border-radius:4px; '+(sel?'outline:1.5px solid var(--bdinfo);':'')+'"></div>'
-       +'<div style="position:absolute; top:1px; left:calc('+w+'% + 6px); font-size:12px; font-weight:500; color:'+txtColor(s.kind)+'; white-space:nowrap;">'+s.v.toFixed(CFG.dp)+wr+'</div></div></div>';
+      var dl=(mtv&&i!==CFG.liveIdx)?fmtDelta((s.v/mtv-1)*100):'';
+      var lbl=s.n+', value '+CFG.ccy+' '+s.v.toFixed(CFG.dp)+(dl?', '+dl+' vs Muddle Through':'')+(sel?', selected':'');
+      var inside=(w>72), vpos=inside?('right:calc('+(100-w)+'% + 6px);'):('left:calc('+w+'% + 6px);');
+      var vtxt=s.v.toFixed(CFG.dp)+(dl?' <span title="vs Muddle Through" style="font-weight:400; font-size:11px;">'+dl+'</span>':'')+wr;
+      h+='<div class="scbar" role="button" tabindex="0" aria-pressed="'+(sel?'true':'false')+'" aria-label="'+esc(lbl)+'" data-i="'+i+'" style="display:flex; align-items:center; gap:8px; margin-bottom:5px; cursor:pointer; border-radius:5px; padding:1px 2px; '+(sel?'background:var(--secondary);':'')+'">'
+       +'<div style="flex:0 1 122px; min-width:56px; max-width:122px; font-size:12px; color:'+(sel?'var(--text)':'var(--text2)')+'; font-weight:'+(sel?'500':'400')+'; text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">'+del+esc(s.n)+od+'</div>'
+       +'<div style="flex:1 1 0; min-width:0; position:relative; height:19px;"><div style="height:19px; width:'+w+'%; background:'+barColor(s.kind)+'; border-radius:4px; '+(sel?'outline:1.5px solid var(--bdinfo);':'')+'"></div>'
+       +'<div style="position:absolute; top:-3px; bottom:-4px; left:'+mkt+'%; border-left:1.5px dashed var(--text2); pointer-events:none;"></div>'
+       +'<div style="position:absolute; top:1px; '+vpos+' font-size:12px; font-weight:500; color:'+txtColor(s.kind)+'; white-space:nowrap;">'+vtxt+'</div></div></div>';
     });
-    h+='<div style="position:absolute; left:130px; right:0; top:0; bottom:14px; pointer-events:none;"><div style="position:absolute; left:'+mkt+'%; top:0; bottom:0; border-left:1.5px dashed var(--text2);"></div></div></div>';
+    h+='</div>';
     var bx=document.getElementById('bars'); bx.innerHTML=h;
-    Array.prototype.forEach.call(bx.querySelectorAll('.scbar'),function(el){ el.addEventListener('click',function(){ selectBar(parseInt(el.getAttribute('data-i'))); }); });
+    Array.prototype.forEach.call(bx.querySelectorAll('.scbar'),function(el){ el.addEventListener('click',function(){ selectBar(parseInt(el.getAttribute('data-i'))); });
+      el.addEventListener('keydown',function(ev){ if(ev.target!==el) return; if(ev.key==='Enter'||ev.key===' '||ev.key==='Spacebar'){ ev.preventDefault(); selectBar(parseInt(el.getAttribute('data-i'))); } }); });
     Array.prototype.forEach.call(bx.querySelectorAll('.delu'),function(el){ el.addEventListener('click',function(ev){ ev.stopPropagation(); delScenario(el.getAttribute('data-uid')); }); });
+    if(refocus!==null){ var f=bx.querySelector('.scbar[data-i="'+refocus+'"]'); if(f) f.focus({preventScroll:true}); }
     updateWacc();
   }
 
+  // first sentence of the scenario narrative + its "why" line, shown under the chart (text comes from CFG.narr)
+  function plainText(html){ var t=document.createElement('div'); t.innerHTML=String(html).replace(/<\/(p|div|li)>/gi,'$& '); return (t.textContent||'').replace(/\s+/g,' ').trim(); }
+  function updateBarNarr(){ var el=document.getElementById('barnarr'); if(!el) return; el.textContent='';
+    var sc=activeScen(); if(!sc||sc.kind==='user'||sc.kind==='broker'||!CFG.narr||!CFG.narr[sc.n]) return;
+    var ss=plainText(CFG.narr[sc.n]).replace(/([.!?])\s+/g,'$1\u0001').split('\u0001'), why=null, ans=null;
+    for(var i=0;i<ss.length;i++){ if(/^Why\b/.test(ss[i])){ why=ss[i]; if(/\?$/.test(why)&&ss[i+1]) ans=ss[i+1]; break; } }
+    var p=document.createElement('div'); var b=document.createElement('b'); b.textContent=sc.n+': '; p.appendChild(b); p.appendChild(document.createTextNode(ss[0])); el.appendChild(p);
+    if(why&&why!==ss[0]){ var w=document.createElement('div'); w.style.marginTop='4px'; w.className='sub'; w.style.fontSize='12.5px'; var wb=document.createElement('b'); wb.textContent='Why it lands here: '; w.appendChild(wb); w.appendChild(document.createTextNode(why+(ans?' '+ans:''))); el.appendChild(w); } }
+
   function selectScenario(i){ CFG.activeIdx=i; var sc=CFG.scenarios[i];
     if(sc.kind!=='broker'){ st=sc.vals; slidersEnabled(true); syncSliders(); } else { slidersEnabled(false); }
-    document.getElementById('selscen').textContent=sc.n; updateEditingUI(); updateCards(sc.v); drawBars(); }
+    document.getElementById('selscen').textContent=sc.n; updateEditingUI(); updateCards(sc.v); drawBars(); updateBarNarr(); }
   function selectBar(i){ selectScenario(i); markExplore('world'); openDetail('world'); }
 
   // sliders (edit the active scenario's vals)
@@ -219,9 +241,10 @@ function vccDownload(){ try{
   var ex=document.getElementById('explore'); var exBtns={};
   Object.keys(CFG.titles).forEach(function(k){ var b=document.createElement('button'); b.textContent=CFG.titles[k]; b.style.fontSize='12px'; b.addEventListener('click',function(){ markExplore(k); openDetail(k); }); ex.appendChild(b); exBtns[k]=b; });
   var allBtn=document.createElement('button'); allBtn.textContent='⊕ open all'; allBtn.style.fontSize='12px'; allBtn.addEventListener('click',function(){ openAll(); }); ex.appendChild(allBtn);
-  function markExplore(k){ Object.keys(exBtns).forEach(function(j){ exBtns[j].style.borderColor='var(--bd2)'; }); allBtn.style.borderColor='var(--bd2)'; if(exBtns[k]) exBtns[k].style.borderColor='var(--bdinfo)'; document.getElementById('panel').innerHTML=''; }
+  function tabState(b,on){ b.style.borderColor=on?'var(--bdinfo)':'var(--bd2)'; b.style.fontWeight=on?'600':'400'; b.style.textDecoration=on?'underline':'none'; b.setAttribute('aria-pressed',on?'true':'false'); }
+  function markExplore(k){ Object.keys(exBtns).forEach(function(j){ tabState(exBtns[j],j===k); }); tabState(allBtn,false); document.getElementById('panel').innerHTML=''; }
   function setPanel(k){ markExplore(k); openDetail(k); }
-  function openAll(){ Object.keys(exBtns).forEach(function(j){ exBtns[j].style.borderColor='var(--bd2)'; }); allBtn.style.borderColor='var(--bdinfo)'; document.getElementById('panel').innerHTML='';
+  function openAll(){ Object.keys(exBtns).forEach(function(j){ tabState(exBtns[j],false); }); tabState(allBtn,true); document.getElementById('panel').innerHTML='';
     var d=document.getElementById('detail'); var h='';
     Object.keys(CFG.titles).forEach(function(k){ h+='<div class="detailcard"><h4 style="margin-bottom:8px;">'+CFG.titles[k]+'</h4><div>'+detailHTML(k)+'</div></div>'; });
     d.innerHTML=h; wireEditable('assum',d); wireEditable('forces',d); wireEditable('discount',d);
@@ -255,7 +278,7 @@ function vccDownload(){ try{
     imp.forEach(function(m,i){ if(m&&m.path){ var ov=(act.forces&&Array.isArray(act.forces[i]))?act.forces[i]:m.path; var cells='';
       ['FY27','FY28','FY29','FY30','FY31'].forEach(function(y,yi){ cells+='<td style="padding:2px 5px; text-align:center;"><div class="sub" style="font-size:10px;">'+y+'</div><input class="fy" data-i="'+i+'" data-y="'+yi+'" type="number" step="1" value="'+esc(ov[yi])+'" style="width:52px; font:inherit; font-size:12px; padding:2px 4px; border:0.5px solid var(--bd2); border-radius:5px; background:var(--primary); color:var(--text);"></td>'; });
       pr+='<tr><td class="sub" style="padding:4px 10px 4px 0; white-space:nowrap;">'+fd.rows[i][0]+'</td>'+cells+'</tr>'; } });
-    if(pr){ h+='<div style="margin-top:12px; border-top:0.5px solid var(--bd); padding-top:8px;"><div class="hd" style="margin-bottom:2px;">Year-by-year path — transitory forces ('+act.n+')</div><div class="sub" style="margin-bottom:6px;">Edit per-year bps for the active scenario; the assessed column PV-collapses this path. The engine (M2) will use the path directly.</div><table style="border-collapse:collapse;">'+pr+'</table></div>'; }
+    if(pr){ h+='<div style="margin-top:12px; border-top:0.5px solid var(--bd); padding-top:8px;"><div class="hd" style="margin-bottom:2px;">Year-by-year path — transitory forces ('+act.n+')</div><div class="sub" style="margin-bottom:6px;">Edit per-year bps for the active scenario; the assessed column PV-collapses this path. The engine (M2) will use the path directly.</div><div style="overflow-x:auto;"><table style="border-collapse:collapse;">'+pr+'</table></div></div>'; }
     return h+'</div>'; }
   function userWorldHTML(sc){ var rows='';
     CFG.sliders.forEach(function(s){ var uv=sc.vals[s.k], dv=s.def, chg=(uv!==dv);
@@ -604,6 +627,17 @@ function vccDownload(){ try{
   document.getElementById('m4lab').textContent=CFG.metric4.label;
   document.getElementById('m4val').textContent=CFG.metric4.value;
   if(CFG.pvsub) document.getElementById('pvsub').textContent=CFG.pvsub;
+  // provenance chip, header download button, first-visit strip
+  (function(){ var p=CFG.prov||{}, pe=document.getElementById('prov');
+    if(pe) pe.textContent='Engine commit '+(p.commit||'unknown')+' \u00b7 '+(p.dataDate?('market price as at '+p.dataDate):'no market-price date recorded')+' \u00b7 built '+(p.buildDate||'unknown');
+    var hb=document.getElementById('hdl');
+    if(hb){ if(CFG.xlsxB64){ hb.textContent='\u2913 Download audited workbook'+(CFG.xlsxSheets?(' ('+CFG.xlsxSheets+' sheets)'):''); hb.addEventListener('click',function(){ vccDownload(); }); } else { hb.style.display='none'; } }
+    var ht=document.getElementById('howto'), hk='vcc_howto_'+CFG.companyShort, gone=false;
+    try{ gone=(localStorage.getItem(hk)==='1'); }catch(e){}
+    if(ht&&!gone){ ht.style.display='block';
+      ht.innerHTML='<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;"><div><b>How to read this</b><ol style="margin:4px 0 0; padding-left:18px;"><li>Pick a scenario bar to see what that world assumes.</li><li>Move a slider or open a panel to see what moves the value.</li><li>Download the audited workbook to check every number.</li></ol></div><button id="howtox" aria-label="dismiss how to read this" style="font-size:12px; flex:none;">Got it</button></div>';
+      document.getElementById('howtox').addEventListener('click',function(){ ht.style.display='none'; try{ localStorage.setItem(hk,'1'); }catch(e){} }); }
+  })();
   markExplore('forces'); openDetail('forces', true);
 })();
 </script></body></html>"""

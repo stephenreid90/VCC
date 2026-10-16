@@ -3,9 +3,9 @@
 _Generated 2026-10-16 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `7f3ca16 Batch 2 item 1: CSL section 16.3 market-gap note (item 10, D-92), set, sizing script and test` on `main`
+- HEAD: `7954bfd Batch 2 item 3: UI integrity M5, 21, 22, 31; CSL build-up from the engine; market price from data` on `main`
 - Unpushed commits: **0**
-- Tracked files: 383
+- Tracked files: 384
 - Untracked files: 1
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
@@ -111,8 +111,8 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `build_plan.html` (15.3KB)
   - `engine_implementation_plan.md` (16.5KB)
   - `open_items.css` (3.5KB)
-  - `open_items.json` (52.5KB)
-  - `open_questions.json` (2.2KB)
+  - `open_items.json` (53.8KB)
+  - `open_questions.json` (2.3KB)
   - `scenarios_workshop.md` (13.6KB)
   - `scenarios_workshop_prep.md` (19.7KB)
   - `single_source_of_truth.md` (16.7KB)
@@ -228,6 +228,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `test_three_statement.py` (717B)
   - `test_trade_working_capital_intensity.py` (3.3KB)
   - `test_ui_integrity_m5_21_22_31.py` (4.8KB)
+  - `test_ui_polish_23_34.py` (5.7KB)
   - `test_wbc_loads.py` (2.1KB)
   - `test_workbook_defects_m6_m7_m11.py` (9.2KB)
   - `test_workbook_recalc_live.py` (3.4KB)
@@ -283,16 +284,16 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
 ## UI generator
 
-  - `csl_scenario_interface.html` (181.0KB)
-  - `dnl_scenario_interface.html` (227.6KB)
-  - `wbc_scenario_interface.html` (167.9KB)
+  - `csl_scenario_interface.html` (185.8KB)
+  - `dnl_scenario_interface.html` (232.4KB)
+  - `wbc_scenario_interface.html` (172.7KB)
   - **_generator/**
     - `README.md` (893B)
     - `beta_data.py` (10.0KB)
-    - `build_cfgs.py` (98.7KB)
-    - `cfgs_gen.json` (253.3KB)
+    - `build_cfgs.py` (102.3KB)
+    - `cfgs_gen.json` (254.2KB)
     - `engine_workbook.py` (125.3KB)
-    - `gen_ui.py` (90.6KB)
+    - `gen_ui.py` (95.1KB)
 
 ## Analyses (workbooks)
 
@@ -376,5 +377,5 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 Not in git. Either commit them or clear them — an untracked file is invisible
 to anyone who clones the repo, and is the most common way work gets lost.
 
-- `tests/test_ui_integrity_m5_21_22_31.py`
+- `tests/test_ui_polish_23_34.py`
 

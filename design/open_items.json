@@ -272,9 +272,9 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "Headline sub-caption pvsub unused — the punchline isn't landed in 5 seconds.",
-    "treatment": "<b>Partly wrong</b> — CSL's <i>is</i> populated. Do it for DNL and WBC: engine-sourced gap sentence. [Reviewed 16 Oct 2026: Not verified. pvsub appears in the prototypes; check it is populated for DNL and WBC.]",
+    "treatment": "<b>Partly wrong</b> — CSL's <i>is</i> populated. Do it for DNL and WBC: engine-sourced gap sentence. [Reviewed 16 Oct 2026: Not verified. pvsub appears in the prototypes; check it is populated for DNL and WBC.] [Done 16 Oct 2026: pvsub now carries an engine-sourced gap sentence for DNL, WBC and CSL; test tests/test_ui_polish_23_34.py]",
     "questions": [],
-    "status": "PLANNED",
+    "status": "DONE",
     "batch": "Batch 5"
   },
   {
@@ -282,11 +282,11 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "Metric card 4 is inconsistent — asymmetry for DNL/WBC, terminal share for CSL.",
-    "treatment": "Show asymmetry for all three; move terminal share into the discount-rate panel beside the §11.4.2 warning. [Reviewed 16 Oct 2026: Not verified. Needs a look at the metric cards in the prototypes.]",
+    "treatment": "Show asymmetry for all three; move terminal share into the discount-rate panel beside the §11.4.2 warning. [Reviewed 16 Oct 2026: Not verified. Needs a look at the metric cards in the prototypes.] [Done 16 Oct 2026: metric card 4 is the asymmetry for all three; terminal share moved into the discount-rate panel beside the section 11.4.2 warning (Q6 option b); test tests/test_ui_polish_23_34.py]",
     "questions": [
       "Q6"
     ],
-    "status": "PLANNED",
+    "status": "DONE",
     "batch": "Batch 5"
   },
   {
@@ -304,9 +304,9 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "Bar values show only the per-share number, no \"% vs MT\".",
-    "treatment": "Add the delta beside each bar value — already computed for the narrative. [Reviewed 16 Oct 2026: Probably partly done. '% vs MT' appears in the WBC prototype. Check CSL and DNL bars.]",
+    "treatment": "Add the delta beside each bar value — already computed for the narrative. [Reviewed 16 Oct 2026: Probably partly done. '% vs MT' appears in the WBC prototype. Check CSL and DNL bars.] [Done 16 Oct 2026: bars show the delta vs Muddle Through beside the value for all three; test tests/test_ui_polish_23_34.py]",
     "questions": [],
-    "status": "PLANNED",
+    "status": "DONE",
     "batch": "Batch 5"
   },
   {
@@ -314,9 +314,9 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "The download button lives only inside detail panels, so the most persuasive traceability artefact is invisible until a reviewer drills down.",
-    "treatment": "Persistent \"Download audited workbook\" in the header, sheet count from cfg. [Reviewed 16 Oct 2026: Still open. No download button in the header of any prototype.]",
+    "treatment": "Persistent \"Download audited workbook\" in the header, sheet count from cfg. [Reviewed 16 Oct 2026: Still open. No download button in the header of any prototype.] [Done 16 Oct 2026: persistent header \"Download audited workbook\" button with the sheet count counted from the built workbook; test tests/test_ui_polish_23_34.py]",
     "questions": [],
-    "status": "PLANNED",
+    "status": "DONE",
     "batch": "Batch 5"
   },
   {
@@ -324,9 +324,9 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "No provenance chip — the topnote reads as a disclaimer rather than a feature.",
-    "treatment": "One-line engine/commit/data provenance under the header. Sell the one-source-of-truth story. [Reviewed 16 Oct 2026: Still open. No provenance text in any prototype.]",
+    "treatment": "One-line engine/commit/data provenance under the header. Sell the one-source-of-truth story. [Reviewed 16 Oct 2026: Still open. No provenance text in any prototype.] [Done 16 Oct 2026: provenance chip under the header: engine commit, market-price date, build date; test tests/test_ui_polish_23_34.py]",
     "questions": [],
-    "status": "PLANNED",
+    "status": "DONE",
     "batch": "Batch 5"
   },
   {
@@ -334,9 +334,9 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "<b>Bars are click-only divs; the whole file has one aria-label; tab selection is border-colour only</b> (WCAG 1.4.1 failure). The file is currently unusable by keyboard.",
-    "treatment": "role/tabindex/Enter-Space/aria-label on bars; aria-pressed and a non-colour cue on tabs. [Reviewed 16 Oct 2026: Still open. One aria-label per file, and no role or tabindex on the bars.]",
+    "treatment": "role/tabindex/Enter-Space/aria-label on bars; aria-pressed and a non-colour cue on tabs. [Reviewed 16 Oct 2026: Still open. One aria-label per file, and no role or tabindex on the bars.] [Done 16 Oct 2026: bars are keyboard operable with role, tabindex and aria-label; tabs carry aria-pressed and bold/underline when selected; test tests/test_ui_polish_23_34.py]",
     "questions": [],
-    "status": "PLANNED",
+    "status": "DONE",
     "batch": "Batch 5"
   },
   {
@@ -344,9 +344,9 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "Narrow-width overflow: fixed 122px label column, value label at calc(w% + 6px).",
-    "treatment": "Move the value inside the bar above ~80% width. <b>Partly wrong</b> — the DCF workings table is already wrapped; the unwrapped one is the transitory-forces table. [Reviewed 16 Oct 2026: Not verified at narrow widths.]",
+    "treatment": "Move the value inside the bar above ~80% width. <b>Partly wrong</b> — the DCF workings table is already wrapped; the unwrapped one is the transitory-forces table. [Reviewed 16 Oct 2026: Not verified at narrow widths.] [Done 16 Oct 2026: label column shrinks, value sits inside bars wider than about 72%, forces year-path table scrolls; test tests/test_ui_polish_23_34.py]",
     "questions": [],
-    "status": "PLANNED",
+    "status": "DONE",
     "batch": "Batch 5"
   },
   {
@@ -376,9 +376,9 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "Scenario narratives are buried one click deep.",
-    "treatment": "Show the first sentence + \"why it lands here\" under the chart on bar selection. [Reviewed 16 Oct 2026: Not verified.]",
+    "treatment": "Show the first sentence + \"why it lands here\" under the chart on bar selection. [Reviewed 16 Oct 2026: Not verified.] [Done 16 Oct 2026: first sentence and the \"why\" line of the narrative show under the chart on bar selection; test tests/test_ui_polish_23_34.py]",
     "questions": [],
-    "status": "PLANNED",
+    "status": "DONE",
     "batch": "Batch 5"
   },
   {
@@ -386,9 +386,9 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "No onboarding for first-time reviewers.",
-    "treatment": "Dismissible 3-step \"how to read this\" strip aimed at the feedback ask. [Reviewed 16 Oct 2026: Still open. No 'how to read' onboarding in any prototype.]",
+    "treatment": "Dismissible 3-step \"how to read this\" strip aimed at the feedback ask. [Reviewed 16 Oct 2026: Still open. No 'how to read' onboarding in any prototype.] [Done 16 Oct 2026: dismissible three-step how-to-read strip, remembered per company in localStorage; test tests/test_ui_polish_23_34.py]",
     "questions": [],
-    "status": "PLANNED",
+    "status": "DONE",
     "batch": "Batch 5"
   },
   {

@@ -91,6 +91,20 @@ working capital confirmations; UI design choices 32, 35, Q6, Q7.
   `tests/test_ui_integrity_m5_21_22_31.py` (8 tests). Left alone: the CSL slider defaults (`cp`, `sliders`), and
   "Implied price AUD 105.53" in `data/companies/csl_documents.yaml`. DCF 439 / 1 skipped; other 340; LibreOffice 2; lint 14/14.
 
+- 16 Oct 2026: **UI polish 23, 24 (Q6 option b), 26-30, 33, 34 done (batch 2 item 4, Sonnet, mild).** Values unchanged.
+  Engine-sourced gap line under the headline for all three (23); metric card 4 is the asymmetry for all three (DNL 2.99x,
+  WBC 1.19x, CSL 1.91x) and terminal share now sits in the discount-rate panel beside the 11.4.2 warning (24, Q6 built);
+  delta vs Muddle Through beside every bar (26); "Download audited workbook (N sheets)" in the header, sheet count from
+  openpyxl (27); provenance chip: engine commit, market price date, build date (28); bars are keyboard buttons with
+  aria-labels, tabs carry aria-pressed and a non-colour cue (29); label column shrinks, value moves inside wide bars,
+  transitory-forces table scrolls (30); first narrative sentence and the "why it lands here" line under the chart on bar
+  selection (33); dismissible three-step "how to read this" strip, remembered per company in localStorage (34). Typed
+  gap claims in the CSL narratives were wrong and are now computed (MT "~93%" -> ~100%; Stagflation "+52%" -> +36%;
+  DNL snap "just below market" -> ~44% below). CSL labels now say WACC, not cost of equity (D-84); the CSL beta
+  workbench still runs in cost-of-equity mode (a calculation, left alone). Pages rendered in Chromium at 1280 and 420 px
+  with no script errors. Test: `tests/test_ui_polish_23_34.py` (12 tests). Other suite 352; goldens and CSL tie green;
+  lint 14/14. DNL's market price 3.61 is still typed with no date (known gap, needs a dated price from Ben's feed).
+
 ### Batch 1 progress
 
 - 16 Oct 2026: **CSL decay band 15-25 years, midpoint 20 (D-93, Stephen's ruling, serious).** The six CSL

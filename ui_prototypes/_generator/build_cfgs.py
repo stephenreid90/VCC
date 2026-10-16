@@ -261,7 +261,7 @@ wbc = {
 }
 
 csl = {
- "company":"CSL Limited (ASX:CSL)","companyShort":"CSL","ccy":"AUD","ccynote":"USD functional · AUD at 0.66 · cost-of-equity DCF",
+ "company":"CSL Limited (ASX:CSL)","companyShort":"CSL","ccy":"AUD","ccynote":"USD functional · AUD at 0.66 · WACC-based DCF",
  "dp":2,"market":105.53,"broker":136.0,"scale":260.0,"liveIdx":1,"activeIdx":1,
  "mklab":"vs market (105.53)","brlab":"vs average broker (136)","metric4":{"label":"Terminal % of value","value":"75%"},
  "pvsub":"AUD (USD-functional model, at 0.66)",
@@ -269,7 +269,7 @@ csl = {
  "footnote":"Prototype for discussion. Calibrated central case: CSL Muddle Through USD 134.52 / AUD 203.83 (market AUD 105.53). The framework sits ~93% above market — a §16 &lsquo;cause for curiosity&rsquo;, not a calibration error; β held at 0.85 for a repeatable framework. Per-scenario figures from csl_scenarios_comparison_v2 and _muddle_through_v4.",
  "cp":{"base":203.83,"re0":0.0875,"g0":0.03,"m0":30.0,"tax0":0.19,"wTerm":0.752,"xKey":"uplift","x0":150,"xk":0.0004},
  "sliders":[
-   {"k":"re","label":"Discount rate (cost of equity)","min":7,"max":11,"step":0.25,"def":8.75,"suf":"%","dec":2},
+   {"k":"re","label":"Discount rate (WACC)","min":7,"max":11,"step":0.25,"def":8.75,"suf":"%","dec":2},
    {"k":"g","label":"Terminal growth","min":2,"max":4,"step":0.25,"def":3.0,"suf":"%","dec":2},
    {"k":"m","label":"Terminal EBIT margin","min":26,"max":34,"step":0.5,"def":30.0,"suf":"%","dec":1},
    {"k":"tax","label":"Effective tax rate","min":15,"max":25,"step":0.5,"def":19.0,"suf":"%","dec":1},
@@ -341,6 +341,7 @@ csl = {
 
 import beta_data
 dnl["beta"]=beta_data.DNL; wbc["beta"]=beta_data.WBC; csl["beta"]=beta_data.CSL
+csl["discLabel"] = "WACC"   # D-84: CSL is discounted at the engine WACC; the sub-line must not say cost of equity
 
 import os as _os
 _CFGP=_os.path.join(_os.path.dirname(_os.path.abspath(__file__)),'cfgs_gen.json')
@@ -456,6 +457,7 @@ def engine_pack(company_id, archetype_id, scen, broker_price):
     asym = (max(downs) / max(ups)) if (ups and downs) else None
     return {"base": base, "wacc": r0.wacc, "discount_to_market": r0.discount_to_market,
             "vals": vals, "bars": bars, "asym": asym, "live_name": live[1],
+            "terminal_share": r0.terminal_share_of_ev, "terminal_denom": "EV",
             "ev": {nm: res[sid].enterprise_value for sid, nm, _k in scen}}
 
 from vcc_valuations.translator import build_bank_inputs_from_data as _bbi
@@ -480,6 +482,7 @@ def bank_pack(company_id, archetype_id, scen, broker_price, market_price):
     asym = (max(downs) / max(ups)) if (ups and downs) else None
     return {"base": base, "ke": r0.cost_of_equity, "discount_to_market": base / market_price - 1.0,
             "vals": vals, "bars": bars, "asym": asym,
+            "terminal_share": r0.terminal_share_of_claim, "terminal_denom": "the equity claim",
             "ordinary_equity": {nm: res[sid].ordinary_equity_value for sid, nm, _k in scen},
             "npat_y5": {nm: res[sid].cash_npat[5] for sid, nm, _k in scen}}
 
@@ -503,7 +506,7 @@ def segment_pack(company_id, archetype_id, scen, broker_price, market_price):
     downs = [base - v for v in vals.values() if v < base]
     asym = (max(downs) / max(ups)) if (ups and downs) else None
     return {"base": base, "ke": _ke, "discount_to_market": base / market_price - 1.0,
-            "vals": vals, "bars": bars, "asym": asym, "terminal_share": r0.terminal_share_of_ev,
+            "vals": vals, "bars": bars, "asym": asym, "terminal_share": r0.terminal_share_of_ev, "terminal_denom": "EV",
             "usd": {nm: res[sid].value_per_share_usd for sid, nm, _k in scen},
             "ev": {nm: res[sid].enterprise_value for sid, nm, _k in scen},
             "pv_explicit": {nm: res[sid].pv_explicit for sid, nm, _k in scen},
@@ -530,7 +533,7 @@ def _pct(nm): return (_vals[nm] / _base - 1.0) * 100.0
 
 dnl["cp"]["base"] = _base
 dnl["scenarios"] = _pk["bars"]
-dnl["metric4"] = {"label": "Asymmetry (down/up)", "value": ("%.1f×" % _asym)}
+dnl["metric4"] = {"label": "Asymmetry (down/up)", "value": ("%.2f\u00d7" % _asym)}
 _align_reduced_form_rate(dnl, _wacc)
 _point_active_at_live(dnl)
 
@@ -742,7 +745,7 @@ _sdm = abs(_sp["discount_to_market"]) * 100.0
 def _sm(v): return "{:,.0f}".format(round(v))
 csl["cp"]["base"] = _sbase
 csl["scenarios"] = _sp["bars"]
-csl["metric4"] = {"label": "Terminal % of value", "value": ("%.0f%%" % (_sp["terminal_share"] * 100))}
+csl["metric4"] = {"label": "Asymmetry (down/up)", "value": ("%.2f\u00d7" % _sp["asym"])}
 _align_reduced_form_rate(csl, _ske)
 _point_active_at_live(csl)
 
@@ -821,5 +824,67 @@ csl.setdefault("dcfDetail", {})["workings"] = {"title": "Per-year segment build 
              _crow("Group EBIT", _cr2.group_ebit[1:]),
              _crow("FCFF (FY26\u2013FY31)", _cr2.fcff)]}
 # ===== end CSL SSOT block =====
+
+# ===== UI polish, items 23/24/27/28 (16 Oct 2026): every figure below is formatted from engine output =====
+import io as _io
+import datetime as _dt
+import subprocess as _sub
+from openpyxl import load_workbook as _lwb
+from vcc_valuations.dcf.fcf_engine import TERMINAL_SHARE_THRESHOLD as _TST, terminal_share_warning as _tsw
+
+def _gap_sentence(cfg):
+    """Headline gap to market, from the engine base value and the cfg's market price."""
+    base, mkt, dp = cfg["cp"]["base"], cfg["market"], cfg["dp"]
+    gap = (base / mkt - 1.0) * 100.0
+    return "%s %.*f vs market %.*f: %.0f%% %s" % (cfg["ccy"], dp, base, dp, mkt, abs(gap), "above" if gap >= 0 else "below")
+
+def _term_block(share, denom):
+    """Terminal share of value, set beside the section 11.4.2 warning (engine text, threshold from the engine)."""
+    warn = _tsw(share, denom)
+    return ('<div id="termshare" class="sub" style="margin-top:10px; line-height:1.5;"><b>Terminal share of value:</b> %.0f%% of %s '
+            '(§11.4.2 sensitivity-pass threshold %.0f%%).%s</div>'
+            % (share * 100.0, denom, _TST * 100.0,
+               (' <span style="color:var(--warning-tx);">%s</span>' % warn) if warn else ""))
+
+def _git_commit():
+    try:
+        _o = _sub.run(["git", "rev-parse", "--short", "HEAD"], cwd=str(_ROOT), capture_output=True, text=True, timeout=15)
+        _c = _o.stdout.strip()
+        return _c if (_o.returncode == 0 and _c) else "uncommitted"
+    except Exception:
+        return "uncommitted"
+
+def _data_date(company):
+    try:
+        _d = _data("data/companies/%s.yaml" % company)["company_position"]["share_statistics"].get("market_reference_date")
+        return str(_d) if _d else None
+    except Exception:
+        return None
+
+_COMMIT = _git_commit()
+_BUILT = _dt.date.today().isoformat()
+for _cfg, _co, _pack in ((dnl, "dnl", _pk), (wbc, "wbc", _wp), (csl, "csl", _sp)):
+    _gap = _gap_sentence(_cfg)
+    _cfg["pvsub"] = (_cfg["pvsub"] + " · " + _gap) if _cfg.get("pvsub") else _gap
+    _cfg["_discount"] = _cfg["_discount"] + _term_block(_pack["terminal_share"], _pack["terminal_denom"])
+    _cfg["xlsxSheets"] = len(_lwb(_io.BytesIO(_b64.b64decode(_cfg["xlsxB64"])), read_only=True).sheetnames)
+    _cfg["prov"] = {"commit": _COMMIT, "buildDate": _BUILT, "dataDate": _data_date(_co) if _co != "dnl" else None}
+
+# ----- typed gap claims -> engine-formatted (follow-up, 16 Oct 2026) -----
+_cdm = abs(_sp["discount_to_market"]) * 100.0          # CSL value vs market, %
+_csl_gap = "~%.0f%% above market" % _cdm
+_cs = csl["narr"]
+_cs["Muddle Through"] = _cs["Muddle Through"].replace("Why ~93% above market?", "Why %s?" % _csl_gap)
+_c_stag = (_svals["Stagflation Persists"] / csl["market"] - 1.0) * 100.0
+_c_fall = abs(_svals["Stagflation Persists"] / _sbase - 1.0) * 100.0
+_cs["Stagflation Persists"] = (_cs["Stagflation Persists"]
+    .replace("the whole 21% fall", "the whole %.0f%% fall" % _c_fall)
+    .replace("+52% above market", "%+.0f%% above market" % _c_stag))
+csl["footnote"] = (csl["footnote"]
+    .replace("(market AUD 105.53). The framework sits ~93% above market",
+             "(market AUD %.2f). The framework sits %s" % (csl["market"], _csl_gap)))
+dnl["snap"]["world"] = dnl["snap"]["world"].replace(
+    "sits just below market", "sits ~%.0f%% below market" % _dmpct)
+# ===== end UI polish block =====
 json.dump({"dnl":dnl,"wbc":wbc,"csl":csl}, open(_CFGP,'w',encoding='utf-8'), ensure_ascii=False)  # encoding is not optional: ensure_ascii False plus a platform default codec dies on Windows
 print("cfgs_gen.json written")
