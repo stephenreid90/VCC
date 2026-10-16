@@ -1,0 +1,30 @@
+# RBA cash rate target: the rate in force from each effective date (percent).
+# Source: Reserve Bank of Australia, "Cash Rate Target",
+# https://www.rba.gov.au/statistics/cash-rate/ (read 16 Oct 2026). Only changes are
+# listed; the rate holds between entries. Used by scripts/size_bank_nim_pass_through.py
+# (R16-4) to measure WBC's net interest margin against the policy rate.
+rba_cash_rate:
+  units: percent
+  changes:
+    - {effective: 2020-03-20, target: 0.25}
+    - {effective: 2020-11-04, target: 0.10}
+    - {effective: 2022-05-04, target: 0.35}
+    - {effective: 2022-06-08, target: 0.85}
+    - {effective: 2022-07-06, target: 1.35}
+    - {effective: 2022-08-03, target: 1.85}
+    - {effective: 2022-09-07, target: 2.35}
+    - {effective: 2022-10-05, target: 2.60}
+    - {effective: 2022-11-02, target: 2.85}
+    - {effective: 2022-12-07, target: 3.10}
+    - {effective: 2023-02-08, target: 3.35}
+    - {effective: 2023-03-08, target: 3.60}
+    - {effective: 2023-05-03, target: 3.85}
+    - {effective: 2023-06-07, target: 4.10}
+    - {effective: 2023-11-08, target: 4.35}
+    - {effective: 2025-02-19, target: 4.10}
+    - {effective: 2025-05-21, target: 3.85}
+    - {effective: 2025-08-13, target: 3.60}
+    - {effective: 2026-02-04, target: 3.85}
+    - {effective: 2026-03-18, target: 4.10}
+    - {effective: 2026-05-06, target: 4.35}
+    - {effective: 2026-09-30, target: 4.60}

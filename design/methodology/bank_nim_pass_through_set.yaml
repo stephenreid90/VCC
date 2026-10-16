@@ -1,0 +1,61 @@
+bank_nim_pass_through_set:
+  generated: 16 Oct 2026 by scripts/size_bank_nim_pass_through.py (R16-4)
+  what: bp of WBC group NIM per 100bp of RBA cash rate, measured over 1H21-1H26
+  sample_halves: 10
+  observations:
+  - half: 1H21 (Mar 2021)
+    nim_bps: 206.0
+    avg_cash_rate_pct: 0.128
+  - half: 1H22 (Mar 2022)
+    nim_bps: 191.0
+    avg_cash_rate_pct: 0.1
+  - half: 2H22 (Sep 2022)
+    nim_bps: 196.0
+    avg_cash_rate_pct: 1.084
+  - half: 1H23 (Mar 2023)
+    nim_bps: 196.0
+    avg_cash_rate_pct: 3.063
+  - half: 2H23 (Sep 2023)
+    nim_bps: 194.0
+    avg_cash_rate_pct: 3.965
+  - half: 1H24 (Mar 2024)
+    nim_bps: 189.0
+    avg_cash_rate_pct: 4.298
+  - half: 2H24 (Sep 2024)
+    nim_bps: 197.0
+    avg_cash_rate_pct: 4.35
+  - half: 1H25 (Mar 2025)
+    nim_bps: 188.0
+    avg_cash_rate_pct: 4.294
+  - half: 2H25 (Sep 2025)
+    nim_bps: 195.0
+    avg_cash_rate_pct: 3.851
+  - half: 1H26 (Mar 2026)
+    nim_bps: 189.0
+    avg_cash_rate_pct: 3.696
+  level_regression:
+    pass_through_bp_per_100bp: -1.53
+    std_error: 0.93
+    r_squared: 0.252
+    intercept_nim_bps: 198.5
+    band_1se_bp_per_100bp:
+    - -2.47
+    - -0.6
+  level_regression_excluding_1h21:
+    pass_through_bp_per_100bp: -0.3
+    std_error: 0.86
+    r_squared: 0.017
+    why: 1H21 (206bp) predates the cycle and the FY22 register; shown so the slope is not read off one point
+  change_regression:
+    pass_through_bp_per_100bp: 1.59
+    std_error: 3.79
+    r_squared: 0.025
+  cycle_check:
+    cash_rate_rise_pct_points: 4.25
+    nim_change_at_peak_rate_bps: -9.0
+    implied_bp_per_100bp: -2.12
+  reading: The sample is one hiking-and-easing cycle, ten half-years. Group NIM stayed in a 188-197bp band while
+    the cash rate rose 425bp, so the measured pass-through is small and not statistically distinct from zero. A
+    one-for-one path (100bp per 100bp) is ruled out by the data; the typed per-scenario shift is of the same order
+    as the measurement. Deposit repricing and front-book mortgage competition offset the lending-side benefit the
+    Porter's work names.
