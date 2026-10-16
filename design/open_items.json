@@ -588,9 +588,9 @@
     "source": "D-42 diagnostic, 16 Sep 2026",
     "area": "Correctness",
     "issue": "<b>CSL's terminal asserts a 61-73% return on new capital, and that is D-53 unimplemented.</b> The segment terminal declares <code>terminal_capex_pct_revenue: 0.06</code> equal to <code>da_pct_revenue: 0.06</code>, so net capex in the terminal is exactly zero and the only reinvestment left is working capital at g x 0.35, about 1.05% of revenue. A perpetuity growing at 3% while reinvesting roughly 4% of its earnings is asserting a return on new capital in the high sixties against a discount rate of 8.75% — an excess of 5,258 to 6,415bp depending on scenario. For comparison, DNL now runs 4.85% to 12.13% against a WACC of 8.88%, which is the range a real business occupies.",
-    "treatment": "This is not a new defect — it is the quantification D-53 was missing. D-49 retired <code>capex_rule: equals_da</code> as a house rule on the argument that capex equal to depreciation holds the asset base flat in nominal dollars while revenue compounds; D-53 ruled that argument general and therefore applicable to CSL. Implementing D-53 raises CSL's terminal capex above D&A, cuts terminal FCFF and lowers all six CSL levels, and should drop the implied return into the range DNL occupies. The diagnostic gives that implementation a target to land in and a before-figure to cite. Take with D-55, which also moves all six CSL levels. [Reviewed 16 Oct 2026: Still open. CSL terminal capex equals D&A at 6% of revenue (csl.yaml), so net terminal capex is zero.]",
+    "treatment": "This is not a new defect — it is the quantification D-53 was missing. D-49 retired <code>capex_rule: equals_da</code> as a house rule on the argument that capex equal to depreciation holds the asset base flat in nominal dollars while revenue compounds; D-53 ruled that argument general and therefore applicable to CSL. Implementing D-53 raises CSL's terminal capex above D&A, cuts terminal FCFF and lowers all six CSL levels, and should drop the implied return into the range DNL occupies. The diagnostic gives that implementation a target to land in and a before-figure to cite. Take with D-55, which also moves all six CSL levels. [Reviewed 16 Oct 2026: Still open. CSL terminal capex equals D&A at 6% of revenue (csl.yaml), so net terminal capex is zero.] [Closed 16 Oct 2026, D-85: the capex line feeds only a diagnostic, so no CSL value moves. The open question is the starting return and fade, now item R16-8.]",
     "questions": "",
-    "status": "PLANNED",
+    "status": "DONE",
     "batch": "Batch 4"
   },
   {
@@ -672,5 +672,15 @@
     "questions": [],
     "status": "NEEDS",
     "batch": "Batch 6"
+  },
+  {
+    "id": "R16-8",
+    "source": "D-85, 16 Oct 2026",
+    "area": "Methodology",
+    "issue": "<b>CSL's value depends on its starting return and 25-year fade, which are a judgement.</b> The convergence terminal starts at 20.5% to 31.2% and fades to 8.12% over 25 years. A 20% start cuts orderly convergence from 264.30 to 198.26. A 10-year fade cuts it to 194.57.",
+    "treatment": "Sensitivity in design/methodology/csl_terminal_return_sensitivity_2026-10-16.md. No change made. Stephen to decide whether the starting return and fade stand.",
+    "questions": "Keep the earned starting return and 25-year fade, or set a declared return or shorter fade for CSL?",
+    "status": "NEEDS-STEPHEN",
+    "batch": "Batch 4"
   }
 ]
