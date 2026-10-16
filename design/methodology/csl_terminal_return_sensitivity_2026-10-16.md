@@ -17,6 +17,9 @@ inputs overridden. Everything else is as in the model.
   fixed 20%, 15% or 12%.
 - Fade: the model's 25 years, or 10 years.
 - Value: AUD per share, from the segment engine.
+- Source: every figure below is in `design/methodology/csl_terminal_return_sets.yaml`,
+  written by `scripts/size_csl_terminal_return.py` and pinned by
+  `tests/dcf/test_csl_terminal_return_sets.py` (which also checks this table cell by cell).
 
 ## Results (AUD per share)
 

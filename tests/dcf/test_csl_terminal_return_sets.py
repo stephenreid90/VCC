@@ -58,3 +58,40 @@ def test_each_scenario_carries_the_sensitivity_band():
     for s in _committed()["scenarios"]:
         # 2 fades x 4 starts, minus the model row itself (earned start at 25 years).
         assert len(s["sensitivity"]) == 7, s["scenario"]
+
+
+def test_csl_goodwill_return_agrees_with_the_general_terminal_return_set():
+    # D-86a: one general function feeds both sets; they must not drift apart.
+    general = yaml.safe_load(
+        (ROOT / "design" / "methodology" / "terminal_return_sets.yaml").read_text(encoding="utf-8"))
+    by = {r["scenario"]: r for r in general["terminal_return_sets"]["current"]["rows"]
+          if r["company"] == "csl"}
+    for s in _committed()["scenarios"]:
+        g = by[s["scenario"]]
+        assert round(g["earned_return_ex_goodwill"], 4) == s["starting_return_ex_goodwill"]
+        assert round(g["earned_return_incl_goodwill"], 4) == s["starting_return_incl_goodwill"]
+
+
+def test_the_sensitivity_paper_is_the_committed_set():
+    # D-86b: every number in design/methodology/csl_terminal_return_sensitivity_2026-10-16.md
+    # comes from this set. The paper's table is parsed and compared cell by cell.
+    paper = (ROOT / "design" / "methodology"
+             / "csl_terminal_return_sensitivity_2026-10-16.md").read_text(encoding="utf-8")
+    names = {"Orderly convergence": "orderly_convergence", "Muddle through": "muddle_through",
+             "AI productivity lag": "ai_productivity_lag", "Fragmentation": "fragmentation",
+             "Disorderly climate": "disorderly_climate_crystallisation",
+             "Stagflation persists": "stagflation_persists"}
+    sets = {s["scenario"]: s for s in _committed()["scenarios"]}
+    checked = 0
+    for line in paper.splitlines():
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(cells) != 7 or cells[0] not in names:
+            continue
+        s = sets[names[cells[0]]]
+        fade = float(cells[2].split()[0])
+        vals = [float(c) for c in cells[3:7]]
+        by = {(b["fade_years"], b["starting_return"]): b["aud_per_share"] for b in s["sensitivity"]}
+        by[(s["fade_years"], "earned")] = s["aud_per_share_model"]
+        assert vals == [by[(fade, k)] for k in ("earned", 0.2, 0.15, 0.12)], line
+        checked += 1
+    assert checked == 12

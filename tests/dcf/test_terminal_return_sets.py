@@ -230,3 +230,61 @@ def test_the_bank_reports_its_declared_rate_not_an_inverted_one(rows):
         assert r.construction == "bank_roe"
         assert r.reinvestment_rate == pytest.approx(
             r.terminal_growth / r.return_on_new_capital, rel=1e-9)
+
+
+# ------------------------------------------- D-86a: goodwill-inclusive disclosure
+def _row(committed, company, scenario):
+    for r in committed["terminal_return_sets"]["current"]["rows"]:
+        if r["company"] == company and r["scenario"] == scenario:
+            return r
+    raise KeyError((company, scenario))
+
+
+def test_goodwill_inclusive_return_is_general_and_pure():
+    from vcc_valuations.dcf.terminal_return import goodwill_inclusive_return
+    g = goodwill_inclusive_return(earnings=100.0, capital=400.0, goodwill=100.0)
+    assert g.return_ex_goodwill == 0.25
+    assert g.return_incl_goodwill == 0.20
+    assert g.capital_incl_goodwill == 500.0
+
+
+def test_every_company_with_a_capital_base_carries_the_disclosure(rows):
+    for r in rows:
+        if r.terminal_invested_capital or r.company_id == "csl":
+            assert r.goodwill_return is not None, (r.company_id, r.scenario_id)
+            assert r.goodwill_return.return_incl_goodwill < r.goodwill_return.return_ex_goodwill
+        else:
+            assert r.goodwill_return is None, (r.company_id, r.scenario_id)  # bank: no base
+
+
+def test_goodwill_disclosure_is_read_from_the_financials_files(committed):
+    gw = {c: yaml.safe_load((ROOT / "data" / "financials" / f"{c}.yaml").read_text(encoding="utf-8"))
+          for c in ("dnl", "csl")}
+    for r in committed["terminal_return_sets"]["current"]["rows"]:
+        if r["company"] in gw:
+            assert r["goodwill"] == float(gw[r["company"]]["balance_sheet"]["goodwill"])
+
+
+def test_goodwill_inclusive_figures_are_pinned(committed):
+    # Pinned 16 Oct 2026 (D-86a). Disclosure only: goodwill stays out of capital and value.
+    pinned = {
+        ("dnl", "muddle_through"): (0.130543, 0.093421),
+        ("dnl", "orderly_convergence"): (0.148098, 0.106848),
+        ("csl", "muddle_through"): (0.275579, 0.205154),
+        ("csl", "orderly_convergence"): (0.312154, 0.234309),
+        ("csl", "stagflation_persists"): (0.205177, 0.150459),
+    }
+    for (c, s), (ex, incl) in pinned.items():
+        r = _row(committed, c, s)
+        assert r["earned_return_ex_goodwill"] == ex, (c, s)
+        assert r["earned_return_incl_goodwill"] == incl, (c, s)
+    # the headline (ex-goodwill) return is the same number as the whole-capital reading
+    for r in committed["terminal_return_sets"]["current"]["rows"]:
+        if r["company"] == "dnl":
+            assert r["earned_return_ex_goodwill"] == r["return_on_whole_capital"]
+
+
+def test_bank_has_no_goodwill_disclosure(committed):
+    for r in committed["terminal_return_sets"]["current"]["rows"]:
+        if r["company"] == "wbc":
+            assert r["goodwill"] is None and r["earned_return_incl_goodwill"] is None

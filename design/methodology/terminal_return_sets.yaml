@@ -17,6 +17,7 @@ terminal_return_sets:
     - D-42 (PROPOSED)
     - M14
     - D-07 non-blocking precedent
+    - D-86a goodwill-inclusive disclosure
     rows:
     - company: dnl
       scenario: ai_productivity_lag
@@ -35,6 +36,10 @@ terminal_return_sets:
       excess_on_governing_return: 0.040869
       declared_terminal_return: null
       declared_versus_whole_capital: null
+      goodwill: 1778.5
+      capital_incl_goodwill: 6198.134
+      earned_return_ex_goodwill: 0.129641
+      earned_return_incl_goodwill: 0.092442
       warning_count: 1
     - company: dnl
       scenario: disorderly_climate_crystallisation
@@ -53,6 +58,10 @@ terminal_return_sets:
       excess_on_governing_return: -0.009758
       declared_terminal_return: null
       declared_versus_whole_capital: null
+      goodwill: 1778.5
+      capital_incl_goodwill: 7820.175
+      earned_return_ex_goodwill: 0.079013
+      earned_return_incl_goodwill: 0.061044
       warning_count: 0
     - company: dnl
       scenario: fragmentation
@@ -71,6 +80,10 @@ terminal_return_sets:
       excess_on_governing_return: 0.008601
       declared_terminal_return: null
       declared_versus_whole_capital: null
+      goodwill: 1778.5
+      capital_incl_goodwill: 6221.677
+      earned_return_ex_goodwill: 0.097372
+      earned_return_incl_goodwill: 0.069538
       warning_count: 1
     - company: dnl
       scenario: muddle_through
@@ -89,6 +102,10 @@ terminal_return_sets:
       excess_on_governing_return: 0.041772
       declared_terminal_return: null
       declared_versus_whole_capital: null
+      goodwill: 1778.5
+      capital_incl_goodwill: 6254.238
+      earned_return_ex_goodwill: 0.130543
+      earned_return_incl_goodwill: 0.093421
       warning_count: 1
     - company: dnl
       scenario: orderly_convergence
@@ -107,6 +124,10 @@ terminal_return_sets:
       excess_on_governing_return: 0.059327
       declared_terminal_return: null
       declared_versus_whole_capital: null
+      goodwill: 1778.5
+      capital_incl_goodwill: 6385.208
+      earned_return_ex_goodwill: 0.148098
+      earned_return_incl_goodwill: 0.106848
       warning_count: 1
     - company: dnl
       scenario: stagflation_persists
@@ -125,6 +146,10 @@ terminal_return_sets:
       excess_on_governing_return: 0.024926
       declared_terminal_return: null
       declared_versus_whole_capital: null
+      goodwill: 1778.5
+      capital_incl_goodwill: 6108.752
+      earned_return_ex_goodwill: 0.113697
+      earned_return_incl_goodwill: 0.080595
       warning_count: 1
     - company: wbc
       scenario: ai_productivity_lag
@@ -143,6 +168,10 @@ terminal_return_sets:
       excess_on_governing_return: 0.0245
       declared_terminal_return: 0.105
       declared_versus_whole_capital: null
+      goodwill: null
+      capital_incl_goodwill: null
+      earned_return_ex_goodwill: null
+      earned_return_incl_goodwill: null
       warning_count: 1
     - company: wbc
       scenario: disorderly_climate_crystallisation
@@ -161,6 +190,10 @@ terminal_return_sets:
       excess_on_governing_return: 0.0095
       declared_terminal_return: 0.09
       declared_versus_whole_capital: null
+      goodwill: null
+      capital_incl_goodwill: null
+      earned_return_ex_goodwill: null
+      earned_return_incl_goodwill: null
       warning_count: 1
     - company: wbc
       scenario: fragmentation
@@ -179,6 +212,10 @@ terminal_return_sets:
       excess_on_governing_return: 0.0195
       declared_terminal_return: 0.1
       declared_versus_whole_capital: null
+      goodwill: null
+      capital_incl_goodwill: null
+      earned_return_ex_goodwill: null
+      earned_return_incl_goodwill: null
       warning_count: 1
     - company: wbc
       scenario: muddle_through
@@ -197,6 +234,10 @@ terminal_return_sets:
       excess_on_governing_return: 0.0245
       declared_terminal_return: 0.105
       declared_versus_whole_capital: null
+      goodwill: null
+      capital_incl_goodwill: null
+      earned_return_ex_goodwill: null
+      earned_return_incl_goodwill: null
       warning_count: 1
     - company: wbc
       scenario: orderly_convergence
@@ -215,6 +256,10 @@ terminal_return_sets:
       excess_on_governing_return: 0.0295
       declared_terminal_return: 0.11
       declared_versus_whole_capital: null
+      goodwill: null
+      capital_incl_goodwill: null
+      earned_return_ex_goodwill: null
+      earned_return_incl_goodwill: null
       warning_count: 1
     - company: wbc
       scenario: stagflation_persists
@@ -233,6 +278,10 @@ terminal_return_sets:
       excess_on_governing_return: 0.0095
       declared_terminal_return: 0.09
       declared_versus_whole_capital: null
+      goodwill: null
+      capital_incl_goodwill: null
+      earned_return_ex_goodwill: null
+      earned_return_incl_goodwill: null
       warning_count: 2
     - company: csl
       scenario: ai_productivity_lag
@@ -251,6 +300,10 @@ terminal_return_sets:
       excess_on_governing_return: 0.618871
       declared_terminal_return: null
       declared_versus_whole_capital: null
+      goodwill: 8065.0
+      capital_incl_goodwill: 31316.956
+      earned_return_ex_goodwill: 0.270337
+      earned_return_incl_goodwill: 0.200717
       warning_count: 1
     - company: csl
       scenario: disorderly_climate_crystallisation
@@ -269,6 +322,10 @@ terminal_return_sets:
       excess_on_governing_return: 0.5668
       declared_terminal_return: null
       declared_versus_whole_capital: null
+      goodwill: 8065.0
+      capital_incl_goodwill: 30920.056
+      earned_return_ex_goodwill: 0.238145
+      earned_return_incl_goodwill: 0.176029
       warning_count: 1
     - company: csl
       scenario: fragmentation
@@ -287,6 +344,10 @@ terminal_return_sets:
       excess_on_governing_return: 0.563371
       declared_terminal_return: null
       declared_versus_whole_capital: null
+      goodwill: 8065.0
+      capital_incl_goodwill: 30669.166
+      earned_return_ex_goodwill: 0.229141
+      earned_return_incl_goodwill: 0.168884
       warning_count: 1
     - company: csl
       scenario: muddle_through
@@ -305,6 +366,10 @@ terminal_return_sets:
       excess_on_governing_return: 0.613086
       declared_terminal_return: null
       declared_versus_whole_capital: null
+      goodwill: 8065.0
+      capital_incl_goodwill: 31559.029
+      earned_return_ex_goodwill: 0.275579
+      earned_return_incl_goodwill: 0.205154
       warning_count: 1
     - company: csl
       scenario: orderly_convergence
@@ -323,6 +388,10 @@ terminal_return_sets:
       excess_on_governing_return: 0.6478
       declared_terminal_return: null
       declared_versus_whole_capital: null
+      goodwill: 8065.0
+      capital_incl_goodwill: 32340.299
+      earned_return_ex_goodwill: 0.312154
+      earned_return_incl_goodwill: 0.234309
       warning_count: 1
     - company: csl
       scenario: stagflation_persists
@@ -341,4 +410,8 @@ terminal_return_sets:
       excess_on_governing_return: 0.532086
       declared_terminal_return: null
       declared_versus_whole_capital: null
+      goodwill: 8065.0
+      capital_incl_goodwill: 30241.633
+      earned_return_ex_goodwill: 0.205177
+      earned_return_incl_goodwill: 0.150459
       warning_count: 1

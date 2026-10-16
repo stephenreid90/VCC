@@ -49,6 +49,61 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import List, Optional
 
+
+
+@dataclass(frozen=True)
+class GoodwillReturn:
+    """The earned return with and without goodwill in the capital base (D-86a).
+
+    DISCLOSURE ONLY. Goodwill is excluded from invested capital and from value
+    (D-44, D-67): a business is not charged in perpetuity for capital its
+    predecessor deployed. The inclusive figure shows how much of the headline
+    return rests on that exclusion. It is never an input to a valuation.
+    """
+
+    goodwill: float
+    capital_ex_goodwill: float
+    capital_incl_goodwill: float
+    return_ex_goodwill: float          # the headline earned return
+    return_incl_goodwill: float        # the disclosure
+
+
+def goodwill_inclusive_return(earnings: float, capital: float,
+                              goodwill: float) -> GoodwillReturn:
+    """Earned return on the capital base, with and without goodwill (D-86a).
+
+    ``earnings`` is the terminal-year NOPAT and ``capital`` the closing invested
+    capital the engine already uses (goodwill excluded). Goodwill is held at its
+    balance-sheet figure: no impairment and no acquisition is assumed after the
+    balance-sheet date. Company-agnostic: any company with a capital base.
+    """
+    if not capital or capital <= 0:
+        raise ValueError("goodwill_inclusive_return needs a positive capital base")
+    if goodwill < 0:
+        raise ValueError("goodwill cannot be negative")
+    return GoodwillReturn(
+        goodwill=goodwill,
+        capital_ex_goodwill=capital,
+        capital_incl_goodwill=capital + goodwill,
+        return_ex_goodwill=earnings / capital,
+        return_incl_goodwill=earnings / (capital + goodwill),
+    )
+
+
+def goodwill_from_financials(financials: dict) -> Optional[float]:
+    """Goodwill (reporting currency, millions) from a company's financials file.
+
+    Reads the ``goodwill`` figure on the balance sheet. Returns None when the
+    file carries none (a bank, whose capital base is book equity, which already
+    includes goodwill). Raises on a non-numeric figure rather than guessing.
+    """
+    bs = financials.get("balance_sheet", financials)
+    gw = bs.get("goodwill")
+    if gw is None:
+        return None
+    return float(gw)
+
+
 # A step from the final explicit year's earned return to the terminal rate small
 # enough to be glide rather than assumption. One percentage point.
 _MATERIAL_STEP = 0.01
@@ -74,6 +129,8 @@ class TerminalReturn:
     # decisions have to agree on.
     terminal_invested_capital: Optional[float] = None
     declared_return: Optional[float] = None
+    # D-86a disclosure; set by the sizing script where a capital base exists.
+    goodwill_return: Optional[GoodwillReturn] = None
     warnings: List[str] = field(default_factory=list)
 
     @property

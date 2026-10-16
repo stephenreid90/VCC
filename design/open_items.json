@@ -682,5 +682,15 @@
     "questions": "Keep the earned starting return and 25-year fade, or set a declared return or shorter fade for CSL?",
     "status": "DONE",
     "batch": "Batch 4"
+  },
+  {
+    "id": "R16-9",
+    "source": "D-86, 16 Oct 2026",
+    "area": "Reporting",
+    "issue": "<b>D-86 reporting rules (a) and (b).</b> Show the goodwill-inclusive earned return beside the headline return, and show the starting-return and fade band with any headline CSL value. Both are disclosure only; valuation levels must not change.",
+    "treatment": "Goodwill stays out of capital and value (D-44, D-67). Build: general function terminal_return.goodwill_inclusive_return, applied to every company with a capital base (DNL, CSL; the bank has none). [Done 16 Oct 2026: figures pinned in design/methodology/terminal_return_sets.yaml (written by scripts/size_terminal_returns.py, asserted by tests/dcf/test_terminal_return_sets.py) and the CSL band in design/methodology/csl_terminal_return_sets.yaml (scripts/size_csl_terminal_return.py, tests/dcf/test_csl_terminal_return_sets.py, which also checks the sensitivity paper cell by cell). Workbooks: DNL and CSL carry the inclusive return as a formula row and on the Scenarios sheet; CSL has a Terminal band sheet and band low/high on Scenarios (ui_prototypes/_generator/engine_workbook.py; tests/dcf/test_goodwill_band_workbook.py recalculates both in LibreOffice). Values unchanged. UI prototypes do not carry the headline return and are illustrative, so not changed.]",
+    "questions": [],
+    "status": "DONE",
+    "batch": "Batch 6"
   }
 ]

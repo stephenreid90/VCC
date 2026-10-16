@@ -8,7 +8,9 @@ carries three things a report must show beside the headline value:
 2. The per-share value with goodwill included, to show it barely moves.
 3. A sensitivity band over the starting return and the fade length.
 
-Goodwill is read from ``data/financials/csl.yaml`` rather than typed here.
+Goodwill is read from ``data/financials/csl.yaml`` rather than typed here, and the
+return comes from the general ``terminal_return.goodwill_inclusive_return`` (D-86a),
+which ``scripts/size_terminal_returns.py`` applies to every company with a base.
 Follows the standing-rule-4 pattern: the committed set is what the documents
 cite, and ``tests/dcf/test_csl_terminal_return_sets.py`` asserts it.
 
@@ -29,6 +31,9 @@ sys.path.insert(0, str(ROOT / "src"))
 import yaml  # noqa: E402
 
 from vcc_valuations.dcf.segment_engine import SegmentEngine  # noqa: E402
+from vcc_valuations.dcf.terminal_return import (  # noqa: E402
+    goodwill_from_financials, goodwill_inclusive_return,
+)
 from vcc_valuations.translator import (  # noqa: E402
     build_segment_inputs_from_data, load_inputs,
 )
@@ -46,34 +51,21 @@ FADES = (25.0, 10.0)
 STARTS = (None, 0.20, 0.15, 0.12)  # ssot-allow: sensitivity grid, not a register value
 
 
-def find_key(node, key):
-    """Return the first value stored under ``key`` anywhere in the nested data."""
-    if isinstance(node, dict):
-        if key in node:
-            return node[key]
-        for v in node.values():
-            found = find_key(v, key)
-            if found is not None:
-                return found
-    elif isinstance(node, list):
-        for v in node:
-            found = find_key(v, key)
-            if found is not None:
-                return found
-    return None
-
-
 def goodwill() -> float:
-    gw = find_key(yaml.safe_load(FINANCIALS.read_text(encoding="utf-8")), "goodwill")
+    """Goodwill from the financials file, by the general reader (D-86a)."""
+    gw = goodwill_from_financials(yaml.safe_load(FINANCIALS.read_text(encoding="utf-8")))
     if gw is None:
         raise ValueError("data/financials/csl.yaml has no goodwill figure (D-44).")
-    return float(gw)
+    return gw
 
 
 def size_scenario(scenario: str, gw: float) -> dict:
     inp = load_inputs(ROOT, scenario, "biopharmaceuticals", "csl")
     si = build_segment_inputs_from_data(inp, scenario)
     base = SegmentEngine().run(si)
+    gr = goodwill_inclusive_return(
+        base.terminal_earned_return * si.terminal_invested_capital,
+        si.terminal_invested_capital, gw)   # the general D-86a function
     with_gw = SegmentEngine().run(dataclasses.replace(
         si, terminal_invested_capital=si.terminal_invested_capital + gw))
     band = []
@@ -92,9 +84,9 @@ def size_scenario(scenario: str, gw: float) -> dict:
         "scenario": scenario,
         "fade_years": si.convergence_years,
         "invested_capital_ex_goodwill": round(si.terminal_invested_capital, 0),
-        "starting_return_ex_goodwill": round(base.terminal_earned_return, 4),
-        "invested_capital_incl_goodwill": round(si.terminal_invested_capital + gw, 0),
-        "starting_return_incl_goodwill": round(with_gw.terminal_earned_return, 4),
+        "starting_return_ex_goodwill": round(gr.return_ex_goodwill, 4),
+        "invested_capital_incl_goodwill": round(gr.capital_incl_goodwill, 0),
+        "starting_return_incl_goodwill": round(gr.return_incl_goodwill, 4),
         "aud_per_share_model": round(base.value_per_share_aud, 2),
         "aud_per_share_incl_goodwill": round(with_gw.value_per_share_aud, 2),
         "sensitivity": band,

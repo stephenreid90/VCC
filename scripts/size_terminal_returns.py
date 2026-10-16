@@ -44,6 +44,22 @@ def _scenarios() -> list[str]:
     return sorted(p.stem for p in (ROOT / "data" / "scenarios").glob("*.yaml"))
 
 
+def _attach_goodwill(t: tr.TerminalReturn, inputs: dict, capital) -> tr.TerminalReturn:
+    """D-86a: the earned return with goodwill in the base. Disclosure only.
+
+    Applies to any company with a capital base. A company with a base but no
+    goodwill figure on its balance sheet is an error, not a zero.
+    """
+    if not capital:
+        return t
+    gw = tr.goodwill_from_financials(inputs["financials"])
+    if gw is None:
+        raise ValueError(f"{t.company_id}: has a capital base but no goodwill figure "
+                         "in its financials file (D-86a)")
+    t.goodwill_return = tr.goodwill_inclusive_return(t.terminal_earnings, capital, gw)
+    return t
+
+
 def _one(company_id: str, archetype_id: str, scenario_id: str) -> tr.TerminalReturn:
     inputs = load_inputs(ROOT, scenario_id, archetype_id, company_id)
     if company_id == "wbc":
@@ -51,12 +67,14 @@ def _one(company_id: str, archetype_id: str, scenario_id: str) -> tr.TerminalRet
         return tr.from_bank(BankEngine().run(bi), bi)
     if company_id == "csl":
         si = build_segment_inputs_from_data(inputs, scenario_id)
-        return tr.from_segment(SegmentEngine().run(si), si,
-                               company_id=company_id, scenario_id=scenario_id)
+        t = tr.from_segment(SegmentEngine().run(si), si,
+                            company_id=company_id, scenario_id=scenario_id)
+        return _attach_goodwill(t, inputs, si.terminal_invested_capital)
     ei = build_engine_inputs_from_data(inputs, scenario_id)
-    return tr.from_fcff(FcfEngine().run(ei),
-                        company_id=company_id, scenario_id=scenario_id,
-                        declared_return=ei.declared_terminal_return)
+    t = tr.from_fcff(FcfEngine().run(ei),
+                     company_id=company_id, scenario_id=scenario_id,
+                     declared_return=ei.declared_terminal_return)
+    return _attach_goodwill(t, inputs, t.terminal_invested_capital)
 
 
 def collect() -> list[tr.TerminalReturn]:
@@ -73,6 +91,11 @@ def _pct(x) -> str:
 
 def _bp(x) -> str:
     return "-" if x is None else f"{x * 10000:+,.0f}"  # ssot-allow: display format
+
+
+def _gw(r: tr.TerminalReturn, name: str, nd: int):
+    g = r.goodwill_return
+    return None if g is None else round(getattr(g, name), nd)
 
 
 def as_set(rows: list[tr.TerminalReturn]) -> dict:
@@ -99,7 +122,8 @@ def as_set(rows: list[tr.TerminalReturn]) -> dict:
                 ),
                 "regenerated_by": "scripts/size_terminal_returns.py",
                 "asserted_by": "tests/dcf/test_terminal_return_sets.py",
-                "decisions": ["D-42 (PROPOSED)", "M14", "D-07 non-blocking precedent"],
+                "decisions": ["D-42 (PROPOSED)", "M14", "D-07 non-blocking precedent",
+                              "D-86a goodwill-inclusive disclosure"],
                 "rows": [
                     {
                         "company": r.company_id,
@@ -136,6 +160,11 @@ def as_set(rows: list[tr.TerminalReturn]) -> dict:
                         "declared_versus_whole_capital": (
                             None if r.declared_versus_whole_capital is None
                             else round(r.declared_versus_whole_capital, 6)),
+                        # D-86a disclosure: goodwill is NOT in capital or value.
+                        "goodwill": _gw(r, "goodwill", 3),
+                        "capital_incl_goodwill": _gw(r, "capital_incl_goodwill", 3),
+                        "earned_return_ex_goodwill": _gw(r, "return_ex_goodwill", 6),
+                        "earned_return_incl_goodwill": _gw(r, "return_incl_goodwill", 6),
                         "warning_count": len(r.warnings),
                     }
                     for r in rows
@@ -155,6 +184,12 @@ def print_table(rows: list[tr.TerminalReturn]) -> None:
               f"{_bp(r.excess_on_governing_return):>8} {_pct(r.declared_return):>9} "
               f"{_bp(r.declared_versus_whole_capital):>8}")
     print("  * excess is on the governing reading: whole capital where it exists.")
+    print("\nD-86a disclosure (goodwill NOT in capital or value):")
+    for r in rows:
+        g = r.goodwill_return
+        if g is not None:
+            print(f"  {r.company_id:4} {r.scenario_id:34} earned {_pct(g.return_ex_goodwill):>7} "
+                  f"incl goodwill {_pct(g.return_incl_goodwill):>7}")
 
     warned = [w for r in rows for w in r.warnings]
     print(f"\n{len(warned)} warning(s) across {len(rows)} valuations:")

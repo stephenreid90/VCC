@@ -64,6 +64,15 @@ working capital confirmations; UI design choices 32, 35, Q6, Q7.
 
 ### Batch 1 progress
 
+- 16 Oct 2026: **D-86 reporting rules (a) and (b) done (R16-9), values unchanged.** The
+  goodwill-inclusive earned return is one general function (`terminal_return.goodwill_inclusive_return`)
+  applied to every company with a capital base. Figures are pinned in
+  `design/methodology/terminal_return_sets.yaml` (test: `tests/dcf/test_terminal_return_sets.py`); CSL
+  muddle through 27.56% headline, 20.52% with goodwill. The CSL starting-return and fade band is pinned in
+  `design/methodology/csl_terminal_return_sets.yaml` (the sensitivity paper is checked cell by cell). DNL and
+  CSL workbooks show the inclusive return as a formula row and on the Scenarios sheet; CSL also has a
+  Terminal band sheet and band low/high (`tests/dcf/test_goodwill_band_workbook.py`, LibreOffice recalc).
+  UI prototypes not changed: they do not carry the headline return and are illustrative.
 - 16 Oct 2026: **R16-6 done, values unchanged.** The DNL and bank level anchors now sit in
   their archetypes (`data/industries/industrial_explosives.yaml`, `australian_major_banks.yaml`).
   Derived scenario files are byte-identical, the three workbooks are cell-identical, goldens

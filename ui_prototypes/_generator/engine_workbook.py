@@ -474,6 +474,9 @@ class Book:
             ws.cell(r[0] - 1, 2, "=" + "+".join(
                 self.ref[k].split("!")[1] for k in ("ic_ppe", "ic_intang", "ic_ncwc"))).number_format = NUM0
             self.ref["ic0"] = f"'Assumptions'!$B${r[0] - 1}"
+            # D-86a: goodwill is a DISCLOSURE input only. It feeds no valuation row.
+            line("Goodwill at balance-sheet date (DISCLOSURE ONLY; excluded from capital and value, D-44/D-67/D-86)",
+                 bs["goodwill"], "ic_gw", NUM0)
             line("Terminal capex % of revenue (rule: grows_capital_base_at_g)")
             ws.cell(r[0] - 1, 2, "per scenario — see the DCF build sheet")
             self.ref["t_capex"] = None
@@ -792,6 +795,9 @@ class Book:
             prow("t_ret", f"Earned return R = Y{H} NOPAT x (1+g) / Y{H} invested capital", PCT3,
                  lambda s, c, j: (f"={c}{rmap[f'nop{H}']}*(1+{R[f'macro:terminal_growth:{s}']})"
                                   f"/{c}{rmap[f'ic{H}']}"))
+            prow("t_ret_gw", "Disclosure: earned return including goodwill in the base (D-86a; goodwill excluded from valuation, D-44/D-67)", PCT3,
+                 lambda s, c, j: (f"={c}{rmap[f'nop{H}']}*(1+{R[f'macro:terminal_growth:{s}']})"
+                                  f"/({c}{rmap[f'ic{H}']}+{R['ic_gw']})"))
             def f_tv(s, c, j):
                 g = R[f'macro:terminal_growth:{s}']; r = R['wacc']; n = R[f'macro:convergence_years:{s}']
                 gordon = f"{c}{rmap['tfcff']}/({r}-{g})"
@@ -833,6 +839,9 @@ class Book:
         for j, (sid, nm) in enumerate(SCEN):
             self.ref[f"vps:{sid}"] = f"'DCF build'!{SC[j]}{rmap['vps']}"
             self.ref[f"ev:{sid}"] = f"'DCF build'!{SC[j]}{rmap['ev']}"
+            if "t_ret_gw" in rmap:
+                self.ref[f"tret:{sid}"] = f"'DCF build'!{SC[j]}{rmap['t_ret']}"
+                self.ref[f"tret_gw:{sid}"] = f"'DCF build'!{SC[j]}{rmap['t_ret_gw']}"
         ws.column_dimensions["A"].width = 42
         for cc in "CDEFGH":
             ws.column_dimensions[cc].width = 13
@@ -911,19 +920,31 @@ class Book:
         R = self.ref
         ws.cell(1, 1, "Scenario summary — value per share by world (each links to DCF build)"); ws.cell(1, 1).font = HDR
         hr = 3
-        for cc, t in ((1, "Scenario"), (2, "Value/share"), (3, "EV (AUD m)"), (4, "vs market")):
+        _hdrs = [(1, "Scenario"), (2, "Value/share"), (3, "EV (AUD m)"), (4, "vs market")]
+        _has_ret = f"tret:{SCEN[0][0]}" in R
+        if _has_ret:
+            _hdrs += [(5, "Earned return (headline, goodwill excluded)"),
+                      (6, "Disclosure: earned return incl. goodwill (D-86a)")]
+        for cc, t in _hdrs:
             ws.cell(hr, cc, t).font = BOLD
+            ws.cell(hr, cc).alignment = Alignment(wrap_text=True)
         rr = hr + 1
         for sid, nm in SCEN:
             ws.cell(rr, 1, nm)
             ws.cell(rr, 2, f"={R[f'vps:{sid}']}").number_format = NUM1 + "00"
             ws.cell(rr, 3, f"={R[f'ev:{sid}']}").number_format = NUM0
             ws.cell(rr, 4, f"={R[f'vps:{sid}']}/{R['mkt']}-1").number_format = PCT2
+            if _has_ret:
+                ws.cell(rr, 5, f"={R[f'tret:{sid}']}").number_format = PCT2
+                ws.cell(rr, 6, f"={R[f'tret_gw:{sid}']}").number_format = PCT2
             rr += 1
+        if _has_ret:
+            rr += 1
+            ws.cell(rr, 1, "Goodwill is a disclosure only. It is excluded from invested capital and from value (D-44, D-67, D-86).").font = NOTE
         rr += 1
         ws.cell(rr, 1, "Market reference price"); ws.cell(rr, 2, f"={R['mkt']}").number_format = NUM1 + "0"
         ws.column_dimensions["A"].width = 28
-        for cc in "BCD":
+        for cc in "BCDEF":
             ws.column_dimensions[cc].width = 14
 
     # ---- Comparables & beta (triangulation) --------------------------------
@@ -1728,6 +1749,17 @@ def build_csl_workbook_bytes(cfg=None):
     _bs = inp["financials"]["balance_sheet"]
     line("Net PP&E FY25 incl. right-of-use (D-53)", _bs["property_plant_and_equipment_net"], "ppe0", NUM0)
     line("Intangibles FY25 ex goodwill (D-53)", _bs["intangible_assets"], "int0", NUM0)
+    # D-86a: goodwill is a DISCLOSURE input only. It feeds no valuation row.
+    line("Goodwill FY25 (DISCLOSURE ONLY; excluded from capital and value, D-44/D-67/D-86)", _bs["goodwill"], "gw0", NUM0)
+    # D-86b: the sensitivity grid is read from the committed sizing set, not typed here.
+    import yaml as _yaml
+    _set = _yaml.safe_load((_ROOT / "design" / "methodology" / "csl_terminal_return_sets.yaml").read_text(encoding="utf-8"))
+    _grid = _set["scenarios"][0]["sensitivity"]
+    _starts = sorted({b["starting_return"] for b in _grid if b["starting_return"] != "earned"}, reverse=True)
+    _short_fade = min(b["fade_years"] for b in _grid)
+    for _i, _v in enumerate(_starts):
+        line(f"Terminal band: fixed starting return {_i + 1} (D-86b, reporting only)", _v, f"bs{_i}", PCT2)
+    line("Terminal band: short fade, years (D-86b, reporting only)", _short_fade, "bn", NUM1)
     line("Shares outstanding (m)", anch["shares_outstanding_m"], "shares", NUM1)
     line("FX (AUD per USD)", sf["fx_aud_per_usd"], "fx", NUM1 + "000")
     line("Market price (AUD)", cfg.get("market", 0), "mkt", NUM1 + "0")
@@ -1920,6 +1952,8 @@ def build_csl_workbook_bytes(cfg=None):
                                   f"-{c}{m[f'grev{p}']}*{R['da']}-{c}{m[f'dwc{p}']}"))
     row("t_ret", f"Earned return R = {YRS[_T]} NOPAT at terminal margin x (1+g) / {YRS[_T]} invested capital", PCT2,
         lambda s, c, j: f"={c}{m[f'grev{_T}']}*{R[f'tmargin:{s}']}*(1-{R[f'tax:{s}']})*(1+{R[f'tg:{s}']})/{c}{m[f'ic{_T}']}")
+    row("t_ret_gw", "Disclosure: earned return including goodwill in the base (D-86a; goodwill excluded from valuation, D-44/D-67)", PCT2,
+        lambda s, c, j: f"={c}{m[f'grev{_T}']}*{R[f'tmargin:{s}']}*(1-{R[f'tax:{s}']})*(1+{R[f'tg:{s}']})/({c}{m[f'ic{_T}']}+{R['gw0']})")
     def f_tv(s, c, j):
         g = R[f'tg:{s}']; r_ = R['ke']; n = R[f'cyrs:{s}']
         gordon = f"{c}{m['tfcff']}/({r_}-{g})"
@@ -1999,22 +2033,69 @@ def build_csl_workbook_bytes(cfg=None):
     ws.cell(rr, 2, f"={R['vaud:muddle_through']}").number_format = NUM1 + "00"; ws.cell(rr, 2).font = BOLD
     ws.column_dimensions["A"].width = 42; ws.column_dimensions["B"].width = 14
 
+    # ---------------- Terminal band (D-86b; reporting only) ----------------
+    # Each cell re-strikes only the terminal value with a different starting return
+    # and fade. The explicit-period PV, net debt and shares are the model's, so
+    # value = model value + (TV_alt - TV_model) / (1+Ke)^H x FX / shares.
+    wsb = wb.create_sheet("Terminal band")
+    wsb.cell(1, 1, "CSL terminal return sensitivity band (D-86b) — AUD per share. Reporting only: the headline value is unchanged.").font = HDR
+    wsb.cell(2, 1, "Starting return and fade are varied; everything else is as in Segment FCFF. Grid inputs are on Assumptions.").font = NOTE
+    _bh = 4
+    _nst = len(_starts)
+    for k, t in enumerate(["Scenario", "Fade (years)", "Earned start (model)"]):
+        wsb.cell(_bh, 1 + k, t).font = BOLD
+    for i in range(_nst):
+        _c = wsb.cell(_bh, 4 + i, f"={R[f'bs{i}']}"); _c.number_format = '"Start "0%'; _c.font = BOLD
+    wsb.cell(_bh, 4 + _nst, "Check: earned @ model fade less model value").font = BOLD
+    _band = {}
+    _br = _bh + 1
+    for j, sid in enumerate(SIDS):
+        _col_s = COLS[j]; g = R[f'tg:{sid}']; ke_ = R['ke']
+        _kk = f"((1+{g})/(1+{ke_}))"
+        _ic = f"'Segment FCFF'!{_col_s}{m[f'ic{_T}']}"
+        _tv = f"'Segment FCFF'!{_col_s}{m['tv']}"
+        _va = f"'Segment FCFF'!{_col_s}{m['vaud']}"
+        _tr = f"'Segment FCFF'!{_col_s}{m['t_ret']}"
+        _band[sid] = (_br, _br + 1)
+        for fi, nref in enumerate((R[f'cyrs:{sid}'], R['bn'])):
+            wsb.cell(_br, 1, dict(SCEN)[sid])
+            wsb.cell(_br, 2, f"={nref}").number_format = NUM1
+            for si_, rs in enumerate([_tr] + [R[f'bs{i}'] for i in range(_nst)]):
+                mult = f"(({rs}-{g})/({ke_}-{g}))"
+                tv_alt = f"{_ic}*({mult}*(1-{_kk}^$B{_br})+{_kk}^$B{_br})"
+                wsb.cell(_br, 3 + si_, f"={_va}+({tv_alt}-{_tv})/(1+{ke_})^{_H}*{R['fx']}/{R['shares']}").number_format = NUM1 + "00"
+            if fi == 0:
+                wsb.cell(_br, 4 + _nst, f"=C{_br}-{_va}").number_format = NUM1 + "00"
+            _br += 1
+    wsb.column_dimensions["A"].width = 26
+    for cc in "BCDEFGH": wsb.column_dimensions[cc].width = 16
+
     # ---------------- Scenarios summary ----------------
     ws = wb.create_sheet("Scenarios")
     ws.cell(1, 1, "Scenario summary — value per share (links to Segment FCFF)").font = HDR
     hr = 3
-    for j, t in enumerate(["Scenario", "USD/share", "AUD/share", "EV (USD m)", "vs market"]):
-        ws.cell(hr, 1 + j, t).font = BOLD
+    for j, t in enumerate(["Scenario", "USD/share", "AUD/share", "EV (USD m)", "vs market",
+                           "Earned return (headline, goodwill excluded)",
+                           "Disclosure: earned return incl. goodwill (D-86a)",
+                           "Band low AUD/share (D-86b)", "Band high AUD/share (D-86b)"]):
+        ws.cell(hr, 1 + j, t).font = BOLD; ws.cell(hr, 1 + j).alignment = Alignment(wrap_text=True)
     rr2 = hr + 1
-    for sid, nm in SCEN:
+    for j, (sid, nm) in enumerate(SCEN):
         ws.cell(rr2, 1, nm)
         ws.cell(rr2, 2, f"={R[f'vusd:{sid}']}").number_format = NUM1 + "00"
         ws.cell(rr2, 3, f"={R[f'vaud:{sid}']}").number_format = NUM1 + "00"
         ws.cell(rr2, 4, f"={R[f'ev:{sid}']}").number_format = NUM0
         ws.cell(rr2, 5, f"={R[f'vaud:{sid}']}/{R['mkt']}-1").number_format = PCT2
+        ws.cell(rr2, 6, f"='Segment FCFF'!{COLS[j]}{m['t_ret']}").number_format = PCT2
+        ws.cell(rr2, 7, f"='Segment FCFF'!{COLS[j]}{m['t_ret_gw']}").number_format = PCT2
+        _b0, _b1 = _band[sid]
+        ws.cell(rr2, 8, f"=MIN('Terminal band'!$C${_b0}:${_col(3 + _nst)}${_b1})").number_format = NUM1 + "00"
+        ws.cell(rr2, 9, f"=MAX('Terminal band'!$C${_b0}:${_col(3 + _nst)}${_b1})").number_format = NUM1 + "00"
         rr2 += 1
+    rr2 += 1
+    ws.cell(rr2, 1, "Headline = the model value. The band varies the starting return and fade only (Terminal band sheet). Goodwill is a disclosure only (D-44, D-67, D-86).").font = NOTE
     ws.column_dimensions["A"].width = 26
-    for cc in "BCDE": ws.column_dimensions[cc].width = 13
+    for cc in "BCDEFGHI": ws.column_dimensions[cc].width = 15
 
     buf = io.BytesIO(); wb.save(buf); return buf.getvalue()
 
