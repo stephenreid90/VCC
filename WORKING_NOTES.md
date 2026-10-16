@@ -32,7 +32,40 @@ kept getting reopened.
 It regenerates the two maps, runs the suite and the ratchet, checks the base ties and
 prints git state.
 
-## 🔴 HANDOVER — sittings of 14-15 October 2026 (read this first)
+## 🔴 HANDOVER — sitting of 16 October 2026, evening (read this first)
+
+**Bridge note: `notes/bridge/bridge_note_2026-10-16.md`.** This sitting closed the DNL equity bridge
+on reported figures (D-88), the CSL price premium (D-89, none), the two flat-offset US paths
+(D-90, produced from the world series) and the bank NIM rule (D-91, pass-through zero, typed
+shifts retired). M14, M16, R16-2, R16-4, R16-5 closed in the tracker.
+
+**State:** DCF folder 415 passed / 1 skipped; other tests 304 passed; SSOT lint 17/17; base ties
+**DNL 2.006 / WBC 33.93 / CSL 226.66** (`session_start.py`). Last commit `d97ed0a`, pushed. Working
+tree clean. Git is handled in the background; the PAT in `.github-token` works.
+
+**Stephen's decisions this sitting (plain terms):**
+1. D-88: DNL shares 1,755.6m, dividend A$80.8m, H1 cash flow annualised (293.2). Value 2.0067 -> 2.0057.
+2. D-89: no healthcare price premium for CSL. The price/volume split is reporting only.
+3. D-90: AI Lag (+0.2pp) and Disorderly (-0.3pp) US paths are produced from the world path. No value change.
+4. D-91: WBC NIM does not follow the cash rate (measured -1.5bp per 100bp, se 0.9). The typed
+   Orderly +5bp and Stagflation -20bp shifts are retired. Orderly 47.91 -> 47.35; Stagflation 16.35 -> 18.02.
+   The payout cut (D-60) no longer bites in Stagflation.
+5. Goodwill stays excluded from capital and value (D-44, D-67). The D-86 goodwill-inclusive line is
+   a disclosure only.
+6. Valuation date: no further changes until one date is settled (CSL and DNL both 30 Jun 2026).
+
+**Next: the batch plan.** Stephen agreed to run the remaining work in batches through separate agents
+(Sonnet for routine builds, Haiku for tidy-ups, Fable/Opus for serious items), one at a time, with
+decisions brought back to him. The table of outstanding work with a model per item is in the bridge
+note. First batch (no decision needed): R16-6 level anchors; D-86 goodwill-inclusive reporting line;
+Q5 close; M6, M7, M11 workbook defects. Decisions still needed from Stephen: R16-7 confirm closed by
+D-86; item 10 (CSL 93% above market, structural reason); M10 market price refresh (when); Q4/Q8
+working capital confirmations; UI design choices 32, 35, Q6, Q7.
+
+**Correction made this sitting, for the record:** I first said only Orderly carried a typed NIM
+shift. Stagflation carried -20bp too. Both were sized before Stephen decided.
+
+## HANDOVER — sittings of 14-15 October 2026 (superseded by the block above)
 
 **Bridge note: `notes/bridge/bridge_note_2026-10-14.md`.** The five-step repeatable-process
 plan of 2 October is COMPLETE (steps 1-5, D-73 to D-78). The fourth sitting of 14 October
