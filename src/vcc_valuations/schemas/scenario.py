@@ -139,6 +139,25 @@ class FinancialConditions(BaseModel):
     equity_risk_premium: str
 
 
+class DerivedMacroVariable(BaseModel):
+    """A base macro series produced from another series in the same scenario (R16-5, 16 Oct 2026).
+
+    ``variable`` = ``from_series`` + ``offset_pp`` at every year the source series carries.
+    The script ``scripts/derive_macro_driver_paths.py --write`` renders it into
+    ``macro_variables`` inside a ``BEGIN derived paths (scenario)`` block, and
+    ``tests/test_macro_driver_paths.py`` asserts the committed block matches. The
+    offset is a declared judgement with a written basis, not a typed path.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    variable: str
+    from_series: str
+    offset_pp: float = Field(..., description="Percentage points added to the source series.")
+    units: str = "percent_yoy"
+    basis: str = Field(..., description="Who ruled it, when, and why.")
+
+
 class Scenario(BaseModel):
     """A scenario per section 6.4."""
 
@@ -151,6 +170,7 @@ class Scenario(BaseModel):
     narrative: ScenarioNarrative
     time_profile: List[TimePhase] = Field(..., min_length=1)
     macro_variables: List[MacroVariable] = Field(..., min_length=1)
+    derived_macro_variables: Optional[List[DerivedMacroVariable]] = None
     geopolitical: Geopolitical
     technology: Technology
     regulatory: Regulatory

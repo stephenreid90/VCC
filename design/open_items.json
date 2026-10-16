@@ -648,9 +648,9 @@
     "source": "review-2026-10-16",
     "area": "Scenarios",
     "issue": "<b>US real GDP shape in AI Lag and Disorderly Climate.</b> The drafted US paths are flat offsets from the world path, so they have no effect on value (D-82).",
-    "treatment": "Derive the US path from the world series (world real GDP plus a fixed gap), as the other archetype paths are. The Disorderly Climate US path is typed and equals world minus 0.3pp in every year. No value change for AI Lag or Disorderly. Stephen to confirm.",
+    "treatment": "Done 16 Oct 2026 (D-90): the two flat-offset US paths are produced from the world series by the derivation script. The other four stay as approved. No value change.",
     "questions": [],
-    "status": "NEEDS",
+    "status": "DONE",
     "batch": "Batch 6"
   },
   {

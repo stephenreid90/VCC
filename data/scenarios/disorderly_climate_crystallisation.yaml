@@ -68,6 +68,13 @@ scenario:
         risk-adjusted underwriting; affected sectors at new lower equilibrium
         valuations.
 
+  # R16-5 (16 Oct 2026, Stephen): the US path is PRODUCED from the world series, not typed.
+  # Rendered into macro_variables by scripts/derive_macro_driver_paths.py --write.
+  derived_macro_variables:
+    - variable: real_gdp_growth_us
+      from_series: real_gdp_growth_world
+      offset_pp: -0.3
+      basis: "15 Oct 2026 (Stephen approved): world path - 0.3pp; carbon and stranded-asset drag."
   macro_variables:
     # BEGIN derived paths (vaccines)
     # Written by scripts/derive_macro_driver_paths.py from the derivations declared in
@@ -154,16 +161,20 @@ scenario:
         - {year: 7, value: 3.88}
         - {year: 10, value: 3.1}
     # END derived paths
+    # BEGIN derived paths (scenario)
+    # Written by scripts/derive_macro_driver_paths.py from this scenario's
+    # derived_macro_variables; asserted by tests/test_macro_driver_paths.py.
+    # Not hand-typed: edit the declaration or the source series, then rerun.
     - variable: real_gdp_growth_us
       units: percent_yoy
       type: time_series
-      # 15 Oct 2026 (Stephen approved): world path - 0.3pp; carbon and stranded-asset drag.
+      # real_gdp_growth_world -0.3pp (R16-5). 15 Oct 2026 (Stephen approved): world path - 0.3pp; carbon and stranded-asset drag.
       time_series:
-        - {year: 1, value: 1.7, confidence_low: 1.1, confidence_high: 2.3}
-        - {year: 3, value: 1.5, confidence_low: 0.7, confidence_high: 2.2}
-        - {year: 5, value: 1.7, confidence_low: 1.0, confidence_high: 2.4}
-        - {year: 10, value: 1.9, confidence_low: 1.2, confidence_high: 2.6}
-
+        - {year: 1, value: 1.7}
+        - {year: 3, value: 1.5}
+        - {year: 5, value: 1.7}
+        - {year: 10, value: 1.9}
+    # END derived paths
     - variable: real_gdp_growth_world
       units: percent_yoy
       type: time_series

@@ -255,3 +255,37 @@ def test_muddle_through_paths_average_to_the_typed_steady_states():
     # and it is no longer flat: the year-10 point sits below the year-1 point
     pts = dict(_committed("muddle_through", "bank_system_aiea_growth"))
     assert pts[10] < pts[1]
+
+
+# ------------------------------------------------- (d) scenario-level base series (R16-5)
+from derive_macro_driver_paths import derive_scenario_series, scenario_derivations  # noqa: E402
+
+SCENARIO_DERIVED = [(s, d["variable"]) for s in SCENARIOS for d in scenario_derivations(s)]
+
+
+def test_r16_5_the_two_flat_offset_us_paths_are_declared_not_typed():
+    """R16-5 (16 Oct 2026): AI Lag (+0.2pp) and Disorderly Climate (-0.3pp) were the two
+    US paths typed as flat offsets from the world path. They are now produced from it.
+    The other four US paths are distinct series Stephen approved on 15 Oct (D-82) and
+    stay typed on purpose."""
+    assert sorted(SCENARIO_DERIVED) == [
+        ("ai_productivity_lag", "real_gdp_growth_us"),
+        ("disorderly_climate_crystallisation", "real_gdp_growth_us"),
+    ]
+
+
+@pytest.mark.parametrize("scenario_id,variable", SCENARIO_DERIVED)
+def test_committed_scenario_series_equal_the_declaration(scenario_id, variable):
+    series, _ = derive_scenario_series(scenario_id)[variable]
+    assert _committed(scenario_id, variable) == series, (
+        "data/scenarios/%s.yaml %s is stale -- rerun "
+        "`PYTHONPATH=src python scripts/derive_macro_driver_paths.py --write`"
+        % (scenario_id, variable)
+    )
+
+
+@pytest.mark.parametrize("scenario_id,variable", SCENARIO_DERIVED)
+def test_a_declared_scenario_series_appears_exactly_once(scenario_id, variable):
+    doc = yaml.safe_load((ROOT / "data" / "scenarios" / f"{scenario_id}.yaml").read_text(encoding="utf-8"))
+    hits = [mv for mv in doc["scenario"]["macro_variables"] if mv["variable"] == variable]
+    assert len(hits) == 1, "a typed copy survives beside the produced one"

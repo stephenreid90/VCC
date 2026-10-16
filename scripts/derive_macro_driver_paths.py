@@ -205,8 +205,71 @@ def write(archetype, scenario_id, d):
     path.write_text(text, encoding="utf-8")
 
 
+# ------------------------------------------------- scenario-level base series (R16-5)
+SCENARIO_BLOCK_ID = "scenario"
+
+
+def scenario_derivations(scenario_id):
+    """The scenario's ``derived_macro_variables`` declarations (may be empty)."""
+    return _scenario_doc(scenario_id).get("derived_macro_variables") or []
+
+
+def derive_scenario_series(scenario_id):
+    """``{variable: ([(year, value_pct), ...], note)}`` for base series the scenario
+    declares as source series plus a fixed offset. Sits on the SOURCE series' own
+    years, so the shape is the source's by construction."""
+    doc = _scenario_doc(scenario_id)
+    out = {}
+    for d in scenario_derivations(scenario_id):
+        src = _series(doc, d["from_series"])
+        series = [(p["year"], round(p["value"] + d["offset_pp"], 2)) for p in src]
+        out[d["variable"]] = (series, f"{d['from_series']} {d['offset_pp']:+.1f}pp (R16-5). {d['basis']}")
+    return out
+
+
+def render_scenario(scenario_id, d):
+    decls = {x["variable"]: x for x in scenario_derivations(scenario_id)}
+    out = [
+        _begin(SCENARIO_BLOCK_ID),
+        "    # Written by scripts/derive_macro_driver_paths.py from this scenario's",
+        "    # derived_macro_variables; asserted by tests/test_macro_driver_paths.py.",
+        "    # Not hand-typed: edit the declaration or the source series, then rerun.",
+    ]
+    for variable, (series, note) in d.items():
+        out += [
+            f"    - variable: {variable}",
+            f"      units: {decls[variable].get('units', 'percent_yoy')}",
+            "      type: time_series",
+            f"      # {note}",
+            "      time_series:",
+        ]
+        out += [f"        - {{year: {y}, value: {v}}}" for y, v in series]
+    out.append(END)
+    return "\n".join(out) + "\n"
+
+
+def write_scenario(scenario_id, d):
+    path = ROOT / "data" / "scenarios" / f"{scenario_id}.yaml"
+    text = path.read_text(encoding="utf-8")
+    block_re = re.compile(re.escape(_begin(SCENARIO_BLOCK_ID)) + r".*?" + re.escape(END) + r"\n", re.S)
+    text = block_re.sub("", text, count=1)
+    if d:
+        marker = "  macro_variables:\n"
+        assert text.count(marker) == 1, scenario_id
+        text = text.replace(marker, marker + render_scenario(scenario_id, d), 1)
+    path.write_text(text, encoding="utf-8")
+
+
 def main(argv):
     do_write = "--write" in argv
+    # Scenario-level base series first: the archetype derivations below read them.
+    for s in SCENARIOS:
+        d = derive_scenario_series(s)
+        if not d:
+            continue
+        print(f"== {s} (scenario): " + "  ".join(f"{v}={[x for _, x in ser]}" for v, (ser, _) in d.items()))
+        if do_write:
+            write_scenario(s, d)
     for archetype in archetypes():
         if not derived_variables(archetype):
             continue
