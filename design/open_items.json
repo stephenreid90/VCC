@@ -86,11 +86,11 @@
     "source": "fable-2026-08-13",
     "area": "Methodology",
     "issue": "<b>CSL discounts unlevered FCFF at the cost of equity, then deducts net debt</b> — charges for the debt twice. Fable estimated +8–15% on EV; re-derived it is <b>+21.5% to +26.6%</b> on the per-share value, and it pushes CSL <b>up</b>, not down as the review's fix-order assumed. The largest open item in the project.",
-    "treatment": "<b>DECIDED 20 Aug 2026 (D-05):</b> build a WACC on a <b>target</b> capital structure. Parameters proposed in <code>csl_cost_of_debt_and_target_structure.md</code>, awaiting confirmation (Q9). [Reviewed 16 Oct 2026: Still open. CSL is still discounted at its cost of equity (translator: cost_of_equity_build). D-05 is decided but not built.]",
+    "treatment": "Built 16 Oct 2026 as D-84: CSL discounted at a WACC on the confirmed target structure (Q9): Ke 8.75%, kd 5.50%, D/V 12.9%, WACC 8.12%.",
     "questions": [
       "Q9"
     ],
-    "status": "PLANNED",
+    "status": "DONE",
     "batch": "Batch 4 — decided"
   },
   {

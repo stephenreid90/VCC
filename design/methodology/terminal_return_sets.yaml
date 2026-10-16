@@ -238,17 +238,17 @@ terminal_return_sets:
       scenario: ai_productivity_lag
       construction: segment_roic
       cost_of_capital_name: Ke
-      cost_of_capital: 0.0875
+      cost_of_capital: 0.0812
       terminal_growth: 0.0455
       reinvestment_rate: 0.064993
       return_on_new_capital: 0.700071
-      excess_over_cost_of_capital: 0.612571
+      excess_over_cost_of_capital: 0.618871
       earned_final_explicit: null
       step_from_earned: null
       return_on_whole_capital: null
       terminal_invested_capital: null
       governing_return: 0.700071
-      excess_on_governing_return: 0.612571
+      excess_on_governing_return: 0.618871
       declared_terminal_return: null
       declared_versus_whole_capital: null
       warning_count: 1
@@ -256,17 +256,17 @@ terminal_return_sets:
       scenario: disorderly_climate_crystallisation
       construction: segment_roic
       cost_of_capital_name: Ke
-      cost_of_capital: 0.0875
+      cost_of_capital: 0.0812
       terminal_growth: 0.034895
       reinvestment_rate: 0.05385
       return_on_new_capital: 0.648
-      excess_over_cost_of_capital: 0.5605
+      excess_over_cost_of_capital: 0.5668
       earned_final_explicit: null
       step_from_earned: null
       return_on_whole_capital: null
       terminal_invested_capital: null
       governing_return: 0.648
-      excess_on_governing_return: 0.5605
+      excess_on_governing_return: 0.5668
       declared_terminal_return: null
       declared_versus_whole_capital: null
       warning_count: 1
@@ -274,17 +274,17 @@ terminal_return_sets:
       scenario: fragmentation
       construction: segment_roic
       cost_of_capital_name: Ke
-      cost_of_capital: 0.0875
+      cost_of_capital: 0.0812
       terminal_growth: 0.034848
       reinvestment_rate: 0.054064
       return_on_new_capital: 0.644571
-      excess_over_cost_of_capital: 0.557071
+      excess_over_cost_of_capital: 0.563371
       earned_final_explicit: null
       step_from_earned: null
       return_on_whole_capital: null
       terminal_invested_capital: null
       governing_return: 0.644571
-      excess_on_governing_return: 0.557071
+      excess_on_governing_return: 0.563371
       declared_terminal_return: null
       declared_versus_whole_capital: null
       warning_count: 1
@@ -292,17 +292,17 @@ terminal_return_sets:
       scenario: muddle_through
       construction: segment_roic
       cost_of_capital_name: Ke
-      cost_of_capital: 0.0875
+      cost_of_capital: 0.0812
       terminal_growth: 0.048575
       reinvestment_rate: 0.069964
       return_on_new_capital: 0.694286
-      excess_over_cost_of_capital: 0.606786
+      excess_over_cost_of_capital: 0.613086
       earned_final_explicit: null
       step_from_earned: null
       return_on_whole_capital: null
       terminal_invested_capital: null
       governing_return: 0.694286
-      excess_on_governing_return: 0.606786
+      excess_on_governing_return: 0.613086
       declared_terminal_return: null
       declared_versus_whole_capital: null
       warning_count: 1
@@ -310,17 +310,17 @@ terminal_return_sets:
       scenario: orderly_convergence
       construction: segment_roic
       cost_of_capital_name: Ke
-      cost_of_capital: 0.0875
+      cost_of_capital: 0.0812
       terminal_growth: 0.0506
       reinvestment_rate: 0.06941
       return_on_new_capital: 0.729
-      excess_over_cost_of_capital: 0.6415
+      excess_over_cost_of_capital: 0.6478
       earned_final_explicit: null
       step_from_earned: null
       return_on_whole_capital: null
       terminal_invested_capital: null
       governing_return: 0.729
-      excess_on_governing_return: 0.6415
+      excess_on_governing_return: 0.6478
       declared_terminal_return: null
       declared_versus_whole_capital: null
       warning_count: 1
@@ -328,17 +328,17 @@ terminal_return_sets:
       scenario: stagflation_persists
       construction: segment_roic
       cost_of_capital_name: Ke
-      cost_of_capital: 0.0875
+      cost_of_capital: 0.0812
       terminal_growth: 0.026927
       reinvestment_rate: 0.043907
       return_on_new_capital: 0.613286
-      excess_over_cost_of_capital: 0.525786
+      excess_over_cost_of_capital: 0.532086
       earned_final_explicit: null
       step_from_earned: null
       return_on_whole_capital: null
       terminal_invested_capital: null
       governing_return: 0.613286
-      excess_on_governing_return: 0.525786
+      excess_on_governing_return: 0.532086
       declared_terminal_return: null
       declared_versus_whole_capital: null
       warning_count: 1

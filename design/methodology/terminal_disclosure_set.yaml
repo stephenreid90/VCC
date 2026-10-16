@@ -296,7 +296,7 @@ terminal_disclosure_set:
     scenario: ai_productivity_lag
     available: true
     reason: null
-    cost_of_capital: 0.0875
+    cost_of_capital: 0.0812
     terminal_growth: 0.0455
     capital: 23251.956
     earned_return: 0.30862
@@ -313,15 +313,15 @@ terminal_disclosure_set:
       six scenarios; the named threat is what changes.
 
       '
-    terminal_value: 99937.288
-    value_per_share: 213.3984
-    engine_terminal_value: 86660.493
-    engine_value_per_share: 195.2421
+    terminal_value: 107390.278
+    value_per_share: 235.4579
+    engine_terminal_value: 93226.661
+    engine_value_per_share: 214.9303
   - company: csl
     scenario: disorderly_climate_crystallisation
     available: true
     reason: null
-    cost_of_capital: 0.0875
+    cost_of_capital: 0.0812
     terminal_growth: 0.034895
     capital: 22855.056
     earned_return: 0.272545
@@ -338,15 +338,15 @@ terminal_disclosure_set:
       six scenarios; the named threat is what changes.
 
       '
-    terminal_value: 79974.619
-    value_per_share: 178.663
-    engine_terminal_value: 69356.048
-    engine_value_per_share: 164.1419
+    terminal_value: 85680.8
+    value_per_share: 196.2993
+    engine_terminal_value: 74385.986
+    engine_value_per_share: 179.9295
   - company: csl
     scenario: fragmentation
     available: true
     reason: null
-    cost_of_capital: 0.0875
+    cost_of_capital: 0.0812
     terminal_growth: 0.034848
     capital: 22604.166
     earned_return: 0.258842
@@ -363,15 +363,15 @@ terminal_disclosure_set:
       six scenarios; the named threat is what changes.
 
       '
-    terminal_value: 74891.129
-    value_per_share: 167.4042
-    engine_terminal_value: 65827.274
-    engine_value_per_share: 155.0093
+    terminal_value: 80265.228
+    value_per_share: 183.9944
+    engine_terminal_value: 70624.265
+    engine_value_per_share: 170.0215
   - company: csl
     scenario: muddle_through
     available: true
     reason: null
-    cost_of_capital: 0.0875
+    cost_of_capital: 0.0812
     terminal_growth: 0.048575
     capital: 23494.029
     earned_return: 0.319064
@@ -388,15 +388,15 @@ terminal_disclosure_set:
       six scenarios; the named threat is what changes.
 
       '
-    terminal_value: 107070.01
-    value_per_share: 224.985
-    engine_terminal_value: 91375.534
-    engine_value_per_share: 203.5226
+    terminal_value: 115156.385
+    value_per_share: 248.6232
+    engine_terminal_value: 98399.291
+    engine_value_per_share: 224.3367
   - company: csl
     scenario: orderly_convergence
     available: true
     reason: null
-    cost_of_capital: 0.0875
+    cost_of_capital: 0.0812
     terminal_growth: 0.0506
     capital: 24275.299
     earned_return: 0.363593
@@ -413,15 +413,15 @@ terminal_disclosure_set:
       six scenarios; the named threat is what changes.
 
       '
-    terminal_value: 129278.204
-    value_per_share: 266.3564
-    engine_terminal_value: 109714.975
-    engine_value_per_share: 239.6033
+    terminal_value: 139010.489
+    value_per_share: 294.593
+    engine_terminal_value: 118110.92
+    engine_value_per_share: 264.3028
   - company: csl
     scenario: stagflation_persists
     available: true
     reason: null
-    cost_of_capital: 0.0875
+    cost_of_capital: 0.0812
     terminal_growth: 0.026927
     capital: 22176.633
     earned_return: 0.22938
@@ -438,7 +438,7 @@ terminal_disclosure_set:
       six scenarios; the named threat is what changes.
 
       '
-    terminal_value: 61724.527
-    value_per_share: 143.4144
-    engine_terminal_value: 54978.144
-    engine_value_per_share: 134.1886
+    terminal_value: 66016.285
+    value_per_share: 157.131
+    engine_terminal_value: 58855.737
+    engine_value_per_share: 146.7531

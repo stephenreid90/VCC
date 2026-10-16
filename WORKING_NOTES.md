@@ -45,6 +45,10 @@ took follow-up (f) and closed it as **D-81** (the D-36 fade retired). This block
 203.46 under D-80). Commits on `main`, pushed to origin at the end of each sitting. The
 PAT in `.github-token` was replaced on 15 Oct and works again (D-80 and D-81 pushed).
 
+### D-84 DONE -- CSL discounted at a WACC on the target structure (D-06; Q9 confirmed, 16 Oct)
+
+Plain terms: CSL's cash flows are now discounted at 8.12% (a blend of the cost of equity and the after-tax cost of debt, weighted 12.9% debt) instead of the 8.75% cost of equity. CSL levels rise about 10% in every scenario. Base tie CSL 224.34. **Open:** the review had estimated +21% to +27%. The build gives about +10%. The gap is not explained yet. Terminal capex still equals D&A (M15). The UI prototypes were not regenerated.
+
 ### D-83 DONE -- retained bank equity earns Ke as cash (bridge item (e), 16 Oct)
 
 Plain terms: in the bank model, profit kept in the bank used to earn nothing until the terminal. Now it earns the cost of equity, and that income is paid to shareholders. WBC levels rise 4 to 6% in every scenario. The payout cut (D-60) now raises value everywhere. Suite: 700 passed, 1 skipped (incl. one new check); base ties DNL 2.007 / WBC 33.93 / CSL 203.52.

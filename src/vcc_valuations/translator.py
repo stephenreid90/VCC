@@ -1737,6 +1737,29 @@ def build_bank_inputs_from_data(inputs: dict, scenario_id: str):
     )
 
 
+def segment_wacc_from_data(inputs: dict, ke: float) -> dict:
+    """D-06 (16 Oct 2026): the WACC a segment company is discounted at, on a target structure.
+
+    Ke comes from the cost-of-equity build. The debt weight is the framework's target leverage
+    (company_position.balance_sheet.net_debt_ebitda) over the EV/EBITDA in wacc_target_structure:
+    D/V = (ND/EBITDA) / (EV/EBITDA). kd is the pre-tax cost of debt, and the tax shield is at
+    the statutory rate. WACC = Ke x (1 - D/V) + kd x (1 - t) x D/V. Stored nowhere; derived here.
+    """
+    company_raw = inputs.get("company_raw") or {}
+    wts = resolve_normalised_baseline(inputs).get("wacc_target_structure")
+    if not wts:
+        raise ValueError("segment company has no wacc_target_structure (D-06)")
+    kd = wts["cost_of_debt_pretax"]
+    tax = wts["tax_rate"]
+    nd_ebitda = ((company_raw.get("company_position") or {}).get("balance_sheet") or {}).get("net_debt_ebitda")
+    if nd_ebitda is None:
+        raise ValueError("segment company has no balance_sheet.net_debt_ebitda (the target leverage)")
+    dv = nd_ebitda / wts["target_ev_ebitda"]
+    wacc = ke * (1.0 - dv) + kd * (1.0 - tax) * dv
+    return {"ke": ke, "kd": kd, "tax": tax, "net_debt_ebitda": nd_ebitda,
+            "target_ev_ebitda": wts["target_ev_ebitda"], "dv": dv, "wacc": wacc}
+
+
 def build_segment_inputs_from_data(inputs: dict, scenario_id: str, route_terminal_form: bool = True):
     """Assemble ``SegmentInputs`` for one segment-level company x scenario (M3).
 
@@ -1769,6 +1792,8 @@ def build_segment_inputs_from_data(inputs: dict, scenario_id: str, route_termina
     if rf is None or erp is None or beta is None:
         raise ValueError(f"{company.id}: incomplete cost_of_equity_build.")
     ke = rf + beta * erp
+    # D-06 (16 Oct 2026): discount at the WACC on the target capital structure.
+    wacc_parts = segment_wacc_from_data(inputs, ke)
 
     horizon = sf["timing"]["horizon_years"]
     uplift_years = sf["timing"].get("margin_uplift_years", horizon + 1)
@@ -1814,7 +1839,7 @@ def build_segment_inputs_from_data(inputs: dict, scenario_id: str, route_termina
         # final-year revenue, capped at scenario nominal GDP; the typed rate left
         # csl.yaml 14 Oct 2026.
         terminal_growth=segment_terminal_growth_from_data(inputs, scenario_id, horizon).result,
-        tax_rate=scen["tax_rate"], cost_of_equity=ke,
+        tax_rate=scen["tax_rate"], cost_of_equity=wacc_parts["wacc"],  # D-06: the WACC, not Ke
         net_debt=anch["net_debt"], restructuring_cash_to_come=anch["restructuring_cash_to_come"],
         shares_outstanding_m=anch["shares_outstanding_m"], fx_aud_per_usd=sf["fx_aud_per_usd"],
         terminal_form=terminal_form, convergence_years=convergence_years,

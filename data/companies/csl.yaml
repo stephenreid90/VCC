@@ -579,6 +579,26 @@ normalised_baseline:
 
   # Cost-of-equity method and selection (layer 2). Rejoined with the layer-1
   # `coe_observed_inputs` into `cost_of_equity_build` by the translator.
+  # D-06 (16 Oct 2026; Stephen confirmed Q9): CSL is discounted at a WACC on a TARGET capital
+  # structure, not at Ke. Protocol: design/methodology/csl_cost_of_debt_and_target_structure.md.
+  # Layer-2 judgements: the notional rating, the spread, and the EV/EBITDA used to convert the
+  # target leverage to a debt weight. The target leverage is balance_sheet.net_debt_ebitda (1.8x,
+  # the framework's target ratio); the risk-free rate is cost_of_equity_build's.
+  wacc_target_structure:
+    cost_of_debt_pretax: 0.055
+    cost_of_debt_pretax_rationale: >
+      Notional BBB+/A- rating, two to three notches above DNL's notional BBB. Spread about
+      100-130bp over the 10-year sovereign, at the bottom of that range (conservative). kd = Rf
+      (4.50%, the same as the cost-of-equity build) + spread.
+    target_ev_ebitda: 14.0
+    target_ev_ebitda_rationale: >
+      Enterprise value to EBITDA used to convert the 1.8x net debt / EBITDA target into a debt
+      weight: D/V = (ND/EBITDA) / (EV/EBITDA) = 1.8 / 14.0 = 12.9%.
+    tax_rate: 0.30
+    tax_rate_rationale: >
+      Australian statutory company tax rate, for the interest shield. The scenario effective
+      rates (19-20%) are not used for the debt shield.
+
   coe_method:
     equity_risk_premium: 0.05
     equity_risk_premium_rationale: >

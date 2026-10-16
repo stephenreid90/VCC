@@ -1663,10 +1663,19 @@ def build_csl_workbook_bytes(cfg=None):
     head("CSL — Assumptions (yellow cells are the only inputs; segment FCFF / M3)")
     note("Every other sheet links here by formula. Sourced from the production segment engine's data.")
     r[0] += 1
-    sub("Cost of equity (single Ke; applied to FCFF, no WACC)")
+    # D-06 (16 Oct 2026): FCFF is discounted at a WACC on a target capital structure.
+    _wts = nb["wacc_target_structure"]
+    _nd = inp["company_raw"]["company_position"]["balance_sheet"]["net_debt_ebitda"]
+    sub("Cost of equity (Rf + beta x ERP)")
     line("Risk-free rate Rf", coe["risk_free_rate"], "rf", PCT2)
     line("Equity risk premium ERP", coe["equity_risk_premium"], "erp", PCT2)
     line("Beta (peer-triangulated)", coe["beta"], "beta", NUM1 + "0")
+    r[0] += 1
+    sub("Cost of debt and target capital structure (D-06)")
+    line("Pre-tax cost of debt kd", _wts["cost_of_debt_pretax"], "kd", PCT2)
+    line("Tax rate (statutory; interest shield)", _wts["tax_rate"], "tax", PCT2)
+    line("Target net debt / EBITDA (x)", _nd, "ndebitda", NUM1)
+    line("Target EV / EBITDA (x)", _wts["target_ev_ebitda"], "evebitda", NUM1)
     r[0] += 1
     sub("Shared drivers & anchors")
     line("Capex / revenue", drv["capex_pct_revenue"], "capex", PCT2)
@@ -1763,10 +1772,14 @@ def build_csl_workbook_bytes(cfg=None):
     for cc in "BCDEFGH": ws.column_dimensions[cc].width = 13
 
     # ---------------- Ke build ----------------
-    ws = wb.create_sheet("Ke build")
-    ws.cell(1, 1, "Cost of equity (applied to FCFF; no WACC)").font = HDR
-    ws.cell(3, 1, "Re = Rf + beta x ERP"); c = ws.cell(3, 2, f"={R['rf']}+{R['beta']}*{R['erp']}"); c.number_format = PCT3; c.font = BOLD
-    R["ke"] = "'Ke build'!$B$3"; ws.column_dimensions["A"].width = 26
+    ws = wb.create_sheet("WACC build")
+    ws.cell(1, 1, "WACC on a target capital structure (D-06). FCFF is discounted at this rate.").font = HDR
+    ws.cell(3, 1, "Ke = Rf + beta x ERP"); c = ws.cell(3, 2, f"={R['rf']}+{R['beta']}*{R['erp']}"); c.number_format = PCT3
+    ws.cell(4, 1, "Target D/V = (ND/EBITDA) / (EV/EBITDA)"); c = ws.cell(4, 2, f"={R['ndebitda']}/{R['evebitda']}"); c.number_format = PCT2
+    ws.cell(5, 1, "After-tax kd = kd x (1 - t)"); c = ws.cell(5, 2, f"={R['kd']}*(1-{R['tax']})"); c.number_format = PCT3
+    ws.cell(6, 1, "WACC = Ke x (1 - D/V) + kd(1-t) x D/V").font = BOLD
+    c = ws.cell(6, 2, "=B3*(1-B4)+B5*B4"); c.number_format = PCT3; c.font = BOLD
+    R["ke"] = "'WACC build'!$B$6"; ws.column_dimensions["A"].width = 44
 
     # ---------------- Segment FCFF (scenarios as columns) ----------------
     ws = wb.create_sheet("Segment FCFF")

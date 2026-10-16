@@ -54,12 +54,14 @@ def test_muddle_through_ties_workbook():
     LibreOffice across all six scenarios; these figures are that workbook's.
     """
     r = _run_at_five_years("muddle_through")
-    assert r.value_per_share_usd == pytest.approx(129.2130, abs=1e-3)
-    assert r.value_per_share_aud == pytest.approx(195.78, abs=0.02)
-    assert r.enterprise_value == pytest.approx(71487.10, abs=1.0)
-    assert r.pv_explicit == pytest.approx(17586.26, abs=1.0)
-    assert r.terminal_value == pytest.approx(81986.40, abs=2.0)
-    assert r.equity_value == pytest.approx(61880.10, abs=1.0)
+    # 16 Oct 2026 (D-06): discounted at the WACC (8.12%), not Ke (8.75%). Was 129.2130 / 195.78 /
+    # 71487.10 / 17586.26 / 81986.40 / 61880.10.
+    assert r.value_per_share_usd == pytest.approx(147.3215, abs=1e-3)
+    assert r.value_per_share_aud == pytest.approx(223.22, abs=0.02)
+    assert r.enterprise_value == pytest.approx(80159.26, abs=1.0)
+    assert r.pv_explicit == pytest.approx(17841.83, abs=1.0)
+    assert r.terminal_value == pytest.approx(92074.57, abs=2.0)
+    assert r.equity_value == pytest.approx(70552.26, abs=1.0)
     # cost of equity Rf + beta*ERP = 4.5% + 0.85*5.0%
     assert r.value_per_share_aud == pytest.approx(r.value_per_share_usd * 1.5152, abs=1e-6)
 
@@ -78,7 +80,8 @@ def test_at_ten_years_the_live_level_is_the_golden():
     # 3.0% to the derived 5.37% (segment series at Y10, capped at nominal GDP).
     # D-80 (same day): 208.8861 -> 203.4633 as year-10 CPI falls to 2.5% (the cap, 4.86%).
     # 15 Oct 2026 (item (c)): 203.4633 -> 203.5226 with the US real GDP driver.
-    assert r.value_per_share_aud == pytest.approx(203.5226, abs=1e-3)
+    # 16 Oct 2026 (D-06): 203.5226 -> 224.3367 as the discount rate moves from Ke (8.75%) to the WACC (8.12%).
+    assert r.value_per_share_aud == pytest.approx(224.3367, abs=1e-3)  # D-06 WACC (16 Oct 2026)
     assert r.terminal_form == "excess_return_convergence" and r.convergence_years == 25
 
 
@@ -91,11 +94,13 @@ def test_all_six_scenarios_value_and_downside_skewed():
         assert vals[s] < vals["muddle_through"]
 
 
-def test_single_ke_held_across_scenarios():
+def test_single_discount_rate_held_across_scenarios():
+    """16 Oct 2026 (D-06): the rate is the WACC on the target structure, one value in every
+    scenario. Ke 8.75% x (1 - 12.9%) + kd 5.50% x (1 - 30%) x 12.9% = 8.12%."""
     inps = [build_segment_inputs_from_data(load_inputs(ROOT, s, "biopharmaceuticals", "csl"), s) for s in SCENARIOS]
-    kes = {round(i.cost_of_equity, 8) for i in inps}
-    assert len(kes) == 1
-    assert abs(next(iter(kes)) - 0.0875) < 1e-9
+    rates = {round(i.cost_of_equity, 8) for i in inps}
+    assert len(rates) == 1
+    assert abs(next(iter(rates)) - 0.0812) < 1e-9
 
 
 def test_derivation_headline_is_value_per_share_aud():

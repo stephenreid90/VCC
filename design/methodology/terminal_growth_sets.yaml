@@ -155,10 +155,10 @@ terminal_growth_sets:
       g_cap: 0.0455
       g: 0.0455
       capped: true
-      value_per_share: 195.2421
+      value_per_share: 214.9303
       retired_typed_growth: 0.0288
-      value_per_share_at_typed: 181.0789
-      level_change: 0.0782
+      value_per_share_at_typed: 198.0462
+      level_change: 0.0853
     - company: csl
       scenario: disorderly_climate_crystallisation
       horizon_years: 10
@@ -166,10 +166,10 @@ terminal_growth_sets:
       g_cap: 0.04755
       g: 0.034895
       capped: false
-      value_per_share: 164.1419
+      value_per_share: 179.9295
       retired_typed_growth: 0.0275
-      value_per_share_at_typed: 159.3614
-      level_change: 0.03
+      value_per_share_at_typed: 174.2082
+      level_change: 0.0328
     - company: csl
       scenario: fragmentation
       horizon_years: 10
@@ -177,10 +177,10 @@ terminal_growth_sets:
       g_cap: 0.04856
       g: 0.034848
       capped: false
-      value_per_share: 155.0093
+      value_per_share: 170.0215
       retired_typed_growth: 0.0275
-      value_per_share_at_typed: 150.5785
-      level_change: 0.0294
+      value_per_share_at_typed: 164.7082
+      level_change: 0.0323
     - company: csl
       scenario: muddle_through
       horizon_years: 10
@@ -188,10 +188,10 @@ terminal_growth_sets:
       g_cap: 0.048575
       g: 0.048575
       capped: true
-      value_per_share: 203.5226
+      value_per_share: 224.3367
       retired_typed_growth: 0.03
-      value_per_share_at_typed: 186.733
-      level_change: 0.0899
+      value_per_share_at_typed: 204.3253
+      level_change: 0.0979
     - company: csl
       scenario: orderly_convergence
       horizon_years: 10
@@ -199,10 +199,10 @@ terminal_growth_sets:
       g_cap: 0.0506
       g: 0.0506
       capped: true
-      value_per_share: 239.6033
+      value_per_share: 264.3028
       retired_typed_growth: 0.0325
-      value_per_share_at_typed: 218.9523
-      level_change: 0.0943
+      value_per_share_at_typed: 239.7829
+      level_change: 0.1023
     - company: csl
       scenario: stagflation_persists
       horizon_years: 10
@@ -210,7 +210,7 @@ terminal_growth_sets:
       g_cap: 0.0506
       g: 0.026927
       capped: false
-      value_per_share: 134.1886
+      value_per_share: 146.7531
       retired_typed_growth: 0.03
-      value_per_share_at_typed: 135.6775
-      level_change: -0.011
+      value_per_share_at_typed: 148.5486
+      level_change: -0.0121
