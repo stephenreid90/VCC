@@ -678,9 +678,9 @@
     "source": "D-85, 16 Oct 2026",
     "area": "Methodology",
     "issue": "<b>CSL's value depends on its starting return and 25-year fade, which are a judgement.</b> The convergence terminal starts at 20.5% to 31.2% and fades to 8.12% over 25 years. A 20% start cuts orderly convergence from 264.30 to 198.26. A 10-year fade cuts it to 194.57.",
-    "treatment": "Sensitivity in design/methodology/csl_terminal_return_sensitivity_2026-10-16.md. No change made. Stephen to decide whether the starting return and fade stand.",
+    "treatment": "Sensitivity in design/methodology/csl_terminal_return_sensitivity_2026-10-16.md. No change made. Stephen to decide whether the starting return and fade stand. [Decided 16 Oct 2026, D-86: the general earned-return and matrix-fade rule stands for all companies. Goodwill-inclusive return and the sensitivity band are to be shown in reporting.]",
     "questions": "Keep the earned starting return and 25-year fade, or set a declared return or shorter fade for CSL?",
-    "status": "NEEDS-STEPHEN",
+    "status": "DONE",
     "batch": "Batch 4"
   }
 ]

@@ -1193,7 +1193,7 @@ moved. One new script, one new declaration file, one new test module.
    the +1.0pp premium; the harness gives 1.4383 and 1.6380.
 
 ### Open, needing Stephen
-- R16-8 (16 Oct 2026): CSL starting return and 25-year fade. Sensitivity note written, no change made. Your call.
+- R16-8 closed 16 Oct 2026 by D-86: general rule kept (earned start, matrix fade). Goodwill-inclusive return and sensitivity band to appear in reports.
 
 5. **Item 11 is still the blocker, and it is now fully sized** — see §13b of the paper.
    On the central case: ruled build 2.6956, hold intensity flat 1.7676, volume plus asset
