@@ -105,6 +105,19 @@ working capital confirmations; UI design choices 32, 35, Q6, Q7.
   with no script errors. Test: `tests/test_ui_polish_23_34.py` (12 tests). Other suite 352; goldens and CSL tie green;
   lint 14/14. DNL's market price 3.61 is still typed with no date (known gap, needs a dated price from Ben's feed).
 
+- 16 Oct 2026: **Backlog 36 and 37 done (batch 2 item 5, Haiku, mild).** Values unchanged. A print stylesheet hides
+  the controls and keeps cards and tables whole; the build-up panels expand on print (36). A "Compare scenarios" button
+  shows a side-by-side table under the chart (value per share, delta vs Muddle Through, the per-scenario inputs that
+  differ), all from the cfg; the table scrolls sideways with a sticky measure column (37). Rendered in Chromium, no
+  script errors. Test: `tests/test_ui_backlog_36_37.py` (6 tests, incl. `node --check` on each page). Other suite 358;
+  base ties hold; lint 14/14.
+
+**Batch 2 landed and pushed, 16 Oct 2026 late evening:** items 2, 1, 3, 4, 5 (commits 0e7e0a6, 7f3ca16, 7954bfd,
+5c5c69d and the one carrying this line). Item 6 (32 / Q7 placeholder tabs) waits on Ben's feed. Base ties unchanged
+DNL 2.006 / WBC 33.93 / CSL 211.15. Still open in the tracker: 32 (Ben's feed), 35 (the CSL market-gap panel, now
+unblocked by item 10; its content is `design/methodology/csl_market_gap_note_2026-10-16.md`). Known gap, not an item
+yet: DNL's market price 3.61 has no reference date (a "Wall St target"); needs a dated close from Ben's feed.
+
 ### Batch 1 progress
 
 - 16 Oct 2026: **CSL decay band 15-25 years, midpoint 20 (D-93, Stephen's ruling, serious).** The six CSL

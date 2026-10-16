@@ -30,6 +30,14 @@ details.thy>summary::before{content:"\25B8"; color:var(--text3); display:inline-
 details.thy[open]>summary::before{content:"\25BE";}
 details.thy .thybody{padding:2px 12px 11px 22px; font-size:12.5px;}
 .thytag{font-size:10.5px; font-weight:600; letter-spacing:.03em; text-transform:uppercase;}
+@media print{
+@page{margin:12mm;}
+*{background:#fff !important; color:#000 !important; box-shadow:none !important; text-shadow:none !important;}
+.wrap{max-width:none; padding:0;}
+button,.delu,.noprint,#howto{display:none !important;}
+div[style*="height:19px; width:"]{background:#e6e6e6 !important;}
+.scbar,.metric,.detailcard,details.thy,table,tr,#cmp{break-inside:avoid; page-break-inside:avoid;}
+}
 </style></head>
 <body><div class="wrap">
 <div style="display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px; margin-bottom:4px;">
@@ -47,21 +55,21 @@ details.thy .thybody{padding:2px 12px 11px 22px; font-size:12.5px;}
   <div class="metric"><div style="font-size:13px; color:var(--text2);">Discount rate</div><div style="font-size:24px; font-weight:600;"><span id="wacchip"></span></div><div style="font-size:12px; color:var(--text3);" id="waccsub"></div></div>
 </div>
 <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1.5rem; margin-bottom:1.5rem;">
-  <div><div class="hd">Top 5 value drivers <span style="font-weight:400; color:var(--text3); font-size:12px;">— flex to see impact</span></div>
+  <div class="noprint"><div class="hd">Top 5 value drivers <span style="font-weight:400; color:var(--text3); font-size:12px;">— flex to see impact</span></div>
     <div class="sub" style="margin-bottom:6px;">illustrative reduced-form approximation of the engine · full set under Assumptions</div>
     <div id="sliders"></div>
     <div style="display:flex; gap:8px; margin-top:8px;"><button id="reset">↻ reset</button><button id="resetall" title="Clear your saved scenarios and edits in this browser">reset all</button><span class="sub" id="resetnote" style="align-self:center;"></span><button id="allassum">all assumptions &amp; rationale</button></div>
     <label style="display:flex; align-items:center; gap:6px; margin-top:8px; font-size:12px; color:var(--text2); cursor:pointer;"><input type="checkbox" id="applyall" style="accent-color:var(--bdinfo);"> apply input changes to <b>&nbsp;all editable scenarios&nbsp;</b> (global), not just this one</label></div>
-  <div><div class="hd">Outcomes across scenarios <span style="font-weight:400; color:var(--text3); font-size:12px;">(__CCY__/share)</span></div>
+  <div style="min-width:0;"><div class="hd">Outcomes across scenarios <span style="font-weight:400; color:var(--text3); font-size:12px;">(__CCY__/share)</span></div>
     <div class="sub" style="margin-bottom:6px;">click a scenario to explore its build-up</div>
     <div id="bars"></div>
-    <div style="display:flex; align-items:center; gap:10px; margin-top:8px; flex-wrap:wrap;"><button id="addscen" style="font-size:12px;">+ add your scenario</button><span class="sub" id="editing"></span></div>
+    <div style="display:flex; align-items:center; gap:10px; margin-top:8px; flex-wrap:wrap;"><button id="addscen" style="font-size:12px;">+ add your scenario</button><button id="cmpbtn" type="button" aria-controls="cmp" aria-pressed="false" style="font-size:12px;">Compare scenarios</button><span class="sub" id="editing"></span></div>
     <div class="sub" style="margin-top:6px;"><span style="color:var(--info-tx);">▮</span> Muddle Through · <span style="color:var(--user-tx);">▮</span> your scenarios · <span style="color:var(--warning-tx);">▮</span> average broker · dashed = market</div>
-    <div id="barnarr" aria-live="polite" style="margin-top:10px; font-size:13px; line-height:1.55;"></div></div>
+    <div id="barnarr" aria-live="polite" style="margin-top:10px; font-size:13px; line-height:1.55;"></div><div id="cmp" hidden style="margin-top:12px; max-width:100%;"></div></div>
 </div>
 <div style="border-top:0.5px solid var(--bd); padding-top:1rem;">
-  <div class="hd" style="margin-bottom:8px;">Explore the build-up for the selected scenario</div>
-  <div id="explore" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;"></div>
+  <div class="hd noprint" style="margin-bottom:8px;">Explore the build-up for the selected scenario</div>
+  <div id="explore" class="noprint" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;"></div>
   <div id="panel"></div>
   <div id="detail"></div></div>
 <div class="sub" id="footnote" style="margin-top:28px; border-top:0.5px solid var(--bd); padding-top:12px;"></div>
@@ -152,6 +160,32 @@ function vccDownload(){ try{
     else { a.vals[k]=v; a.v=scVal(a); }
     saveLS(); syncSliders(); updateCards(activeScen().v); drawBars(); }
 
+  // Side-by-side comparison under the chart. Columns = editable scenario bars (broker excluded);
+  // rows = value per share, delta vs Muddle Through, then each slider the scenario carries in vals.
+  // Labels, units and decimals come from CFG.sliders; every value comes from the scenario's vals.
+  var cmpOn=false;
+  function renderCompare(){ var box=document.getElementById('cmp'), btn=document.getElementById('cmpbtn'); if(!box||!btn) return;
+    btn.setAttribute('aria-pressed', cmpOn?'true':'false');
+    if(!cmpOn){ box.hidden=true; box.innerHTML=''; return; }
+    var cols=CFG.scenarios.filter(function(s){ return s.kind!=='broker'; }), mt=CFG.scenarios[CFG.liveIdx];
+    function has(s,k){ return !!(s.vals && Object.prototype.hasOwnProperty.call(s.vals,k)); }
+    var cell='padding:5px 8px; text-align:right; white-space:nowrap; border-top:0.5px solid var(--bd);';
+    var stick='position:sticky; left:0; background:var(--primary); text-align:left; padding:5px 8px 5px 0; border-top:0.5px solid var(--bd);';
+    var h='<div class="hd" style="margin-bottom:2px;">Scenarios side by side</div><div class="sub" style="margin-bottom:6px;">delta is against '+esc(mt?mt.n:'the live case')+'</div>';
+    h+='<div style="overflow-x:auto; max-width:100%;"><table style="font-size:12px; border-collapse:collapse;"><tr><th scope="col" style="position:sticky; left:0; background:var(--primary); text-align:left; padding:4px 8px 4px 0; font-weight:500; color:var(--text2);">Measure</th>';
+    cols.forEach(function(s){ h+='<th scope="col" style="text-align:right; padding:4px 8px; font-weight:500; white-space:nowrap;'+(s===activeScen()?' color:var(--info-tx);':'')+'">'+esc(s.n)+'</th>'; });
+    h+='</tr>';
+    h+='<tr><th scope="row" style="'+stick+' font-weight:600;">Value per share ('+CFG.ccy+')</th>'+cols.map(function(s){ return '<td style="'+cell+' font-weight:600;">'+s.v.toFixed(CFG.dp)+'</td>'; }).join('')+'</tr>';
+    h+='<tr><th scope="row" style="'+stick+' font-weight:400; color:var(--text2);">vs Muddle Through</th>'+cols.map(function(s){ return '<td style="'+cell+'">'+((mt&&s!==mt)?fmtDelta((s.v/mt.v-1)*100):'—')+'</td>'; }).join('')+'</tr>';
+    var skipped=0;
+    CFG.sliders.forEach(function(sl){ if(!cols.some(function(s){ return has(s,sl.k); })) return;
+      var same=cols.length>0 && cols.every(function(s){ return has(s,sl.k) && s.vals[sl.k]===cols[0].vals[sl.k]; });
+      if(same){ skipped++; return; }
+      h+='<tr><th scope="row" style="'+stick+' font-weight:400; color:var(--text2);">'+esc(sl.label)+'</th>'+cols.map(function(s){ return '<td style="'+cell+'">'+(has(s,sl.k)?fmt(sl,s.vals[sl.k]):'—')+'</td>'; }).join('')+'</tr>'; });
+    h+='</table></div>';
+    if(skipped) h+='<div class="sub" style="margin-top:6px;">inputs that are the same in every scenario are not shown</div>';
+    box.innerHTML=h; box.hidden=false; }
+
   function barColor(k){ return k==='live'?'var(--info-bg)':k==='broker'?'var(--warning-bg)':k==='user'?'var(--user-bg)':'var(--tertiary)'; }
   function txtColor(k){ return k==='live'?'var(--info-tx)':k==='broker'?'var(--warning-tx)':k==='user'?'var(--user-tx)':'var(--text)'; }
   function fmtDelta(d){ return (d>=0?'+':'−')+Math.abs(d).toFixed(1)+'%'; }
@@ -178,7 +212,7 @@ function vccDownload(){ try{
       el.addEventListener('keydown',function(ev){ if(ev.target!==el) return; if(ev.key==='Enter'||ev.key===' '||ev.key==='Spacebar'){ ev.preventDefault(); selectBar(parseInt(el.getAttribute('data-i'))); } }); });
     Array.prototype.forEach.call(bx.querySelectorAll('.delu'),function(el){ el.addEventListener('click',function(ev){ ev.stopPropagation(); delScenario(el.getAttribute('data-uid')); }); });
     if(refocus!==null){ var f=bx.querySelector('.scbar[data-i="'+refocus+'"]'); if(f) f.focus({preventScroll:true}); }
-    updateWacc();
+    updateWacc(); renderCompare();
   }
 
   // first sentence of the scenario narrative + its "why" line, shown under the chart (text comes from CFG.narr)
@@ -222,6 +256,7 @@ function vccDownload(){ try{
   });
   document.getElementById('allassum').addEventListener('click',function(){ setPanel('assum'); markExplore('assum'); openDetail('assum'); });
   document.getElementById('applyall').addEventListener('change',function(){ applyGlobal=this.checked; });
+  document.getElementById('cmpbtn').addEventListener('click',function(){ cmpOn=!cmpOn; renderCompare(); });
   document.getElementById('addscen').addEventListener('click',function(){ var name=prompt('Name your scenario (starts from Muddle Through, then flex any input):','My scenario '+(CFG.scenarios.filter(function(s){return s.kind==='user';}).length+1));
     if(!name) return; name=(''+name).slice(0,40); var sc={n:name, kind:'user', uid:'u'+Date.now(), anchor:CFG.cp.base, vals:defaultVals(), forces:{}}; sc.v=scVal(sc);
     CFG.scenarios.push(sc); saveLS(); selectBar(CFG.scenarios.length-1); });
@@ -638,6 +673,10 @@ function vccDownload(){ try{
       ht.innerHTML='<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;"><div><b>How to read this</b><ol style="margin:4px 0 0; padding-left:18px;"><li>Pick a scenario bar to see what that world assumes.</li><li>Move a slider or open a panel to see what moves the value.</li><li>Download the audited workbook to check every number.</li></ol></div><button id="howtox" aria-label="dismiss how to read this" style="font-size:12px; flex:none;">Got it</button></div>';
       document.getElementById('howtox').addEventListener('click',function(){ ht.style.display='none'; try{ localStorage.setItem(hk,'1'); }catch(e){} }); }
   })();
+  // print: expand the build-up panels so the DCF table and workings print in full, then restore
+  var _pdet=[];
+  window.addEventListener('beforeprint',function(){ _pdet=[]; Array.prototype.forEach.call(document.querySelectorAll('details.thy'),function(d){ _pdet.push([d,d.open]); d.open=true; }); });
+  window.addEventListener('afterprint',function(){ _pdet.forEach(function(p){ p[0].open=p[1]; }); _pdet=[]; });
   markExplore('forces'); openDetail('forces', true);
 })();
 </script></body></html>"""

@@ -406,9 +406,9 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "No print/PDF stylesheet; the file prints poorly.",
-    "treatment": "Worth doing if the prototype graduates. [Reviewed 16 Oct 2026: Still open. No print stylesheet in any prototype.]",
+    "treatment": "Worth doing if the prototype graduates. [Reviewed 16 Oct 2026: Still open. No print stylesheet in any prototype.] [Done 16 Oct 2026: Print stylesheet added to gen_ui.py: controls, sliders and tabs hidden, cards and tables kept whole, build-up panels expanded on print. test tests/test_ui_backlog_36_37.py]",
     "questions": [],
-    "status": "BACKLOG",
+    "status": "DONE",
     "batch": ""
   },
   {
@@ -416,9 +416,9 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "No side-by-side scenario comparison.",
-    "treatment": "All the data is already in cfg. Nice-to-have. [Reviewed 16 Oct 2026: Not verified. The word 'compare' appears in the prototypes; check whether a side-by-side view exists.]",
+    "treatment": "All the data is already in cfg. Nice-to-have. [Reviewed 16 Oct 2026: Not verified. The word 'compare' appears in the prototypes; check whether a side-by-side view exists.] [Done 16 Oct 2026: Compare scenarios toggle (aria-pressed) renders a side-by-side table from CFG.sliders and each scenario vals, excluding the broker bar. test tests/test_ui_backlog_36_37.py]",
     "questions": [],
-    "status": "BACKLOG",
+    "status": "DONE",
     "batch": ""
   },
   {
