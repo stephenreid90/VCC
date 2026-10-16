@@ -273,7 +273,7 @@ function vccDownload(){ try{
     if(k==='assum'){ var lab=activeScen().n; var head='';
       if(activeScen().kind!=='broker'){ head='<div style="border:0.5px solid var(--bd); border-left:2.5px solid var(--user-tx); border-radius:8px; padding:11px 13px; margin-bottom:12px;"><div style="font-weight:600; margin-bottom:2px;">Your inputs — '+lab+'</div><div class="sub" style="margin-bottom:8px;">the value-material inputs; type to override (syncs with the sliders and the live value). The full assumption set is below.</div>'+editableInputsTable()+'</div>'; }
       return head+CFG.detail.assum; }
-    if(k==='dcf'){ var _dlcap=CFG.xlsxB64?'full audited formula workbook · all six scenarios, DCF build, WACC, tax &amp; equity bridges, comparables/β, Porter&#39;s · engine-sourced, links to one Assumptions sheet':'formula workbook · DCF to equity, discount build, comparables/β &amp; charts (DNL) · includes your edits';var _dllab=CFG.xlsxB64?'⤓ download full valuation workbook (Excel)':'⤓ download all scenarios to Excel';var _dl='<button style="margin-top:12px; font-size:13px; padding:6px 12px;" id="dlbtn">'+_dllab+'</button><div style="font-size:11px; color:var(--text3); margin-top:4px;">'+_dlcap+'</div>';
+    if(k==='dcf'){ var _dlcap=CFG.xlsxB64?'full audited formula workbook · all six scenarios, DCF build, WACC, tax &amp; equity bridges, comparables/β, Porter&#39;s · engine-sourced, links to one Assumptions sheet':'formula workbook · DCF to equity, discount build, comparables/β &amp; charts ('+CFG.companyShort+') · includes your edits';var _dllab=CFG.xlsxB64?'⤓ download full valuation workbook (Excel)':'⤓ download all scenarios to Excel';var _dl='<button style="margin-top:12px; font-size:13px; padding:6px 12px;" id="dlbtn">'+_dllab+'</button><div style="font-size:11px; color:var(--text3); margin-top:4px;">'+_dlcap+'</div>';
       var _nar='<p>'+CFG.dcfIntro+'</p>'; CFG.dcfRows.forEach(function(r){ if(r[2]){ _nar+='<details class="thy"><summary style="display:flex; justify-content:space-between; align-items:center;"><span>'+r[0]+'</span><span style="font-weight:600; margin-left:auto;">'+r[1]+'</span></summary><div class="thybody">'+r[2]+'</div></details>'; } else { _nar+='<div style="display:flex; justify-content:space-between; padding:8px 10px; margin-top:5px; font-weight:600; border-top:1px solid var(--bd2);"><span>'+r[0]+'</span><span>'+r[1]+'</span></div>'; } });
       if(!CFG.richbook){ return _nar+workingsHTML()+_dl; }
       var _sc=activeScen(); if(_sc.kind==='broker'){ _sc=muScenByKind('live')||_sc; }
@@ -355,7 +355,7 @@ function vccDownload(){ try{
     h+='<div style="display:flex; flex-wrap:wrap; gap:12px 18px; align-items:flex-end; margin-bottom:12px;">'+numField('bw_rf','Risk-free %',bs.rf,0.05)+numField('bw_erp','ERP %',bs.erp,0.05)+numField('bw_alpha','Alpha %',bs.alpha,0.1);
     h+='<div><div class="sub">Index</div><select id="bw_idx" style="font:inherit; padding:3px 6px; border:0.5px solid var(--bd2); border-radius:6px; background:var(--primary); color:var(--text);">'+BW.indices.map(function(ix){return '<option'+(ix===bs.idx?' selected':'')+'>'+ix+'</option>';}).join('')+'</select></div>';
     h+='<div><div class="sub">Estimation window</div>'+BW.windows.map(function(w){return '<button class="bw_win" data-w="'+w+'" style="font-size:12px; margin-right:4px; '+(w===bs.win?'border-color:var(--bdinfo); color:var(--info-tx);':'')+'">'+w+'</button>';}).join('')+'</div></div>';
-    if(!BW.bank){ h+='<label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text2); margin-bottom:4px; flex-wrap:wrap;"><input type="checkbox" id="bw_relev" '+(bs.relever?'checked':'')+'> use asset betas: unlever peers, re-lever at DNL gearing D/E <input type="number" id="bw_de" value="'+bs.targetDE+'" step="0.05" min="0" '+(bs.relever?'':'disabled')+' style="width:60px; font:inherit; padding:2px 6px; border:0.5px solid var(--bd2); border-radius:6px; background:var(--primary); color:var(--text);"></label><div class="sub" style="margin-bottom:10px; font-size:11.5px;">off = median of peers’ levered β · on = Hamada re-lever (the proper triangulation) at DNL’s gearing, and reveals the D/E box</div>'; }
+    if(!BW.bank){ h+='<label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text2); margin-bottom:4px; flex-wrap:wrap;"><input type="checkbox" id="bw_relev" '+(bs.relever?'checked':'')+'> use asset betas: unlever peers, re-lever at '+CFG.companyShort+' gearing D/E <input type="number" id="bw_de" value="'+bs.targetDE+'" step="0.05" min="0" '+(bs.relever?'':'disabled')+' style="width:60px; font:inherit; padding:2px 6px; border:0.5px solid var(--bd2); border-radius:6px; background:var(--primary); color:var(--text);"></label><div class="sub" style="margin-bottom:10px; font-size:11.5px;">off = median of peers’ levered β · on = Hamada re-lever (the proper triangulation) at '+CFG.companyShort+'’s gearing, and reveals the D/E box</div>'; }
     else { h+='<div class="sub" style="margin-bottom:10px;">Relevering is not applied to banks — beta is used directly (deposits/wholesale funding are operating inputs, not financing).</div>'; }
     h+='</div>';
     h+='<div style="flex:1 1 250px; min-width:240px;">';
@@ -518,16 +518,22 @@ function vccDownload(){ try{
     var ci=cont.querySelector('#mu_custom'); if(ci) ci.addEventListener('change',function(){ ms.custom=this.value; ms.refMode='custom'; mwRender(cont); });
   }
 
+  // M6: one EV-to-equity bridge for both DCF views. CFG.bridge carries the engine's own lines
+  // (net debt ex-leases, equity-bridge adjustments, leases, shares), unrounded. CFG.engineEv is the
+  // production engine's EV per scenario, so the tie check below is against an independent figure.
+  function dcfBridgeEv(per){ var B=CFG.bridge; return per*B.shares+B.netDebt+B.adj+B.leases; }
+  function dcfEngineTie(name, ev){ var E=CFG.engineEv&&CFG.engineEv[name]; if(E==null) return null; return {engine:E, delta:ev-E, ok:Math.abs(ev-E)<=1.0}; }
+
   function dcfTableHTML(sc){ var v=sc.vals||{}, re=(v.re!=null?+v.re:CFG.cp.re0*100), g=(v.g!=null?+v.g:CFG.cp.g0*100), gr=5;
-    var reF=re/100, gF=g/100, grF=gr/100, per=sc.v, ev=per*CFG.shares+CFG.netDebt;
+    var reF=re/100, gF=g/100, grF=gr/100, per=sc.v, ev=dcfBridgeEv(per), B=CFG.bridge, tie=dcfEngineTie(sc.n, ev);
     var den=0; for(var t=1;t<=5;t++){ den+=Math.pow(1+grF,t-1)/Math.pow(1+reF,t); }
     den+=Math.pow(1+grF,4)*(1+gF)/((reF-gF)*Math.pow(1+reF,5));
     var F1=ev/den, yrs=['FY27','FY28','FY29','FY30','FY31'], fc=[],df=[],pv=[], pvexp=0;
     for(var t=0;t<5;t++){ var f=F1*Math.pow(1+grF,t), d=1/Math.pow(1+reF,t+1); fc.push(f); df.push(d); pv.push(f*d); pvexp+=f*d; }
     var tv=fc[4]*(1+gF)/(reF-gF), pvterm=tv/Math.pow(1+reF,5), evchk=pvexp+pvterm;
     function n0(x){ return Math.round(x).toLocaleString(); }
-    var h='<p style="margin-top:0;">Traditional DCF for the selected scenario <b>'+sc.n+'</b> — an explicit five-year FCFF stream discounted at the scenario rate, bridged from enterprise value to equity. Reduced-form-consistent: the explicit stream reconstructs the headline EV (tie check below). '+CFG.ccy+' m unless noted.</p>';
-    h+='<div class="sub" style="margin-bottom:8px;">Discount rate '+re.toFixed(2)+'% · terminal growth '+g.toFixed(2)+'% · near-term FCFF growth '+gr.toFixed(0)+'% · net debt '+n0(CFG.netDebt)+' · shares '+n0(CFG.shares)+'m.</div>';
+    var h='<p style="margin-top:0;">Traditional DCF for the selected scenario <b>'+sc.n+'</b> — an explicit five-year FCFF stream discounted at the scenario rate, bridged from enterprise value to equity. The EV is the scenario value bridged back with the same lines as the Narrative view; the tie check below compares it to the production engine. '+CFG.ccy+' m unless noted.</p>';
+    h+='<div class="sub" style="margin-bottom:8px;">Discount rate '+re.toFixed(2)+'% · terminal growth '+g.toFixed(2)+'% · near-term FCFF growth '+gr.toFixed(0)+'% · net debt '+n0(B.netDebt)+' · equity-bridge adjustments '+n0(B.adj)+' · leases '+n0(B.leases)+' · shares '+n0(B.shares)+'m.</div>';
     h+='<div style="overflow-x:auto;"><table style="font-size:12px; border-collapse:collapse; white-space:nowrap; width:100%;">';
     h+='<tr><td class="sub" style="padding:3px 8px 3px 0;">Explicit period</td>'+yrs.map(function(y){return '<td class="sub" style="padding:3px 8px; text-align:right;">'+y+'</td>';}).join('')+'</tr>';
     h+='<tr style="border-top:0.5px solid var(--bd);"><td style="padding:5px 8px 5px 0;">FCFF</td>'+fc.map(function(f){return '<td style="padding:5px 8px; text-align:right;">'+n0(f)+'</td>';}).join('')+'</tr>';
@@ -539,13 +545,15 @@ function vccDownload(){ try{
     h+=row('Sum PV of explicit FCFF (FY27–FY31)',pvexp);
     h+=row('Terminal value (Gordon, g '+g.toFixed(2)+'%)',tv);
     h+=row('PV of terminal value',pvterm);
-    h+=row('Enterprise value',evchk,true);
-    h+=row('Less: net debt',-CFG.netDebt,false,true);
-    h+=row('Equity value',evchk-CFG.netDebt,true);
-    h+='<tr style="border-top:0.5px solid var(--bd);"><td style="padding:6px 8px 6px 0;">÷ shares (m)</td><td style="padding:6px 0; text-align:right;">'+n0(CFG.shares)+'</td></tr>';
+    h+=row('Enterprise value',ev,true);
+    h+=row('Less: net debt at valuation date',-B.netDebt,false,true);
+    h+=row('Less: equity-bridge adjustments (net)',-B.adj,false,true);
+    h+=row('Less: AASB 16 lease liabilities',-B.leases,false,true);
+    h+=row('Equity value',ev-B.netDebt-B.adj-B.leases,true);
+    h+='<tr style="border-top:0.5px solid var(--bd);"><td style="padding:6px 8px 6px 0;">÷ shares (m)</td><td style="padding:6px 0; text-align:right;">'+n0(B.shares)+'</td></tr>';
     h+='<tr style="border-top:1px solid var(--bd2);"><td style="padding:6px 8px 6px 0; font-weight:700;">Value per share ('+CFG.ccy+')</td><td style="padding:6px 0; text-align:right; font-weight:700;">'+per.toFixed(CFG.dp)+'</td></tr>';
     h+='</table>';
-    h+='<div class="sub" style="margin-top:6px;">Tie check: reconstructed EV '+n0(evchk)+' vs headline EV '+n0(ev)+' (Δ '+(evchk-ev).toFixed(1)+'). Terminal value is ~'+Math.round(pvterm/evchk*100)+'% of enterprise value. FCFF year 1 solved so the explicit stream reproduces the reduced-form EV; when the full DCF engine lands, its per-year projection lines replace this cascade in place.</div>';
+    h+='<div class="sub" style="margin-top:6px;">Tie check: this view&#39;s EV '+n0(ev)+(tie?(' vs production-engine EV '+n0(tie.engine)+' (Δ '+tie.delta.toFixed(1)+(tie.ok?', ties within rounding of the 3-decimal price':', differs: the sliders are off the engine case and this view is the reduced form')+')'):' (no engine EV for this scenario)')+'. Terminal value is ~'+Math.round(pvterm/evchk*100)+'% of enterprise value. The year-by-year FCFF is a smooth stream solved to the EV above, shown for the shape of the discounting only; it is not a separate check.</div>';
     var dd=CFG.dcfDetail;
     if(dd){
       h+='<details class="thy" style="margin-top:10px;"><summary>Net debt — breakdown</summary><div class="thybody"><table style="width:100%; font-size:12.5px;">';

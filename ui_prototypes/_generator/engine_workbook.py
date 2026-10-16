@@ -159,15 +159,34 @@ def _anchor_term(inp, variable, index):
     return inp["archetype"].driver_anchor(variable).terms[index]
 
 
+def _market_reference(craw):
+    """(price, date) of the market reference from the company data, date None if absent.
+
+    Banks and CSL carry ``company_position.share_statistics.market_reference_price_aud``
+    with ``market_reference_date``; DNL carries the price on the equity-bridge run-rates
+    and no date. One reader, so every workbook takes its price from the same place and
+    nothing is pasted into a formula or a non-Assumptions cell (M11).
+    """
+    ss = (craw.get("company_position") or {}).get("share_statistics") or {}
+    price = ss.get("market_reference_price_aud")
+    if price is None:
+        price = ((craw.get("normalised_baseline") or {}).get("equity_bridge_run_rates") or {}).get(
+            "market_reference_price")
+    if price is None:
+        raise ValueError("no market reference price in the company data")
+    return price, ss.get("market_reference_date")
+
+
 def _col(i):  # 1-based -> letter
     return get_column_letter(i)
 
 
 class Book:
-    def __init__(self):
+    def __init__(self, short="DNL"):
         self.wb = Workbook()
         self.wb.calculation.fullCalcOnLoad = True
         self.ref = {}  # key -> "'Sheet'!$C$R"
+        self.short = short  # company ticker used in sheet labels (M7: never another company's)
 
     # ---- Assumptions -------------------------------------------------------
     def build_assumptions(self, inp):
@@ -215,7 +234,7 @@ class Book:
         def blank():
             r[0] += 1
 
-        ws.cell(r[0], 1, "DNL — Assumptions (yellow cells are the only inputs)"); ws.cell(r[0], 1).font = HDR; r[0] += 1
+        ws.cell(r[0], 1, f"{self.short} — Assumptions (yellow cells are the only inputs)"); ws.cell(r[0], 1).font = HDR; r[0] += 1
         ws.cell(r[0], 1, "Every other sheet links here by formula (standing rule 1). Sourced from the production engine's data files."); ws.cell(r[0], 1).font = NOTE; r[0] += 1
         blank()
 
@@ -495,7 +514,10 @@ class Book:
         line("Capex run-rate (annual)", rr["capex_run_rate"], "capex_rr", NUM0)
         line("AASB 16 lease liabilities", rr["lease_liabilities"], "leases", NUM1)
         line("Shares outstanding (m)", fin["share_statistics"]["shares_outstanding"] / 1_000_000, "shares", NUM0)
-        line("Market reference price", rr["market_reference_price"], "mkt", NUM1 + "0")
+        _mkt_px, _mkt_dt = _market_reference(craw)
+        line("Market reference price", _mkt_px, "mkt", NUM1 + "0")
+        if _mkt_dt:
+            line("Market reference date", _mkt_dt, "mkt_date", "d mmm yyyy")
         # equity-bridge adjustments net (derived elsewhere; here as one audited input line with detail on its own sheet)
         blank()
 
@@ -948,20 +970,21 @@ class Book:
             ws.column_dimensions[cc].width = 14
 
     # ---- Comparables & beta (triangulation) --------------------------------
-    def build_comps(self):
+    def build_comps(self, beta=None):
         import beta_data as _bd
-        d = _bd.DNL
+        d = beta if beta is not None else _bd.DNL
+        S = self.short
         ws = self.wb.create_sheet("Comparables & beta")
         R = self.ref
         ws.cell(1, 1, "Beta triangulation — peer unlever/relever (MOCK peer data, pending EODHD feed)"); ws.cell(1, 1).font = HDR
-        ws.cell(2, 1, "Asset beta = equity beta / (1+(1-tax)*D/E); relevered to DNL gearing & tax. Ratified beta is the owner's triangulated choice, not a mechanical median."); ws.cell(2, 1).font = NOTE
-        # DNL relever basis
+        ws.cell(2, 1, f"Asset beta = equity beta / (1+(1-tax)*D/E); relevered to {S} gearing & tax. Ratified beta is the owner's triangulated choice, not a mechanical median."); ws.cell(2, 1).font = NOTE
+        # subject relever basis
         rr = 4
-        ws.cell(rr, 1, "DNL D/E (for relever)"); c = ws.cell(rr, 2, d["subject"]["de"]); c.fill = YELLOW; c.font = BLUEFONT; c.number_format = NUM1 + "00"; dnl_de = rr; rr += 1
-        ws.cell(rr, 1, "DNL tax (for relever)"); ws.cell(rr, 2, f"={R['tax_wacc']}").number_format = PCT2; dnl_tax = rr; rr += 1
+        ws.cell(rr, 1, f"{S} D/E (for relever)"); c = ws.cell(rr, 2, d["subject"]["de"]); c.fill = YELLOW; c.font = BLUEFONT; c.number_format = NUM1 + "00"; dnl_de = rr; rr += 1
+        ws.cell(rr, 1, f"{S} tax (for relever)"); ws.cell(rr, 2, f"={R['tax_wacc']}").number_format = PCT2; dnl_tax = rr; rr += 1
         rr += 1
         hdr = rr
-        for cc, t in ((1, "Peer"), (2, "Equity beta"), (3, "Tax"), (4, "D/E"), (5, "Include?"), (6, "Asset beta"), (7, "Relevered to DNL")):
+        for cc, t in ((1, "Peer"), (2, "Equity beta"), (3, "Tax"), (4, "D/E"), (5, "Include?"), (6, "Asset beta"), (7, f"Relevered to {S}")):
             ws.cell(hdr, cc, t).font = BOLD
         rr += 1
         relev_cells = []
@@ -1058,8 +1081,8 @@ class Book:
         ws = self.wb.create_sheet("Trading multiples")
         R = self.ref
         MULT = '0.0"x"'
-        ws.cell(1, 1, "Trading multiples — peer comps, DNL implied value, and the market-implied read"); ws.cell(1, 1).font = HDR
-        ws.cell(2, 1, "Peer EV = market cap + net debt; multiples computed by formula. DNL implied value applies the peer median to DNL's own earnings, then bridges to equity."); ws.cell(2, 1).font = NOTE
+        ws.cell(1, 1, f"Trading multiples — peer comps, {self.short} implied value, and the market-implied read"); ws.cell(1, 1).font = HDR
+        ws.cell(2, 1, f"Peer EV = market cap + net debt; multiples computed by formula. {self.short} implied value applies the peer median to {self.short}'s own earnings, then bridges to equity."); ws.cell(2, 1).font = NOTE
         # DNL net debt incl leases (lease-inclusive), from Assumptions run-rates
         ndincl = f"({R['nd_anchor']}-{R['ocf_rr']}*{R['pa_days']}/365+{R['capex_rr']}*{R['pa_days']}/365+{R['leases']})"
 
@@ -1098,8 +1121,8 @@ class Book:
                           "pe_ttm": f"J{med_r}", "pe_fwd": f"K{med_r}"}
         rr += 2
 
-        # ---- DNL earnings bases ----
-        ws.cell(rr, 1, "DNL earnings bases (our build; consensus where shown)"); ws.cell(rr, 1).font = SUB; rr += 1
+        # ---- subject earnings bases ----
+        ws.cell(rr, 1, f"{self.short} earnings bases (our build; consensus where shown)"); ws.cell(rr, 1).font = SUB; rr += 1
         bh = rr
         for j, t in enumerate(["Base", "EBITDA", "EBIT", "Net income", "EBITDA (consensus)", "EBIT (cons.)", "NI (cons.)"]):
             ws.cell(bh, 1 + j, t).font = BOLD
@@ -1120,7 +1143,7 @@ class Book:
         rr += 1
 
         # ---- DNL implied value per share (apply peer median to DNL earnings) ----
-        ws.cell(rr, 1, "DNL implied value per share (peer median x DNL earnings, bridged to equity)"); ws.cell(rr, 1).font = SUB; rr += 1
+        ws.cell(rr, 1, f"{self.short} implied value per share (peer median x {self.short} earnings, bridged to equity)"); ws.cell(rr, 1).font = SUB; rr += 1
         ih = rr
         for j, t in enumerate(["Base", "via EV/EBITDA", "via EV/EBIT", "via P/E"]):
             ws.cell(ih, 1 + j, t).font = BOLD
@@ -1142,8 +1165,8 @@ class Book:
         # ---- market-implied read ----
         ws.cell(rr, 1, "Market-implied read (what the tape pays on DNL's own earnings)"); ws.cell(rr, 1).font = SUB; rr += 1
         fy26 = base_rows.get("fy26", base_rows[base_order[-1]])
-        ws.cell(rr, 1, "DNL market cap = price x shares"); ws.cell(rr, 2, f"={R['mkt']}*{R['shares']}").number_format = NUM0; mc = rr; rr += 1
-        ws.cell(rr, 1, "DNL EV = market cap + net debt (incl leases)"); ws.cell(rr, 2, f"=B{mc}+{ndincl}").number_format = NUM0; ev = rr; rr += 1
+        ws.cell(rr, 1, f"{self.short} market cap = price x shares"); ws.cell(rr, 2, f"={R['mkt']}*{R['shares']}").number_format = NUM0; mc = rr; rr += 1
+        ws.cell(rr, 1, f"{self.short} EV = market cap + net debt (incl leases)"); ws.cell(rr, 2, f"=B{mc}+{ndincl}").number_format = NUM0; ev = rr; rr += 1
         ws.cell(rr, 1, "Market EV/EBITDA (on FY26 EBITDA)"); ws.cell(rr, 2, f"=B{ev}/B{fy26}").number_format = MULT; rr += 1
         ws.cell(rr, 1, "Market EV/EBIT (on FY26 EBIT)"); ws.cell(rr, 2, f"=B{ev}/C{fy26}").number_format = MULT; rr += 1
         ws.cell(rr, 1, "Market P/E (on FY26 NI)"); ws.cell(rr, 2, f"=B{mc}/D{fy26}").number_format = MULT; rr += 1
@@ -1216,7 +1239,7 @@ def build_dnl_workbook_bytes(cfg=None):
     inp = _load_central()
     craw = inp["company_raw"]; nb = craw["normalised_baseline"]
     coff = nb["revenue_growth_chain"]["shared"]["company_offset"]
-    b = Book()
+    b = Book(short=beta["subject"]["ticker"].split(".")[0])
     # DM/EM region partition for the revenue sheet
     dm = set(coff["developed_market_regions"])
     geo = _geographic_regions(craw)
@@ -1229,7 +1252,7 @@ def build_dnl_workbook_bytes(cfg=None):
     b.build_equity(inp)   # net-debt walk + adjustments; defines adj_row used by DCF
     b.build_dcf()         # six-scenario DCF; defines EV/vps refs
     b.finish_equity()     # per-share bridge (central case) links DCF EV
-    b.build_comps()
+    b.build_comps(beta)
     b.build_comparability(beta)
     b.build_porters()
     if cfg.get("multiples"):
@@ -1312,6 +1335,12 @@ def build_wbc_workbook_bytes(cfg=None):
     line("Non-controlling interests", anchors["non_controlling_interests"], "nci", NUM0)
     line("Treasury shares", anchors["treasury_shares"], "treas", NUM0)
     line("Shares outstanding (m)", anchors["shares_outstanding_m"], "shares", NUM1)
+    r[0] += 1
+    sub("Market reference (feeds the Multiples and vs-market columns)")
+    _mkt_px, _mkt_dt = _market_reference(inp["company_raw"])
+    line("Market reference price (AUD)", _mkt_px, "mkt", NUM1 + "0")
+    if _mkt_dt:
+        line("Market reference date", _mkt_dt, "mkt_date", "d mmm yyyy")
     r[0] += 1
     sub("Forecast drivers")
     line("Non-interest income growth", drv["non_interest_income_growth"], "ni_g", PCT2)
@@ -1590,9 +1619,8 @@ def build_wbc_workbook_bytes(cfg=None):
     # ---------------- Multiples (bank: P/E, P/B) ----------------
     ws = wb.create_sheet("Multiples")
     ws.cell(1, 1, "Bank multiples — P/E and P/B on the model's value vs the market").font = HDR
-    mp = cfg.get("market", 0)
     rr = 3
-    ws.cell(rr, 1, "Market price"); c = ws.cell(rr, 2, mp); c.fill = YELLOW; c.font = BLUEFONT; c.number_format = NUM1 + "0"; mpr = rr; rr += 1
+    ws.cell(rr, 1, "Market price (from Assumptions)"); ws.cell(rr, 2, f"={R['mkt']}").number_format = NUM1 + "0"; mpr = rr; rr += 1
     ws.cell(rr, 1, "FY27 NPAT (Muddle Through)"); ws.cell(rr, 2, f"={R['npat:muddle_through:1']}").number_format = NUM0; np1 = rr; rr += 1
     ws.cell(rr, 1, "EPS FY27 = NPAT / shares"); ws.cell(rr, 2, f"=B{np1}/{R['shares']}").number_format = NUM1 + "00"; eps = rr; rr += 1
     ws.cell(rr, 1, "Book value per share = equity / shares"); ws.cell(rr, 2, f"={R['book_eq']}/{R['shares']}").number_format = NUM1 + "00"; bvps = rr; rr += 1
@@ -1640,7 +1668,7 @@ def build_wbc_workbook_bytes(cfg=None):
         ws.cell(rr, 1, nm)
         ws.cell(rr, 2, f"={R[f'vps:{sid}']}").number_format = NUM1 + "00"
         ws.cell(rr, 3, f"={R[f'ord:{sid}']}").number_format = NUM0
-        ws.cell(rr, 4, f"={R[f'vps:{sid}']}/{mp}-1").number_format = PCT2
+        ws.cell(rr, 4, f"={R[f'vps:{sid}']}/{R['mkt']}-1").number_format = PCT2
         rr += 1
     ws.column_dimensions["A"].width = 26
     for cc in "BCD": ws.column_dimensions[cc].width = 15
@@ -1762,7 +1790,10 @@ def build_csl_workbook_bytes(cfg=None):
     line("Terminal band: short fade, years (D-86b, reporting only)", _short_fade, "bn", NUM1)
     line("Shares outstanding (m)", anch["shares_outstanding_m"], "shares", NUM1)
     line("FX (AUD per USD)", sf["fx_aud_per_usd"], "fx", NUM1 + "000")
-    line("Market price (AUD)", cfg.get("market", 0), "mkt", NUM1 + "0")
+    _mkt_px, _mkt_dt = _market_reference(inp["company_raw"])
+    line("Market price (AUD)", _mkt_px, "mkt", NUM1 + "0")
+    if _mkt_dt:
+        line("Market reference date", _mkt_dt, "mkt_date", "d mmm yyyy")
     r[0] += 1
     sub("Segment FY25 anchors (USD m; operating-result margin)")
     for sid, stem, rev0, marg0 in SEGS:

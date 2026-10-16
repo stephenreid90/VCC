@@ -488,9 +488,9 @@
     "source": "triage-2026-08-13",
     "area": "Missed",
     "issue": "<b>DNL's two DCF views disagree by AUD 154m of EV</b> (7,009 vs 6,855 — the table view omits the equity-bridge adjustment), and its \"tie check\" is tautological because the reconstruction is back-solved from the answer.",
-    "treatment": "Reconcile the two views; make the tie check real or remove it. [Reviewed 16 Oct 2026: Not verified. DNL's two DCF views were not re-checked.]",
+    "treatment": "Reconcile the two views; make the tie check real or remove it. [Reviewed 16 Oct 2026: Not verified. DNL's two DCF views were not re-checked.] [Done 16 Oct 2026: the defect was still present. Today the DNL Muddle Through narrative view shows EV 5,122 (engine 5,121.8) and the DCF table view showed 4,971, a gap of 151 (the equity-bridge adjustment, 151.05; August's 154 on 7,009 vs 6,855 was the same fault on older figures). Fixed in gen_ui.py and build_cfgs.py: the table view now bridges EV to equity with the same lines as the narrative (net debt ex-leases, adjustments, leases), and its tie check compares to the production engine's EV per scenario (cfg engineEv) instead of a back-solve. All six DNL scenarios tie within AUD 1m. Pinned by tests/test_workbook_defects_m6_m7_m11.py, including a test that the check fails when the price is moved 5%. Values unchanged.]",
     "questions": [],
-    "status": "PLANNED",
+    "status": "DONE",
     "batch": "Batch 5"
   },
   {
@@ -498,9 +498,9 @@
     "source": "triage-2026-08-13",
     "area": "Missed",
     "issue": "<b>Cross-company text leak</b> — CSL's β workbench says \"re-lever at <b>DNL</b> gearing D/E\". Present in all three generated files.",
-    "treatment": "Parameterise the label. [Reviewed 16 Oct 2026: Not verified.]",
+    "treatment": "Parameterise the label. [Reviewed 16 Oct 2026: Not verified.] [Done 16 Oct 2026: the re-lever label in the beta workbench now takes the company from the config (CFG.companyShort) in gen_ui.py, and the DNL workbook's beta and multiples sheet labels take the ticker from the beta data (engine_workbook.py). The three prototypes were regenerated and grep finds no 'DNL gearing' in any of them. Pinned by tests/test_workbook_defects_m6_m7_m11.py (no other company's ticker in any workbook text cell).]",
     "questions": [],
-    "status": "PLANNED",
+    "status": "DONE",
     "batch": "Batch 5"
   },
   {
@@ -538,9 +538,9 @@
     "source": "triage-2026-08-13",
     "area": "Missed",
     "issue": "<b>WBC's Assumptions sheet has no market-price row</b>, which is why Multiples!B3 hard-codes it.",
-    "treatment": "Add the row, then link. Prerequisite for item 22. [Reviewed 16 Oct 2026: Still open. No market-price row on the WBC Assumptions sheet.]",
+    "treatment": "Add the row, then link. Prerequisite for item 22. [Reviewed 16 Oct 2026: Still open. No market-price row on the WBC Assumptions sheet.] [Done 16 Oct 2026: WBC Assumptions now has a yellow, blue-text 'Market reference price (AUD)' row and a 'Market reference date' row, read from the company data by one helper (_market_reference in engine_workbook.py). WBC Multiples!B3 and the Scenarios vs-market column link to it (the Scenarios column had the price typed inside its formulas). CSL now takes its price and date from the company data, not from the UI config. DNL had the price row already (no reference date in its data, so no date row). Pinned by tests/test_workbook_defects_m6_m7_m11.py. Values unchanged.]",
     "questions": [],
-    "status": "PLANNED",
+    "status": "DONE",
     "batch": "Batch 5"
   },
   {

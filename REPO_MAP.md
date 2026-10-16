@@ -3,9 +3,9 @@
 _Generated 2026-10-16 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `4364b21 R16-6: DNL and bank level anchors moved to their archetypes (values unchanged)` on `main`
+- HEAD: `dd57e5f Q5 closed: answered by D-60 (payout cut on the operating target; D-61 level)` on `main`
 - Unpushed commits: **0**
-- Tracked files: 376
+- Tracked files: 377
 - Untracked files: 1
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
@@ -111,8 +111,8 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `build_plan.html` (15.3KB)
   - `engine_implementation_plan.md` (16.5KB)
   - `open_items.css` (3.5KB)
-  - `open_items.json` (49.0KB)
-  - `open_questions.json` (1.6KB)
+  - `open_items.json` (50.7KB)
+  - `open_questions.json` (1.8KB)
   - `scenarios_workshop.md` (13.6KB)
   - `scenarios_workshop_prep.md` (19.7KB)
   - `single_source_of_truth.md` (16.7KB)
@@ -226,6 +226,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `test_three_statement.py` (717B)
   - `test_trade_working_capital_intensity.py` (3.3KB)
   - `test_wbc_loads.py` (2.1KB)
+  - `test_workbook_defects_m6_m7_m11.py` (9.2KB)
   - `test_workbook_recalc_live.py` (3.4KB)
   - `test_working_capital.py` (2.8KB)
   - **dcf/**
@@ -278,16 +279,16 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
 ## UI generator
 
-  - `csl_scenario_interface.html` (190.3KB)
-  - `dnl_scenario_interface.html` (235.9KB)
-  - `wbc_scenario_interface.html` (190.9KB)
+  - `csl_scenario_interface.html` (179.4KB)
+  - `dnl_scenario_interface.html` (225.9KB)
+  - `wbc_scenario_interface.html` (166.8KB)
   - **_generator/**
     - `README.md` (893B)
     - `beta_data.py` (10.0KB)
-    - `build_cfgs.py` (94.6KB)
-    - `cfgs_gen.json` (250.8KB)
-    - `engine_workbook.py` (122.6KB)
-    - `gen_ui.py` (89.4KB)
+    - `build_cfgs.py` (94.3KB)
+    - `cfgs_gen.json` (251.4KB)
+    - `engine_workbook.py` (124.3KB)
+    - `gen_ui.py` (89.8KB)
 
 ## Analyses (workbooks)
 
@@ -371,5 +372,5 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 Not in git. Either commit them or clear them — an untracked file is invisible
 to anyone who clones the repo, and is the most common way work gets lost.
 
-- `tests/dcf/test_goodwill_band_workbook.py`
+- `tests/test_workbook_defects_m6_m7_m11.py`
 

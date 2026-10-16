@@ -444,7 +444,8 @@ def engine_pack(company_id, archetype_id, scen, broker_price):
     downs = [base - v for v in vals.values() if v < base]
     asym = (max(downs) / max(ups)) if (ups and downs) else None
     return {"base": base, "wacc": r0.wacc, "discount_to_market": r0.discount_to_market,
-            "vals": vals, "bars": bars, "asym": asym, "live_name": live[1]}
+            "vals": vals, "bars": bars, "asym": asym, "live_name": live[1],
+            "ev": {nm: res[sid].enterprise_value for sid, nm, _k in scen}}
 
 from vcc_valuations.translator import build_bank_inputs_from_data as _bbi
 from vcc_valuations.dcf.bank_engine import BankEngine as _BankEng
@@ -580,6 +581,12 @@ dnl["dcfRows"] = [
     ["Equity value", _cm(_EQ), "Enterprise value %s less net debt %s, adjustments %s and leases %s." % (_cm(_EV), _cm(_NDv), _cm(_ADJ), _cm(_LEAS))],
     ["÷ shares (m)", _cm(_SH), "Issued shares at the 31 Mar 2026 H1 anchor (§5.3), paired to the net-debt anchor date; no buyback projection is modelled (value-neutral)."],
     ["Value per share AUD", _vps, ""]]
+
+# M6 (16 Oct 2026): the DCF-table view bridges EV to equity with the SAME lines as the
+# narrative view (net debt ex-leases, equity-bridge adjustments, leases), unrounded, and its
+# tie check compares to the production engine's EV per scenario. Neither is a back-solve.
+dnl["bridge"] = {"shares": float(_SH), "netDebt": float(-_NDv), "adj": float(-_ADJ), "leases": float(-_LEAS)}
+dnl["engineEv"] = {nm: float(v) for nm, v in _pk["ev"].items()}
 
 _dd = dnl["dcfDetail"]
 _dd["leaseMat"]["ev"] = round(_EV); _dd["leaseMat"]["shares"] = round(_SH)

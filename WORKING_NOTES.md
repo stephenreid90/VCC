@@ -81,6 +81,20 @@ working capital confirmations; UI design choices 32, 35, Q6, Q7.
   untouched. CSL's three segment steady states stay in `csl.yaml` by declaration (the company's
   own typed paths, also read by its segment engine); moving them is an owner decision.
 
+- 16 Oct 2026: **M6, M7, M11 workbook defects done, values unchanged.** Tests: `tests/test_workbook_defects_m6_m7_m11.py`
+  (21 tests). M6 was still live: the DNL Muddle Through narrative view showed EV 5,122 and the DCF table view
+  4,971 (gap 151, the equity-bridge adjustments). Both views now use the engine's own bridge lines, and the table
+  tie check compares to the production engine EV per scenario (all six tie within AUD 1m; a 5% price move
+  makes it fail). M7: the beta workbench re-lever label takes the company from the config; the DNL workbook labels
+  take the ticker from the beta data. M11: WBC Assumptions has the market price and date rows (one reader,
+  `_market_reference`, for all three); WBC Multiples!B3 and the Scenarios vs-market column link to it (the latter had
+  the price typed inside its formulas). CSL now reads its price from company data, not the UI config. The three
+  prototypes and `cfgs_gen.json` were regenerated (both are gitignored build outputs).
+  **Seen, not fixed:** (1) the CSL prototype's DCF build-up rows are still the old hand-typed
+  figures (EV 74,029, AUD 203.83) against the engine's 80,512 and 226.66 (D-84 never reached the page);
+  (2) DNL's market price 3.61 has no reference date in the data (its comment says "Wall St target"); (3) item 22's
+  DNL bridge literals are untouched.
+
 **Correction made this sitting, for the record:** I first said only Orderly carried a typed NIM
 shift. Stagflation carried -20bp too. Both were sized before Stephen decided.
 
