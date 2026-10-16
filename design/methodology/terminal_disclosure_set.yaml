@@ -37,9 +37,9 @@ terminal_disclosure_set:
 
       '
     terminal_value: 6071.997
-    value_per_share: 1.9984
+    value_per_share: 1.9974
     engine_terminal_value: 6071.997
-    engine_value_per_share: 1.9984
+    engine_value_per_share: 1.9974
   - company: dnl
     scenario: disorderly_climate_crystallisation
     available: true
@@ -61,9 +61,9 @@ terminal_disclosure_set:
 
       '
     terminal_value: 5499.027
-    value_per_share: 0.9955
+    value_per_share: 0.9863
     engine_terminal_value: 5499.027
-    engine_value_per_share: 0.9955
+    engine_value_per_share: 0.9863
   - company: dnl
     scenario: fragmentation
     available: true
@@ -82,9 +82,9 @@ terminal_disclosure_set:
 
       '
     terminal_value: 4786.555
-    value_per_share: 1.3576
+    value_per_share: 1.3513
     engine_terminal_value: 4786.555
-    engine_value_per_share: 1.3576
+    engine_value_per_share: 1.3513
   - company: dnl
     scenario: muddle_through
     available: true
@@ -106,9 +106,9 @@ terminal_disclosure_set:
 
       '
     terminal_value: 6220.556
-    value_per_share: 2.0067
+    value_per_share: 2.0057
     engine_terminal_value: 6220.556
-    engine_value_per_share: 2.0067
+    engine_value_per_share: 2.0057
   - company: dnl
     scenario: orderly_convergence
     available: true
@@ -129,9 +129,9 @@ terminal_disclosure_set:
 
       '
     terminal_value: 7183.413
-    value_per_share: 2.3451
+    value_per_share: 2.347
     engine_terminal_value: 7183.413
-    engine_value_per_share: 2.3451
+    engine_value_per_share: 2.347
   - company: dnl
     scenario: stagflation_persists
     available: true
@@ -151,9 +151,9 @@ terminal_disclosure_set:
 
       '
     terminal_value: 5241.973
-    value_per_share: 1.0724
+    value_per_share: 1.0638
     engine_terminal_value: 5241.973
-    engine_value_per_share: 1.0724
+    engine_value_per_share: 1.0638
   - company: wbc
     scenario: ai_productivity_lag
     available: true

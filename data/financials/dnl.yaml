@@ -294,8 +294,8 @@ market_data:
 # --- SHARE STATISTICS (issued count anchored per methodology §5.3) ---
 share_statistics:
   shares_outstanding_at: 2026-03-31
-  shares_outstanding: 1770000000       # ~1,770m at H1 anchor date
-  shares_outstanding_source: "Back-solved from H1 NPAT ex IMIs / EPS ex IMIs; period-end estimate net of H1 buybacks (methodology §5.3)"
+  shares_outstanding: 1755597890       # reported at 31 Mar 2026 (Note 9, Issued capital)
+  shares_outstanding_source: "Reported: DNL 1H26 Appendix 4D and half-year financial report, Note 9, 1,755,597,890 shares at 31 Mar 2026 (11 May 2026). Replaces the back-solved estimate of 1,770m (D-88)."
   shares_outstanding_feed_stale: 1875912826   # prior EODHD feed value (superseded; off phantom 1,884m count)
   shares_float: 1595329359
   percent_insiders: 0.0008

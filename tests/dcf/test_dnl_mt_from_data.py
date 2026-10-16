@@ -73,7 +73,8 @@ def test_engine_inputs_assembled_from_data_reproduce_ratified_per_share():
     # D-81 (15 Oct 2026): EV 5,121.8, 2.007/share -- the chain's current-cycle
     # terms glide to equilibrium by their expiry years (D-36's fade retired).
     assert round(r.enterprise_value, 1) == 5121.8
-    assert round(r.value_per_share, 3) == 2.007
+    # 16 Oct 2026 (D-88): reported share count and dividend, H1 operating cash flow: 2.007 -> 2.006.
+    assert round(r.value_per_share, 3) == 2.006
     assert r.value_per_share < r.market_reference_price
 
 
@@ -173,10 +174,16 @@ def test_assembled_inputs_match_the_golden_field_by_field():
     assert gold.terminal_growth == 0.025
 
     db, gb = data.equity_bridge, gold.equity_bridge
-    assert abs(db.net_debt_at_valuation - gb.net_debt_at_valuation) < 1e-9
-    assert abs(db.equity_bridge_adjustments_net - gb.equity_bridge_adjustments_net) < 1e-9
+    # D-88 (16 Oct 2026): the data now carries the reported share count, the reported
+    # dividend and the H1 actual operating cash flow. The frozen golden does not, so
+    # each difference is asserted on its own, rather than equality.
+    # Net debt: H1 actual operating cash flow annualised (293.2 against the golden's 500).
+    assert abs((db.net_debt_at_valuation - gb.net_debt_at_valuation) - 31.1616) < 1e-3
+    # Adjustments: the dividend is 80.8 reported, not 81.4 estimated (adjustments 0.6 lower).
+    assert abs((db.equity_bridge_adjustments_net - gb.equity_bridge_adjustments_net) + 0.6) < 1e-6
     assert db.lease_liabilities == gb.lease_liabilities
-    assert db.shares_outstanding == gb.shares_outstanding
+    # Shares: 1,755.6m reported at 31 Mar 2026, not the 1,770m back-solved estimate.
+    assert abs(db.shares_outstanding - 1755.597890) < 1e-6
     assert db.market_reference_price == gb.market_reference_price
 
     # The one intended difference: β (data ratified 1.10, golden 0.95).
@@ -237,9 +244,9 @@ def test_equity_bridge_derivation_traces_walk_and_per_share():
     d = equity_bridge_from_data(_load(), "muddle_through")
     assert [s.cell for s in d] == \
         ["B6", "B7", "B8", "B10", "B11", "B27", "B28", "B29", "B30", "B31", "B33", "B37"]
-    assert abs(d["B11"].value - 1224.0329) < 1e-3   # net debt at valuation (golden)
-    assert abs(d["B29"].value - (-151.65)) < 1e-2   # adjustments net (§4.2)
-    assert round(d.result, 3) == 2.007              # B33 value per share (D-81, 15 Oct 2026; 2.106 under D-80)
+    assert abs(d["B11"].value - 1255.1945) < 1e-3   # net debt at valuation (D-88 walk)
+    assert abs(d["B29"].value - (-151.05)) < 1e-2   # adjustments net (§4.2; dividend 80.8, D-88)
+    assert round(d.result, 3) == 2.006              # B33 value per share (D-88; 2.007 under D-81)
     # B33 must equal the engine's own value_per_share, not a re-derivation drift.
     inp = build_engine_inputs_from_data(_load(), "muddle_through")
     from vcc_valuations.dcf.fcf_engine import FcfEngine

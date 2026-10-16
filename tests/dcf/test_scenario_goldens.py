@@ -56,6 +56,11 @@ SCENARIOS = [
 
 # --- DNL: industrial FCFF / WACC, AUD per share --------------------------------
 DNL_GOLDEN = {
+    # D-88 (16 Oct 2026): reported share count 1,755.6m (was 1,770m), reported
+    # dividend A$80.8m (was 81.4), H1 operating cash flow annualised to 293.2
+    # (was 500). Net debt rises by 31.2m; per share effect is small (about -0.05%).
+    # Levels: OC 2.3451 -> 2.3470, MT 2.0067 -> 2.0057, AI 1.9984 -> 1.9974,
+    # Frag 1.3576 -> 1.3513, DCC 0.9955 -> 0.9863, Stag 1.0724 -> 1.0638.
     # Re-pinned 15 Oct 2026 for D-81: D-36's end-of-period fade is retired. Each
     # current-cycle chain term now glides linearly from its typed value to its
     # equilibrium value by the archetype's declared expiry year (beta, ore-grade
@@ -123,9 +128,9 @@ DNL_GOLDEN = {
     # the D-72 spread paths recalibrate (a fixed gap on a now-sloping base). MT and OC
     # are both capped now. OC -1.2%, MT -1.5%, AI Lag -0.8%, Frag -1.1%, DCC -1.2%,
     # Stag -1.4%. Before: 2.4908 / 2.1382 / 2.1071 / 1.4342 / 1.0762 / 1.1361.
-    "orderly_convergence": 2.3451,
-    "muddle_through": 2.0067,                      # independently audited (generated workbook, all six)
-    "ai_productivity_lag": 1.9984,
+    "orderly_convergence": 2.3470,
+    "muddle_through": 2.0057,                      # independently audited (generated workbook, all six)
+    "ai_productivity_lag": 1.9974,
     # Fragmentation and Stagflation re-pinned 14 Oct 2026 (bridge note step 3):
     # both now declare a decay horizon (scale + switching_cost, 10-15y, ratified by
     # Stephen via design/frameworks/decay_horizon_checklist.md), so the headline
@@ -133,8 +138,8 @@ DNL_GOLDEN = {
     # excess. Both earn ABOVE the WACC at Y10 (Frag 10.2%, Stag 11.8% vs 8.9%),
     # so competing the excess away cuts them: 1.5776 -> 1.4342, 1.3898 -> 1.1361.
     # Stagflation is again the floor's neighbour, not the floor (DCC 1.08).
-    "fragmentation": 1.3576,
-    "disorderly_climate_crystallisation": 0.9955,
+    "fragmentation": 1.3513,
+    "disorderly_climate_crystallisation": 0.9863,
     # Stagflation Persists crosses to slightly NEGATIVE. It was already earning
     # barely above its own cost of capital on new capital under the old 5-year
     # build (4.96% earned vs 8.877% WACC -- see terminal_return_sets.yaml); a
@@ -144,7 +149,7 @@ DNL_GOLDEN = {
     # margin. Back to slightly POSITIVE under D-71's ten-year horizon (the extra
     # years of chain growth), still Gordon pending a declared decay horizon.
     # D-72: 1.39 -- a cyclical scenario now, see the note above.
-    "stagflation_persists": 1.0724,
+    "stagflation_persists": 1.0638,
 }
 
 # --- WBC: bank DDM / Ke (§15), AUD per share -----------------------------------

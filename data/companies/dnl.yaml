@@ -430,7 +430,7 @@ normalised_baseline:
   # anchor, so they are NOT duplicated here. ---
   equity_bridge_run_rates:
     period_a_days: 55                     # B84: anchor (31 Mar 2026) -> valuation date, in days
-    operating_cash_flow_run_rate: 500.0   # B86: OCF generated over Period A (reduces net debt)
+    operating_cash_flow_run_rate: 293.2   # B86: OCF over Period A. H1 FY26 actual 145.4 (six months to 31 Mar 2026) annualised: 145.4 x 365/181 (D-88)
     capex_run_rate: 256.0                 # B87: capex paid over Period A (raises net debt)
     lease_liabilities: 194.3              # B108: AASB 16, Approach A. A later date than the
                                           #   211.5 FY25-close capital_lease_obligations in financials.
@@ -671,8 +671,8 @@ normalised_baseline:
   # on_balance_sheet_at_anchor flag per the §4.3 validator. ---
   equity_bridge_adjustments:
     - id: declared_unpaid_dividend
-      description: "Interim dividend 4.6cps x 1,770m, declared 11 May 2026, paid Jul 2026"
-      amount_aud_m: 81.4
+      description: "Interim dividend 4.6cps on 1,755.6m shares (reported A$80.8m), declared 11 May 2026, record 15 Jun 2026, paid 2 Jul 2026 (D-88)"
+      amount_aud_m: 80.8
       direction: subtract_from_equity
       on_balance_sheet_at_anchor: no
       treatment: add_back_in_full

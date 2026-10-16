@@ -109,7 +109,8 @@ def test_muddle_through_is_the_ratified_headline():
     # 2.106 under D-80 (14 Oct 2026): year-10 CPI lowered to 2.5%; g is the 4.86% cap.
     # 2.007 under D-81 (15 Oct 2026): the current-cycle chain terms glide to
     # equilibrium by their expiry years; D-36's fade is retired.
-    assert round(r.value_per_share, 3) == 2.007
+    # 16 Oct 2026 (D-88): 2.007 -> 2.006 with the reported share count and dividend and H1 cash flow.
+    assert round(r.value_per_share, 3) == 2.006
 
 
 def test_scenario_asymmetry_is_downside_skewed():

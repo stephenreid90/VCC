@@ -77,8 +77,10 @@ def test_equity_bridge_adjustments_are_data_driven():
 
     raw = yaml.safe_load((ROOT / "data" / "companies" / "dnl.yaml").read_text(encoding="utf-8"))
     net = equity_bridge_adjustments_net_from_data(raw)
-    assert round(net, 2) == 151.65                                   # workbook Equity Bridge B24
-    assert round(net, 4) == round(_equity_bridge_adjustments_net(), 4)   # ties the hand-typed golden
+    # D-88 (16 Oct 2026): the declared dividend is the reported A$80.8m, not the
+    # A$81.4m estimate, so the net is 0.6 lower than the frozen golden's 151.65.
+    assert round(net, 2) == 151.05                                   # workbook Equity Bridge B24
+    assert round(net - _equity_bridge_adjustments_net(), 2) == -0.6  # documented D-88 difference
 
 
 def test_equity_bridge_validator_requires_on_balance_sheet_flag():

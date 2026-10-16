@@ -23,7 +23,7 @@ terminal_growth_sets:
       g_cap: 0.0455
       g: 0.044584
       capped: false
-      value_per_share: 1.9984
+      value_per_share: 1.9974
       retired_typed_growth: null
       value_per_share_at_typed: null
       level_change: null
@@ -34,7 +34,7 @@ terminal_growth_sets:
       g_cap: 0.04755
       g: 0.045812
       capped: false
-      value_per_share: 0.9955
+      value_per_share: 0.9863
       retired_typed_growth: null
       value_per_share_at_typed: null
       level_change: null
@@ -45,7 +45,7 @@ terminal_growth_sets:
       g_cap: 0.04856
       g: 0.040984
       capped: false
-      value_per_share: 1.3576
+      value_per_share: 1.3513
       retired_typed_growth: null
       value_per_share_at_typed: null
       level_change: null
@@ -56,7 +56,7 @@ terminal_growth_sets:
       g_cap: 0.048575
       g: 0.048575
       capped: true
-      value_per_share: 2.0067
+      value_per_share: 2.0057
       retired_typed_growth: null
       value_per_share_at_typed: null
       level_change: null
@@ -67,7 +67,7 @@ terminal_growth_sets:
       g_cap: 0.0506
       g: 0.0506
       capped: true
-      value_per_share: 2.3451
+      value_per_share: 2.347
       retired_typed_growth: null
       value_per_share_at_typed: null
       level_change: null
@@ -78,7 +78,7 @@ terminal_growth_sets:
       g_cap: 0.0506
       g: 0.028438
       capped: false
-      value_per_share: 1.0724
+      value_per_share: 1.0638
       retired_typed_growth: null
       value_per_share_at_typed: null
       level_change: null

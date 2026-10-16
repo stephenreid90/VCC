@@ -111,8 +111,8 @@
       "terminal_value": 7183.41330507144,
       "pv_terminal": 2978.50469001638,
       "enterprise_value": 5720.89161888782,
-      "equity_value": 4150.90874217549,
-      "value_per_share": 2.34514618202005,
+      "equity_value": 4120.34709833987,
+      "value_per_share": 2.34697656098224,
       "terminal_fcff": 437.351127245662
     }
   },
@@ -228,8 +228,8 @@
       "terminal_value": 6220.5559967588,
       "pv_terminal": 2579.26899427811,
       "enterprise_value": 5121.83036913644,
-      "equity_value": 3551.84749242411,
-      "value_per_share": 2.0066934985447,
+      "equity_value": 3521.28584858849,
+      "value_per_share": 2.00574736882857,
       "terminal_fcff": 356.30846764392
     }
   },
@@ -345,8 +345,8 @@
       "terminal_value": 6071.99663489039,
       "pv_terminal": 2517.67087409776,
       "enterprise_value": 5107.17622065905,
-      "equity_value": 3537.19334394672,
-      "value_per_share": 1.99841431861397,
+      "equity_value": 3506.63170011111,
+      "value_per_share": 1.99740027034955,
       "terminal_fcff": 367.134312276018
     }
   },
@@ -462,8 +462,8 @@
       "terminal_value": 4786.5552149189,
       "pv_terminal": 1984.6800610224,
       "enterprise_value": 3972.90069598414,
-      "equity_value": 2402.91781927181,
-      "value_per_share": 1.35758068885413,
+      "equity_value": 2372.3561754362,
+      "value_per_share": 1.35130953901761,
       "terminal_fcff": 243.080865195841
     }
   },
@@ -579,8 +579,8 @@
       "terminal_value": 5499.02708585485,
       "pv_terminal": 2280.09683839052,
       "enterprise_value": 3332.09470528046,
-      "equity_value": 1762.11182856813,
-      "value_per_share": 0.995543405970694,
+      "equity_value": 1731.55018473251,
+      "value_per_share": 0.986302270352189,
       "terminal_fcff": 187.909788003647
     }
   },
@@ -696,8 +696,8 @@
       "terminal_value": 5241.97325949593,
       "pv_terminal": 2173.51296316561,
       "enterprise_value": 3468.09034715578,
-      "equity_value": 1898.10747044345,
-      "value_per_share": 1.07237710194545,
+      "equity_value": 1867.54582660784,
+      "value_per_share": 1.06376627429635,
       "terminal_fcff": 365.692937836647
     }
   }

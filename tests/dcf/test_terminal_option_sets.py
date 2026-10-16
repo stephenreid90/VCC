@@ -131,8 +131,8 @@ def test_engine_current_reproduces_every_engine_value_per_share(rows):
     # D-80 (same day): year-10 CPI lowered in every scenario (2.1382 -> 2.1059;
     # 33.0779 -> 32.2655; 208.8861 -> 203.4633).
     # D-81 (15 Oct 2026): current-cycle chain terms glide to equilibrium inside the
-    # explicit period (2.1059 -> 2.0067; 32.2655 -> 32.3984; CSL unchanged).
-    pinned = {("dnl", "muddle_through"): 2.0067, ("wbc", "muddle_through"): 33.9332,  # 16 Oct 2026: option 1b (retained equity earns Ke)
+    # explicit period (2.1059 -> 2.0057 (D-88); 32.2655 -> 32.3984; CSL unchanged).
+    pinned = {("dnl", "muddle_through"): 2.0057, ("wbc", "muddle_through"): 33.9332,  # 16 Oct 2026: option 1b (retained equity earns Ke)
               ("csl", "muddle_through"): 226.6631}  # 16 Oct 2026: net debt rolled to 30 Jun 2026 on the agreed convention (D-87); was 224.3367 (WACC, D-06)
     for key, vps in pinned.items():
         v = next(x for x in rows if (x.company_id, x.scenario_id) == key)

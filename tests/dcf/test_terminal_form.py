@@ -147,8 +147,9 @@ def test_the_simpler_option_is_selectable(results):
                                                  convergence_years=None))
     assert gordon.terminal_form == "gordon"
     # D-72 paths: 3.0063 (was 2.2288 under D-71 alone); D-80 (lower year-10 CPI, g 4.86% capped): 2.8248;
-    # D-81 (chain terms glide to equilibrium, fade retired): 2.6260
-    assert gordon.value_per_share == pytest.approx(2.6260, abs=5e-4)
+    # D-81 (chain terms glide to equilibrium, fade retired): 2.6260; D-88 (reported share
+    # count and dividend, H1 cash flow annualised): 2.6301
+    assert gordon.value_per_share == pytest.approx(2.6301, abs=5e-4)
     assert gordon.value_per_share > results["muddle_through"].value_per_share
 
 
