@@ -1760,19 +1760,30 @@ def segment_wacc_from_data(inputs: dict, ke: float) -> dict:
             "target_ev_ebitda": wts["target_ev_ebitda"], "dv": dv, "wacc": wacc}
 
 
-def csl_net_debt_at_valuation(anch: dict) -> float:
-    """CSL's net debt at the valuation date (D-87, decision Q1).
+def csl_net_debt_at_valuation(anch: dict, capex_fy26: float) -> float:
+    """CSL's net debt at the valuation date (D-87, decision Q1, convention refined).
 
-    The same walk DNL uses (``EquityBridge.from_anchor``): net debt falls by the
-    operating cash flow generated over the period and rises by the capex paid.
-    It is a walk from the 1H26 close to the valuation date. It leaves out cash paid
-    to shareholders in the period (dividends and buybacks), as DNL does. D-87 notes
-    that this overstates the uplift; see the tracker.
+    Anchored at the 1H26 close (31 Dec 2025) and rolled forward on the part-year
+    cash flow, as agreed: net debt falls by operating cash flow, rises by capex
+    paid, and rises by declared dividends. Buybacks are not guessed.
+    Capex is the segment engine's explicit-period FY26 capex times the half-year
+    fraction, so it uses the model's own capex assumption.
     """
     rf = anch["net_debt_roll_forward"]
+    capex_h2 = float(capex_fy26) * float(rf["capex_period_a_fraction"])
+    dividends = float(rf["dividend_per_share_declared"]) * float(anch["shares_outstanding_m"])
     return (float(anch["net_debt"])
             - float(rf["operating_cash_flow_period_a"])
-            + float(rf["capex_period_a"]))
+            + capex_h2
+            + dividends)
+
+
+def _with_csl_net_debt(si, anch: dict):
+    """Set CSL's net debt from the engine's own FY26 capex (index 1; index 0 is FY25)."""
+    import dataclasses
+    from vcc_valuations.dcf.segment_engine import SegmentEngine
+    capex_fy26 = -SegmentEngine().run(si).capex[1]
+    return dataclasses.replace(si, net_debt=csl_net_debt_at_valuation(anch, capex_fy26))
 
 
 def build_segment_inputs_from_data(inputs: dict, scenario_id: str, route_terminal_form: bool = True):
@@ -1838,7 +1849,7 @@ def build_segment_inputs_from_data(inputs: dict, scenario_id: str, route_termina
         ))
 
     corp = sf["corporate"]; drv = sf["drivers"]; anch = sf["anchors"]
-    return SegmentInputs(
+    si = SegmentInputs(
         company_id=company.id, scenario_id=scenario_id, horizon_years=horizon,
         segments=segs,
         corporate_fy25=corp["unallocated_fy25"], corporate_growth=corp["unallocated_growth"],
@@ -1855,13 +1866,14 @@ def build_segment_inputs_from_data(inputs: dict, scenario_id: str, route_termina
         # csl.yaml 14 Oct 2026.
         terminal_growth=segment_terminal_growth_from_data(inputs, scenario_id, horizon).result,
         tax_rate=scen["tax_rate"], cost_of_equity=wacc_parts["wacc"],  # D-06: the WACC, not Ke
-        net_debt=csl_net_debt_at_valuation(anch), restructuring_cash_to_come=anch["restructuring_cash_to_come"],
+        net_debt=float(anch["net_debt"]), restructuring_cash_to_come=anch["restructuring_cash_to_come"],
         shares_outstanding_m=anch["shares_outstanding_m"], fx_aud_per_usd=sf["fx_aud_per_usd"],
         terminal_form=terminal_form, convergence_years=convergence_years,
         terminal_invested_capital=terminal_capital,
         # D-76: declared rate from the matrix, if the moat work has formed one.
         declared_terminal_return=declared_terminal_return_from_matrix(inputs, scenario_id),
     )
+    return _with_csl_net_debt(si, anch)
 
 
 def _segment_working_capital_intensity(inputs: dict, company) -> float:

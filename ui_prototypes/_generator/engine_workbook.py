@@ -1690,16 +1690,29 @@ def build_csl_workbook_bytes(cfg=None):
     R["wc"] = R.pop("wc_int")
     line("Corporate / unallocated FY25", corp["unallocated_fy25"], "corp0", NUM0)
     line("Corporate growth p.a.", corp["unallocated_growth"], "corpg", PCT2)
-    # D-87 (Q1): net debt is rolled from the 1H26 close to the valuation date on the
-    # same walk as DNL (EquityBridge): less operating cash flow, plus capex.
+    # D-87 (Q1), convention refined: net debt is anchored at the 1H26 close and rolled
+    # forward on part-year cash flow and declared dividends only. Capex is each
+    # scenario's own engine FY26 capex for the half year (translator.csl_net_debt_at_valuation).
+    from vcc_valuations.dcf.segment_engine import SegmentEngine as _SE
+    from vcc_valuations.translator import build_segment_inputs_from_data as _bsi
     _rf = anch["net_debt_roll_forward"]
     _anchor_row = r[0]
     line("Net debt at 1H26 close, 31 Dec 2025 (USD m)", anch["net_debt"], "nd_anchor", NUM0)
     line("Operating cash flow, period A (USD m)", _rf["operating_cash_flow_period_a"], "ocf_a", NUM0)
-    line("Capex, period A (USD m, approximation)", _rf["capex_period_a"], "capex_a", NUM1)
-    ws.cell(r[0], 1, "Net debt at valuation date, 30 Jun 2026 (USD m)")
-    ws.cell(r[0], 2, f"=B{_anchor_row}-B{_anchor_row + 1}+B{_anchor_row + 2}").number_format = NUM0
-    R["nd"] = f"'Assumptions'!$B${r[0]}"
+    line("Dividends declared, period A = DPS x shares (USD m)", _rf["dividend_per_share_declared"] * anch["shares_outstanding_m"], "div_a", NUM1)
+    ws.cell(r[0], 1, "Capex, period A = FY26 capex x half-year fraction, by scenario (USD m)")
+    _capex_row = r[0]
+    for j, sid in enumerate(SIDS):
+        _si_s = _bsi(_li(_ROOT, sid, "biopharmaceuticals", "csl"), sid)
+        _cx = -_SE().run(_si_s).capex[1] * _rf["capex_period_a_fraction"]
+        _c = ws.cell(r[0], 3 + j, round(_cx, 4)); _c.fill = YELLOW; _c.font = BLUEFONT; _c.number_format = NUM1
+    r[0] += 1
+    ws.cell(r[0], 1, "Net debt at valuation date, 30 Jun 2026, by scenario (USD m)")
+    for j, sid in enumerate(SIDS):
+        _col_letter = _col(3 + j)
+        ws.cell(r[0], 3 + j, f"=B{_anchor_row}-B{_anchor_row + 1}+{_col_letter}{_capex_row}+B{_anchor_row + 2}").number_format = NUM0
+        R[f"nd:{sid}"] = f"'Assumptions'!${_col_letter}${r[0]}"
+    R["nd"] = R[f"nd:{SIDS[1]}"]   # muddle_through, used by the market EV line
     r[0] += 1
     line("Restructuring cash to come", anch["restructuring_cash_to_come"], "restr", NUM0)
     # D-44/D-62: the opening invested-capital stock the two-stage terminal rolls
@@ -1914,7 +1927,7 @@ def build_csl_workbook_bytes(cfg=None):
     row("ev", "Enterprise value", NUM0,
         lambda s, c, j: f"={c}{m['pvexp']}+{c}{m['pvtv']}", bold=True)
     row("eq", "Equity value (less net debt, restructuring)", NUM0,
-        lambda s, c, j: f"={c}{m['ev']}-{R['nd']}-{R['restr']}", bold=True)
+        lambda s, c, j: f"={c}{m['ev']}-{R[f'nd:{s}']}-{R['restr']}", bold=True)
     row("vusd", "Value per share USD", NUM1 + "00",
         lambda s, c, j: f"={c}{m['eq']}/{R['shares']}", bold=True)
     row("vaud", "Value per share AUD", NUM1 + "00",

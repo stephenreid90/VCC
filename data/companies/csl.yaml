@@ -740,14 +740,19 @@ normalised_baseline:
       # Period A walk, USD m. The period totals are sourced, not estimated, except
       # capex (see capex_period_a_source).
       net_debt_roll_forward:
+        # Convention (agreed): anchor net debt and issued capital at a known date, then
+        # adjust for the part-year cash flow. Declared dividends only. Buybacks are not
+        # guessed (D-87, Q1).
         period_a_days: 181
         # FY26 operating cash flow 3,512 less 1H26 operating cash flow 1,302
         # (ASX FY26 results, 18 Aug 2026; ASX 1H26 results, 11 Feb 2026).
         operating_cash_flow_period_a: 2210.0
-        # Approximation: half of FY26 PP&E additions 685 (CSL Annual Report 2026,
-        # note 9). The model's capex driver (4.5% of revenue) gives a similar figure.
-        capex_period_a: 342.5
-        capex_period_a_source: half of FY26 PP&E additions, approximation
+        # Explicit-period capex: the segment engine's FY26 capex (4.5% of revenue
+        # driver) times the half-year fraction. Not a separate estimate.
+        capex_period_a_fraction: 0.5
+        # Interim FY26 dividend, declared at 1H26 (US$1.30 per share), paid in period A.
+        # The final FY26 dividend was declared after 30 June 2026 and is excluded.
+        dividend_per_share_declared: 1.30
       restructuring_cash_to_come: 507
       shares_outstanding_m: 478.9
     by_scenario:

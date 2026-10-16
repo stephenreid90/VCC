@@ -4,7 +4,7 @@
     "source": "fable-2026-08-13",
     "area": "Correctness",
     "issue": "<b>CSL valuation-date mismatch.</b> Discounting anchors the valuation at 30 Jun 2026; net debt and share count are struck at 31 Dec 2025. Six months apart. Fable valued this at AUD 5–6/share; re-derived it is ±2%.",
-    "treatment": "Two self-consistent repairs: (a) roll net debt forward, <b>+1.7%</b>; or (b) move the valuation date back with an H2-FY26 stub, <b>−1.9%</b>. (a) matches how DNL already does it. [Reviewed 16 Oct 2026: Still open. Not re-verified against the CSL data this pass.] [Decided 16 Oct 2026 (Q1): roll net debt forward to 30 Jun 2026, +1.7%, matching DNL. Implementation pending.] [Done 16 Oct 2026, D-87: net debt rolled to 30 Jun 2026. Shareholder payments in the half still to be sized.]",
+    "treatment": "Two self-consistent repairs: (a) roll net debt forward, <b>+1.7%</b>; or (b) move the valuation date back with an H2-FY26 stub, <b>−1.9%</b>. (a) matches how DNL already does it. [Reviewed 16 Oct 2026: Still open. Not re-verified against the CSL data this pass.] [Decided 16 Oct 2026 (Q1): roll net debt forward to 30 Jun 2026, +1.7%, matching DNL. Implementation pending.] [Done 16 Oct 2026, D-87: anchored at 1H26 close, rolled on part-year cash flow and declared dividends. Capex is the model's explicit-period assumption. Open: 31 Dec 2025 share count (anchor still FY25 close).]",
     "questions": [
       "Q1"
     ],

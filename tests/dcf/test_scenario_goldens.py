@@ -214,8 +214,9 @@ WBC_GOLDEN = {
 # --- CSL: multi-segment FCFF / Ke (M3), (USD, AUD) per share -------------------
 CSL_GOLDEN = {
     # Re-pinned 16 Oct 2026 (D-87, decision Q1): CSL net debt rolled from the 1H26 close
-    # (USD 9,100m, 31 Dec 2025) to the valuation date (30 Jun 2026) on operating cash flow
-    # and capex only, the DNL walk: net debt 7,232.5. Every CSL value rises 2.2% to 4.0%.
+    # (USD 9,100m, 31 Dec 2025) to the valuation date (30 Jun 2026) on the agreed convention:
+    # part-year operating cash flow, each scenario's own FY26 capex for the half, and declared
+    # dividends only (no buyback guess). Net debt 7,870 to 7,886. Values rise 1.8% to 3.9%.
     # Before (USD, AUD): OC 174.4343/264.3028, MT 148.0575/224.3367, AI 141.8495/214.9303,
     # Frag 112.2106/170.0215, DCC 118.7497/179.9295, Stag 96.8539/146.7531.
     # Re-pinned 16 Oct 2026 for D-06: discounted at the WACC (8.12%), not Ke (8.75%). Before (USD, AUD):
@@ -269,12 +270,12 @@ CSL_GOLDEN = {
     # CSL re-pinned 15 Oct 2026 (item (c)): segment driver now US real GDP + advanced CPI
     # (approved paths). AI Lag and Disorderly Climate are unchanged: a flat offset is absorbed
     # by the calibrated gap.
-    "orderly_convergence": (178.3338, 270.2114),
-    "muddle_through": (151.9571, 230.2454),       # generated workbook ties (LibreOffice recalc, all six)
-    "ai_productivity_lag": (145.749, 220.8389),
-    "fragmentation": (116.1102, 175.9301),
-    "disorderly_climate_crystallisation": (122.6492, 185.8381),
-    "stagflation_persists": (100.7535, 152.6617),
+    "orderly_convergence": (176.9697, 268.1445),
+    "muddle_through": (150.6109, 228.2056),       # generated workbook ties (LibreOffice recalc, all six)
+    "ai_productivity_lag": (144.4047, 218.802),
+    "fragmentation": (114.7774, 173.9107),
+    "disorderly_climate_crystallisation": (121.3099, 183.8088),
+    "stagflation_persists": (99.4224, 150.6448),
 }
 
 

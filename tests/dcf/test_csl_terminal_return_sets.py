@@ -46,10 +46,10 @@ def test_goodwill_barely_moves_value():
 
 
 def test_model_values_are_the_pinned_base_values():
-    # Pinned 16 Oct 2026 (D-87): net debt rolled to 30 Jun 2026 (D-87, decision Q1).
-    pinned = {"orderly_convergence": 270.21, "muddle_through": 230.25,
-              "ai_productivity_lag": 220.84, "fragmentation": 175.93,
-              "disorderly_climate_crystallisation": 185.84, "stagflation_persists": 152.66}
+    # Pinned 16 Oct 2026 (D-87): net debt rolled to 30 Jun 2026 on the agreed convention.
+    pinned = {"orderly_convergence": 268.14, "muddle_through": 228.21,
+              "ai_productivity_lag": 218.80, "fragmentation": 173.91,
+              "disorderly_climate_crystallisation": 183.81, "stagflation_persists": 150.64}
     for s in _committed()["scenarios"]:
         assert s["aud_per_share_model"] == pinned[s["scenario"]], s["scenario"]
 
