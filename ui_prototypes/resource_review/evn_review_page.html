@@ -1,0 +1,567 @@
+<style>
+.ev { display: grid; gap: var(--cds-gap-lg); font-family: var(--font-anthropic-sans); max-width: 78rem; margin-inline: auto; }
+.ev-head { display: grid; gap: var(--cds-gap-xs); }
+.ev-head h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+.ev-take { margin: 0; max-width: 62rem; color: var(--color-fg); font-size: var(--cds-font-size-body); line-height: 1.5; }
+.ev-sub { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+.ev-tabs { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs); border-bottom: 1px solid var(--color-border-line); }
+.ev-tab { font: inherit; font-size: var(--cds-font-size-body); background: none; border: 0; border-bottom: 2px solid transparent; padding: var(--cds-pad-sm) var(--cds-pad-md); color: var(--color-fg-muted); cursor: pointer; }
+.ev-tab[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
+.ev-tab:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
+.ev-page { display: grid; gap: var(--cds-gap-md); }
+.ev-tiles { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); }
+.ev-tile, .ev-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); min-width: 0; }
+.ev-tile { display: grid; gap: var(--cds-gap-xs); align-content: start; }
+.ev-tile .k { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.ev-tile .v { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); font-variant-numeric: tabular-nums; }
+.ev-tile .n { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.4; }
+.ev-card { display: grid; gap: var(--cds-gap-sm); }
+.ev-card h2 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+.ev-card .note { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); line-height: 1.45; max-width: 70ch; }
+.ev-grid { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr)); }
+.ev-controls { display: flex; flex-wrap: wrap; gap: var(--cds-gap-md); align-items: center; font-size: var(--cds-font-size-caption); }
+.ev-controls label { display: flex; gap: var(--cds-gap-sm); align-items: center; }
+.ev-controls input[type=range] { width: min(16rem, 60vw); }
+.ev-controls select, .ev-btn { font: inherit; font-size: var(--cds-font-size-caption); padding: var(--cds-pad-xs) var(--cds-pad-sm); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); }
+.ev-btn { cursor: pointer; }
+.ev-scale-out { font-variant-numeric: tabular-nums; font-weight: var(--cds-font-weight-medium); min-width: 3.5em; }
+.ev-chart { position: relative; min-height: 260px; }
+.ev-chart.short { min-height: 220px; }
+.ev-chart svg text { fill: var(--color-fg-muted); font-size: 11px; font-family: var(--font-anthropic-sans); }
+.ev-chart svg text.lab { fill: var(--color-fg); }
+.ev-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); white-space: nowrap; z-index: 2; }
+.ev-tip .h { color: var(--cds-text-secondary); margin-bottom: 2px; }
+.ev-tip .r { display: flex; gap: 6px; align-items: center; font-variant-numeric: tabular-nums; }
+.ev-sw { width: 8px; height: 8px; border-radius: 2px; display: inline-block; flex: none; }
+.ev-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm) var(--cds-gap-md); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.ev-legend span { display: inline-flex; gap: 6px; align-items: center; }
+.ev-tablewrap { overflow-x: auto; max-height: 34rem; overflow-y: auto; }
+.ev-table { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+.ev-table th, .ev-table td { padding: var(--cds-pad-xs) var(--cds-pad-sm); text-align: right; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.ev-table th:first-child, .ev-table td:first-child { text-align: left; }
+.ev-table th { position: sticky; top: 0; background: var(--color-panel); color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); vertical-align: bottom; white-space: normal; min-width: 4.5rem; }
+.ev-table td.wrap { white-space: normal; text-align: left; min-width: 18rem; line-height: 1.45; }
+.ev-table tr.runoff td { color: var(--color-fg-muted); }
+.ev-table tr.hl td { background: color-mix(in srgb, var(--color-fg) 6%, transparent); }
+.ev-bad { color: var(--color-bad); }
+[data-dash-source-state=empty] { color: transparent; }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+.ev-fail { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: inherit; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+.ev-fail::before { content: ""; width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+</style>
+
+<div class="ev">
+  <header class="ev-head">
+    <h1 id="top">Evolution Mining (EVN) valuation review</h1>
+    <p class="ev-take">Muddle Through values EVN at <b class="dash-skeleton" data-source="scenarios" data-field="value_per_share" data-where="scenario=muddle_through">—</b> a share against a market price of <b class="dash-skeleton" data-source="model_inputs" data-field="value" data-where="item=market_price">—</b>. To reach the market price, Muddle Through's whole gold path would need to be <b class="dash-skeleton" data-source="scenarios" data-field="implied_gold_scale" data-where="scenario=muddle_through">—</b> times higher. The gold path is the input to review first.</p>
+    <p class="ev-sub">Model output from the resource engine, built 20 October 2026. Decisions D-96 to D-101 are still proposed, so every number here can change.</p>
+  </header>
+
+  <nav class="ev-tabs" role="tablist" aria-label="Review pages">
+    <button class="ev-tab" role="tab" data-tab="values" aria-selected="true">Values</button>
+    <button class="ev-tab" role="tab" data-tab="prices" aria-selected="false">Price paths</button>
+    <button class="ev-tab" role="tab" data-tab="cashflow" aria-selected="false">Cash flow</button>
+    <button class="ev-tab" role="tab" data-tab="mines" aria-selected="false">Mines</button>
+    <button class="ev-tab" role="tab" data-tab="inputs" aria-selected="false">Rate and bridge</button>
+  </nav>
+
+  <section class="ev-page" id="values">
+    <div class="ev-tiles">
+      <div class="ev-tile" id="tile-market"><span class="k">Market price, 20 Oct 2026</span><span class="v dash-skeleton" data-source="model_inputs" data-field="value" data-where="item=market_price">—</span><span class="n">The price the model is compared with (D-94).</span></div>
+      <div class="ev-tile" id="tile-mt"><span class="k">Muddle Through value</span><span class="v dash-skeleton" data-source="scenarios" data-field="value_per_share" data-where="scenario=muddle_through">—</span><span class="n">The central scenario, as built.</span></div>
+      <div class="ev-tile" id="tile-range"><span class="k">Range across six scenarios</span><span class="v"><span class="dash-skeleton" data-source="value_range" data-field="low">—</span> to <span class="dash-skeleton" data-source="value_range" data-field="high">—</span></span><span class="n">As built, lowest to highest.</span></div>
+      <div class="ev-tile" id="tile-implied"><span class="k">Gold multiple the market needs</span><span class="v dash-skeleton" data-source="scenarios" data-field="implied_gold_scale" data-where="scenario=muddle_through">—</span><span class="n">Times the Muddle Through gold path, every year.</span></div>
+    </div>
+
+    <div class="ev-card" id="value-card">
+      <h2>Value per share by scenario</h2>
+      <p class="note">Move the slider to scale each scenario's whole gold path up or down. At ×1.00 you see the model as built. Change the mine-life basis to see the two sensitivities. The dashed line is the market price.</p>
+      <div class="ev-controls">
+        <label for="ev-scale">Gold path <input id="ev-scale" type="range" min="0.7" max="2" step="0.05" value="1"> <span class="ev-scale-out" id="ev-scale-out">×1.00</span></label>
+        <label for="ev-basis">Mine life <select id="ev-basis">
+          <option value="stated_life">Company's stated lives</option>
+          <option value="reserves">Ore reserves only</option>
+          <option value="life_extension">Five more years per mine</option>
+        </select></label>
+        <button class="ev-btn" id="ev-reset" type="button">Back to as built</button>
+      </div>
+      <div class="ev-chart" id="value-chart" data-source="gold_grid model_inputs scenarios"></div>
+    </div>
+
+    <div class="ev-card" id="sens-card">
+      <h2>Sensitivities by scenario (A$ a share)</h2>
+      <p class="note">"Spot held flat" keeps today's gold, copper and AUD/USD for the whole life, in real terms. "Five more years" adds five years to every mine. The WACC columns move the discount rate one point either way. The last column is the multiple of that scenario's gold path that gives the market price.</p>
+      <div class="ev-tablewrap">
+        <table class="ev-table" id="sens-table" data-source="scenarios" data-row-key="scenario">
+          <thead><tr>
+            <th data-field="name">Scenario</th>
+            <th data-field="value_per_share">As built</th>
+            <th data-field="reserves">Reserves only</th>
+            <th data-field="life_extension">Five more years</th>
+            <th data-field="spot_flat_real">Spot held flat</th>
+            <th data-field="spot_flat_real_life_extension">Spot flat, five more years</th>
+            <th data-field="wacc_minus_1pp">WACC −1pt</th>
+            <th data-field="wacc_plus_1pp">WACC +1pt</th>
+            <th data-field="run_off_share">Value after year 10</th>
+            <th data-field="implied_gold_scale">Gold multiple for market</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="ev-page" id="prices" hidden>
+    <div class="ev-card">
+      <h2>The price paths each scenario carries (D-99)</h2>
+      <p class="note">Gold and copper are in 2026 US dollars (real). The engine adds each scenario's inflation and converts at its AUD/USD. Each path is typed at years 1, 3, 5, 7 and 10 and joined in straight lines. The dashed line is today's price.</p>
+      <div class="ev-legend" id="price-legend" data-source="scenarios"></div>
+    </div>
+    <div class="ev-grid">
+      <div class="ev-card" id="gold-card"><h2>Gold, US$ an ounce (real)</h2><div class="ev-chart short" id="chart-gold" data-source="price_paths model_inputs"></div></div>
+      <div class="ev-card" id="gold-aud-card"><h2>Gold, A$ an ounce (with inflation)</h2><div class="ev-chart short" id="chart-gold-aud" data-source="price_paths"></div></div>
+      <div class="ev-card" id="aud-card"><h2>AUD/USD</h2><div class="ev-chart short" id="chart-aud" data-source="price_paths model_inputs"></div></div>
+      <div class="ev-card" id="copper-card"><h2>Copper, US$ a tonne (real)</h2><div class="ev-chart short" id="chart-copper" data-source="price_paths model_inputs"></div></div>
+    </div>
+    <div class="ev-card" id="basis-card">
+      <h2>Why each path looks the way it does</h2>
+      <p class="note">The written reason in each scenario file, with the typed points.</p>
+      <div class="ev-controls"><label for="ev-series">Series <select id="ev-series">
+        <option value="gold_price_usd_real">Gold (US$/oz, real)</option>
+        <option value="copper_price_usd_real">Copper (US$/t, real)</option>
+        <option value="aud_usd">AUD/USD</option>
+      </select></label></div>
+      <div class="ev-tablewrap">
+        <table class="ev-table" id="basis-table" data-source="price_basis" data-row-key="scenario,series">
+          <thead><tr>
+            <th data-field="name">Scenario</th>
+            <th data-field="y1">Year 1</th><th data-field="y3">Year 3</th><th data-field="y5">Year 5</th><th data-field="y7">Year 7</th><th data-field="y10">Year 10</th>
+            <th data-field="basis" style="text-align:left">Basis</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="ev-page" id="cashflow" hidden>
+    <div class="ev-controls"><label for="ev-scen">Scenario <select id="ev-scen" data-source="scenarios"></select></label></div>
+    <div class="ev-tiles">
+      <div class="ev-tile"><span class="k">Enterprise value</span><span class="v" id="cf-ev" data-source="scenarios" data-field="enterprise_value">—</span><span class="n">A$ million, at the WACC.</span></div>
+      <div class="ev-tile"><span class="k">From the ten explicit years</span><span class="v" id="cf-pve" data-source="scenarios" data-field="pv_explicit">—</span><span class="n">A$ million, stub plus years 1 to 10.</span></div>
+      <div class="ev-tile"><span class="k">From the run-off after year 10</span><span class="v" id="cf-pvr" data-source="scenarios" data-field="pv_run_off">—</span><span class="n">A$ million, until the last mine closes (D-97).</span></div>
+      <div class="ev-tile"><span class="k">Value per share</span><span class="v" id="cf-vps" data-source="scenarios" data-field="value_per_share">—</span><span class="n">After net debt, rehabilitation and leases.</span></div>
+    </div>
+    <div class="ev-card" id="fcff-card">
+      <h2>Free cash flow by year (A$ million)</h2>
+      <p class="note">Cash after tax and all capital spending, before interest. Solid bars are the stub and the ten explicit years. Pale bars are the run-off, which is the terminal value for a miner.</p>
+      <div class="ev-chart" id="chart-fcff" data-source="cash_flow"></div>
+    </div>
+    <div class="ev-card" id="cf-card">
+      <h2>Year by year (A$ million unless stated)</h2>
+      <div class="ev-tablewrap">
+        <table class="ev-table" id="cf-table" data-source="cash_flow" data-row-key="scenario,fy">
+          <thead><tr>
+            <th data-field="fy">Year</th>
+            <th data-field="gold_koz">Gold (koz)</th>
+            <th data-field="copper_kt">Copper (kt)</th>
+            <th data-field="revenue">Revenue</th>
+            <th data-field="royalty">Royalty</th>
+            <th data-field="operating_cost">Operating cost</th>
+            <th data-field="exploration_and_corporate">Exploration and corporate</th>
+            <th data-field="ebitda">EBITDA</th>
+            <th data-field="tax">Tax</th>
+            <th data-field="capex">Capital spending</th>
+            <th data-field="delta_wc">Working capital</th>
+            <th data-field="fcff">Free cash flow</th>
+            <th data-field="pv_fcff">Present value</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="ev-page" id="mines" hidden>
+    <div class="ev-card" id="mine-card">
+      <h2>When each mine runs (D-98)</h2>
+      <p class="note">Each mine produces at its FY27 guidance rate until its stated life ends. The same in every scenario. Bert and the Northparkes recovery projects are added output from FY29. Mt Rawdon, Marsden and Carnaby are left out.</p>
+      <div class="ev-chart short" id="chart-mines" data-source="mines"></div>
+    </div>
+    <div class="ev-card">
+      <h2>Mine inputs</h2>
+      <p class="note">AISC is the company's all-in sustaining cost per ounce of gold, after copper credits. A negative AISC means copper more than pays for the mine.</p>
+      <div class="ev-tablewrap">
+        <table class="ev-table" id="mine-table" data-source="mines" data-row-key="mine">
+          <thead><tr>
+            <th data-field="mine">Mine</th>
+            <th data-field="first_fy">First year</th>
+            <th data-field="last_fy">Last year</th>
+            <th data-field="gold_koz_pa">Gold a year (koz)</th>
+            <th data-field="copper_kt_pa">Copper a year (kt)</th>
+            <th data-field="aisc_aud_oz">AISC (A$/oz)</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="ev-page" id="inputs" hidden>
+    <div class="ev-card" id="inputs-card">
+      <h2>Discount rate, equity bridge and reference prices</h2>
+      <p class="note">One discount rate for every year and every scenario (D-01). The bridge takes enterprise value to equity value.</p>
+      <div class="ev-tablewrap">
+        <table class="ev-table" id="inputs-table" data-source="model_inputs" data-row-key="item">
+          <thead><tr>
+            <th data-field="label">Item</th>
+            <th data-field="value">Value</th>
+            <th data-field="basis" style="text-align:left">Basis</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  const PRETTY = { cowal: 'Cowal', ernest_henry: 'Ernest Henry', northparkes: 'Northparkes', mungari: 'Mungari', red_lake: 'Red Lake', 'ernest_henry:bert': 'Ernest Henry: Bert', 'northparkes:recovery_projects': 'Northparkes: recovery projects' };
+  const mineName = (m) => PRETTY[m] || m;
+  const aud = (v) => (v == null || isNaN(v)) ? '—' : (v < 0 ? '−A$' : 'A$') + d3.format(',.2f')(Math.abs(v));
+  const num0 = (v) => (v == null || isNaN(v)) ? '—' : d3.format(',.0f')(v).replace('-', '−');
+  const num1 = (v) => (v == null || isNaN(v)) ? '—' : d3.format(',.1f')(v).replace('-', '−');
+  const mult = (v) => (v == null || isNaN(v)) ? '—' : '×' + d3.format('.2f')(v);
+  const pct1 = (v) => d3.format('.1%')(v);
+  const pct2 = (v) => d3.format('.2%')(v);
+  window.evFmt = { aud, num0, num1, mult, pct1, pct2, mineName };
+
+  dash.calc('value_range', {
+    inputs: ['scenarios'],
+    title: 'Lowest and highest scenario value',
+    description: 'The lowest and highest value per share across the six scenarios, as built.',
+    fn: (scenarios) => [{ low: d3.min(scenarios, (s) => s.value_per_share), high: d3.max(scenarios, (s) => s.value_per_share) }],
+  });
+
+  // Tabs
+  const tabs = Array.from(document.querySelectorAll('.ev-tab'));
+  const pages = Array.from(document.querySelectorAll('.ev-page'));
+  window.evShow = (id) => {
+    if (!pages.some((p) => p.id === id)) return;
+    tabs.forEach((t) => t.setAttribute('aria-selected', String(t.dataset.tab === id)));
+    pages.forEach((p) => { p.hidden = p.id !== id; });
+    dash.setLink(id);
+    if (window.evDraw) window.evDraw();
+  };
+  tabs.forEach((t) => t.addEventListener('click', () => window.evShow(t.dataset.tab)));
+  const named = location.hash.slice(1);
+  if (named) window.evShow(named);
+
+  // Controls
+  const scale = document.getElementById('ev-scale');
+  const basis = document.getElementById('ev-basis');
+  const series = document.getElementById('ev-series');
+  const scen = document.getElementById('ev-scen');
+  scale.addEventListener('input', () => dash.setParams({ gold_scale: Math.round(Number(scale.value) * 100) / 100 }));
+  basis.addEventListener('change', () => dash.setParams({ basis: basis.value }));
+  series.addEventListener('change', () => dash.setParams({ series: series.value }));
+  scen.addEventListener('change', () => dash.setParams({ scenario: scen.value }));
+  document.getElementById('ev-reset').addEventListener('click', () => dash.setParams({ gold_scale: 1, basis: 'stated_life' }));
+})();
+</script>
+
+<script>
+(function () {
+  const F = window.evFmt;
+  const colorOf = (order) => dash.colors[order % dash.colors.length];
+  const isOk = (id) => dash.data(id).status === 'ok';
+  const fail = (el, ids) => {
+    const bad = ids.some((id) => ['error', 'connect', 'declined', 'missing'].includes(dash.data(id).status));
+    if (bad) { el.replaceChildren(); const d = document.createElement('div'); d.className = 'ev-fail'; d.textContent = 'Failed to load'; el.append(d); }
+    return bad;
+  };
+  const visible = (el) => el.offsetParent !== null && el.clientWidth > 0;
+
+  function tooltip(box) {
+    let tip = box.querySelector('.ev-tip');
+    if (!tip) { tip = document.createElement('div'); tip.className = 'ev-tip'; tip.hidden = true; box.append(tip); }
+    return {
+      show(x, y, head, rows) {
+        tip.replaceChildren();
+        const h = document.createElement('div'); h.className = 'h'; h.textContent = head; tip.append(h);
+        rows.forEach((r) => {
+          const line = document.createElement('div'); line.className = 'r';
+          if (r.color) { const s = document.createElement('span'); s.className = 'ev-sw'; s.style.background = r.color; line.append(s); }
+          const t = document.createElement('span'); t.textContent = r.text; line.append(t);
+          tip.append(line);
+        });
+        tip.hidden = false;
+        const bw = box.clientWidth, tw = tip.offsetWidth, th = tip.offsetHeight;
+        let left = x + 12; if (left + tw > bw) left = Math.max(0, x - tw - 12);
+        let top = Math.max(0, y - th / 2);
+        tip.style.left = left + 'px'; tip.style.top = top + 'px';
+      },
+      hide() { tip.hidden = true; },
+    };
+  }
+
+  function textWidth(svg, str) {
+    const t = svg.append('text').attr('x', -9999).attr('y', -9999).text(str);
+    const w = t.node().getComputedTextLength(); t.remove(); return w;
+  }
+
+  // ---------- Values: bar chart from the gold-scale grid ----------
+  function drawValues(p) {
+    const el = document.getElementById('value-chart');
+    if (!visible(el) || fail(el, ['gold_grid', 'model_inputs', 'scenarios'])) return;
+    if (!isOk('gold_grid') || !isOk('model_inputs') || !isOk('scenarios')) return;
+    const scen = dash.data('scenarios').data.slice().sort((a, b) => a.order - b.order);
+    const grid = dash.data('gold_grid').data;
+    const market = dash.data('model_inputs').data.find((r) => r.item === 'market_price').value;
+    const k = Number(p.gold_scale ?? 1), b = p.basis ?? 'stated_life';
+    const rows = scen.map((s) => {
+      const g = grid.find((r) => r.scenario === s.scenario && r.basis === b && Math.abs(r.gold_scale - k) < 1e-6);
+      return { s, v: g ? g.value_per_share : NaN };
+    });
+    el.querySelectorAll('svg').forEach((n) => n.remove());
+    const W = el.clientWidth, rowH = 34, top = 24, bottom = 26;
+    const H = top + rows.length * rowH + bottom;
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', 'Value per share by scenario');
+    const labW = d3.max(rows, (r) => textWidth(svg, r.s.name)) + 12;
+    const valW = textWidth(svg, '−A$00.00') + 8;
+    const lo = Math.min(0, d3.min(rows, (r) => r.v)), hi = Math.max(market, d3.max(rows, (r) => r.v)) * 1.05;
+    const x = d3.scaleLinear([lo, hi], [labW, Math.max(labW + 60, W - valW)]).nice();
+    svg.append('g').attr('transform', `translate(0,${top - 6})`).selectAll('line').data(x.ticks(Math.max(2, Math.floor(W / 110)))).join('line')
+      .attr('x1', (d) => x(d)).attr('x2', (d) => x(d)).attr('y1', 0).attr('y2', rows.length * rowH + 6).attr('stroke', 'var(--cds-chart-grid)');
+    svg.append('g').selectAll('text').data(x.ticks(Math.max(2, Math.floor(W / 110)))).join('text')
+      .attr('x', (d) => x(d)).attr('y', H - 8).attr('text-anchor', 'middle').text((d) => 'A$' + d3.format(',.0f')(d));
+    const g = svg.append('g').attr('transform', `translate(0,${top})`);
+    rows.forEach((r, i) => {
+      const y = i * rowH;
+      g.append('text').attr('class', 'lab').attr('x', 0).attr('y', y + rowH / 2).attr('dominant-baseline', 'middle').text(r.s.name);
+      const x0 = x(Math.min(0, r.v)), x1 = x(Math.max(0, r.v));
+      g.append('rect').attr('x', x0).attr('y', y + 7).attr('width', Math.max(1, x1 - x0)).attr('height', rowH - 14).attr('rx', 4)
+        .attr('fill', r.s.scenario === 'muddle_through' ? dash.colors[0] : 'var(--cds-chart-muted)');
+      g.append('text').attr('class', 'lab').attr('x', x1 + 6).attr('y', y + rowH / 2).attr('dominant-baseline', 'middle').text(F.aud(r.v));
+    });
+    const mx = x(market);
+    svg.append('line').attr('x1', mx).attr('x2', mx).attr('y1', top - 10).attr('y2', top + rows.length * rowH).attr('stroke', 'var(--cds-chart-reference)').attr('stroke-width', 1.5).attr('stroke-dasharray', '4 3');
+    const ml = 'Market ' + F.aud(market);
+    const mw = textWidth(svg, ml);
+    svg.append('text').attr('class', 'lab').attr('x', Math.min(Math.max(mx, mw / 2), W - mw / 2)).attr('y', 10).attr('text-anchor', 'middle').text(ml);
+  }
+
+  // ---------- Sensitivity table ----------
+  function drawSens() {
+    const t = document.querySelector('#sens-table tbody');
+    if (!isOk('scenarios')) { t.replaceChildren(); return; }
+    const scen = dash.data('scenarios').data.slice().sort((a, b) => a.order - b.order);
+    const cols = ['value_per_share', 'reserves', 'life_extension', 'spot_flat_real', 'spot_flat_real_life_extension', 'wacc_minus_1pp', 'wacc_plus_1pp'];
+    t.replaceChildren(...scen.map((s) => {
+      const tr = document.createElement('tr'); tr.dataset.key = s.scenario;
+      if (s.scenario === 'muddle_through') tr.className = 'hl';
+      const c0 = document.createElement('td'); c0.textContent = s.name; tr.append(c0);
+      cols.forEach((c) => { const td = document.createElement('td'); td.textContent = F.aud(s[c]); tr.append(td); });
+      const rs = document.createElement('td'); rs.textContent = F.pct1(s.run_off_share); tr.append(rs);
+      const im = document.createElement('td'); im.textContent = F.mult(s.implied_gold_scale); tr.append(im);
+      return tr;
+    }));
+  }
+
+  // ---------- Price path line charts ----------
+  function lineChart(id, field, fmtTick, fmtVal, refItem) {
+    const el = document.getElementById(id);
+    if (!visible(el) || fail(el, ['price_paths', 'scenarios'])) return;
+    if (!isOk('price_paths') || !isOk('scenarios') || (refItem && !isOk('model_inputs'))) return;
+    const scen = dash.data('scenarios').data.slice().sort((a, b) => a.order - b.order);
+    const rows = dash.data('price_paths').data.filter((r) => r.t <= 10);
+    const ref = refItem ? dash.data('model_inputs').data.find((r) => r.item === refItem).value : null;
+    el.querySelectorAll('svg').forEach((n) => n.remove());
+    const W = el.clientWidth, H = 220, m = { t: 12, r: 14, b: 26 };
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img');
+    const vals = rows.map((r) => r[field]).concat(ref != null ? [ref] : []);
+    const y = d3.scaleLinear([d3.min(vals), d3.max(vals)], [H - m.b, m.t]).nice();
+    const yt = y.ticks(5);
+    m.l = d3.max(yt, (d) => textWidth(svg, fmtTick(d))) + 10;
+    const labels = Array.from(new Set(rows.map((r) => r.t))).sort((a, b) => a - b);
+    const fyOf = new Map(rows.map((r) => [r.t, r.fy.split(' ')[0]]));
+    const x = d3.scaleLinear([0, 10], [m.l, W - m.r]);
+    svg.append('g').selectAll('line').data(yt).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', (d) => y(d)).attr('y2', (d) => y(d)).attr('stroke', 'var(--cds-chart-grid)');
+    svg.append('g').selectAll('text').data(yt).join('text').attr('x', m.l - 6).attr('y', (d) => y(d)).attr('text-anchor', 'end').attr('dominant-baseline', 'middle').text(fmtTick);
+    const every = W < 420 ? 5 : 2;
+    svg.append('g').selectAll('text').data(labels.filter((t) => t % every === 0)).join('text').attr('x', (d) => x(d)).attr('y', H - 8).attr('text-anchor', 'middle').text((d) => fyOf.get(d));
+    if (ref != null) svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(ref)).attr('y2', y(ref)).attr('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '4 3');
+    const line = d3.line().x((r) => x(r.t)).y((r) => y(r[field]));
+    scen.forEach((s) => {
+      const pts = rows.filter((r) => r.scenario === s.scenario).sort((a, b) => a.t - b.t);
+      svg.append('path').attr('d', line(pts)).attr('fill', 'none').attr('stroke', colorOf(s.order)).attr('stroke-width', s.scenario === 'muddle_through' ? 2.5 : 1.75).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+    });
+    const tip = tooltip(el);
+    const rule = svg.append('line').attr('y1', m.t).attr('y2', H - m.b).attr('stroke', 'var(--cds-chart-axis)').attr('visibility', 'hidden');
+    svg.append('rect').attr('x', m.l).attr('y', 0).attr('width', W - m.l - m.r).attr('height', H).attr('fill', 'transparent')
+      .on('pointermove', (ev) => {
+        const [px, py] = d3.pointer(ev);
+        const t = Math.max(0, Math.min(10, Math.round(x.invert(px))));
+        rule.attr('x1', x(t)).attr('x2', x(t)).attr('visibility', 'visible');
+        const lines = scen.map((s) => { const r = rows.find((q) => q.scenario === s.scenario && q.t === t); return { color: colorOf(s.order), text: s.name + '  ' + fmtVal(r[field]) }; });
+        if (ref != null) lines.push({ text: 'Today  ' + fmtVal(ref) });
+        tip.show(x(t) * el.clientWidth / W, py * el.clientWidth / W, fyOf.get(t), lines);
+      })
+      .on('pointerleave', () => { tip.hide(); rule.attr('visibility', 'hidden'); });
+  }
+
+  function drawLegend() {
+    const el = document.getElementById('price-legend');
+    if (!isOk('scenarios')) return;
+    const scen = dash.data('scenarios').data.slice().sort((a, b) => a.order - b.order);
+    el.replaceChildren(...scen.map((s) => { const sp = document.createElement('span'); const sw = document.createElement('i'); sw.className = 'ev-sw'; sw.style.background = colorOf(s.order); sp.append(sw, document.createTextNode(s.name)); return sp; }));
+  }
+
+  function drawBasis(p) {
+    const t = document.querySelector('#basis-table tbody');
+    if (!isOk('price_basis') || !isOk('scenarios')) { t.replaceChildren(); return; }
+    const order = new Map(dash.data('scenarios').data.map((s) => [s.scenario, s.order]));
+    const ser = p.series ?? 'gold_price_usd_real';
+    const f = ser === 'aud_usd' ? (v) => v == null ? '—' : d3.format('.2f')(v) : F.num0;
+    const rows = dash.data('price_basis').data.filter((r) => r.series === ser).sort((a, b) => order.get(a.scenario) - order.get(b.scenario));
+    t.replaceChildren(...rows.map((r) => {
+      const tr = document.createElement('tr'); tr.dataset.key = encodeURIComponent(r.scenario) + ',' + encodeURIComponent(r.series);
+      if (r.scenario === 'muddle_through') tr.className = 'hl';
+      const c = [r.name, f(r.y1), f(r.y3), f(r.y5), f(r.y7), f(r.y10)];
+      c.forEach((v) => { const td = document.createElement('td'); td.textContent = v; tr.append(td); });
+      const b = document.createElement('td'); b.className = 'wrap'; b.textContent = r.basis + (r.anchor ? ' Year 0: ' + r.anchor : ''); tr.append(b);
+      return tr;
+    }));
+  }
+
+  // ---------- Cash flow ----------
+  function drawCash(p) {
+    const sid = p.scenario ?? 'muddle_through';
+    const sel = document.getElementById('ev-scen');
+    if (isOk('scenarios')) {
+      const scen = dash.data('scenarios').data.slice().sort((a, b) => a.order - b.order);
+      if (sel.options.length !== scen.length) sel.replaceChildren(...scen.map((s) => new Option(s.name, s.scenario)));
+      sel.value = sid;
+      const s = scen.find((q) => q.scenario === sid);
+      [['cf-ev', 'enterprise_value', F.num0], ['cf-pve', 'pv_explicit', F.num0], ['cf-pvr', 'pv_run_off', F.num0], ['cf-vps', 'value_per_share', F.aud]].forEach(([id, f, fmt]) => {
+        const e = document.getElementById(id); e.dataset.where = 'scenario=' + sid; e.textContent = s ? fmt(s[f]) : '—';
+      });
+    }
+    const t = document.querySelector('#cf-table tbody');
+    const el = document.getElementById('chart-fcff');
+    if (!isOk('cash_flow')) { t.replaceChildren(); fail(el, ['cash_flow']); return; }
+    const rows = dash.data('cash_flow').data.filter((r) => r.scenario === sid).sort((a, b) => a.t - b.t);
+    t.replaceChildren(...rows.map((r) => {
+      const tr = document.createElement('tr'); tr.dataset.key = encodeURIComponent(r.scenario) + ',' + encodeURIComponent(r.fy);
+      if (r.phase === 'run_off') tr.className = 'runoff';
+      const c = [r.fy, F.num0(r.gold_koz), F.num1(r.copper_kt), F.num0(r.revenue), F.num0(r.royalty), F.num0(r.operating_cost), F.num0(r.exploration_and_corporate), F.num0(r.ebitda), F.num0(r.tax), F.num0(r.capex), F.num0(r.delta_wc), F.num0(r.fcff), F.num0(r.pv_fcff)];
+      c.forEach((v) => { const td = document.createElement('td'); td.textContent = v; tr.append(td); });
+      return tr;
+    }));
+    if (!visible(el)) return;
+    el.querySelectorAll('svg').forEach((n) => n.remove());
+    const W = el.clientWidth, H = 260, m = { t: 14, r: 10, b: 26 };
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', 'Free cash flow by year');
+    const y = d3.scaleLinear([Math.min(0, d3.min(rows, (r) => r.fcff)), d3.max(rows, (r) => r.fcff)], [H - m.b, m.t]).nice();
+    const yt = y.ticks(5);
+    m.l = d3.max(yt, (d) => textWidth(svg, F.num0(d))) + 10;
+    const x = d3.scaleBand(rows.map((r) => r.fy), [m.l, W - m.r]).padding(0.2);
+    svg.append('g').selectAll('line').data(yt).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', (d) => y(d)).attr('y2', (d) => y(d)).attr('stroke', 'var(--cds-chart-grid)');
+    svg.append('g').selectAll('text').data(yt).join('text').attr('x', m.l - 6).attr('y', (d) => y(d)).attr('text-anchor', 'end').attr('dominant-baseline', 'middle').text(F.num0);
+    const every = Math.max(1, Math.ceil(rows.length / Math.max(1, Math.floor((W - m.l) / 52))));
+    svg.append('g').selectAll('text').data(rows.filter((r, i) => i % every === 0)).join('text').attr('x', (r) => x(r.fy) + x.bandwidth() / 2).attr('y', H - 8).attr('text-anchor', 'middle').text((r) => r.fy.split(' ')[0]);
+    svg.append('g').selectAll('rect').data(rows).join('rect')
+      .attr('x', (r) => x(r.fy)).attr('width', x.bandwidth())
+      .attr('y', (r) => y(Math.max(0, r.fcff))).attr('height', (r) => Math.max(1, Math.abs(y(r.fcff) - y(0)))).attr('rx', 3)
+      .attr('fill', (r) => r.phase === 'run_off' ? 'var(--cds-chart-muted)' : dash.colors[0]);
+    const tip = tooltip(el);
+    svg.append('g').selectAll('rect').data(rows).join('rect').attr('x', (r) => x(r.fy)).attr('width', x.bandwidth()).attr('y', m.t).attr('height', H - m.t - m.b).attr('fill', 'transparent')
+      .on('pointermove', (ev, r) => { const [px, py] = d3.pointer(ev, svg.node()); tip.show(px * el.clientWidth / W, py * el.clientWidth / W, r.fy + (r.phase === 'run_off' ? ' (run-off)' : ''), [{ text: 'Free cash flow  ' + F.num0(r.fcff) }, { text: 'Present value  ' + F.num0(r.pv_fcff) }, { text: 'Gold  ' + F.num0(r.gold_koz) + ' koz' }]); })
+      .on('pointerleave', () => tip.hide());
+  }
+
+  // ---------- Mines ----------
+  function drawMines() {
+    const t = document.querySelector('#mine-table tbody');
+    const el = document.getElementById('chart-mines');
+    if (!isOk('mines')) { t.replaceChildren(); fail(el, ['mines']); return; }
+    const rows = dash.data('mines').data.slice().sort((a, b) => a.start_period - b.start_period || b.last_period - a.last_period);
+    t.replaceChildren(...rows.map((r) => {
+      const tr = document.createElement('tr'); tr.dataset.key = r.mine;
+      [F.mineName(r.mine), r.first_fy, r.last_fy, F.num1(r.gold_koz_pa), F.num1(r.copper_kt_pa), F.num0(r.aisc_aud_oz)].forEach((v) => { const td = document.createElement('td'); td.textContent = v; tr.append(td); });
+      return tr;
+    }));
+    if (!visible(el)) return;
+    el.querySelectorAll('svg').forEach((n) => n.remove());
+    const fy0 = Number(rows.find((r) => r.start_period === 0).first_fy.slice(2));
+    const maxP = d3.max(rows, (r) => r.last_period) + 1;
+    const W = el.clientWidth, rowH = 26, m = { t: 6, r: 12, b: 24 };
+    const H = m.t + rows.length * rowH + m.b;
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', 'Mine lives');
+    m.l = d3.max(rows, (r) => textWidth(svg, F.mineName(r.mine))) + 12;
+    const x = d3.scaleLinear([0, maxP], [m.l, W - m.r]);
+    const step = W < 480 ? 10 : 5;
+    const ticks = d3.range(0, maxP + 1).filter((p) => (fy0 + p) % step === 0);
+    svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', (d) => x(d)).attr('x2', (d) => x(d)).attr('y1', m.t).attr('y2', H - m.b).attr('stroke', 'var(--cds-chart-grid)');
+    svg.append('g').selectAll('text').data(ticks).join('text').attr('x', (d) => x(d)).attr('y', H - 8).attr('text-anchor', 'middle').text((d) => 'FY' + (fy0 + d));
+    const x10 = x(11);
+    svg.append('line').attr('x1', x10).attr('x2', x10).attr('y1', m.t).attr('y2', H - m.b).attr('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '4 3');
+    rows.forEach((r, i) => {
+      const y = m.t + i * rowH;
+      svg.append('text').attr('class', 'lab').attr('x', 0).attr('y', y + rowH / 2).attr('dominant-baseline', 'middle').text(F.mineName(r.mine));
+      svg.append('rect').attr('x', x(r.start_period)).attr('y', y + 6).attr('width', Math.max(2, x(r.last_period + 1) - x(r.start_period))).attr('height', rowH - 12).attr('rx', 4)
+        .attr('fill', r.start_period > 0 ? 'var(--cds-chart-muted)' : dash.colors[0]);
+    });
+  }
+
+  function drawInputs() {
+    const t = document.querySelector('#inputs-table tbody');
+    if (!isOk('model_inputs')) { t.replaceChildren(); return; }
+    const f = (r) => r.unit === 'pct' ? F.pct2(r.value) : r.unit === 'A$/share' ? F.aud(r.value) : r.unit === 'x' ? d3.format('.2f')(r.value) : r.unit === 'US$ per A$' ? d3.format('.4f')(r.value) : d3.format(',.1f')(r.value) + ' ' + r.unit;
+    t.replaceChildren(...dash.data('model_inputs').data.map((r) => {
+      const tr = document.createElement('tr'); tr.dataset.key = r.item;
+      if (r.item === 'wacc') tr.className = 'hl';
+      [r.label, f(r)].forEach((v) => { const td = document.createElement('td'); td.textContent = v; tr.append(td); });
+      const b = document.createElement('td'); b.className = 'wrap'; b.textContent = r.basis; tr.append(b);
+      return tr;
+    }));
+  }
+
+  // ---------- Header and tiles formatting ----------
+  function drawMarks() {
+    const fmtMark = (el) => {
+      const src = el.dataset.source, field = el.dataset.field, where = el.dataset.where;
+      if (!src || !field || el.closest('table') || el.closest('.ev-chart') || el.id && el.id.startsWith('cf-')) return;
+      const d = dash.data(src);
+      if (d.status !== 'ok') { if (d.status !== 'loading') el.classList.remove('dash-skeleton'); return; }
+      let row = d.data[0];
+      if (where) { const [k, v] = where.split('='); row = d.data.find((r) => String(r[k]) === decodeURIComponent(v)); }
+      if (!row) return;
+      const v = row[field];
+      el.textContent = field === 'implied_gold_scale' ? F.mult(v) : F.aud(v);
+      el.classList.remove('dash-skeleton');
+    };
+    document.querySelectorAll('.ev-head [data-source], .ev-tile [data-source]').forEach(fmtMark);
+  }
+
+  window.evDraw = () => {
+    const p = dash.params();
+    const scale = document.getElementById('ev-scale'), basis = document.getElementById('ev-basis'), series = document.getElementById('ev-series');
+    const k = Number(p.gold_scale ?? 1);
+    if (document.activeElement !== scale) scale.value = String(k);
+    document.getElementById('ev-scale-out').textContent = F.mult(k);
+    basis.value = p.basis ?? 'stated_life';
+    series.value = p.series ?? 'gold_price_usd_real';
+    drawMarks();
+    drawValues(p); drawSens();
+    drawLegend(); drawBasis(p);
+    lineChart('chart-gold', 'gold_usd_real', (d) => 'US$' + d3.format(',.0f')(d), (v) => 'US$' + d3.format(',.0f')(v), 'spot_gold');
+    lineChart('chart-gold-aud', 'gold_aud_nominal', (d) => 'A$' + d3.format(',.0f')(d), (v) => 'A$' + d3.format(',.0f')(v), null);
+    lineChart('chart-aud', 'aud_usd', (d) => d3.format('.2f')(d), (v) => d3.format('.3f')(v), 'spot_aud_usd');
+    lineChart('chart-copper', 'copper_usd_real', (d) => d3.format(',.0f')(d), (v) => 'US$' + d3.format(',.0f')(v), 'spot_copper');
+    drawCash(p); drawMines(); drawInputs();
+  };
+  dash.onData(window.evDraw);
+})();
+</script>

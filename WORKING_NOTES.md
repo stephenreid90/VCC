@@ -42,6 +42,14 @@ with E22 excluded from both capital and volume; rule D-100 with the FY26 annual 
 June 2025 rehabilitation and leases. Gap order: commodity-path discipline, engine-vs-company checks,
 cost-price link, cost curve, adding_a_company.md, UI/workbook, lint. No numbers changed yet.
 
+**EVN review page (20 Oct, 14:25).** Stephen asked for a UI to look at the build. A Dashboard artifact
+"EVN Valuation Review" (claude.ai/artifact/4RgKRBZewHUADMjEokSJmV) reads seven row files written by
+`scripts/build_resource_review_data.py` into `ui_prototypes/resource_review/evn/` (values, price paths,
+cash flow, a gold-multiple grid 0.70x-2.00x on three mine-life bases, path reasons, mine plan, rate and
+bridge). The page copy is `ui_prototypes/resource_review/evn_review_page.html`. No engine port (D-23): the
+slider picks from precomputed engine runs. This is a review page, not gap 9 (EVN in the main prototype UI).
+After any change to paths or inputs: rerun the script and re-upload the files to the artifact.
+
 ## 🔴 HANDOVER — sitting of 20 October 2026, afternoon: EVN first build (read this first)
 
 **EVN (Evolution Mining), the first miner, is built end to end and waiting for review.**
