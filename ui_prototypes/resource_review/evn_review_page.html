@@ -54,7 +54,7 @@
   <header class="ev-head">
     <h1 id="top">Evolution Mining (EVN) valuation review</h1>
     <p class="ev-take">Muddle Through values EVN at <b class="dash-skeleton" data-source="scenarios" data-field="value_per_share" data-where="scenario=muddle_through">—</b> a share against a market price of <b class="dash-skeleton" data-source="model_inputs" data-field="value" data-where="item=market_price">—</b>. To reach the market price, Muddle Through's whole gold path would need to be <b class="dash-skeleton" data-source="scenarios" data-field="implied_gold_scale" data-where="scenario=muddle_through">—</b> times higher. The gold path is the input to review first.</p>
-    <p class="ev-sub">Model output from the resource engine, built 20 October 2026. Decisions D-96 to D-101 are still proposed, so every number here can change.</p>
+    <p class="ev-sub">Model output from the resource engine, 20 October 2026. Price paths follow D-99 and D-102 (ruled). D-96 to D-98 and D-100 are still proposed and D-101 (beta) is on hold, so numbers can change.</p>
   </header>
 
   <nav class="ev-tabs" role="tablist" aria-label="Review pages">
@@ -149,12 +149,12 @@
     <div class="ev-tiles">
       <div class="ev-tile"><span class="k">Enterprise value</span><span class="v" id="cf-ev" data-source="scenarios" data-field="enterprise_value">—</span><span class="n">A$ million, at the WACC.</span></div>
       <div class="ev-tile"><span class="k">From the ten explicit years</span><span class="v" id="cf-pve" data-source="scenarios" data-field="pv_explicit">—</span><span class="n">A$ million, stub plus years 1 to 10.</span></div>
-      <div class="ev-tile"><span class="k">From the run-off after year 10</span><span class="v" id="cf-pvr" data-source="scenarios" data-field="pv_run_off">—</span><span class="n">A$ million, until the last mine closes (D-97).</span></div>
+      <div class="ev-tile"><span class="k">Life-of-mine cash flows after year 10</span><span class="v" id="cf-pvr" data-source="scenarios" data-field="pv_run_off">—</span><span class="n">A$ million, year 11 to the last mine closing. No terminal value.</span></div>
       <div class="ev-tile"><span class="k">Value per share</span><span class="v" id="cf-vps" data-source="scenarios" data-field="value_per_share">—</span><span class="n">After net debt, rehabilitation and leases.</span></div>
     </div>
     <div class="ev-card" id="fcff-card">
       <h2>Free cash flow by year (A$ million)</h2>
-      <p class="note">Cash after tax and all capital spending, before interest. Solid bars are the stub and the ten explicit years. Pale bars are the run-off, which is the terminal value for a miner.</p>
+      <p class="note">Cash after tax and all capital spending, before interest. Solid bars are the stub and the ten explicit years. Pale bars are the life-of-mine cash flows after year 10, to the last closure. There is no terminal value or perpetuity.</p>
       <div class="ev-chart" id="chart-fcff" data-source="cash_flow"></div>
     </div>
     <div class="ev-card" id="cf-card">
@@ -477,7 +477,7 @@
       .attr('fill', (r) => r.phase === 'run_off' ? 'var(--cds-chart-muted)' : dash.colors[0]);
     const tip = tooltip(el);
     svg.append('g').selectAll('rect').data(rows).join('rect').attr('x', (r) => x(r.fy)).attr('width', x.bandwidth()).attr('y', m.t).attr('height', H - m.t - m.b).attr('fill', 'transparent')
-      .on('pointermove', (ev, r) => { const [px, py] = d3.pointer(ev, svg.node()); tip.show(px * el.clientWidth / W, py * el.clientWidth / W, r.fy + (r.phase === 'run_off' ? ' (run-off)' : ''), [{ text: 'Free cash flow  ' + F.num0(r.fcff) }, { text: 'Present value  ' + F.num0(r.pv_fcff) }, { text: 'Gold  ' + F.num0(r.gold_koz) + ' koz' }]); })
+      .on('pointermove', (ev, r) => { const [px, py] = d3.pointer(ev, svg.node()); tip.show(px * el.clientWidth / W, py * el.clientWidth / W, r.fy + (r.phase === 'run_off' ? ' (after year 10)' : ''), [{ text: 'Free cash flow  ' + F.num0(r.fcff) }, { text: 'Present value  ' + F.num0(r.pv_fcff) }, { text: 'Gold  ' + F.num0(r.gold_koz) + ' koz' }]); })
       .on('pointerleave', () => tip.hide());
   }
 

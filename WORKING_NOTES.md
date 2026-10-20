@@ -65,6 +65,11 @@ forecast is available, show it as one of the scenarios or as a selectable option
 D-102, paper §2. The six scenario files already comply. Still open: beta (D-101), copper paths sign-off,
 relabel the run-off for miners.
 
+**Stephen 15:10: "agree all".** Copper paths signed off (D-99 ruled). D-101 held until observed betas
+(0.90 stays as the working figure). Miners' cash flows after year 10 are labelled "life-of-mine cash
+flows after year 10", not a terminal value. Still awaiting rulings: D-96, D-97, D-98 (E22 out of both
+capital and volume), D-100; the gap order; FY26 annual report; PDF renames.
+
 ## 🔴 HANDOVER — sitting of 20 October 2026, afternoon: EVN first build (read this first)
 
 **EVN (Evolution Mining), the first miner, is built end to end and waiting for review.**

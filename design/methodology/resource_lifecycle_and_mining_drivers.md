@@ -320,7 +320,7 @@ closest. The gap is disclosed, not reconciled (D-92's principle).
    index not stated). Stephen suspects it could be high. On the revised paths: beta 1.2 gives a
    WACC of 10.98% and Muddle Through A$5.90; beta 1.6 gives 12.87% and A$5.25. Observed betas for
    EVN and the peers are needed before D-101 is ruled.
-5. **Terminal value.** The model already runs every mine to the end of its stated life, mine by
+5. **Terminal value (presentation ruled: "life-of-mine cash flows after year 10").** The model already runs every mine to the end of its stated life, mine by
    mine, to FY54. There is no perpetuity and no growth rate. The "terminal" is only the present
    value of years 11 to closure, kept separate so the ten-year split of D-71 can be shown. For a
    miner it would read better labelled "life-of-mine cash flows after year 10" (gap 7).
