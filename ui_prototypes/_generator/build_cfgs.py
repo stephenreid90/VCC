@@ -435,7 +435,7 @@ def _align_reduced_form_rate(cfg, engine_rate):
             _s["def"] = _ui
     return _ui
 _sys.path.insert(0, str(_ROOT / "src"))
-from vcc_valuations.translator import load_inputs as _li, build_engine_inputs_from_data as _bi
+from vcc_valuations.translator import load_inputs as _li, build_engine_inputs_from_data as _bi, resolve_normalised_baseline as _rnb
 from vcc_valuations.dcf.fcf_engine import FcfEngine as _Eng
 
 def engine_pack(company_id, archetype_id, scen, broker_price):
@@ -748,6 +748,31 @@ csl["scenarios"] = _sp["bars"]
 csl["metric4"] = {"label": "Asymmetry (down/up)", "value": ("%.2f\u00d7" % _sp["asym"])}
 _align_reduced_form_rate(csl, _ske)
 _point_active_at_live(csl)
+
+# ===== CSL beta workbench runs in WACC mode (20 Oct 2026, Stephen's ruling; implements D-84) =====
+# The workbench converts its cost of equity to the discount rate with the same target structure
+# the engine uses: segment_wacc_from_data() reads csl.yaml (wacc_target_structure and
+# balance_sheet.net_debt_ebitda). Nothing here is typed; at the workbench defaults the implied
+# WACC equals the engine rate. The subject's gearing for re-levering is the same target D/E, and
+# the tax for the Hamada step is the statutory shield rate the WACC uses (not the scenario
+# effective rate). WBC stays in cost-of-equity mode (bank archetype).
+from vcc_valuations.translator import segment_wacc_from_data as _swfd
+_cinp = _li(_ROOT, "muddle_through", "biopharmaceuticals", "csl")
+_ccoe = _rnb(_cinp)["cost_of_equity_build"]
+_cke = _ccoe["risk_free_rate"] + _ccoe["beta"] * _ccoe["equity_risk_premium"]
+_cwp = _swfd(_cinp, _cke)
+assert abs(_cwp["wacc"] - _ske) < 1e-9, "workbench WACC parts disagree with the engine rate"
+csl["beta"]["toDiscount"] = {"mode": "wacc", "wE": round(1.0 - _cwp["dv"], 6),
+                             "kdAfterTax": round(_cwp["kd"] * (1.0 - _cwp["tax"]) * 100.0, 4), "label": "WACC"}
+csl["beta"]["rf"] = round(_ccoe["risk_free_rate"] * 100.0, 4)
+csl["beta"]["erp"] = round(_ccoe["equity_risk_premium"] * 100.0, 4)
+csl["beta"]["subject"]["selectedBeta"] = float(_ccoe["beta"])
+csl["beta"]["subject"]["de"] = round(_cwp["dv"] / (1.0 - _cwp["dv"]), 4)
+csl["beta"]["subject"]["tax"] = float(_cwp["tax"])
+csl["beta"]["waccNote"] = ("Target structure (D-84, D-06): net debt %.1f&times; EBITDA over EV %.0f&times; EBITDA gives a debt weight of %.1f%%; "
+    "pre-tax cost of debt %.2f%%, %.0f%% statutory tax on the shield. Re-levering uses the same target gearing (D/E %.2f) and the same tax rate."
+    % (_cwp["net_debt_ebitda"], _cwp["target_ev_ebitda"], _cwp["dv"] * 100, _cwp["kd"] * 100, _cwp["tax"] * 100, _cwp["dv"] / (1.0 - _cwp["dv"])))
+# ===== end CSL workbench WACC block =====
 
 # build-up bridge + rows -> engine (already FCFF-shaped; source the numbers)
 _cmt = "Muddle Through"

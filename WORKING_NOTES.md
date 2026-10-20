@@ -124,6 +124,14 @@ yet: DNL's market price 3.61 has no reference date (a "Wall St target"); needs a
   three pages (build_cfgs.py then gen_ui.py, about ten seconds) when any is missing. No test logic changed. The "Run failed:
   Tests" emails from GitHub are this and nothing else; they should stop from this commit.
 
+- 20 Oct 2026: **CSL beta workbench moved to WACC mode (Stephen's ruling, medium).** The prototype's β workbench converted its
+  cost of equity straight to the discount rate for CSL (cost-of-equity mode, pre D-84). It now converts through the engine's own
+  target structure: `build_cfgs.py` calls `segment_wacc_from_data` on csl.yaml (debt weight 12.9%, after-tax kd 3.85%), so at the
+  workbench defaults (beta 0.85) the implied WACC is 8.12%, the engine rate. The subject's re-levering gearing is the same target
+  D/E (0.15) and the Hamada tax is the 30% shield rate. The page shows the conversion and the target structure under the Re line.
+  WBC stays in cost-of-equity mode (bank); DNL unchanged. Peer betas in the workbench are still the mock set (peer median 0.80
+  gives 7.90% until Ben's feed). Test: `tests/test_ui_beta_workbench_wacc.py` (5). Other suite 370; lint 14/14; values unchanged.
+
 ### Batch 1 progress
 
 - 16 Oct 2026: **CSL decay band 15-25 years, midpoint 20 (D-93, Stephen's ruling, serious).** The six CSL
