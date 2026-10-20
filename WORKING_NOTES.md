@@ -32,6 +32,16 @@ kept getting reopened.
 It regenerates the two maps, runs the suite and the ratchet, checks the base ties and
 prints git state.
 
+## 🔴 REVIEW IN PROGRESS — 20 October 2026, mid-afternoon: EVN decisions
+
+Recommendations on D-96 to D-101 and the framework gaps are in
+`design/methodology/evn_review_2026-10-20.md`, put to Stephen and awaiting his rulings. In short:
+change D-99 (anchor gold and copper on spot, Muddle Through flat in real terms, the other five as
+stated deviations, at least one above and one below); rule D-96, D-97, D-101 as proposed; rule D-98
+with E22 excluded from both capital and volume; rule D-100 with the FY26 annual report to replace the
+June 2025 rehabilitation and leases. Gap order: commodity-path discipline, engine-vs-company checks,
+cost-price link, cost curve, adding_a_company.md, UI/workbook, lint. No numbers changed yet.
+
 ## 🔴 HANDOVER — sitting of 20 October 2026, afternoon: EVN first build (read this first)
 
 **EVN (Evolution Mining), the first miner, is built end to end and waiting for review.**
