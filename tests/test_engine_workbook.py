@@ -24,6 +24,10 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "ui_prototypes" / "_generator"))
 
 import engine_workbook  # noqa: E402
+import resource_workbook  # noqa: E402
+
+sys.path.insert(0, str(ROOT / "scripts"))
+from size_resource_valuation import resource_companies  # noqa: E402
 
 BUILDERS = {
     "dnl": engine_workbook.build_dnl_workbook_bytes,
@@ -33,6 +37,11 @@ BUILDERS = {
 # Company -> the sheet carrying the valuation build, and the label of the
 # working-capital derivation block where one is expected.
 VALUATION_SHEET = {"dnl": "DCF build", "wbc": None, "csl": "Segment FCFF"}
+# Resource companies (gap 9, 20 Oct 2026): one builder, one run-off sheet per scenario;
+# the central case's sheet stands for the valuation sheet in the pasted-values check.
+for _cid, _arch in resource_companies():
+    BUILDERS[_cid] = (lambda c=_cid, a=_arch: resource_workbook.build_resource_workbook_bytes(c, a))
+    VALUATION_SHEET[_cid] = "Run-off MT"
 
 
 @pytest.fixture(scope="module")
@@ -81,7 +90,7 @@ def test_valuation_sheet_is_formulas_not_pasted_values(books, company: str) -> N
     assert not pasted, f"{company}: pasted values on the valuation sheet: {pasted[:8]}"
 
 
-@pytest.mark.parametrize("company", ["dnl", "csl"])
+@pytest.mark.parametrize("company", ["dnl", "csl"] + [c for c, _ in resource_companies()])
 def test_working_capital_derivation_is_shown_not_asserted(books, company: str) -> None:
     """The intensity must be derived in the sheet, not typed as one number.
 

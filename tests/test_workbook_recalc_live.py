@@ -41,6 +41,15 @@ def _recalc_module():
     return mod
 
 
+def _resource_jobs():
+    """One job per resource company (gap 9): the builder is in resource_workbook.py, the
+    extractor takes the whole book (one run-off sheet per scenario)."""
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from size_resource_valuation import resource_companies  # noqa: E402
+    return [(cid, ("resource", cid, arch), None, "_extract_resource", f"{cid}_workbook_all_scenarios.json")
+            for cid, arch in resource_companies()]
+
+
 @pytest.mark.skipif(shutil.which("soffice") is None, reason="LibreOffice not installed")
 @pytest.mark.parametrize(
     "company,builder,sheet,extractor,fixture",
@@ -49,7 +58,7 @@ def _recalc_module():
          "dnl_workbook_all_scenarios.json"),
         ("csl", "build_csl_workbook_bytes", "Segment FCFF", "_extract_csl",
          "csl_workbook_all_scenarios.json"),
-    ],
+    ] + _resource_jobs(),
 )
 def test_committed_oracle_matches_a_live_recalc(
     company: str, builder: str, sheet: str, extractor: str, fixture: str
@@ -62,9 +71,13 @@ def test_committed_oracle_matches_a_live_recalc(
     with tempfile.TemporaryDirectory() as td:
         work = Path(td)
         src = work / f"{company}.xlsx"
-        src.write_bytes(getattr(engine_workbook, builder)())
-        ws = load_workbook(mod._recalc(src, work), data_only=True)[sheet]
-        fresh = getattr(mod, extractor)(ws)
+        if isinstance(builder, tuple):
+            import resource_workbook  # noqa: E402
+            src.write_bytes(resource_workbook.build_resource_workbook_bytes(builder[1], builder[2]))
+        else:
+            src.write_bytes(getattr(engine_workbook, builder)())
+        book = load_workbook(mod._recalc(src, work), data_only=True)
+        fresh = getattr(mod, extractor)(book[sheet] if sheet else book)
 
     committed = json.loads((GOLDEN / fixture).read_text())
     assert set(fresh) == set(committed)

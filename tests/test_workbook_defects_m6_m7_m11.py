@@ -28,6 +28,10 @@ sys.path.insert(0, str(GEN))
 sys.path.insert(0, str(ROOT / "src"))
 
 import engine_workbook as ew  # noqa: E402
+import resource_workbook as rw  # noqa: E402
+
+sys.path.insert(0, str(ROOT / "scripts"))
+from size_resource_valuation import resource_companies  # noqa: E402
 
 TICKERS = {"dnl": "DNL", "wbc": "WBC", "csl": "CSL"}
 BUILDERS = {
@@ -36,6 +40,21 @@ BUILDERS = {
     "csl": ew.build_csl_workbook_bytes,
 }
 ARCH = {"dnl": "industrial_explosives", "wbc": "australian_major_banks", "csl": "biopharmaceuticals"}
+# Resource companies (gap 9, 20 Oct 2026) are held to M7 and M11 like the other three.
+for _cid, _arch in resource_companies():
+    TICKERS[_cid] = _cid.upper()
+    BUILDERS[_cid] = (lambda c=_cid, a=_arch: rw.build_resource_workbook_bytes(c, a))
+    ARCH[_cid] = _arch
+
+
+def _market_reference(inp):
+    """(price, date): the one reader for the three original companies, the financials
+    ``market_data`` block for a resource company (its translator reads it from there)."""
+    craw = inp["company_raw"]
+    if (craw.get("normalised_baseline") or {}).get("engine") == "resource":
+        md = inp["financials"]["market_data"]
+        return md["price_aud"], md.get("price_date")
+    return ew._market_reference(craw)
 GEN_UI = (GEN / "gen_ui.py").read_text(encoding="utf-8")
 
 
@@ -90,7 +109,7 @@ def test_m7_generated_prototype_has_no_leak(company):
 
 @pytest.mark.parametrize("company", list(TICKERS))
 def test_m11_market_price_is_a_yellow_input_on_assumptions(books, company):
-    price, date = ew._market_reference(_company_inputs(company)["company_raw"])
+    price, date = _market_reference(_company_inputs(company))
     ws = books[company]["Assumptions"]
     rows = [r for r in ws.iter_rows(min_col=1, max_col=2)
             if isinstance(r[0].value, str) and r[0].value.lower().startswith("market")
@@ -109,7 +128,7 @@ def test_m11_market_price_is_a_yellow_input_on_assumptions(books, company):
 
 @pytest.mark.parametrize("company", list(TICKERS))
 def test_m11_no_other_cell_hard_codes_the_price(books, company):
-    price, _ = ew._market_reference(_company_inputs(company)["company_raw"])
+    price, _ = _market_reference(_company_inputs(company))
     lit = re.compile(r"(?<![\d.])" + re.escape(repr(float(price)).rstrip("0").rstrip(".")) + r"(?![\d])")
     bad = []
     for ws in books[company]:

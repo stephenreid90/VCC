@@ -285,7 +285,7 @@ def build_resource_cfg(cid, arch, world_desc, dtable, bridge, buildup_note):
                          _row("EBITDA", r0.ebitda), _row("Tax", [-x for x in r0.tax]), _row("Capital", [-x for x in r0.capex]),
                          _row("Working capital", [-x for x in r0.delta_wc]), _row("FCFF", r0.fcff),
                          _row("PV of FCFF", r0.pv_fcff), _row("Cost response (D-104, % on base unit cost)", [m - 1.0 for m in r0.cost_price_link], True)],
-                "foot": "The engine&#39;s central case (does not move with the sliders); the same per-year build the EVN valuation review page shows."}
+                "foot": "The engine&#39;s central case (does not move with the sliders); the same per-year build the valuation review page shows, and the same build the downloadable workbook carries as formulas, mine by mine."}
 
     # ---- narratives: the written price basis per scenario, then why the number lands there ----
     def _narr(sid):
@@ -347,7 +347,9 @@ def build_resource_cfg(cid, arch, world_desc, dtable, bridge, buildup_note):
         "dcf": dcf_html, "dcfIntro": dcf_intro, "dcfRows": rows_dcf,
         "dcfDetail": {"workings": workings},
         "worldDesc": world_desc,
-        "workbookNote": "No formula workbook is embedded for this company yet: the mine-by-mine run-off workbook is its own build (paper §6 gap 9). The per-year table above is the engine's central case.",
+        # build_cfgs.py embeds the formula workbook (resource_workbook.py) and drops this note; it
+        # stays here so a page built without the workbook still says why.
+        "workbookNote": "No formula workbook is embedded for this company: the mine-by-mine run-off workbook did not build (paper §6 gap 9). The per-year table above is the engine's central case.",
         "_runoffBlock": runoff_block,
         "_prov": {"dataDate": price_date},
         "_pack": {"base": mt, "wacc": p["wacc"], "discount_to_market": r0.discount_to_market, "vals": vals, "asym": asym,

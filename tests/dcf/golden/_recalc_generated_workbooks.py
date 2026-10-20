@@ -1,4 +1,4 @@
-"""Regenerate the generated-workbook oracles — DNL and CSL, six scenarios each.
+"""Regenerate the generated-workbook oracles — DNL, CSL and the resource companies, six scenarios each.
 
 Why this exists. ``_recalc.py`` pins the engine against
 ``dnl_muddle_through_valuation_v6_2026-06-25.xlsx``, a hand-built workbook for
@@ -35,6 +35,11 @@ REPO = Path(__file__).resolve().parents[3]
 HERE = Path(__file__).resolve().parent
 DNL_JSON = HERE / "dnl_workbook_all_scenarios.json"
 CSL_JSON = HERE / "csl_workbook_all_scenarios.json"
+
+
+def resource_json(cid: str) -> Path:
+    """One oracle per resource company (gap 9, 20 Oct 2026): ``<cid>_workbook_all_scenarios.json``."""
+    return HERE / f"{cid}_workbook_all_scenarios.json"
 
 SCENARIOS = [
     "orderly_convergence",
@@ -143,6 +148,64 @@ def _extract_dnl(ws) -> dict:
     return payload
 
 
+# A resource company's workbook (resource_workbook.py) has one "Run-off <X>" sheet per
+# scenario with periods ACROSS, so its extractor takes the whole workbook. The vectors are
+# read for the engine's own number of periods (the "Producing periods" scalar); the sheet
+# carries spare columns past the last closure so the inventory basis can be flexed by hand.
+RESOURCE_SHEET = {
+    "orderly_convergence": "Run-off OC",
+    "muddle_through": "Run-off MT",
+    "ai_productivity_lag": "Run-off AI",
+    "fragmentation": "Run-off Frag",
+    "disorderly_climate_crystallisation": "Run-off DCC",
+    "stagflation_persists": "Run-off Stag",
+}
+RESOURCE_VECTORS = {
+    "Group gold sold (koz)": "gold_koz",
+    "Group copper sold (kt)": "copper_kt",
+    "Revenue": "revenue",
+    "Royalty = rate x revenue": "royalty",
+    "Operating cost": "operating_cost",
+    "EBITDA": "ebitda",
+    "D&A (tax-depreciation proxy)": "da",
+    "Tax = rate x max(EBITDA - D&A, 0)": "tax",
+    "Capital = sustaining, mine development and project capital": "capex",
+    "FCFF = EBITDA - tax - capital - change in working capital": "fcff",
+    "PV of FCFF": "pv_fcff",
+    "D-104 cost multiplier": "cost_price_link",
+}
+RESOURCE_SCALARS = {
+    "PV of explicit FCFF (stub and the horizon years)": "pv_explicit",
+    "PV of life-of-mine cash flows after the explicit period (the depletion run-off, D-97)": "pv_terminal",
+    "Run-off value at the end of the explicit period (PV run-off x (1 + WACC)^(stub + horizon))": "terminal_value",
+    "Enterprise value": "enterprise_value",
+    "Equity value": "equity_value",
+    "Run-off share of enterprise value": "terminal_share_of_ev",
+}
+RESOURCE_VALUE_LABEL_PREFIX = "Value per share ("   # "Value per share (AUD)": the currency is the company's
+RESOURCE_LIFE_LABEL_PREFIX = "Life, years from the valuation date"
+RESOURCE_PERIODS_LABEL = "Producing periods (the engine's n)"
+
+
+def _extract_resource(wb) -> dict:
+    payload = {}
+    for scenario, sheet in RESOURCE_SHEET.items():
+        ws = wb[sheet]
+        rows = _label_rows(ws)
+        n = int(ws.cell(rows[RESOURCE_PERIODS_LABEL], 2).value)
+        vectors = {attr: [ws.cell(rows[label], 3 + t).value for t in range(n)]
+                   for label, attr in RESOURCE_VECTORS.items()}
+        # the change-in-working-capital row carries a long label; match it by prefix
+        dwc_row = next(r for lbl, r in rows.items() if lbl.startswith("Change in working capital"))
+        vectors["delta_wc"] = [ws.cell(dwc_row, 3 + t).value for t in range(n)]
+        scalars = {attr: ws.cell(rows[label], 2).value for label, attr in RESOURCE_SCALARS.items()}
+        scalars["value_per_share"] = ws.cell(next(r for lbl, r in rows.items() if lbl.startswith(RESOURCE_VALUE_LABEL_PREFIX)), 2).value
+        scalars["life_years"] = ws.cell(next(r for lbl, r in rows.items() if lbl.startswith(RESOURCE_LIFE_LABEL_PREFIX)), 2).value
+        scalars["periods"] = n
+        payload[scenario] = {"vectors": vectors, "scalars": scalars}
+    return payload
+
+
 def _extract_csl(ws) -> dict:
     rows = _label_rows(ws)
     payload = {}
@@ -163,17 +226,24 @@ def main() -> None:
     import engine_workbook  # noqa: E402
     from openpyxl import load_workbook  # noqa: E402
 
+    sys.path.insert(0, str(REPO / "scripts"))
+    import resource_workbook  # noqa: E402
+    from size_resource_valuation import resource_companies  # noqa: E402
+
     jobs = [
         ("dnl", engine_workbook.build_dnl_workbook_bytes, "DCF build", _extract_dnl, DNL_JSON),
         ("csl", engine_workbook.build_csl_workbook_bytes, "Segment FCFF", _extract_csl, CSL_JSON),
     ]
+    for cid, arch in resource_companies():
+        jobs.append((cid, (lambda c=cid, a=arch: resource_workbook.build_resource_workbook_bytes(c, a)),
+                     None, _extract_resource, resource_json(cid)))
     with tempfile.TemporaryDirectory() as td:
         work = Path(td)
         for name, build, sheet, extract, out in jobs:
             src = work / f"{name}_generated.xlsx"
             src.write_bytes(build())
-            ws = load_workbook(_recalc(src, work), data_only=True)[sheet]
-            payload = extract(ws)
+            book = load_workbook(_recalc(src, work), data_only=True)
+            payload = extract(book[sheet] if sheet else book)
             out.write_text(json.dumps(payload, indent=2) + "\n")
             print(f"wrote {out.relative_to(REPO)} ({len(payload)} scenarios)")
 

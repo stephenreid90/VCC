@@ -347,7 +347,11 @@ closest. The gap is disclosed, not reconciled (D-92's principle).
    output). This is its own sitting. *UI and base tie built 20 Oct 2026 evening
    (`ui_prototypes/_generator/resource_cfg.py`, `evn_scenario_interface.html`,
    `tests/test_ui_evn_gap9.py`); the page carries the gap 7 disclosures and the gap 8 note.
-   The formula workbook is still open.*
+   Formula workbook built 20 Oct 2026 late evening (`ui_prototypes/_generator/resource_workbook.py`):
+   a mine-by-mine depletion run-off on the Assumptions-sheet discipline, one run-off sheet per
+   scenario, embedded in the page for download; LibreOffice recalculation ties every per-period
+   line and value to the engine to 1e-6 (`tests/dcf/test_evn_workbook_tie.py`, oracle
+   `tests/dcf/golden/evn_workbook_all_scenarios.json`). Gap closed.*
 10. **The register lint treats every number in a guidance table as a register value.** It
     flags coincidences with UI pixel widths. Sixteen were baselined. A guidance table is
     observed data and might be better exempt by path.

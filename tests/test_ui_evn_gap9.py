@@ -6,7 +6,7 @@ time. These tests hold: the six headline levels tie to the pinned set in
 ``resource_valuation_sets.yaml``; the browser-side form is the engine grid (no second
 model); the going-concern terminal disclosures are replaced by the run-off disclosures
 (paper section 6 gap 7); every page states the risk-free dates (gap 8); and the page
-carries no workbook download it cannot honour.
+embeds the formula workbook built by ``resource_workbook.py`` (gap 9, second half).
 """
 from __future__ import annotations
 
@@ -115,11 +115,29 @@ def test_every_page_states_the_risk_free_dates(cfgs):
             assert co in d
 
 
-def test_no_workbook_download_is_offered_without_a_workbook(cfgs):
+def test_formula_workbook_is_embedded_and_is_formulas(cfgs):
+    """Gap 9, second half (20 Oct 2026): the page carries the mine-by-mine run-off workbook.
+
+    The embedded bytes must open, carry the Assumptions sheet, one run-off sheet per world
+    and the Scenarios summary, and hold no pasted number outside column A on any run-off
+    sheet (standing rule 1). The value tie is ``tests/dcf/test_evn_workbook_tie.py``.
+    """
+    import base64
+    from openpyxl import load_workbook
     for cid in _resource_ids():
         cfg = cfgs[cid]
-        assert "xlsxB64" not in cfg
-        assert cfg.get("workbookNote"), "page must say why no workbook is embedded"
+        assert cfg.get("xlsxB64"), "no workbook embedded"
+        assert "workbookNote" not in cfg, "the 'no workbook' note must go once one is embedded"
+        wb = load_workbook(io.BytesIO(base64.b64decode(cfg["xlsxB64"])))
+        runoff = [n for n in wb.sheetnames if n.startswith("Run-off ")]
+        assert "Assumptions" in wb.sheetnames and "Prices" in wb.sheetnames and "Scenarios" in wb.sheetnames
+        assert len(runoff) == 6, wb.sheetnames
+        assert cfg["xlsxSheets"] == len(wb.sheetnames)
+        for n in runoff:
+            ws = wb[n]
+            pasted = [c.coordinate for row in ws.iter_rows(min_col=2) for c in row
+                      if isinstance(c.value, (int, float)) and not isinstance(c.value, bool)]
+            assert not pasted, f"{cid} {n}: pasted values {pasted[:5]}"
     assert "CFG.workbookNote" in GEN_UI
 
 

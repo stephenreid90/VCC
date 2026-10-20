@@ -16,3 +16,10 @@ is maintained directly. Slider responses are an illustrative approximation, not 
 production DCF engine. Calibrated central cases only: CSL MT (USD 141.78 / AUD 214.82),
 DNL MT (AUD 3.59), WBC MT (AUD 30.15). DNL/WBC carry all six real scenario values;
 CSL's other five are placeholders pending calibration.
+
+## resource_workbook.py (20 Oct 2026)
+
+The formula workbook for resource-engine companies (gap 9): a mine-by-mine depletion run-off on the
+Assumptions-sheet discipline, one run-off sheet per scenario, embedded in the page by `build_cfgs.py`.
+Ties to the engine through a LibreOffice recalculation (`tests/dcf/golden/_recalc_generated_workbooks.py`,
+`tests/dcf/test_evn_workbook_tie.py`). Run it directly to write `_<cid>_full.xlsx` (gitignored).

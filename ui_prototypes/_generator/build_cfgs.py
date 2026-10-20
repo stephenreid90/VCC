@@ -889,11 +889,18 @@ def _data_date(company):
 # ===== Resource-engine companies (gap 9, 20 Oct 2026): config built by resource_cfg.py from the engine =====
 from resource_cfg import build_resource_cfg as _brc
 from size_resource_valuation import resource_companies as _rcos
+from resource_workbook import build_resource_workbook_bytes as _rwbk
 _RES = {}
 for _rc, _ra in _rcos():
     _RES[_rc] = _brc(_rc, _ra, WORLD_DESC, dtable, bridge, _BUILDUP_NOTE)
     _align_reduced_form_rate(_RES[_rc], _RES[_rc]["_pack"]["wacc"])
     _point_active_at_live(_RES[_rc])
+    # The formula workbook (gap 9, second half): a mine-by-mine depletion run-off on the
+    # Assumptions-sheet discipline, built by resource_workbook.py and base64-embedded for
+    # the download button like the other three. The page no longer needs the "not yet" note.
+    _RES[_rc]["xlsxB64"] = _b64.b64encode(_rwbk(_rc, _ra)).decode("ascii")
+    _RES[_rc]["xlsxName"] = "%s_full_valuation_workbook.xlsx" % _RES[_rc]["companyShort"]
+    _RES[_rc].pop("workbookNote", None)
 
 # ----- Risk-free dates (paper §6 gap 8): the companies are not on one risk-free date; every page says so -----
 import re as _re
@@ -935,6 +942,7 @@ for _co, _cfg in _RES.items():
     _gap = _gap_sentence(_cfg)
     _cfg["pvsub"] = (_cfg["pvsub"] + " · " + _gap) if _cfg.get("pvsub") else _gap
     _cfg["_discount"] = _cfg["_discount"] + _cfg.pop("_runoffBlock") + _RF_NOTE
+    _cfg["xlsxSheets"] = len(_lwb(_io.BytesIO(_b64.b64decode(_cfg["xlsxB64"])), read_only=True).sheetnames)
     _cfg["prov"] = {"commit": _COMMIT, "buildDate": _BUILT, "dataDate": _cfg.pop("_prov")["dataDate"]}
     _cfg.pop("_pack", None); _cfg.pop("asymNote", None)
 

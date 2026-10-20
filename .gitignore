@@ -19,6 +19,7 @@ htmlcov/
 ui_prototypes/_generator/_dnl_full.xlsx
 ui_prototypes/_generator/_wbc_full.xlsx
 ui_prototypes/_generator/_csl_full.xlsx
+ui_prototypes/_generator/_evn_full.xlsx
 
 # generated build outputs (reproducible from ui_prototypes/_generator/*.py; contain the base64 workbook)
 ui_prototypes/_generator/cfgs_gen.json
