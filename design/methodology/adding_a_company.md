@@ -1,6 +1,6 @@
 # Adding a company — the process, on one page
 
-**Status: written 14 October 2026 (bridge note step 5, D-78 sitting).** This is the only
+**Status: written 14 October 2026 (bridge note step 5, D-78 sitting); updated 20 October 2026 for the fourth engine (D-96).** This is the only
 document a new company needs. It lists the steps, in order, from the archetype's declared
 drivers to "every company x scenario has a decay horizon or a baselined reason", and ends
 with the seven terminal disclosures every write-up carries. Where a step has a longer
@@ -18,8 +18,9 @@ declarations. If a step seems to need a company's name in `src/`, the step is wr
    before building.
 3. Pick the engine. Industrial (FCFF on invested capital, `dcf/fcf_engine.py`, DNL);
    bank (ROE on book equity, `dcf/bank_engine.py`, WBC); segment-valued (FCFF per
-   segment, discounted at the cost of equity, `dcf/segment_engine.py`, CSL). A company
-   that fits none needs a ruling before a line of code.
+   segment, discounted at the cost of equity, `dcf/segment_engine.py`, CSL); resource
+   (a depleting asset, mine by mine until the ore runs out, `dcf/resource_engine.py`, EVN;
+   D-96). A company that fits none needs a ruling before a line of code.
 
 ## The steps, in order
 
@@ -29,7 +30,10 @@ declarations. If a step seems to need a company's name in `src/`, the step is wr
    `required_macro_drivers` (step 2), `growth_chain_terms` (step 4) and, for a bank, the
    `bank_archetype` block. A segment-valued company has one archetype per segment and
    declares `company_position.segment_level_valuation: true` (SSOT check 11: the fallback
-   is declared, never inferred from a missing file).
+   is declared, never inferred from a missing file). A resource archetype carries a
+   `resource_lifecycle` block instead: the fade length is the remaining ore life, mine by
+   mine, and its company declares `no_barrier_declared` on its moat (D-97, D-43a: every
+   source is a rent, not a barrier).
 2. **Macro drivers and their paths (D-37, D-72, D-73).** For each macro driver the
    archetype's growth chain reads, declare it under `required_macro_drivers` with a
    `derivation`: `scenario_series` (the scenario file carries it natively), `spread` (a
@@ -49,6 +53,24 @@ declarations. If a step seems to need a company's name in `src/`, the step is wr
    SSOT lint (`tests/test_ssot_lint.py`, 14 checks) enforces the split: no derived value
    stored, no judgement in layer 1, every rate declares the basis it was struck on, the
    anchor dates pair up. Run it after every edit.
+
+   **Resource companies (D-96 to D-102).** Collect, for each producing mine:
+   - **Reserves, resources and the stated life.** The life-of-mine year sets the inventory
+     (D-98): the company's stated life at the FY27 guidance midpoint. Reserves-only and a
+     five-year extension are the sensitivities.
+   - **FY27 guidance (layer 1).** Production rate (gold koz, copper kt), AISC in A$ net of
+     by-product credits, sustaining and mine-development capex, project capex, and the
+     guidance price basis (gold A$/oz, copper A$/t). Also the royalty rate.
+   - **Commodity paths (D-99, D-102).** Gold and copper in real 2026 US$, and AUD/USD, for
+     every scenario, each with its basis from the scenario narrative. Year 0 is the spot
+     price on the valuation date. Muddle Through holds spot flat in real terms. Every other
+     scenario is a stated move from it, with the mechanism named.
+   - **Bridge (D-100).** Cash, net cash and shares at one dated anchor, with any declared
+     dividend that is unpaid at that date deducted. Rehabilitation and leases are debt-like
+     and come from the latest balance sheet. A stream that sells metal below spot is
+     modelled in revenue, not deducted again.
+   - **Unquantified projects.** Take them out of both capital and volume and disclose them
+     as excluded, with zero NPV (D-98, the E22 case).
 4. **Equilibrium chain terms and derived terminal growth (D-72, D-78, D-79).** Terminal
    growth is never typed. It is the company's growth chain read at year ten with the
    archetype's current-cycle terms at their equilibrium reading, capped at the
@@ -123,4 +145,12 @@ Where a market price exists, add the line: what the market price needs the termi
 on the same forecast.
 
 
-**20 Oct 2026:** a fourth engine is proposed for depleting assets: `dcf/resource_engine.py` (mine-by-mine depletion DCF, EVN; D-96 proposed). For it, the seven terminal disclosures are replaced by the run-off share, the life and the value on each inventory basis (`resource_lifecycle_and_mining_drivers.md` §6, gap 7).
+**Depleting assets (D-97, D-102 principle 8, ruled 20 Oct 2026).** A miner has no perpetuity.
+Its terminal is the depletion run-off, so the seven disclosures above are replaced by these four:
+
+1. **Run-off share of value.** The share of total value from cash flows after year 10. This replaces the terminal value share.
+2. **Mine life.** The life-of-mine year for each mine, and the inventory basis used (D-98).
+3. **Value per share on each inventory basis.** The stated life first, then reserves-only and the five-year extension.
+4. **Value at spot held flat, and the market's multiple.** The value with the commodity price held at spot in real terms, and the gold (or primary commodity) multiple the market price needs.
+
+Label the post-year-10 cash flows "life-of-mine cash flows after year 10", not "terminal value" (D-97 presentation ruling). Method paper: `resource_lifecycle_and_mining_drivers.md`.

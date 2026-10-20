@@ -83,7 +83,7 @@ Recommended order for the rest:
 2. **New: check the engine against the company's own numbers.** Two tests. (a) The engine's FY27
    cash-flow change for A$100/oz of gold should land near the company's stated A$65-70m (FY26 results
    presentation, slide 14). (b) Run at FY26 prices, the engine should come close to FY26 actuals
-   (EBITDA A$3,171m; net mine cash flow A$2,079m). Today year-1 FCFF is A$1,008m against roughly
+   (EBITDA A$3,171m; net mine cash flow A$2,079m). Today year-1 FCFF is A$1,170m (engine Y1 is FY28; corrected 20 Oct from a stale A$1,008m, see evn_engine_vs_company_2026-10-20.md) against roughly
    A$1,400m of FY26 cash flow before interest and dividends; most of the difference looks like higher
    FY27 capital guidance and full tax, but it has not been reconciled. Medium.
 3. **New: costs do not move with the gold price.** Only the royalty does. In practice mine costs

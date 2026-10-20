@@ -43,6 +43,19 @@ DERIVED_KEY = re.compile(
 
 SCAN_GLOBS = ("src/**/*.py", "scripts/**/*.py", "ui_prototypes/_generator/*.py")
 
+# Guidance and disclosure tables: rows of observed company or broker figures
+# (guidance ranges, "disclosed" inputs) written as literal text in a generator
+# file. They are evidence of what the company said, not copies of register
+# values, so the lint skips them by path. Each entry needs a reason. A file in
+# this list is NOT scanned at all, so a real duplicate placed in it goes
+# unflagged; move the table to a data file if the file starts holding engine
+# output. Checked by test_guidance_table_exemptions_are_real_files.
+GUIDANCE_TABLE_PATHS = frozenset({
+    # Assumption and bridge tables for each company page (_assum, _discount,
+    # dtable rows), e.g. "Blended effective tax 19%, FY26 guidance 18-20%".
+    "ui_prototypes/_generator/build_cfgs.py",
+})
+
 # Values too generic to be evidence of duplication (years, counts, small ints,
 # common ratios). Matching these would drown the signal.
 def _is_scannable(v) -> bool:
@@ -169,6 +182,8 @@ def _find_duplicates():
     for pattern in SCAN_GLOBS:
         for f in sorted(ROOT.glob(pattern)):
             rel = f.relative_to(ROOT).as_posix()
+            if rel in GUIDANCE_TABLE_PATHS:
+                continue
             for line in f.read_text(encoding="utf-8", errors="ignore").split("\n"):
                 if "ssot-allow" in line:
                     continue
@@ -200,6 +215,19 @@ def test_register_values_not_duplicated_in_code():
         "DRIFTED and the copy is now stale (bad — reconcile it first). Check "
         "which before regenerating:\n  " + "\n  ".join(stale)
     )
+
+
+def test_guidance_table_exemptions_are_real_files():
+    """An exemption for a file that was renamed or deleted must fail, not linger."""
+    for rel in GUIDANCE_TABLE_PATHS:
+        assert (ROOT / rel).is_file(), f"GUIDANCE_TABLE_PATHS names a missing file: {rel}"
+
+
+def test_guidance_table_paths_are_not_reported_as_duplicates():
+    """Exempt files produce no hits, so the ratchet baseline never records them."""
+    hits = _find_duplicates()
+    leaked = sorted(k for k in hits if k.split(":", 1)[0] in GUIDANCE_TABLE_PATHS)
+    assert not leaked, f"exempt path still reported: {leaked[:5]}"
 
 
 # Known limitation: the register is keyed by value, not by path, so a value

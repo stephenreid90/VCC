@@ -32,6 +32,26 @@ kept getting reopened.
 It regenerates the two maps, runs the suite and the ratchet, checks the base ties and
 prints git state.
 
+## 🔴 BATCH 3 run — 20 October 2026, 16:00 (parallel lane landed; E22 on branch awaiting a ruling)
+
+Parallel lane done and committed: (1) engine-vs-company checks, `scripts/check_resource_engine_vs_company.py`
+and `design/methodology/evn_engine_vs_company_2026-10-20.md` (gold +A$100/oz = +A$66m FY27 operating
+cash flow vs company 65-70; backcast at FY26 prices on FY27 guidance explains the gaps, nothing tuned);
+(2) cost-vs-gold evidence, `design/methodology/evn_cost_vs_gold_evidence_2026-10-20.md` (FY22-26 only;
+non-royalty AISC elasticity about 0.19 nominal; proposed rule 1.5% per 10% real gold move, range 0.5-3.0%,
+one-year lag, cap 20%); (3) tidy-ups: lint exempts `ui_prototypes/_generator/build_cfgs.py` by path
+(gap 10, baseline 148 -> 103), `adding_a_company.md` names the resource engine and miner disclosures
+(gaps 1 and 7), PDF rename plan in `notes/evn_pdf_rename_plan_2026-10-20.md` (not yet applied).
+
+Serial lane: E22 (D-98) is BLOCKED on a ruling. No document splits E22 out of Northparkes' FY27 major
+project capital (A$125-135m); only "A$545M over ~5 years (EVN share)" exists (HY26 presentation p14).
+Option (a) sized on branch `batch3-e22` (commit eb55555, not merged): A$109m/yr out, levels rise about
+0.11 (MT 6.47 -> 6.57), multiple 1.45 -> 1.44. Option (b) wait for the Dec 2026 quarterly or HY27.
+
+Awaiting Stephen: E22 (a) or (b); cost-price rule size and symmetry; `y1_*` relabel to FY28 (labels only);
+FY26 mine-by-mine actuals and exploration treatment for Ben; apply the PDF renames. Cost-price link
+(item 5, serious) waits on the rule. Note: engine "Y1" is FY28; FY27 is the stub.
+
 ## 🔴 REVIEW DONE — 20 October 2026: EVN decisions (next: batch 3, see notes/bridge/bridge_note_2026-10-20c_evn_batch3.md)
 
 Recommendations on D-96 to D-101 and the framework gaps are in
