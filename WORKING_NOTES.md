@@ -32,7 +32,7 @@ kept getting reopened.
 It regenerates the two maps, runs the suite and the ratchet, checks the base ties and
 prints git state.
 
-## 🔴 GAP 9 BUILT — 20 October 2026, late evening (EVN in the main prototype UI; awaiting Stephen's confirmation of five build choices)
+## 🔴 GAP 9 BUILT — 20 October 2026, late evening (EVN in the main prototype UI; five build choices CONFIRMED by Stephen 20 Oct, 17:06, "looks fine")
 
 `ui_prototypes/evn_scenario_interface.html` now exists, generated like the other three (`build_cfgs.py` then
 `gen_ui.py`). New module `ui_prototypes/_generator/resource_cfg.py` builds the config for every company whose
@@ -41,7 +41,7 @@ browser). Headline levels tie to set `evn` (OC 5.07, MT 6.57, AI 7.47, DCC 7.19,
 Tests: `tests/test_ui_evn_gap9.py` (9). `session_start.py` base tie now includes EVN 6.57; `conftest.py` builds
 four pages. Suite: DCF 473 passed, rest 396. Build takes about 45 s longer (324 engine runs for the grids).
 
-Build choices made in the sitting, to CONFIRM (medium, none changes a number):
+Build choices CONFIRMED by Stephen (20 Oct, 17:06); not to be reopened:
 1. **Sliders are engine dimensions, interpolated.** WACC (engine rate +/-2 points, five engine points), gold path
    multiple (0.7-2.0x the scenario's path, 14 engine points per inventory basis), inventory basis (reserves /
    stated life / +5 years, each an engine run), cost response to gold (0-3% per 10%, seven engine points). At the
@@ -61,7 +61,7 @@ years, Northparkes FY54) and value per share by inventory basis (5.50 / 6.57 / 7
 small generic hooks (labelled sliders render as a select, optional reference-bar legend label, workbench and
 workbook optional, engine-grid form); DNL, WBC and CSL pages are unchanged in content apart from the risk-free note.
 
-**Next:** Stephen confirms or amends choices 1-5 (medium). Then the EVN workbook sitting (serious). Still awaiting:
+**Next:** the EVN formula workbook sitting (serious, its own chat). Still awaiting:
 D-101 observed betas (Ben); PDF renames in `notes/evn_pdf_rename_plan_2026-10-20.md`.
 
 ## 🔴 COST-PRICE LINK BUILT — 20 October 2026, evening (D-104 implemented; next: gap 9, EVN in the main UI)
