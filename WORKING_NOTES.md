@@ -32,7 +32,43 @@ kept getting reopened.
 It regenerates the two maps, runs the suite and the ratchet, checks the base ties and
 prints git state.
 
-## 🔴 HANDOVER — sitting of 16 October 2026, evening (read this first)
+## 🔴 HANDOVER — sitting of 20 October 2026, afternoon: EVN first build (read this first)
+
+**EVN (Evolution Mining), the first miner, is built end to end and waiting for review.**
+Stephen asked for the whole build on the existing framework, then a review of the
+shortcomings. Serious. Method paper: `design/methodology/resource_lifecycle_and_mining_drivers.md`
+(§6 lists the gaps). Decisions D-94 to D-101 in `DECISIONS.md`: D-94 (20 Oct, A$12.09) and
+D-95 (AUD functional, USD gold and AUD/USD as separate series) ruled; D-96 to D-101 PROPOSED.
+
+**What was added:** `dcf/resource_engine.py` (fourth engine, depletion DCF);
+`resource_translator.py` (data to inputs, names no company); `ResourceLifecycle` schema in
+`schemas/frameworks.py` (closes "schema TBD"); `data/industries/gold_producers.yaml`;
+`data/impact_matrix/by_industry/gold_producers.yaml` (real cost escalator per scenario);
+gold, copper and AUD/USD series in all six scenario files (D-99, typed judgement);
+`data/financials/evn.yaml`, `data/companies/evn.yaml`, `evn_documents.yaml`;
+`scripts/size_resource_valuation.py` -> `design/methodology/resource_valuation_sets.yaml`;
+tests `tests/dcf/test_resource_engine.py` (8 hand-computed cases),
+`tests/dcf/test_resource_valuation_sets.py`, `tests/test_resource_lifecycle_schema.py`, and
+EVN levels and terminal shares in `tests/dcf/test_scenario_goldens.py`.
+
+**EVN levels (A$/share, set `evn`):** OC 2.58, MT 4.18, AI Lag 4.97, Frag 7.74, DCC 5.03,
+Stag 6.54, against A$12.09. Run-off after Y10 is 14-17% of EV. Market-implied: the gold path
+x1.71 (about US$5,990 real at Y10). Spot held flat with five more years per mine: 7.80.
+
+**Framework fixes made on the way (no DNL/WBC/CSL number moved):** SSOT check 12 reads the
+fiscal year-end from layer 1 (was hard-coded 30 Sep); the moat-role test accepts a declared
+`no_barrier_declared` (a miner is all rent); 16 coincidental register hits and 6 intra-file
+coincidences in the EVN guidance table baselined.
+
+**Not done (own sittings):** EVN in the UI, workbook and `session_start.py` base ties; the
+FY26 statutory accounts (not in the folder); an industry cost curve from a primary source.
+Proposed tidy-up, needs Stephen's OK first: rename the twelve EVN PDFs to the
+`evn_<period>_<type>_<date>.pdf` convention the other companies use.
+
+**Next:** Stephen reviews the paper's decisions (D-96 to D-101), above all the D-99 price
+paths, and the §6 framework gaps.
+
+## 🔴 HANDOVER — sitting of 16 October 2026, evening (earlier)
 
 **Bridge notes: `notes/bridge/bridge_note_2026-10-16.md` (evening) and `bridge_note_2026-10-16b.md` (late evening, batch 2 plan).** This sitting closed the DNL equity bridge
 on reported figures (D-88), the CSL price premium (D-89, none), the two flat-offset US paths

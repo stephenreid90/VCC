@@ -1,0 +1,120 @@
+# Impact matrix for the gold_producers archetype (EVN). Written 20 Oct 2026.
+# Sparse per architecture spec 10.2. The one quantified driver the resource engine reads is
+# real_cost_escalation: percentage points a year ABOVE the scenario's CPI, applied from year 1
+# up to the year before the scenario's final (equilibrium) phase starts, after which the
+# higher cost LEVEL persists (method paper §6). Price and FX channels are not here: they are
+# scenario series (D-99 proposed). No excess_return_defence: for a resource archetype the
+# decay horizon is the remaining ore life (D-97 proposed), not a Five Forces band.
+
+industry: gold_producers
+archetype_class: resource
+version: 2026-Q4-v1
+matrix:
+- scenario: orderly_convergence
+  scenario_version: 2026-Q2-v1
+  drivers:
+    real_cost_escalation:
+      direction: neutral
+      magnitude: small
+      confidence: moderate
+      rationale: >-
+        Supply-side normalisation and lower energy prices: AUD mining costs track CPI. No real escalation.
+      quantified_override:
+        min: 0.0
+        mid: 0.0
+        max: 0.0
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-10-20T00:00:00Z'
+- scenario: muddle_through
+  scenario_version: 2026-Q2-v1
+  drivers:
+    real_cost_escalation:
+      direction: neutral
+      magnitude: small
+      confidence: moderate
+      rationale: >-
+        Status-quo extension: mining costs track CPI. No real escalation.
+      quantified_override:
+        min: 0.0
+        mid: 0.0
+        max: 0.0
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-10-20T00:00:00Z'
+- scenario: ai_productivity_lag
+  scenario_version: 2026-Q2-v1
+  drivers:
+    real_cost_escalation:
+      direction: neutral
+      magnitude: small
+      confidence: moderate
+      rationale: >-
+        As Muddle Through; no channel to mining input costs beyond CPI.
+      quantified_override:
+        min: 0.0
+        mid: 0.0
+        max: 0.0
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-10-20T00:00:00Z'
+- scenario: fragmentation
+  scenario_version: 2026-Q2-v1
+  drivers:
+    real_cost_escalation:
+      direction: negative
+      magnitude: small
+      confidence: low
+      rationale: >-
+        Supply-chain regionalisation and contested critical inputs (reagents, equipment) add about half a point a year above CPI through the realignment and adjustment phases.
+      quantified_override:
+        min: 0.0
+        mid: 0.5
+        max: 1.0
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-10-20T00:00:00Z'
+- scenario: disorderly_climate_crystallisation
+  scenario_version: 2026-Q2-v1
+  drivers:
+    real_cost_escalation:
+      direction: negative
+      magnitude: moderate
+      confidence: moderate
+      rationale: >-
+        Carbon prices spike and diesel-fleet open pits pay for it; power costs rise with forced transition. About one point a year above CPI through crystallisation and repricing.
+      quantified_override:
+        min: 0.5
+        mid: 1.0
+        max: 1.5
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-10-20T00:00:00Z'
+- scenario: stagflation_persists
+  scenario_version: 2026-Q2-v1
+  drivers:
+    real_cost_escalation:
+      direction: negative
+      magnitude: moderate
+      confidence: moderate
+      rationale: >-
+        Energy shock (Hormuz disruption) and second-round wage dynamics: diesel, power and labour rise faster than CPI through the shock and entrenchment phases.
+      quantified_override:
+        min: 1.0
+        mid: 1.5
+        max: 2.0
+      not_applicable: false
+      evidence_refs: []
+      governance:
+        created_by: stephenreid90@gmail.com
+        created_at: '2026-10-20T00:00:00Z'

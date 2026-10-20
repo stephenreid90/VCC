@@ -1,0 +1,218 @@
+# Evolution Mining Limited (ASX: EVN) -- layer 2: company position and method judgements.
+# Written 20 Oct 2026. Observed inputs are in data/financials/evn.yaml (layer 1). Method:
+# design/methodology/resource_lifecycle_and_mining_drivers.md. Decisions D-94 to D-101
+# (D-94 and D-95 ruled 20 Oct 2026; the rest PROPOSED, awaiting Stephen).
+# Strength tags (§14.5.1): [disclosed] [derived] [judgment] [default].
+
+company_position:
+  id: evn
+  name: Evolution Mining Limited
+  ticker: EVN
+  industry_type: resource
+  industry_archetype: gold_producers
+  reporting_currency: AUD
+  functional_currency: AUD
+  functional_currency_rationale: >
+    D-95 (Stephen, 20 Oct 2026). Reports in AUD; most costs are AUD (Red Lake's are CAD);
+    the USD notes are swapped into AUD; the shares and dividends are AUD. Gold and copper
+    are priced in USD, so the scenario carries the USD price and AUD/USD as separate,
+    jointly set series and the realised AUD price is derived.
+
+  segments:
+    # One segment per producing mine, all on the gold_producers archetype. Revenue shares
+    # are FY25 segment revenue (AR25 segment note; FY26 statutory accounts not saved) and
+    # are descriptive only: the engine values each mine from its own mine plan.
+    - segment: cowal
+      industry_archetype: gold_producers
+      functional_currency: AUD
+      revenue_share: 0.333
+      notes: NSW open pit plus the new underground; current life to 2042. Largest gold producer.
+    - segment: ernest_henry
+      industry_archetype: gold_producers
+      functional_currency: AUD
+      revenue_share: 0.225
+      notes: QLD underground copper-gold; copper is the larger revenue line, gold AISC negative.
+    - segment: northparkes
+      industry_archetype: gold_producers
+      functional_currency: AUD
+      revenue_share: 0.116
+      notes: NSW block-cave copper-gold (Evolution 80%); Triple Flag gold and silver stream.
+    - segment: mungari
+      industry_archetype: gold_producers
+      functional_currency: AUD
+      revenue_share: 0.122
+      notes: WA; mill expanded to 4.2Mtpa in FY26, about 200kozpa.
+    - segment: red_lake
+      industry_archetype: gold_producers
+      functional_currency: CAD
+      functional_currency_rationale: >
+        Ontario costs are CAD. Valued at FY27 guidance in A$ with the CAD/AUD cross held
+        flat (D-95): too small a share to justify a third currency driver.
+      revenue_share: 0.130
+      notes: Ontario underground; current life to 2040.
+
+  balance_sheet:
+    net_debt_ebitda: null
+    leverage_posture: low
+    liquidity: >
+      Net cash A$141m at 30 Sep 2026 (cash 1,470, hedged USPP 1,329) before the A$429m final
+      dividend paid 2 Oct 2026; A$525m undrawn revolver to 2028; no repayments before FY29.
+
+  capital_allocation:
+    dividend_policy: Payout of 60% of group cash flow (raised from 50% at the FY26 result).
+    buyback_posture: None announced.
+    m_and_a_posture: >
+      Active acquirer of long-life copper-gold assets (Northparkes 2023; Carnaby scheme vote
+      late 2026). Acquisitions are assumed to earn the cost of capital (D-97 proposed).
+
+  management_and_governance:
+    strategy_quality: high
+    strategy_evidence: Portfolio of long-life, low-cost assets with copper diversification; unhedged from FY27.
+    execution_track_record: moderate
+    execution_evidence: >
+      FY26 guidance delivered; Mungari expansion on time; Ernest Henry weather event in
+      December 2025 cost about 12koz gold and 8kt copper.
+
+  esg_and_transition:
+    carbon_intensity: Moderate; diesel fleets at the open pits, grid power elsewhere.
+    transition_plan: Renewable power contracts and fleet electrification studies (not modelled).
+    stranded_asset_exposure: Low for gold; copper by-product is transition-positive.
+
+  five_forces_company_position:
+    cost_position:
+      placement_on_curve: bottom_quartile
+      evidence: >
+        FY26 group AISC A$1,717/oz (about US$1,200 at 0.70), "one of the lowest in the
+        sector" (SQ). The copper credit at Ernest Henry and Northparkes does most of it.
+    moat:
+      sources: [resource, scale]
+      source_roles: {resource: rent, scale: rent}
+      no_barrier_declared: >
+        Intended. A gold producer is a price taker with no barrier that stops a rival; its
+        excess return is the rent on ore it owns, and that rent is dated by the ore's life,
+        mine by mine (resource_lifecycle overlay, D-97 proposed). There is no Five Forces
+        decay horizon to set.
+      evidence: >
+        The ore bodies are the advantage and they deplete: a RENT with an end date (D-43a),
+        carried in the cash flows to the end of each mine's life. Scale lowers unit cost but
+        excludes no rival. There is no BARRIER, so there is no Five Forces decay band.
+
+normalised_baseline:
+  engine: resource                         # D-96 proposed: the depletion engine
+  valuation_date: 2026-10-20               # D-94 (Stephen, 20 Oct 2026)
+  stub_years: 0.6932                       # 20 Oct 2026 to 30 Jun 2027 = 253 / 365
+  horizon_years: 10                        # D-71
+  equity_bridge_run_rates:
+    period_a_days: 20                      # 30 Sep 2026 anchor to 20 Oct 2026
+    rationale: >
+      D-100 proposed. The September quarter's cash flow is already in the 30 Sep net cash.
+      The 20 days to the valuation date are not rolled (no run rate is observed for them);
+      the only adjustment is the final dividend paid on 2 Oct, deducted as a declared,
+      unpaid claim at the anchor (the D-88 precedent).
+
+  # ---- Producing inventory and mine life (D-98 proposed) ----
+  inventory:
+    basis: stated_life                     # [disclosed] company life-of-mine end years
+    basis_rationale: >
+      Each mine produces at its FY27 guidance midpoint from the valuation date to the end
+      of its disclosed life-of-mine year. Ore Reserves are struck at A$3,000/oz, half the
+      spot price, so they understate what the company plans to mine. The reserves-only
+      life and a five-year extension are sized as sensitivities (method paper §7).
+    sensitivity_bases: [reserves, life_extension]
+    life_extension_years: 5                # [judgment] resource conversion upside, sensitivity only
+    default_metallurgical_recovery: 0.85   # [default] the only recovery found (Cowal underground resource cut-off), applied to every mine and to copper in the reserves sensitivity
+    default_metallurgical_recovery_basis:
+      entity: Cowal underground (applied to all five mines, gold and copper)
+      window: 31 Dec 2025 estimate
+      level: Mineral Resource cut-off assumption, used as a proxy
+      source: data/financials/evn.yaml ore_reserves_2025_12_31.cowal_metallurgical_recovery
+
+  # ---- Capital (D-98 proposed) ----
+  project_capex_runoff: [1.0, 0.75, 0.5, 0.25]
+  project_capex_runoff_rationale: >
+    [judgment] Major project capital at the FY27 guidance midpoint, then running off by a
+    quarter a year to nil from FY31. The named projects (Cowal open-pit continuation to
+    FY31, Northparkes E22 over about five years to FY30, coarse-particle flotation by FY28,
+    concentrate regrind by FY29, Bert from FY29) all complete inside that window. Major
+    mine development and sustaining capital continue at the FY27 rate, per ounce, to the
+    end of each mine's life: they are the cost of keeping a mine producing.
+
+  # ---- Declared project uplifts (method paper §5.3) ----
+  # The growth capital is in each host's major_project_capex; these credit the metal it
+  # buys. Only uplifts the company has quantified are included. Northparkes E22 (block
+  # cave, initial production end FY30, "supports transition to 8Mtpa") is NOT: its volume
+  # is not quantified in the saved documents, so its capital is charged and its uplift is
+  # not credited (a known understatement). Carnaby (Greater Duchess) is excluded: an
+  # acquisition awaiting a scheme vote, valued at zero NPV (D-97 proposed).
+  project_uplifts:
+    - name: bert
+      host: ernest_henry
+      start_fy: 2029
+      years: 7
+      gold_koz_pa: 12.0
+      copper_kt_pa: 6.0
+      cost_basis: host_unit_cost
+      source: >
+        [disclosed] 2026 Investor Briefing: Bert "+~6ktpa copper +~12kozpa gold, ramping
+        from FY29"; Half-year presentation: "Estimated 7 year mine life from first-half FY29".
+    - name: recovery_projects
+      host: northparkes
+      start_fy: 2029
+      years: host_life
+      fraction_of_host: {gold: 0.04, copper: 0.03}
+      cost_basis: incremental_recovery
+      source: >
+        [disclosed] Coarse-particle flotation (~2% gold and copper recovery, commissioning
+        2H FY28) plus concentrate regrind and filtration (+2% gold, +1% copper, complete
+        Q1 FY29): half-year presentation and September 2026 quarterly. Both counted from
+        FY29.
+
+  # ---- Northparkes stream ----
+  stream_step_down_reached: false
+  stream_step_down_rationale: >
+    [judgment] The cumulative ounces delivered towards the 630koz step-down are not in the
+    saved documents. The model holds the 67.5% delivery share for the whole life, which is
+    conservative.
+
+  # ---- Discount rate (D-101 proposed) ----
+  wacc_build:
+    beta: 0.90
+    beta_selection_rationale:
+      method: peer triangulation (D-02)
+      peers: [Northern Star (NST), Newmont (NEM CDI), Perseus (PRU), Genesis (GMD), Ramelius (RMS)]
+      selection: >
+        [judgment] Gold miners' equity betas against the ASX 200 sit below one because the
+        gold price is weakly correlated with the market, while their volatility is high.
+        0.90 sits mid-cluster for diversified Australian producers. The peer betas are NOT
+        observed in this repo (no feed); the selection rests on the named peers and
+        judgement, as D-02 requires to be said when citing it.
+    equity_risk_premium: 0.0500            # house ERP (DNL, CSL D-84)
+    cost_of_debt_spread: 0.0150
+    cost_of_debt_rationale: >
+      D-03: risk-free rate plus a spread on comparably rated paper. EVN is unrated; the
+      notional rating is BBB (investment-grade balance sheet, net cash). 150bp over the
+      10-year bond. The contractual 4.47% swapped coupon is lower because it was struck in
+      2021-2023.
+    tax_rate: 0.30
+
+  # ---- Working capital (D-09, D-29) ----
+  working_capital_intensity:
+    clean_years: [FY2025, FY2024]
+    rounding: nearest_5pct
+    rationale: >
+      Two statutory balance sheets (AR25 with comparatives). Both negative: payables,
+      provisions and current tax exceed receivables and inventory. Neither year is distorted
+      by an acquisition close (Northparkes closed in FY24 and is in both). Applied to the
+      change in revenue: as mines close, the negative balance unwinds and costs cash.
+
+  # ---- Equity bridge ----
+  equity_bridge:
+    deduct_rehabilitation_provision: true
+    deduct_lease_liabilities: true
+    deduct_stream_deferred_revenue: false
+    rationale: >
+      D-100 proposed. Closure costs are not in the mine cash flows, so the rehabilitation
+      provision (latest found: 30 Jun 2025, 572) is a debt-like claim. Leases are debt
+      (Approach A, methodology §4.6). The stream's deferred revenue is NOT deducted: the
+      stream is modelled in Northparkes' cash flows (ounces delivered at 10% of spot), and
+      deducting the accounting balance as well would count it twice.

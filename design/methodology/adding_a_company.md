@@ -121,3 +121,6 @@ Every terminal, whatever its basis, is reported with the same set, in this order
 
 Where a market price exists, add the line: what the market price needs the terminal to be,
 on the same forecast.
+
+
+**20 Oct 2026:** a fourth engine is proposed for depleting assets: `dcf/resource_engine.py` (mine-by-mine depletion DCF, EVN; D-96 proposed). For it, the seven terminal disclosures are replaced by the run-off share, the life and the value on each inventory basis (`resource_lifecycle_and_mining_drivers.md` §6, gap 7).

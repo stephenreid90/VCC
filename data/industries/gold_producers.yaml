@@ -1,0 +1,184 @@
+# Industry archetype: gold producers (with copper by-product exposure).
+# Written 20 Oct 2026 for Evolution Mining (EVN), the first resource archetype and the
+# first use of the resource_lifecycle complementary framework (architecture.md §7.5.1).
+# Method paper: design/methodology/resource_lifecycle_and_mining_drivers.md.
+# Built from the industry level up: nothing here is read off EVN. Company figures live
+# in data/companies/evn.yaml and data/financials/evn.yaml.
+
+industry_archetype:
+  id: gold_producers
+  name: Gold producers (price-taking, depleting ore bodies)
+  version: 2026-Q4-v1
+  archetype_class: resource
+
+  # The engine reads these scenario series (D-37). All four are carried natively by the
+  # scenario files (scenario_series): the three price series were added 20 Oct 2026 as
+  # scenario development (D-99 proposed); advanced CPI is the D-73 proxy for AUD cost
+  # inflation, the same series the other archetypes read.
+  required_macro_drivers:
+    - gold_price_usd_real
+    - copper_price_usd_real
+    - aud_usd
+    - cpi_inflation_advanced
+
+  # A resource archetype has no revenue growth chain: volume is a mine plan and price is
+  # a scenario series, so there are no chain terms to classify (D-78). Terminal growth is
+  # not used either: the terminal is the depletion run-off (D-97 proposed).
+  growth_chain_terms: []
+
+  geography: global
+
+  five_forces:
+    buyer_power:
+      rating: very_low
+      rationale: >
+        Gold is sold into a deep, liquid global market (refiners, the LBMA, central banks,
+        ETFs, jewellery and bar demand) at a quoted spot price. No buyer can negotiate the
+        price of a fungible ounce. Copper concentrate is sold to smelters with treatment
+        and refining charges, which gives smelters some power over the by-product, but the
+        metal price itself is set on the LME. Net: producers are price takers, and buyer
+        power is not where returns are decided.
+    supplier_power:
+      rating: moderate
+      rationale: >
+        Labour (skilled underground and processing workforces, fly-in fly-out rosters in
+        Western Australia and Queensland), diesel and power, cyanide and reagents, and
+        mining contractors. Skilled labour was tight through 2022-2026 and drove the cost
+        inflation the sector reported. Inputs are not concentrated in a few suppliers, but
+        costs move with the general and energy price level, which is why the archetype
+        escalates costs with CPI plus a scenario real escalator (impact matrix).
+    threat_of_new_entrants:
+      rating: low_to_moderate
+      rationale: >
+        The barrier is the ore body, not capital or know-how. Permitting and building a new
+        mine takes 7-15 years from discovery and the best deposits are found. Capital is
+        available at high prices, so new mid-tier producers do appear, but their output is
+        small against annual mine supply of under 4,000t (World Gold Council: 966t in the June 2026 quarter). Entry adds supply slowly and
+        cannot set the price.
+    threat_of_substitutes:
+      rating: low
+      rationale: >
+        For investment and reserve demand the substitutes are other stores of value (US
+        Treasuries, other reserve currencies, and for some buyers crypto-assets). These
+        move the price, which the scenario price series carry. They do not displace a
+        producer's ounces, which always clear at the market price.
+    rivalry:
+      rating: low
+      rationale: >
+        Producers do not compete on price; every ounce sells at spot. Rivalry shows up in
+        the competition for deposits, people and capital (M&A at full prices), not in
+        margins. A producer's return over its cost of capital is a geological rent from
+        ore grade, scale and location, set by where it sits on the industry cost curve.
+        That rent has an end date: it lasts as long as the ore (D-43a: a RENT, not a
+        BARRIER).
+
+  complementary_framework:
+    type: resource_lifecycle
+    details:
+      commodities:
+        - name: gold
+          role: primary
+          price_series: gold_price_usd_real
+          price_units: usd_per_oz_real_2026
+          rationale: The archetype's defining product; priced in USD on a global market.
+        - name: copper
+          role: by_product
+          price_series: copper_price_usd_real
+          price_units: usd_per_t_real_2026
+          rationale: >
+            A by-product for most gold producers but material for some (Ernest Henry and
+            Northparkes for EVN). Its revenue is credited against gold costs in the
+            industry's AISC measure, so the archetype models it as revenue in its own
+            right and adds the credit back to costs (method paper §5).
+      price_basis: >
+        Scenario price series are real 2026 US dollars; the engine inflates them by the
+        scenario's cpi_inflation_advanced, compounded from the valuation date, and converts
+        at the scenario's aud_usd. Real price and real cost therefore move together unless
+        the scenario says otherwise.
+      inflation_series: cpi_inflation_advanced
+      fx_series: aud_usd
+      cost_metric: AISC (World Gold Council all-in sustaining cost, A$ per ounce of gold, net of by-product credits)
+      cost_curve_note: >
+        Gold has no cost-set price: above-ground stocks are about sixty years of mine
+        supply, so the marginal producer does not set the price as it does for a consumed
+        commodity. The cost curve matters for where a producer's margin sits, not for the
+        price path, which is a scenario input. An industry cost-curve anchor (average and
+        90th-percentile AISC) is NOT yet sourced to a primary document; see the method
+        paper's gap list.
+      inventory_basis: stated_life
+      inventory_basis_rationale: >
+        The company's disclosed life-of-mine end year at its current guidance rate. Ore
+        Reserves are struck at a conservative price (EVN: A$3,000/oz against a spot near
+        A$6,000/oz), so a reserves-only life understates what the company itself plans to
+        mine. The stated life is a disclosed figure; reserves-only is the disclosed
+        sensitivity (D-98 proposed).
+      replacement: zero_npv
+      replacement_rationale: >
+        Once the declared inventory is mined, ounces are replaced by exploration and
+        acquisition at prices that earn about the cost of capital. Replacement is therefore
+        value-neutral and the terminal carries no perpetuity (D-97 proposed). A positive
+        replacement value is a declared sensitivity (life extension), never a default.
+      reserve_life_note: >
+        The excess return of a producer is the rent on its ore, and its decay horizon is
+        the remaining life of that ore, mine by mine. It replaces the Five Forces decay
+        band of D-63/D-86 for this archetype.
+      jurisdictions:
+        - jurisdiction: Australia (NSW, QLD, WA)
+          rating: low
+          rationale: >
+            Stable tenure and permitting; state royalties are the main fiscal lever and are
+            revised occasionally (WA gold royalty 2.5%; NSW and QLD ad valorem regimes).
+        - jurisdiction: Canada (Ontario)
+          rating: low
+          rationale: Stable mining jurisdiction; costs in CAD.
+      stranded_asset_trajectory: low
+      stranded_asset_rationale: >
+        Gold demand is not exposed to the energy transition; copper by-product demand
+        benefits from it. The transition shows up as cost (diesel, power, carbon pricing),
+        which the impact matrix carries as a real cost escalator in Disorderly Climate.
+
+  lifecycle_stage: mature
+  lifecycle_rationale: >
+    A mature, price-taking industry. In 2025-2026 a record gold price lifted margins far
+    above the cost of capital; those margins are a price windfall on a depleting asset,
+    not a structural shift in returns.
+
+  cyclicality:
+    current_cycle_phase: peak
+    amplitude: high
+    rationale: >
+      The gold price set records in early 2026 (above US$4,000/oz) and eased in the June
+      quarter (World Gold Council, Gold Demand Trends Q2 2026: central banks added 289t,
+      ETFs saw 45t of outflows). Margins are at the top of their historical range.
+
+  input_dependencies:
+    critical_inputs:
+      - ore body (grade, tonnes, metallurgy)
+      - skilled labour
+      - diesel and power
+      - cyanide and flotation reagents
+      - water and tailings capacity
+    supply_risk: moderate
+    rationale: >
+      Labour and energy are the inputs that move costs. Water and tailings capacity are
+      permitting constraints that can cap throughput.
+
+  disruption_vectors:
+    - vector: Official-sector reserve diversification away from USD
+      nature: opportunity
+      incumbency_position: neutral
+      time_horizon: '3-7 years'
+      severity: moderate
+      certainty: moderate
+      description: >
+        Central-bank buying has been the swing source of demand since 2022. It is carried
+        in the scenario price series, strongest in Fragmentation.
+    - vector: Carbon pricing and diesel substitution
+      nature: threat
+      incumbency_position: neutral
+      time_horizon: '3-7 years'
+      severity: low_to_moderate
+      certainty: moderate
+      description: >
+        Raises operating costs for diesel-fleet open pits; carried as a real cost escalator
+        in Disorderly Climate Crystallisation.

@@ -35,7 +35,9 @@ from vcc_valuations.dcf.fcf_engine import (
     TERMINAL_SHARE_THRESHOLD,
     terminal_share_warning,
 )
+from vcc_valuations.dcf.resource_engine import ResourceEngine
 from vcc_valuations.dcf.segment_engine import SegmentEngine
+from vcc_valuations.resource_translator import build_resource_inputs_from_data
 from vcc_valuations.translator import (
     build_bank_inputs_from_data,
     build_engine_inputs_from_data,
@@ -292,6 +294,44 @@ CSL_GOLDEN = {
     "stagflation_persists": (94.8465, 143.7115),
 }
 
+
+# --- EVN: resource depletion FCFF / WACC (D-96 proposed), AUD per share -----------
+# Pinned 20 Oct 2026 at first build (valuation date 20 Oct 2026, D-94). Inventory on
+# the stated mine lives (D-98 proposed), depletion run-off terminal with replacement at
+# zero NPV (D-97 proposed), WACC 9.55% (D-101 proposed). Market reference A$12.09: every
+# scenario sits well below it; the gap is disclosed, not reconciled (D-92's principle),
+# see design/methodology/resource_valuation_sets.yaml for the market-implied gold price.
+EVN_GOLDEN = {
+    "orderly_convergence": 2.5809,
+    "muddle_through": 4.1771,
+    "ai_productivity_lag": 4.9662,
+    "fragmentation": 7.7365,
+    "disorderly_climate_crystallisation": 5.0309,
+    "stagflation_persists": 6.5385,
+}
+# The run-off after year 10 is 14-17% of EV: a finite life puts most of the value in
+# the explicit period, the reverse of the three going-concern companies.
+EVN_TERMINAL_SHARES = {
+    "orderly_convergence": 0.1519,
+    "muddle_through": 0.1680,
+    "ai_productivity_lag": 0.1726,
+    "fragmentation": 0.1732,
+    "disorderly_climate_crystallisation": 0.1571,
+    "stagflation_persists": 0.1407,
+}
+
+
+def _evn(scenario):
+    inp = load_inputs(ROOT, scenario, "gold_producers", "evn")
+    return ResourceEngine().run(build_resource_inputs_from_data(inp, scenario))
+
+
+@pytest.mark.parametrize("scenario", SCENARIOS)
+def test_evn_scenario_level(scenario):
+    r = _evn(scenario)
+    assert r.value_per_share == pytest.approx(EVN_GOLDEN[scenario], abs=5e-4)
+    assert r.terminal_share_of_ev == pytest.approx(EVN_TERMINAL_SHARES[scenario], abs=5e-4)
+    assert r.terminal_share_of_ev < TERMINAL_SHARE_THRESHOLD
 
 def _dnl(scenario):
     inp = load_inputs(ROOT, scenario, "industrial_explosives", "dnl")

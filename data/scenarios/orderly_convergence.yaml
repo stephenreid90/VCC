@@ -59,6 +59,50 @@ scenario:
         long-term demographic challenges remain.
 
   macro_variables:
+    # BEGIN resource prices (gold_producers archetype; typed scenario series, not derived)
+    # Real prices are in 2026 US dollars and are inflated by this scenario's
+    # cpi_inflation_advanced inside the engine; aud_usd is nominal US dollars per A$1.
+    - variable: gold_price_usd_real
+      units: usd_per_oz_real_2026
+      type: time_series
+      # Scenario development, 20 Oct 2026 (EVN, the first resource archetype; D-99 proposed).
+      # Year 0 reference: spot US$4,166/oz, 16 Oct 2026 (pricegold.net).
+      # Basis: Geopolitical tension resolves and real rates settle positive, so the safe-haven and
+      # reserve-diversification bid fades; the price reverts toward the pre-2024 real regime but
+      # holds above it because official-sector holdings are sticky.
+      time_series:
+        - {year: 1, value: 3900}
+        - {year: 3, value: 3400}
+        - {year: 5, value: 3100}
+        - {year: 7, value: 3000}
+        - {year: 10, value: 3000}
+    - variable: copper_price_usd_real
+      units: usd_per_t_real_2026
+      type: time_series
+      # Scenario development, 20 Oct 2026 (EVN, the first resource archetype; D-99 proposed).
+      # Year 0 reference: EVN September 2026 quarter achieved US$6.69/lb, about US$14,750/t.
+      # Basis: Sustained transition demand with supply responding (scenario metals_regime): a firm
+      # but not spiking copper price.
+      time_series:
+        - {year: 1, value: 14000}
+        - {year: 3, value: 13500}
+        - {year: 5, value: 13000}
+        - {year: 7, value: 13000}
+        - {year: 10, value: 13000}
+    - variable: aud_usd
+      units: usd_per_aud
+      type: time_series
+      # Scenario development, 20 Oct 2026 (EVN, the first resource archetype; D-99 proposed).
+      # Year 0 reference: close 0.6968, 19 Oct 2026 (poundsterlinglive.com).
+      # Basis: USD softens as the Fed eases and capital reglobalises (scenario fx_regime); a risk-on
+      # commodity currency appreciates.
+      time_series:
+        - {year: 1, value: 0.71}
+        - {year: 3, value: 0.73}
+        - {year: 5, value: 0.74}
+        - {year: 7, value: 0.74}
+        - {year: 10, value: 0.74}
+    # END resource prices
     # BEGIN derived paths (vaccines)
     # Written by scripts/derive_macro_driver_paths.py from the derivations declared in
     # data/industries/vaccines.yaml; asserted by tests/test_macro_driver_paths.py.

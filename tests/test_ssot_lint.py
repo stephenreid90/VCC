@@ -235,8 +235,12 @@ def test_valuation_date_ties_the_anchor_walk_and_the_stub():
             f"but valuation_date says {vd}"
         )
 
-        # The stub must run from the valuation date to the fiscal year-end.
-        fy_end = date(vd.year, 9, 30) if vd <= date(vd.year, 9, 30) else date(vd.year + 1, 9, 30)
+        # The stub must run from the valuation date to the fiscal year-end. The year-end
+        # is read from layer 1 where declared ('MM-DD'); 30 Sep (DNL, the first company
+        # this check was written for) only where it is not. EVN (20 Oct 2026) is the first
+        # June year-end company to declare a valuation date.
+        month, day = (int(x) for x in str(fin.get("fiscal_year_end", "09-30")).split("-"))
+        fy_end = date(vd.year, month, day) if vd <= date(vd.year, month, day) else date(vd.year + 1, month, day)
         implied = (fy_end - vd).days / 365.0
         assert abs(implied - nb["stub_years"]) < 0.005, (
             f"{cid}: stub_years {nb['stub_years']} implies a different valuation date — "

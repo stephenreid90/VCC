@@ -144,6 +144,22 @@ Full reasoning and the numbers behind these: `design/methodology/horizon_and_ter
 | D-06 | 25 Aug 2026 | **CSL's WACC parameters stay PROVISIONAL.** Reconsidered this session and retained: marking it FIRM would drop the commitment to revisit without supplying support for the 14× through-cycle EV/EBITDA multiple. Now load-bearing twice — as the discount rate and as the benchmark the terminal return is judged against. | PROVISIONAL — revisit when peer financials land | supersedes nothing; status re-affirmed |
 | D-19 | 25 Aug 2026 | **Market prices are refreshed and everything re-tested after the UI work lands**, so all eighteen goldens move once rather than repeatedly. CSL's 105.53 reference against a 200-day average of 161.95 is a known distortion in the meantime. | PROVISIONAL — sequencing set | paper §13 |
 
+
+## Evolution Mining (EVN), the first miner -- 20 October 2026
+
+Method paper: `design/methodology/resource_lifecycle_and_mining_drivers.md`. Numbers: set `evn` in `design/methodology/resource_valuation_sets.yaml`.
+
+| ID | Date | Decision | Status | Reasoning |
+|---|---|---|---|---|
+| D-94 | 20 Oct 2026 | **EVN is valued at 20 October 2026 at a market reference price of A$12.09.** Stephen's ruling. D-92 is not reopened: DNL, WBC and CSL keep 15 June 2026. EVN therefore sits on a different date from the other three, and its risk-free rate is read at its own date (D-101). | RULED 20 Oct 2026 | paper §2 |
+| D-95 | 20 Oct 2026 | **EVN is valued in AUD. The USD gold price and AUD/USD are separate scenario series set together; copper likewise; the realised AUD price is derived. Red Lake's CAD costs are held at FY27 guidance in A$ (cross flat); the USD notes at their swapped A$ value.** Stephen: "ok with where you are going". | RULED 20 Oct 2026 | paper §2 |
+| D-96 | 20 Oct 2026 | **A fourth engine, `dcf/resource_engine.py`: a mine-by-mine depletion DCF for resource_lifecycle archetypes.** Reuses the industrial stub, mid-period discounting, single WACC and equity bridge; names no company or mine. | PROPOSED -- awaiting Stephen | paper §2, §4 |
+| D-97 | 20 Oct 2026 | **Ten explicit years stay (D-71); the terminal is the depletion run-off of the declared inventory, then replacement at zero NPV (no perpetuity). D-86 holds with the fade length set by the remaining ore life, because an ore body is a RENT (D-43a), not a barrier.** | PROPOSED -- awaiting Stephen | paper §2 |
+| D-98 | 20 Oct 2026 | **Inventory = the company's stated mine life at the FY27 guidance midpoint; reserves-only and a five-year extension are the sensitivities. Sustaining and mine-development capital run to closure; project capital runs off to nil by FY31; quantified project uplifts (Bert, Northparkes recoveries) are credited, unquantified ones (E22) are not.** | PROPOSED -- awaiting Stephen | paper §2 |
+| D-99 | 20 Oct 2026 | **Gold, copper (real 2026 US$) and AUD/USD are typed scenario series in all six scenario files, each with a narrative basis; real prices inflate by the scenario CPI; costs by CPI plus an impact-matrix real escalator.** A carve-out from D-73 ruling 1: no existing series can proxy a commodity price. | PROPOSED -- awaiting Stephen (the paths are judgement he has not yet seen) | paper §2 table |
+| D-100 | 20 Oct 2026 | **EVN's bridge is anchored at the 30 Sep 2026 quarterly (cash, net cash and shares at one date), less the A$429m final dividend paid 2 Oct; rehabilitation (A$572m, 30 Jun 2025) and leases are debt-like; the Triple Flag stream is modelled in revenue, not deducted.** | PROPOSED -- awaiting Stephen | paper §2 |
+| D-101 | 20 Oct 2026 | **EVN WACC 9.55%: Rf 5.31% (10-year bond, 14 Oct 2026), beta 0.90 (peer judgement, peers not observed), ERP 5.00%, kd Rf + 150bp, tax 30%, spot weights.** | PROPOSED -- awaiting Stephen | paper §2 |
+
 **Implementation note on D-58, CLOSED 17 September 2026.** The decay horizon was prose
 inside `terminal_roic.rationale` in the impact matrix — "decay horizon = 10-15 years" is a
 sentence, so there was nothing for a validator to read and nothing a test could hold to the

@@ -100,6 +100,12 @@ def test_a_rent_bearing_source_does_not_set_the_horizon_alone(
         if not roles:
             continue
         if all(r == "rent" for r in roles.values()):
+            # 20 Oct 2026: a depleting-asset company (resource_lifecycle archetype) has no
+            # barrier by construction -- its excess return is the rent on its ore, dated
+            # by the ore's life (D-97 proposed). That is the legitimate configuration this
+            # test names; it passes only when the block says so in a declared field.
+            if block.get("no_barrier_declared"):
+                continue
             pytest.fail(
                 f"{key}: every source is rent-bearing, so the moat has no "
                 f"barrier and the decay horizon collapses to the earliest "

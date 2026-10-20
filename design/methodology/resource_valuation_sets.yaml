@@ -1,0 +1,65 @@
+# Generated. Do not hand-edit; rerun the script.
+generated_by: scripts/size_resource_valuation.py
+sets:
+  evn:
+    status: current
+    basis: stated_life
+    wacc: 0.095527
+    levels:
+      orderly_convergence: 2.5809
+      muddle_through: 4.1771
+      ai_productivity_lag: 4.9662
+      fragmentation: 7.7365
+      disorderly_climate_crystallisation: 5.0309
+      stagflation_persists: 6.5385
+    terminal_shares:
+      orderly_convergence: 0.1519
+      muddle_through: 0.168
+      ai_productivity_lag: 0.1726
+      fragmentation: 0.1732
+      disorderly_climate_crystallisation: 0.1571
+      stagflation_persists: 0.1407
+    life_years: 27.6932
+    mine_last_period:
+      cowal: 15
+      ernest_henry: 13
+      northparkes: 27
+      mungari: 11
+      red_lake: 13
+      ernest_henry:bert: 8
+      northparkes:recovery_projects: 27
+    baseline_detail:
+      scenario: muddle_through
+      enterprise_value: 9446.3
+      pv_explicit: 7859.3
+      pv_terminal: 1587.0
+      net_debt_at_valuation: 288.0
+      adjustments: 572.3
+      leases: 45.7
+      y1_fcff: 1007.8
+      y1_ebitda: 2911.0
+      y1_gold_aud_oz: 5959.3
+    sensitivities:
+      inventory_reserves:
+        orderly_convergence: 2.1691
+        muddle_through: 3.5425
+        ai_productivity_lag: 4.2102
+        fragmentation: 6.6181
+        disorderly_climate_crystallisation: 4.3025
+        stagflation_persists: 5.7418
+      inventory_life_extension:
+        orderly_convergence: 2.9425
+        muddle_through: 4.9196
+        ai_productivity_lag: 5.8526
+        fragmentation: 9.154
+        disorderly_climate_crystallisation: 5.7756
+        stagflation_persists: 7.5423
+      wacc_minus_1pp: 4.4542
+      wacc_plus_1pp: 3.9254
+      spot_flat_real: 6.5471
+      spot_flat_real_life_extension: 7.7951
+    market:
+      price: 12.09
+      gap_to_market_baseline: -0.6545
+      implied_gold_scale: 1.7112
+      implied_real_gold_y10_usd: 5989.0

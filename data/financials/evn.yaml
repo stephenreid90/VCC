@@ -1,0 +1,209 @@
+# Evolution Mining Limited (ASX: EVN) -- layer 1, OBSERVED inputs only.
+# Written 20 Oct 2026. Every figure is read from a document in
+# data/financials/historical/evn/ (record: _extract_notes_2026-10-20.md, which quotes the
+# line each figure came from) or a dated market source. No judgement lives here (D-17);
+# the method and selections are in data/companies/evn.yaml. A$ millions unless stated.
+# No EODHD feed exists for EVN (Stephen, 20 Oct 2026): this file is hand-built from the
+# primary documents, so it is not machine-refreshable yet.
+
+company_id: evn
+reporting_currency: AUD
+fiscal_year_end: '06-30'
+units: AUD_m
+
+# ---- Market data at the valuation date (D-94) ----
+market_data:
+  price_aud: 12.09
+  price_date: 2026-10-20
+  price_source: Stephen Reid, 20 Oct 2026 (ruling D-94)
+
+# ---- §5.3 share and net-debt anchor: the 30 Sep 2026 quarterly report (D-100 proposed) ----
+share_statistics:
+  shares_outstanding: 2044.548397          # millions
+  shares_outstanding_at: 2026-09-30
+  shares_outstanding_source: >
+    September 2026 Quarterly Report (14 Oct 2026): "At 30 September 2026 issued share
+    capital was 2,044,548,397 fully-paid ordinary shares."
+  shares_outstanding_at_fy_end: 2031.090542   # 30 Jun 2026, June 2026 Quarterly Report
+  performance_rights: NOT FOUND (count not in the saved documents)
+
+derived_metrics:
+  net_debt_at: 2026-09-30
+  cash_at_anchor: 1470.0                   # SQ: "cash balance of $1,470M"
+  net_cash_at_anchor: 141.0                # SQ: "Improved net cash position of $141M"
+  debt_at_anchor_source: >
+    Debt is not stated in the September quarterly; cash 1,470 less net cash 141 gives the
+    US private placement notes at their hedged A$ value, 1,329, the same figure as at
+    30 June 2026 (FY26 results: "debt of $1,329 million"; no repayments due until FY29).
+  final_dividend_unpaid_at_anchor: 429.0   # SQ: FY26 final dividend 21.0cps, paid 2 Oct 2026, $429M
+  final_dividend_source: >
+    FY26 results (19 Aug 2026): final dividend 21.0 cents fully franked, record 10 Sep,
+    paid 2 Oct 2026. September 2026 Quarterly Report puts the payment at $429M.
+
+# ---- Debt detail (Annual Report 2025, Note 12; FY26 results presentation slide 7) ----
+debt:
+  uspp_usd_m: 950.0
+  uspp_hedged_aud_m: 1329.0
+  uspp_fixed_cost: 0.0447                  # FYP slide 7: "average rate of 4.47%"
+  uspp_fixed_cost_basis:
+    entity: Evolution Mining group
+    window: at 30 June 2026
+    level: contractual coupon after cross-currency swaps
+    source: EVN_FY26_Full_Year_Financial_Results_Presentation.pdf slide 7
+  maturities_fy: [2029, 2031, 2032, 2034, 2036]
+  undrawn_rcf_aud_m: 525.0
+  credit_rating: NOT FOUND (company says "investment grade balance sheet")
+  hedging: none ("Evolution is fully unhedged with no gold or copper hedges", SQ)
+
+# ---- Latest balance-sheet items found: 30 June 2025 (Annual Report 2025, p66). The FY26
+# statutory accounts are not in the folder; these are the latest available. ----
+balance_sheet_2025_06_30:
+  rehabilitation_provision: 572.264        # 11.435 current + 560.829 non-current (AR25 Note 20)
+  lease_liabilities: 45.653                # AR25 Note 8 "Total lease liabilities 45,653"
+  stream_deferred_revenue: 568.079         # 4.423 + 563.656 (AR25 Note 22, Triple Flag)
+  goodwill: 0.0
+  total_equity: 4957.336
+
+working_capital_history:
+  - fiscal_year: FY2025
+    fy_end_date: 2025-06-30
+    revenue: 4351.475
+    total_current_assets: 1454.018
+    total_current_liabilities: 951.803
+    cash_and_short_term_investments: 759.542
+    interest_bearing_current_debt: 29.416  # nil bank loans + 29.416 current leases
+  - fiscal_year: FY2024
+    fy_end_date: 2024-06-30
+    revenue: 3215.832
+    total_current_assets: 1070.554
+    total_current_liabilities: 979.578
+    cash_and_short_term_investments: 403.303
+    interest_bearing_current_debt: 126.527 # 72.889 bank loans + 53.638 current leases
+
+# ---- FY27 guidance by mine (FY26 results, 19 Aug 2026, p4; maintained in SQ) ----
+# Ranges as published. Struck at A$5,700/oz gold and A$18,000/t copper.
+guidance_fy27:
+  price_basis:
+    gold_aud_oz: 5700.0
+    copper_aud_t: 18000.0
+  corporate_aisc_aud_oz: {low: 170.0, high: 190.0}
+  greenfields_exploration: {low: 21.0, high: 23.0}
+  mines:
+    cowal:
+      gold_koz: {low: 285.0, high: 305.0}
+      copper_kt: {low: 0.0, high: 0.0}
+      aisc_aud_oz: {low: 2200.0, high: 2400.0}
+      sustaining_capex: {low: 45.0, high: 60.0}
+      major_mine_development: {low: 145.0, high: 155.0}
+      major_project_capex: {low: 210.0, high: 230.0}
+      exploration: {low: 18.0, high: 22.0}
+      da_aud_oz: {low: 675.0, high: 775.0}
+    ernest_henry:
+      gold_koz: {low: 50.0, high: 60.0}
+      copper_kt: {low: 40.0, high: 43.0}
+      aisc_aud_oz: {low: -3700.0, high: -3500.0}
+      sustaining_capex: {low: 60.0, high: 75.0}
+      major_mine_development: {low: 65.0, high: 80.0}
+      major_project_capex: {low: 165.0, high: 185.0}
+      exploration: {low: 20.0, high: 24.0}
+      da_aud_oz: {low: 2000.0, high: 2200.0}
+    northparkes:
+      gold_koz: {low: 20.0, high: 25.0}
+      copper_kt: {low: 23.0, high: 27.0}
+      aisc_aud_oz: {low: -7500.0, high: -7300.0}
+      sustaining_capex: {low: 10.0, high: 20.0}
+      major_mine_development: {low: 45.0, high: 55.0}
+      major_project_capex: {low: 125.0, high: 135.0}
+      exploration: {low: 14.0, high: 16.0}
+      da_aud_oz: {low: 2500.0, high: 3500.0}
+    mungari:
+      gold_koz: {low: 185.0, high: 205.0}
+      copper_kt: {low: 0.0, high: 0.0}
+      aisc_aud_oz: {low: 2500.0, high: 2650.0}
+      sustaining_capex: {low: 75.0, high: 85.0}
+      major_mine_development: {low: 80.0, high: 90.0}
+      major_project_capex: {low: 35.0, high: 50.0}
+      exploration: {low: 32.0, high: 35.0}
+      da_aud_oz: {low: 850.0, high: 950.0}
+    red_lake:
+      gold_koz: {low: 120.0, high: 135.0}
+      copper_kt: {low: 0.0, high: 0.0}
+      aisc_aud_oz: {low: 3100.0, high: 3300.0}
+      sustaining_capex: {low: 75.0, high: 85.0}
+      major_mine_development: {low: 105.0, high: 120.0}
+      major_project_capex: {low: 35.0, high: 50.0}
+      exploration: {low: 25.0, high: 40.0}
+      da_aud_oz: {low: 1200.0, high: 1400.0}
+
+# ---- Disclosed mine lives (Annual Report 2025 pp12-13: "Current life to ...") ----
+# Mt Rawdon finished processing in the September 2026 quarter (SQ) and is excluded.
+# Marsden (Cowal district) holds 0.79Moz of reserves but is undeveloped, with no
+# development decision; it is excluded from the producing inventory.
+stated_mine_life_end_fy:
+  cowal: 2042
+  ernest_henry: 2040
+  northparkes: 2054
+  mungari: 2038
+  red_lake: 2040
+
+# ---- Ore Reserves at 31 Dec 2025 (MROR, 1 May 2026, Tables 4 and 6), contained metal ----
+ore_reserves_2025_12_31:
+  cowal: {gold_moz: 5.1, copper_kt: 0.0}
+  ernest_henry: {gold_moz: 1.1, copper_kt: 550.0}
+  northparkes: {gold_moz: 0.69, copper_kt: 400.0}
+  mungari: {gold_moz: 2.1, copper_kt: 0.0}
+  red_lake: {gold_moz: 2.0, copper_kt: 0.0}
+  reserve_price_aud: {gold_oz: 3000.0, copper_t: 13000.0}
+  cowal_metallurgical_recovery: 0.85     # MROR l.789 / l.1733: "A metallurgical recovery of 85% has been assumed"
+  cowal_metallurgical_recovery_basis:
+    entity: Cowal underground (GRE46)
+    window: 31 Dec 2025 estimate
+    level: Mineral Resource cut-off assumption (at the A$3,300/oz resource price), not a reserve or plant figure
+    source: annual_mineral_resources_and_ore_reserves_statement.pdf, Cowal JORC Table 1
+
+# Production since the reserve date (Mar, Jun FY26 and Sep FY27 quarters; SQ group table).
+production_since_reserve_date:
+  window: 1 Jan 2026 to 30 Sep 2026
+  gold_koz: {cowal: 211.0, ernest_henry: 39.0, northparkes: 18.0, mungari: 137.0, red_lake: 85.0}
+  copper_kt: {ernest_henry: 28.0, northparkes: 20.0}
+
+# ---- Northparkes stream (Triple Flag; AR25 Note 22) ----
+northparkes_stream:
+  mine: northparkes
+  gold_delivered_fraction_of_attributable: 0.675  # "54.0% of payable gold ... (67.5% of 80% attributable interest)"
+  gold_delivered_fraction_of_attributable_basis:
+    entity: Northparkes (Evolution 80%)
+    window: until 630koz delivered, then halves
+    level: stream contract
+    source: Annual_Report_2025.pdf Note 22
+  cash_received_fraction_of_spot: 0.10           # "equivalent to 10% of the prevailing spot prices"
+  step_down_after_koz: 630.0
+  cumulative_delivered_koz: NOT FOUND
+
+# ---- Royalties and tax (FY26 June quarter, Appendix 2) ----
+royalties_fy26:
+  royalty_aud_per_sold_oz: 242.0
+  gold_sold_oz: 709541.0
+  achieved_gold_aud_oz: 6023.0
+  copper_produced_t: 65636.0
+  achieved_copper_aud_t: 18051.0
+statutory_tax_rate: 0.30
+
+# ---- Observed WACC inputs at the valuation date ----
+wacc_observed_inputs:
+  risk_free_rate: 0.0531
+  risk_free_rate_date: 2026-10-14
+  risk_free_rate_source: >
+    Australian 10-year government bond yield 5.31% on 14 Oct 2026 (RBA data via
+    thetrading.tools/australia-10-year-yield, read 20 Oct 2026).
+  # Debt at market value for the D-55 spot weights: debt.uspp_hedged_aud_m (one home).
+
+# ---- Spot reference prices at the valuation date (context for the scenario series) ----
+spot_reference:
+  gold_usd_oz: 4165.58
+  gold_date: 2026-10-16
+  gold_source: pricegold.net/2026/october/16
+  aud_usd: 0.6968
+  aud_usd_date: 2026-10-19
+  aud_usd_source: poundsterlinglive.com AUD-USD 2026 history (close)
+  copper_usd_lb_sep_qtr_achieved: 6.69
