@@ -1,11 +1,11 @@
 # REPO_MAP — what exists, and where
 
-_Generated 2026-10-16 by `scripts/repo_inventory.py`. **Regenerate at the start of
+_Generated 2026-10-20 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `5c5c69d Batch 2 item 4: UI polish 23, 24 (Q6 b), 26-30, 33, 34; CSL gap claims and rate labels from the engine` on `main`
+- HEAD: `d93cbca Bridge note after batch 2 (16 Oct night)` on `main`
 - Unpushed commits: **0**
-- Tracked files: 385
+- Tracked files: 387
 - Untracked files: 1
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
@@ -111,7 +111,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `build_plan.html` (15.3KB)
   - `engine_implementation_plan.md` (16.5KB)
   - `open_items.css` (3.5KB)
-  - `open_items.json` (54.1KB)
+  - `open_items.json` (54.4KB)
   - `open_questions.json` (2.3KB)
   - `scenarios_workshop.md` (13.6KB)
   - `scenarios_workshop_prep.md` (19.7KB)
@@ -229,6 +229,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `test_trade_working_capital_intensity.py` (3.3KB)
   - `test_ui_backlog_36_37.py` (3.0KB)
   - `test_ui_integrity_m5_21_22_31.py` (4.8KB)
+  - `test_ui_market_gap_35.py` (3.8KB)
   - `test_ui_polish_23_34.py` (5.7KB)
   - `test_wbc_loads.py` (2.1KB)
   - `test_workbook_defects_m6_m7_m11.py` (9.2KB)
@@ -285,16 +286,16 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
 ## UI generator
 
-  - `csl_scenario_interface.html` (189.8KB)
+  - `csl_scenario_interface.html` (197.2KB)
   - `dnl_scenario_interface.html` (236.4KB)
   - `wbc_scenario_interface.html` (176.6KB)
   - **_generator/**
     - `README.md` (893B)
     - `beta_data.py` (10.0KB)
-    - `build_cfgs.py` (102.3KB)
-    - `cfgs_gen.json` (254.2KB)
+    - `build_cfgs.py` (107.7KB)
+    - `cfgs_gen.json` (261.6KB)
     - `engine_workbook.py` (125.3KB)
-    - `gen_ui.py` (99.1KB)
+    - `gen_ui.py` (99.2KB)
 
 ## Analyses (workbooks)
 
@@ -378,5 +379,5 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 Not in git. Either commit them or clear them — an untracked file is invisible
 to anyone who clones the repo, and is the most common way work gets lost.
 
-- `tests/test_ui_backlog_36_37.py`
+- `tests/test_ui_market_gap_35.py`
 

@@ -886,5 +886,67 @@ csl["footnote"] = (csl["footnote"]
 dnl["snap"]["world"] = dnl["snap"]["world"].replace(
     "sits just below market", "sits ~%.0f%% below market" % _dmpct)
 # ===== end UI polish block =====
+# ===== CSL market-gap panel (open item 35, 16 Oct 2026; D-92) =====
+# Numbers come from the set written by scripts/size_csl_market_gap.py and pinned by
+# tests/dcf/test_csl_market_gap_set.py. Disclosure only: no reconciliation, no haircut, no price refresh.
+_GAP = _data("design/methodology/csl_market_gap_set.yaml")
+_GAP_NAMES = {
+    "orderly_convergence": "Orderly convergence", "muddle_through": "Muddle through",
+    "ai_productivity_lag": "AI productivity lag", "fragmentation": "Fragmentation",
+    "disorderly_climate_crystallisation": "Disorderly climate", "stagflation_persists": "Stagflation persists"}
+_gs = _GAP["scenarios"]
+_gap_by = {s["scenario"]: s for s in _gs}
+_gap_price = float(_gs[0]["market_price_aud"])
+_gap_date = str(_gs[0]["market_price_date"])
+_gap_low = min(s["fade_band_aud_per_share"]["fade_15"] for s in _gs)
+_gap_closest = _gap_by[_GAP["closest_to_market"]]
+_gd = _GAP["discount_rate"]
+_gdb = _GAP["decay_band_years"]
+
+def _gap_pct(g):
+    return "%+.0f%%" % (g * 100.0)
+
+def _gap_abs(g):
+    return "%.0f%%" % (g * 100.0)
+
+def _gap_tbl(head, rows):
+    cell = '<td style="padding:5px 8px; text-align:%s; border-top:0.5px solid var(--bd);">%s</td>'
+    th = "".join('<th style="padding:5px 8px; text-align:%s;">%s</th>' % ("left" if i == 0 else "right", h) for i, h in enumerate(head))
+    body = "".join("<tr>" + "".join(cell % ("left" if i == 0 else "right", c) for i, c in enumerate(r)) + "</tr>" for r in rows)
+    return ('<div style="overflow-x:auto;"><table style="font-size:12px; border-collapse:collapse; white-space:nowrap; width:100%%;">'
+            '<thead><tr>%s</tr></thead><tbody>%s</tbody></table></div>' % (th, body))
+
+_gap_rows = [[_GAP_NAMES[s["scenario"]], "%.2f" % s["aud_per_share_model"], _gap_pct(s["gap_to_market"])] for s in _gs]
+_gap_band = [[_GAP_NAMES[s["scenario"]]] + ["%.2f" % s["fade_band_aud_per_share"][k] for k in ("fade_15", "fade_20", "fade_25")] for s in _gs]
+_gap_asm = [
+    "<b>Discount rate</b> (D-84, D-06): WACC %.2f%% on a target capital structure. Cost of equity %.2f%%, after-tax cost of debt %.2f%%, debt weight %.2f%%. The debt weight rests on a %.0f times through-cycle EV/EBITDA multiple with no independent support, so D-06 stays provisional."
+    % (_gd["wacc"] * 100.0, _gd["cost_of_equity"] * 100.0, _gd["cost_of_debt_after_tax"] * 100.0, _gd["debt_weight"] * 100.0, _gd["target_ev_ebitda"]),
+    "<b>Terminal form</b> (D-62, D-71, D-93): the return earned on capital fades to the cost of capital over %.0f years, then growth continues at the terminal rate. %.0f years is the midpoint of a %.0f to %.0f year band."
+    % (_gdb["midpoint"], _gdb["midpoint"], _gdb["low"], _gdb["high"]),
+    "<b>Earned starting returns</b> (D-44, D-86): return on capital excluding goodwill, which the fade starts from. "
+    + "; ".join("%s %.2f%%" % (_GAP_NAMES[s["scenario"]], s["earned_starting_return"] * 100.0) for s in _gs) + ".",
+    "<b>Terminal growth</b>, set by scenario: "
+    + "; ".join("%s %.2f%%" % (_GAP_NAMES[s["scenario"]], s["terminal_growth"] * 100.0) for s in _gs) + ".",
+    "<b>Price date</b> (D-92): %s. The model is not marked to a later price." % _gap_date,
+]
+_gap_mt = _gap_by["muddle_through"]
+_gap_parts = []
+_gap_parts.append('<p>CSL&rsquo;s central case sits above the market price in every scenario. This panel discloses the gap and the assumptions behind it. It does not reconcile the gap, propose a haircut or refresh the price (D-92).</p>')
+_gap_parts.append('<div class="hd" style="margin:14px 0 4px;">Gap to market</div>')
+_gap_parts.append('<p class="sub" style="margin:0 0 6px;">Market price AUD %.2f per share, struck on %s. Gap is model value divided by price, less one.</p>' % (_gap_price, _gap_date))
+_gap_parts.append(_gap_tbl(["Scenario", "AUD per share", "Gap to market"], _gap_rows))
+_gap_parts.append('<p style="margin-top:8px;">All six scenarios sit above the market price. The closest is %s at AUD %.2f, %s above it. Following section 16.3, the market is implicitly pricing closer to that scenario&rsquo;s terminal assumptions than to Muddle through (AUD %.2f, %s above it).</p>'
+    % (_GAP_NAMES[_GAP["closest_to_market"]], _gap_closest["aud_per_share_model"], _gap_abs(_gap_closest["gap_to_market"]), _gap_mt["aud_per_share_model"], _gap_abs(_gap_mt["gap_to_market"])))
+_gap_parts.append('<div class="hd" style="margin:14px 0 4px;">Assumptions that differ</div><ol style="padding-left:18px;">' + "".join("<li>%s</li>" % a for a in _gap_asm) + '</ol>')
+_gap_parts.append('<div class="hd" style="margin:14px 0 4px;">Band: fade of 15, 20 or 25 years</div>')
+_gap_parts.append('<p class="sub" style="margin:0 0 6px;">Value per share in AUD if the fade runs 15, 20 or 25 years (D-63 band ends, D-93 midpoint). Everything else is as in the model.</p>')
+_gap_parts.append(_gap_tbl(["Scenario", "15 years", "20 years", "25 years"], _gap_band))
+_gap_parts.append('<p style="margin-top:8px;">The lowest value in the band (AUD %.2f) %s the market price of AUD %.2f. %s</p>'
+    % (_gap_low, "is still above" if _gap_low > _gap_price else "is below", _gap_price,
+       "The band does not close the gap." if _gap_low > _gap_price else "The band closes the gap in at least one case."))
+_gap_parts.append('<p class="sub" style="margin-top:8px;">The gap is an output of the assumptions above. A reader who disagrees with any of them can change them and rerun the model. No reconciliation to the market is made.</p>')
+csl["titles"]["gap"] = "Market gap to price"
+csl["_gap"] = "".join(_gap_parts)
+
 json.dump({"dnl":dnl,"wbc":wbc,"csl":csl}, open(_CFGP,'w',encoding='utf-8'), ensure_ascii=False)  # encoding is not optional: ensure_ascii False plus a platform default codec dies on Windows
 print("cfgs_gen.json written")

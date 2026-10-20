@@ -114,9 +114,10 @@ working capital confirmations; UI design choices 32, 35, Q6, Q7.
 
 **Batch 2 landed and pushed, 16 Oct 2026 late evening:** items 2, 1, 3, 4, 5 (commits 0e7e0a6, 7f3ca16, 7954bfd,
 5c5c69d and the one carrying this line). Item 6 (32 / Q7 placeholder tabs) waits on Ben's feed. Base ties unchanged
-DNL 2.006 / WBC 33.93 / CSL 211.15. Still open in the tracker: 32 (Ben's feed), 35 (the CSL market-gap panel, now
-unblocked by item 10; its content is `design/methodology/csl_market_gap_note_2026-10-16.md`). Known gap, not an item
+DNL 2.006 / WBC 33.93 / CSL 211.15. Still open in the tracker: 32 (Ben's feed). Item 35 (the CSL market-gap panel) is done, see below. Known gap, not an item
 yet: DNL's market price 3.61 has no reference date (a "Wall St target"); needs a dated close from Ben's feed.
+
+- 20 Oct 2026: **Item 35 done: CSL market-gap panel (batch 2 item 6, Sonnet, mild).** New tab "Market gap to price" on the CSL page. Built in `build_cfgs.py` from `design/methodology/csl_market_gap_set.yaml` (no typed numbers): six scenario values and gaps, the assumptions that differ, the 15/20/25 year band. Discloses the gap, does not reconcile it (D-92). No model input changed. Pinned by `tests/test_ui_market_gap_35.py` (7 tests). Tracker item 35 DONE. Generated pages rebuilt; DNL and WBC pages carry no panel. Verified and committed 20 Oct 2026 (the earlier sitting built it but did not land it): DCF 439 passed / 1 skipped; other 365; lint 14/14; base ties unchanged DNL 2.006 / WBC 33.93 / CSL 211.15. Batch 2 is now complete except item 32 (Ben's feed).
 
 ### Batch 1 progress
 

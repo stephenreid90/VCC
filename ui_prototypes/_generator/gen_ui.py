@@ -758,7 +758,8 @@ for key,cfg in CFGS.items():
     }
     cfg['forcesData']=cfg['_forces']
     if '_financials' in cfg: cfg['detail']['financials']=financials_html(cfg['_financials'])
-    for kk in ['_forces','_position','_discount','_assum','_drtheory','_financials']: cfg.pop(kk, None)
+    if '_gap' in cfg: cfg['detail']['gap']=cfg['_gap']
+    for kk in ['_forces','_position','_discount','_assum','_drtheory','_financials','_gap']: cfg.pop(kk, None)
     html=SCAFFOLD.replace('__CFG__', json.dumps(cfg)).replace('__COMPANY__', cfg['company']).replace('__CCYNOTE__', cfg['ccynote']).replace('__CCY__', cfg['ccy'])
     out=os.path.join(OUTDIR, '%s_scenario_interface.html'%key)
     open(out,'w',encoding='utf-8').write(html)

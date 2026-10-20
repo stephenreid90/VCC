@@ -396,9 +396,9 @@
     "source": "fable-2026-08-13",
     "area": "UI/UX",
     "issue": "No dedicated CSL market-gap panel.",
-    "treatment": "Build it — but <b>after</b> items 6 and 10 land. Writing \"why we differ\" before knowing whether the gap is 93% or 140% is wasted work. [Reviewed 16 Oct 2026: Still open. Depends on items 6 and 10.] [Decided 16 Oct 2026: build after item 10.] [D-92: the gap is disclosed, not reconciled; the panel states the assumptions that differ.]",
+    "treatment": "Build it — but <b>after</b> items 6 and 10 land. Writing \"why we differ\" before knowing whether the gap is 93% or 140% is wasted work. [Reviewed 16 Oct 2026: Still open. Depends on items 6 and 10.] [Decided 16 Oct 2026: build after item 10.] [D-92: the gap is disclosed, not reconciled; the panel states the assumptions that differ.] [Done 20 Oct 2026: CSL market-gap panel, tab \"Market gap to price\" on the CSL page. Built in build_cfgs.py from design/methodology/csl_market_gap_set.yaml: six scenario values and gaps, the assumptions that differ, the 15/20/25 year band. Discloses, does not reconcile (D-92). Test tests/test_ui_market_gap_35.py.]",
     "questions": [],
-    "status": "NEEDS",
+    "status": "DONE",
     "batch": "Batch 5"
   },
   {
