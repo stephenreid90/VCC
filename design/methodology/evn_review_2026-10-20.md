@@ -107,4 +107,4 @@ Recommended order for the rest:
 3. Futures contango is carry, not a forecast: https://www.mitrade.com/insights/news/live-news/article-2-2015333-20260820
 4. Australian 10-year 5.23%, 15 Oct 2026: https://tradingeconomics.com/australia/government-bond-yield/news/592104
 5. AUD/USD 0.6928 on 1 Oct 2026: https://www.exchange-rates.org/exchange-rate-history/aud-usd-2026-10-01
-6. EVN FY26 results (EBITDA 3,171; group cash flow 1,389): data/financials/historical/evn/evn_fy26_full_year_financial_results_and_final_dividend.pdf
+6. EVN FY26 results (EBITDA 3,171; group cash flow 1,389): data/financials/historical/evn/2026-08-19 FY26 Full Year Results and Final Dividend.pdf

@@ -1,6 +1,6 @@
-# EVN PDF rename plan (proposal, not applied)
+# EVN PDF rename plan (applied)
 
-**Status: plan only, 20 October 2026. Nothing has been renamed.** Folder: `data/financials/historical/evn/`.
+**Status: applied 20 October 2026.** Rows 1 to 13 were renamed (12 tracked files with `git mv`, the new Appendix 4E file with `mv`). The references in section 2 were updated to the new names, plus one the plan missed: `design/methodology/evn_engine_vs_company_2026-10-20.md` line 29. Folder: `data/financials/historical/evn/`.
 Format: `YYYY-MM-DD Description.pdf`. Each date was read from the document itself (first page text, or the
 auditor's signing date for the annual reports), using pypdf on 20 October 2026.
 
@@ -20,6 +20,7 @@ auditor's signing date for the annual reports), using pypdf on 20 October 2026.
 | 10 | `evn_fy26_full_year_financial_results_and_final_dividend.pdf` | `2026-08-19 FY26 Full Year Results and Final Dividend.pdf` | 2026-08-19 | "ASX Announcement 19 August 2026" (PDF p1). |
 | 11 | `EVN_2026_Investor_Briefing_Presentations.pdf` | `2026-09-15 Investor Briefing Presentations.pdf` | 2026-09-15 | "ASX Announcement 15 September 2026" (PDF p1). |
 | 12 | `annual_mineral_resources_and_ore_reserves_statement.pdf` | `2026-05-01 Mineral Resources and Ore Reserves Statement.pdf` | 2026-05-01 | "ASX Announcement 1 May 2026" (PDF p1). |
+| 13 | `Appendix_4E_and_FY26_Financial_Report.pdf` (new, added 20 October 2026) | `2026-08-19 FY26 Appendix 4E and Financial Report.pdf` | 2026-08-19 | Auditor's report dated 19 August 2026 (PDF p48 and p107). Matches the FY26 results release date. |
 
 Open points before renaming:
 - Rows 1 to 3 use the auditor's signing date. The release date is not printed in the file. If the

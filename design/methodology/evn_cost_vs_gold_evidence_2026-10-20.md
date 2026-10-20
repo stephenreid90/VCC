@@ -12,7 +12,7 @@ Research only. No model change. Answers the "known gap" in `evn_review_2026-10-2
 
 ## 2. Table: group gold, price and unit costs
 
-All A$. "Sold" oz is the base for AISC. Page numbers are PDF page numbers (the printed page can differ by one or two). File abbreviations: AR23, AR24, AR25 = `Annual_Report_2023/2024/2025.pdf`; JQ = `june-2026-quarterly-report.pdf`.
+All A$. "Sold" oz is the base for AISC. Page numbers are PDF page numbers (the printed page can differ by one or two). File abbreviations: AR23, AR24, AR25 = `2023-08-17 Annual Report FY23.pdf`, `2024-08-14 Annual Report FY24.pdf`, `2025-08-13 Annual Report FY25.pdf`; JQ = `2026-07-15 Quarterly Report Jun 2026.pdf`.
 
 | Item | FY19 | FY20 | FY21 | FY22 | FY23 | FY24 | FY25 | FY26 |
 |---|---|---|---|---|---|---|---|---|

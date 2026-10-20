@@ -49,7 +49,7 @@ debt:
     entity: Evolution Mining group
     window: at 30 June 2026
     level: contractual coupon after cross-currency swaps
-    source: EVN_FY26_Full_Year_Financial_Results_Presentation.pdf slide 7
+    source: 2026-08-19 FY26 Full Year Results Presentation.pdf slide 7
   maturities_fy: [2029, 2031, 2032, 2034, 2036]
   undrawn_rcf_aud_m: 525.0
   credit_rating: NOT FOUND (company says "investment grade balance sheet")
@@ -159,7 +159,7 @@ ore_reserves_2025_12_31:
     entity: Cowal underground (GRE46)
     window: 31 Dec 2025 estimate
     level: Mineral Resource cut-off assumption (at the A$3,300/oz resource price), not a reserve or plant figure
-    source: annual_mineral_resources_and_ore_reserves_statement.pdf, Cowal JORC Table 1
+    source: 2026-05-01 Mineral Resources and Ore Reserves Statement.pdf, Cowal JORC Table 1
 
 # Production since the reserve date (Mar, Jun FY26 and Sep FY27 quarters; SQ group table).
 production_since_reserve_date:
@@ -175,7 +175,7 @@ northparkes_stream:
     entity: Northparkes (Evolution 80%)
     window: until 630koz delivered, then halves
     level: stream contract
-    source: Annual_Report_2025.pdf Note 22
+    source: 2025-08-13 Annual Report FY25.pdf Note 22
   cash_received_fraction_of_spot: 0.10           # "equivalent to 10% of the prevailing spot prices"
   step_down_after_koz: 630.0
   cumulative_delivered_koz: NOT FOUND

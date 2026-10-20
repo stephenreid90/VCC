@@ -26,7 +26,7 @@ at the end of this note. Nothing was tuned to close a gap.
    prices ~A$6,200/oz (gold)". The slide does not define the measure further. The placement
    says it is **operating mine cash flow**: after royalty and site costs, before capital,
    corporate costs and tax. The arithmetic agrees (about 690koz x A$100, less royalty).
-2. FY26 actuals. FY26 results release (`evn_fy26_full_year_financial_results_and_final_dividend.pdf`)
+2. FY26 actuals. FY26 results release (`2026-08-19 FY26 Full Year Results and Final Dividend.pdf`)
    p2 table: "Underlying EBITDA $M 3,171", "Operating mine cash flow $M 3,394", "Net mine
    cash flow $M 2,079", "Group cash flow4 $M 1,389". Footnote 4: "Cash flow before
    dividends, debt repayments, equity raises and any acquisitions or divestments." Page 1:

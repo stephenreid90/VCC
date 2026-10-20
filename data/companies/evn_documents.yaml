@@ -8,17 +8,17 @@ documents:
   source_pack_label: "Stephen's downloads, saved to data/financials/historical/evn/ on 20 Oct 2026"
   extraction_record: data/financials/historical/evn/_extract_notes_2026-10-20.md
   documents:
-    - {id: evn_ar_2023, filename: Annual_Report_2023.pdf, type: annual_report, reporting_period: 2023-06-30, status: saved_not_read}
-    - {id: evn_ar_2024, filename: Annual_Report_2024.pdf, type: annual_report, reporting_period: 2024-06-30, status: read_comparatives_only}
-    - {id: evn_ar_2025, filename: Annual_Report_2025.pdf, type: annual_report, reporting_period: 2025-06-30, status: read}
-    - {id: evn_mror_2025, filename: annual_mineral_resources_and_ore_reserves_statement.pdf, type: resources_and_reserves, reporting_period: 2025-12-31, release_date: 2026-05-01, status: read}
-    - {id: evn_q2_fy26, filename: December_2025_Quarterly_Report.pdf, type: quarterly, reporting_period: 2025-12-31, status: read}
-    - {id: evn_q3_fy26, filename: March_2026_Quarterly_Report.pdf, type: quarterly, reporting_period: 2026-03-31, status: read}
-    - {id: evn_q4_fy26, filename: june-2026-quarterly-report.pdf, type: quarterly, reporting_period: 2026-06-30, status: read}
-    - {id: evn_q1_fy27, filename: September_2026_Quarterly_Report.pdf, type: quarterly, reporting_period: 2026-09-30, release_date: 2026-10-14, status: read}
-    - {id: evn_hy26_presentation, filename: EVN_FY26_Half_Year_Results_Presentation.pdf, type: investor_presentation, reporting_period: 2025-12-31, status: read}
-    - {id: evn_fy26_results, filename: evn_fy26_full_year_financial_results_and_final_dividend.pdf, type: results_announcement, reporting_period: 2026-06-30, release_date: 2026-08-19, status: read}
-    - {id: evn_fy26_presentation, filename: EVN_FY26_Full_Year_Financial_Results_Presentation.pdf, type: investor_presentation, reporting_period: 2026-06-30, release_date: 2026-08-19, status: read}
-    - {id: evn_investor_briefing_2026, filename: EVN_2026_Investor_Briefing_Presentations.pdf, type: investor_presentation, status: read}
-  missing:
-    - FY26 Appendix 4E or FY26 annual report (statutory accounts and the 30 June 2026 balance sheet)
+    - {id: evn_ar_2023, filename: 2023-08-17 Annual Report FY23.pdf, type: annual_report, reporting_period: 2023-06-30, status: saved_not_read}
+    - {id: evn_ar_2024, filename: 2024-08-14 Annual Report FY24.pdf, type: annual_report, reporting_period: 2024-06-30, status: read_comparatives_only}
+    - {id: evn_ar_2025, filename: 2025-08-13 Annual Report FY25.pdf, type: annual_report, reporting_period: 2025-06-30, status: read}
+    - {id: evn_mror_2025, filename: 2026-05-01 Mineral Resources and Ore Reserves Statement.pdf, type: resources_and_reserves, reporting_period: 2025-12-31, release_date: 2026-05-01, status: read}
+    - {id: evn_q2_fy26, filename: 2026-01-21 Quarterly Report Dec 2025.pdf, type: quarterly, reporting_period: 2025-12-31, status: read}
+    - {id: evn_q3_fy26, filename: 2026-04-15 Quarterly Report Mar 2026.pdf, type: quarterly, reporting_period: 2026-03-31, status: read}
+    - {id: evn_q4_fy26, filename: 2026-07-15 Quarterly Report Jun 2026.pdf, type: quarterly, reporting_period: 2026-06-30, status: read}
+    - {id: evn_q1_fy27, filename: 2026-10-14 Quarterly Report Sep 2026.pdf, type: quarterly, reporting_period: 2026-09-30, release_date: 2026-10-14, status: read}
+    - {id: evn_hy26_presentation, filename: 2026-02-11 FY26 Half Year Results Presentation.pdf, type: investor_presentation, reporting_period: 2025-12-31, status: read}
+    - {id: evn_fy26_results, filename: 2026-08-19 FY26 Full Year Results and Final Dividend.pdf, type: results_announcement, reporting_period: 2026-06-30, release_date: 2026-08-19, status: read}
+    - {id: evn_fy26_presentation, filename: 2026-08-19 FY26 Full Year Results Presentation.pdf, type: investor_presentation, reporting_period: 2026-06-30, release_date: 2026-08-19, status: read}
+    - {id: evn_investor_briefing_2026, filename: 2026-09-15 Investor Briefing Presentations.pdf, type: investor_presentation, status: read}
+    - {id: evn_fy26_appendix_4e, filename: 2026-08-19 FY26 Appendix 4E and Financial Report.pdf, type: annual_report, reporting_period: 2026-06-30, release_date: 2026-08-19, status: read_first_pages}
+  missing: []

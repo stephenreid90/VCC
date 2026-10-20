@@ -5,11 +5,12 @@ its file and quotes the line or table it came from. All amounts A$ unless stated
 means the figure is not in the documents saved here; nothing below is estimated, except rows
 marked **derived**, which show the arithmetic.
 
-File short names: MROR = `annual_mineral_resources_and_ore_reserves_statement.pdf` (dated 1 May 2026,
-estimates at 31 Dec 2025); FYR = `evn_fy26_full_year_financial_results_and_final_dividend.pdf` (19 Aug 2026);
-FYP = `EVN_FY26_Full_Year_Financial_Results_Presentation.pdf`; HYP = `EVN_FY26_Half_Year_Results_Presentation.pdf`;
-JQ = `june-2026-quarterly-report.pdf`; SQ = `September_2026_Quarterly_Report.pdf` (14 Oct 2026);
-IB = `EVN_2026_Investor_Briefing_Presentations.pdf`; AR25 = `Annual_Report_2025.pdf`.
+File short names: MROR = `2026-05-01 Mineral Resources and Ore Reserves Statement.pdf` (dated 1 May 2026,
+estimates at 31 Dec 2025); FYR = `2026-08-19 FY26 Full Year Results and Final Dividend.pdf` (19 Aug 2026);
+FYP = `2026-08-19 FY26 Full Year Results Presentation.pdf`; HYP = `2026-02-11 FY26 Half Year Results Presentation.pdf`;
+JQ = `2026-07-15 Quarterly Report Jun 2026.pdf`; SQ = `2026-10-14 Quarterly Report Sep 2026.pdf` (14 Oct 2026);
+IB = `2026-09-15 Investor Briefing Presentations.pdf`; AR25 = `2025-08-13 Annual Report FY25.pdf`;
+AR26 = `2026-08-19 FY26 Appendix 4E and Financial Report.pdf` (Appendix 4E with the FY26 annual financial report, 19 Aug 2026).
 
 ## 1. Ore Reserves and Mineral Resources at 31 December 2025 (MROR Tables 3 to 6)
 
