@@ -237,7 +237,7 @@ def resource_equity_bridge_from_data(inputs: dict) -> EquityBridge:
     fin = inputs["financials"]
     nb = inputs["company_raw"]["normalised_baseline"]["equity_bridge"]
     dm = fin["derived_metrics"]
-    bs = fin["balance_sheet_2025_06_30"]
+    bs = fin["latest_balance_sheet"]  # dated by its `date` field; the translator names no date
     net_debt = -dm["net_cash_at_anchor"] + dm["final_dividend_unpaid_at_anchor"]
     adjustments = bs["rehabilitation_provision"] if nb["deduct_rehabilitation_provision"] else 0.0
     if nb["deduct_stream_deferred_revenue"]:

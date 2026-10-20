@@ -56,6 +56,17 @@ Awaiting Stephen: E22 (a) or (b); cost-price rule size and symmetry; `y1_*` rela
 FY26 mine-by-mine actuals and exploration treatment for Ben; apply the PDF renames. Cost-price link
 (item 5, serious) waits on the rule. Note: engine "Y1" is FY28; FY27 is the stub.
 
+**D-100 updated (20 Oct, 16:30).** Rehabilitation 583.7 and leases 35.8 at 30 Jun 2026 from the FY26
+financial report; `data/financials/evn.yaml` block renamed `latest_balance_sheet` with a `date` field so
+the translator names no date. Levels unchanged to 3 dp: OC 4.99, MT 6.57, AI 7.51, Frag 10.21, DCC 7.15,
+Stag 9.85; multiple 1.44. Goldens and review data re-pinned; DCF 463 passed, rest 384 passed.
+**FY26 true backcast done:** mine-by-mine actuals are in AR26 Note 1(b) and pp11-13, saved to
+`data/financials/actuals/evn_fy26_actuals.yaml`; exploration is its own segment (A$12.5m expensed,
+A$60.0m capitalised). Engine on FY26 inputs: EBITDA 3,184 vs 3,171; net mine cash flow 2,200 vs 2,079
+(gap = A$118m one-offs); group cash flow 1,366 vs 1,389. Nothing tuned. Engine FY27 exploration (~A$145m)
+is the company's FY27 guidance (per-mine 109-137 plus greenfields 21-23), not a defect.
+**Next:** cost-price link build (D-104, serious, fresh chat); then gap 9 (EVN in the main UI, serious).
+
 ## 🔴 REVIEW DONE — 20 October 2026: EVN decisions (next: batch 3, see notes/bridge/bridge_note_2026-10-20c_evn_batch3.md)
 
 Recommendations on D-96 to D-101 and the framework gaps are in

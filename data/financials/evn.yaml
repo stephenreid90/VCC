@@ -55,14 +55,17 @@ debt:
   credit_rating: NOT FOUND (company says "investment grade balance sheet")
   hedging: none ("Evolution is fully unhedged with no gold or copper hedges", SQ)
 
-# ---- Latest balance-sheet items found: 30 June 2025 (Annual Report 2025, p66). The FY26
-# statutory accounts are not in the folder; these are the latest available. ----
-balance_sheet_2025_06_30:
-  rehabilitation_provision: 572.264        # 11.435 current + 560.829 non-current (AR25 Note 20)
-  lease_liabilities: 45.653                # AR25 Note 8 "Total lease liabilities 45,653"
-  stream_deferred_revenue: 568.079         # 4.423 + 563.656 (AR25 Note 22, Triple Flag)
+# ---- Latest balance-sheet items: 30 June 2026 (AR26 = "2026-08-19 FY26 Appendix 4E and
+# Financial Report.pdf", balance sheet PDF p50, Note 14 PDF p77, Note 6(c) PDF p65). Key is
+# generic so the translator names no date; `date` says which balance sheet. Updated 20 Oct 2026
+# for D-100 (was 30 Jun 2025: rehab 572.264, leases 45.653, stream 568.079, equity 4957.336). ----
+latest_balance_sheet:
+  date: 2026-06-30
+  rehabilitation_provision: 583.656        # 6.792 current + 576.864 non-current (AR26 Note 14, PDF p77)
+  lease_liabilities: 35.841                # AR26 Note 6(c) PDF p65 "Lease liabilities (35,841)"; 15.510 current + 20.331 non-current (balance sheet PDF p50)
+  stream_deferred_revenue: 578.081         # 31.731 current + 546.350 non-current (AR26 Note 16, balance sheet PDF p50; Triple Flag)
   goodwill: 0.0
-  total_equity: 4957.336
+  total_equity: 5828.768                   # balance sheet PDF p50
 
 working_capital_history:
   - fiscal_year: FY2025

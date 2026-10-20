@@ -13,7 +13,7 @@ at the end of this note. Nothing was tuned to close a gap.
    (A$1,389m). Each gap traces to a named cause. The two big ones are higher FY27 capital
    (A$286m) and full accrued tax against FY26's lagged cash tax (A$241m).
 3. **A stale figure in the review.** The review says year-1 FCFF is A$1,008m. The engine and
-   the committed sizing set (`resource_valuation_sets.yaml`, `y1_fcff`) both give A$1,170m.
+   the committed sizing set (`resource_valuation_sets.yaml`, `fy28_fcff`) both give A$1,170m.
    Also, the engine's "Y1" is FY28, not FY27. FY27 is the stub period (20 Oct 2026 to
    30 Jun 2027). The review compared an FY28 figure with FY26 actuals.
 
@@ -110,7 +110,7 @@ at the end of this note. Nothing was tuned to close a gap.
    about A$1,941/oz. The group guidance midpoint is A$1,895/oz. The mine ranges do not add
    to the group range. The engine uses the mine figures, so FY27 costs are about A$30m
    higher than the group midpoint implies.
-3. **Labelling: "Y1" is FY28.** The sizing set's `y1_fcff` and `y1_ebitda` are FY28. Anyone
+3. **Labelling: "Y1" is FY28.** The sizing set's `fy28_fcff` and `y1_ebitda` are FY28. Anyone
    comparing them with a company FY27 or FY26 figure will mis-compare. The review did.
 4. **Review figure A$1,008m is stale.** It should read A$1,170m (FY28, Muddle Through).
 
@@ -177,4 +177,154 @@ at the end of this note. Nothing was tuned to close a gap.
   total gap                                       -343.7
 
   context: muddle_through engine Y1 (= FY28) FCFF 1169.9, EBITDA 3142.1, capex -1259.2, tax -721.2, gold A$6,130/oz
+```
+
+## FY26 actuals rerun
+
+Added 20 October 2026, after the owner saved the FY26 Appendix 4E and financial report
+(`data/financials/historical/evn/2026-08-19 FY26 Appendix 4E and Financial Report.pdf`).
+Page references are PDF page, then the printed page in brackets (printed = PDF minus 2).
+
+### What the report holds
+
+1. **Mine-by-mine actuals: yes, mostly.** Note 1(b) "Segment information", PDF p56 (p54), gives
+   each mine's revenue, segment EBITDA, sustaining, major and total capital. The Directors'
+   report "Mining operations" tables, PDF p11-13 (p9-11), give each mine's gold and copper
+   produced, AISC, AIC, operating mine cash flow, non-operational costs and net mine cash
+   flow. **Not in the report for any mine:** D&A, royalty, site exploration, cash (C1) cost,
+   mill throughput, grade, gold sold (Mungari's 186koz sold is in text only).
+2. **Exploration treatment: yes.** Exploration is its own operating segment (Note 1(a), PDF p56),
+   so site exploration is **not** in any mine's EBITDA, capital or operating mine cash flow.
+   Policy, Note 7(c)(iii), PDF p70 (p68): capitalised by area of interest while tenure is
+   current and the cost is expected to be recouped (or reserves cannot yet be assessed),
+   otherwise expensed. FY26: A$12.5m expensed, on its own income-statement line below cost
+   of sales (PDF p49 (p47)), and inside underlying EBITDA through "Corporate, admin,
+   exploration and other costs (excluding D&A) (105,652)" (PDF p10 (p8)). A$60.0m
+   capitalised (Note 7 E&E additions, PDF p67 (p65)), an investing cash flow outside the
+   A$1,090m segment capital.
+3. Royalties: A$186.4m "Royalty and other selling costs", group only (Note 2(e), PDF p60 (p58)).
+4. Cash tax paid: A$408.6m (cash flow statement, PDF p52 (p50)). Tax expense A$712.6m.
+5. Hedging: 50,000oz delivered at A$3,234/oz in FY26; "no further gold or copper hedges in
+   place" (PDF p8 (p6)). The only remaining hedge is the cross-currency swap on the US$ notes.
+6. Every figure, with its page and table, is in `data/financials/actuals/evn_fy26_actuals.yaml`.
+   It sits in a subfolder because the lint treats every top-level YAML in `data/financials/`
+   as a company financials file.
+
+**For D-100:** rehabilitation provision at 30 June 2026 **A$583.7m** (current 6.8 + non-current
+576.9; Note 14, PDF p77, printed p75). Lease liabilities at 30 June 2026 **A$35.8m** (current
+15.5 + non-current 20.3; balance sheet PDF p50, printed p48; total in Note 6(c), PDF p65, printed p63).
+
+### Method
+
+`python scripts/check_resource_engine_vs_company.py --fy26-actuals`. One full year at FY26
+achieved prices (gold A$6,023/oz, copper A$18,051/t). Per mine: FY26 gold and copper produced,
+FY26 AISC, sustaining capital, major capital; Mt Rawdon included; site exploration nil (its
+own segment). Corporate overheads A$93.2m and expensed exploration A$12.5m. Group D&A A$755.5m
+spread per ounce (tax depends only on the total). Kept from the data files because the report
+lacks them: royalty rate 3.15% (it only moves cost between the royalty and cost lines, since
+AISC already holds the actual royalty), Northparkes stream cash price 10% of spot, 30% tax on
+accrual. Northparkes stream share is FY26 actual: 17,151oz delivered of 27,299oz produced.
+Nothing was tuned.
+
+### Results (A$m)
+
+1. **EBITDA 3,184 vs 3,171 underlying (+13).** Close.
+2. **Net mine cash flow 2,200 vs 2,079 (+121).** The gap is the company's A$118m of one-off
+   non-operational costs (Ernest Henry flood 45.4, Mungari commissioning and bought-in ore 70.5,
+   other 1.6). Before those, the company's figure is 2,197: a gap of +4.
+3. **Group cash flow (engine FCFF) 1,366 vs 1,389 (-23).** Close, but only because large
+   items offset. Put on the company's basis (add capitalised exploration -60, working
+   capital -112, interest and other income -24, the one-offs -118, and cash tax paid instead
+   of accrued tax +320), the engine gives 1,371: a gap of -18.
+
+### Remaining gaps, in plain words
+
+1. **Northparkes stream (placement only).** Engine operating mine cash flow is A$109m below the
+   company's at Northparkes. The engine takes the stream out of revenue; the company deducts
+   the A$108m stream payment below operating mine cash flow. After it, the two agree
+   (net mine cash flow 233.9 vs 234.5).
+2. **One gold price for every mine.** The engine gives each mine the group price, A$6,023/oz.
+   The company's revenue per ounce produced is A$6,208 at Cowal, A$6,335 at Red Lake, but
+   A$5,469 at Mungari, which carried the 50,000oz hedge. So the engine is high at Mungari
+   (+127 operating mine cash flow) and low at Cowal (-54) and Red Lake (-43). These offset at
+   group level. With no hedges from FY27, this mix error goes away.
+3. **Mt Rawdon (-23).** Its AISC includes non-cash stockpile drawdown; the engine treats all
+   AISC as cash. Mt Rawdon closed in the September 2026 quarter, so this does not carry forward.
+4. **Ernest Henry (-2) and the other mines' cost lines.** Small.
+5. **Revenue is A$162m lower** than reported, but this does not reach cash flow. The engine has
+   no corporate-segment metal sales (A$138m, offset by matching cost) and no silver line
+   (AISC already nets silver).
+6. **Tax.** Engine accrued tax 728 vs FY26 expense 713 (-16). Cash paid was only 409, because
+   instalments lag profit and A$78m of Canadian tax losses were used. Timing, as the first
+   backcast said.
+7. **Residual -21** on the company basis, not separable from the report (the report has no
+   net-mine-to-group cash flow bridge).
+
+### What this changes in the first backcast
+
+1. The earlier "mine exploration (-A$123m)" item was a real presentation difference: the
+   company keeps site exploration out of mine cash flow. It is value-neutral (cash is cash),
+   but the engine's FY27 exploration (A$123m by mine plus A$22m greenfields) is about twice
+   FY26's A$72.5m cash spend (12.5 expensed + 60.0 capitalised).
+2. With true FY26 inputs, **the engine maths reproduces FY26 to within about 1% at every
+   level.** The large gaps in the first backcast were FY27 guidance against FY26, not engine error.
+
+### Decision for the owner
+
+1. Whether the FY27 exploration input (about A$145m in total) is right against FY26's A$72.5m
+   cash spend. Check it against the company's FY27 exploration guidance before the next run.
+
+### Script output (FY26 actuals)
+
+`python scripts/check_resource_engine_vs_company.py --fy26-actuals`, 20 October 2026, tree at
+`19b1abe` plus this change. (The default checks (a) and (b) are unchanged in code. Their
+output has moved since the run above because D-103, at `19b1abe`, changed FY27 major capital.)
+
+```
+(c) FY26 ACTUALS RERUN: engine on FY26 mine volumes, AISC, capital and achieved prices (gold A$6,023/oz, copper A$18,051/t), one full year, A$m
+  source: data/financials/actuals/evn_fy26_actuals.yaml
+  inputs kept from the data files: northparkes stream cash price 10% of spot (data file; not in the report); royalty rate 0.0315 of revenue (data file; the report gives only the group total); tax rate 0.30 on EBITDA less D&A (accrual; the report gives cash tax paid)
+  site exploration per mine 0.0 (Exploration is its own segment); expensed exploration 12.5; corporate 130.4 A$/oz
+
+  mine            revenue      co.   EBITDA      co.     OMCF      co.    NMCF*     co.*   non-op
+  cowal            1789.0   1844.0   1166.9   1235.6   1166.9   1220.9    797.7    851.7     -0.0
+  ernest_henry     1013.1    993.5    545.0    523.7    545.0    547.1    345.7    347.8    -45.4
+  northparkes       574.8    616.1    322.1    297.5    322.1    430.8    233.9    342.6   -108.1
+  mungari          1121.0   1017.9    778.2    662.6    778.2    651.6    563.7    437.0    -70.5
+  red_lake          765.9    805.5    457.0    501.2    457.0    500.2    243.6    286.8     -0.7
+  mt_rawdon         132.9    143.3     20.5     44.1     20.5     43.8     16.0     39.3     -0.9
+  * NMCF before non-operational costs (company NMCF + its non-op line); company EBITDA is statutory segment EBITDA
+
+                                                  engine   company       gap
+  revenue                                         5396.6    5558.8    -162.1
+  royalty (co.: royalty and other selling)        -169.8    -186.4      16.6
+  corporate + expensed exploration                -105.7    -105.7       0.0
+  EBITDA (co.: underlying)                        3184.0    3171.0      13.0
+  operating mine cash flow                        3289.6    3394.3    -104.7
+  non-operational costs (engine: none)               0.0    -225.7     225.7
+  net mine cash flow                              2200.5    2079.0     121.5
+  tax (co.: income taxes paid)                    -728.5    -408.6    -320.0
+  tax (co.: income tax expense, accrual)          -728.5    -712.6     -16.0
+  group cash flow (engine: FCFF)                  1366.3    1389.0     -22.7
+
+  items the engine has no input for (FY26, A$m, from the actuals file):
+  capitalised exploration (E&E additions)          -60.0
+  corporate capital                                 -1.1
+  working capital change (Note 6(a))              -112.3
+  D&A used for engine tax (group, p57)            -755.5
+  net interest + other income received (p52)       -24.0
+  tax paid less engine accrued tax                 320.0
+  non-op costs other than the stream payment      -117.6
+  net mine cash flow, co. before those one-offs    2200.5    2196.6       3.9
+  engine FCFF on the company's basis              1371.4    1389.0     -17.6
+    of which Northparkes OMCF (stream placement)    -108.7
+    stream payment, company below OMCF             108.1
+    of which other five mines' OMCF                  4.1
+    of which other, not separable                  -21.0
+
+  company revenue per gold ounce produced, gold-only mines (engine uses one group price):
+    cowal        A$6,208/oz
+    mungari      A$5,469/oz
+    red_lake     A$6,335/oz
+    mt_rawdon    A$6,494/oz
 ```

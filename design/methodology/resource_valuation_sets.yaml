@@ -6,12 +6,12 @@ sets:
     basis: stated_life
     wacc: 0.095527
     levels:
-      orderly_convergence: 4.9867
-      muddle_through: 6.5741
-      ai_productivity_lag: 7.5113
-      fragmentation: 10.2105
-      disorderly_climate_crystallisation: 7.1532
-      stagflation_persists: 9.8547
+      orderly_convergence: 4.986
+      muddle_through: 6.5733
+      ai_productivity_lag: 7.5105
+      fragmentation: 10.2098
+      disorderly_climate_crystallisation: 7.1525
+      stagflation_persists: 9.854
     terminal_shares:
       orderly_convergence: 0.1789
       muddle_through: 0.191
@@ -34,32 +34,32 @@ sets:
       pv_explicit: 11606.6
       pv_terminal: 2740.2
       net_debt_at_valuation: 288.0
-      adjustments: 572.3
-      leases: 45.7
+      adjustments: 583.7
+      leases: 35.8
       fy28_fcff: 1254.1
       fy28_ebitda: 3142.1
       fy28_gold_aud_oz: 6130.0
     sensitivities:
       inventory_reserves:
-        orderly_convergence: 4.1797
-        muddle_through: 5.4986
-        ai_productivity_lag: 6.2767
-        fragmentation: 8.5851
-        disorderly_climate_crystallisation: 6.0243
-        stagflation_persists: 8.3514
+        orderly_convergence: 4.1789
+        muddle_through: 5.4979
+        ai_productivity_lag: 6.2759
+        fragmentation: 8.5844
+        disorderly_climate_crystallisation: 6.0235
+        stagflation_persists: 8.3506
       inventory_life_extension:
-        orderly_convergence: 5.8073
-        muddle_through: 7.8087
-        ai_productivity_lag: 8.9505
-        fragmentation: 12.2599
-        disorderly_climate_crystallisation: 8.384
-        stagflation_persists: 11.7641
-      wacc_minus_1pp: 7.0277
-      wacc_plus_1pp: 6.1636
-      spot_flat_real: 6.6539
-      spot_flat_real_life_extension: 7.9019
+        orderly_convergence: 5.8065
+        muddle_through: 7.8079
+        ai_productivity_lag: 8.9497
+        fragmentation: 12.2591
+        disorderly_climate_crystallisation: 8.3833
+        stagflation_persists: 11.7633
+      wacc_minus_1pp: 7.0269
+      wacc_plus_1pp: 6.1628
+      spot_flat_real: 6.6531
+      spot_flat_real_life_extension: 7.9011
     market:
       price: 12.09
-      gap_to_market_baseline: -0.4562
-      implied_gold_scale: 1.4386
-      implied_real_gold_y10_usd: 5993.0
+      gap_to_market_baseline: -0.4563
+      implied_gold_scale: 1.4387
+      implied_real_gold_y10_usd: 5994.0

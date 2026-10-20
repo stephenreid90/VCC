@@ -213,8 +213,8 @@ normalised_baseline:
     deduct_lease_liabilities: true
     deduct_stream_deferred_revenue: false
     rationale: >
-      D-100 proposed. Closure costs are not in the mine cash flows, so the rehabilitation
-      provision (latest found: 30 Jun 2025, 572) is a debt-like claim. Leases are debt
+      D-100 ruled. Closure costs are not in the mine cash flows, so the rehabilitation
+      provision (30 Jun 2026, 583.7, AR26 Note 14) is a debt-like claim. Leases are debt
       (Approach A, methodology §4.6). The stream's deferred revenue is NOT deducted: the
       stream is modelled in Northparkes' cash flows (ounces delivered at 10% of spot), and
       deducting the accounting balance as well would count it twice.

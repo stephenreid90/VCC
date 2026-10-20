@@ -302,12 +302,12 @@ CSL_GOLDEN = {
 # scenario sits well below it; the gap is disclosed, not reconciled (D-92's principle),
 # see design/methodology/resource_valuation_sets.yaml for the market-implied gold price.
 EVN_GOLDEN = {
-    "orderly_convergence": 4.9867,
-    "muddle_through": 6.5741,
-    "ai_productivity_lag": 7.5113,
-    "fragmentation": 10.2105,
-    "disorderly_climate_crystallisation": 7.1532,
-    "stagflation_persists": 9.8547,
+    "orderly_convergence": 4.9860,
+    "muddle_through": 6.5733,
+    "ai_productivity_lag": 7.5105,
+    "fragmentation": 10.2098,
+    "disorderly_climate_crystallisation": 7.1525,
+    "stagflation_persists": 9.8540,
 }
 # The run-off after year 10 is 18-20% of EV: a finite life puts most of the value in
 # the explicit period, the reverse of the three going-concern companies.

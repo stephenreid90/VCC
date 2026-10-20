@@ -1,0 +1,247 @@
+# Evolution Mining Limited (ASX: EVN) -- FY26 (year to 30 June 2026) ACTUALS, layer 1, observed only.
+# Kept in data/financials/actuals/, not data/financials/: tests/test_ssot_lint.py treats every
+# top-level YAML there as a company financials file (it needs share anchors), which this is not.
+# Written 20 Oct 2026. Every figure is read from one document:
+#   data/financials/historical/evn/2026-08-19 FY26 Appendix 4E and Financial Report.pdf
+# (108 PDF pages; "Evolution Mining Annual Financial Report 2026"). Citations give the PDF page
+# and the printed page number (printed = PDF - 2), then the table. Units are the report's:
+# A$'000 unless stated. Nothing here is estimated. A line marked NOT_FOUND is not in this report.
+# A line marked "derived" is arithmetic on two cited figures, shown in full.
+# Used by: scripts/check_resource_engine_vs_company.py --fy26-actuals (a check, not the register).
+# This file is not data/financials/evn.yaml and is not read by the valuation itself.
+
+company_id: evn
+period: FY26
+period_end: 2026-06-30
+units: AUD_000
+source_document: "2026-08-19 FY26 Appendix 4E and Financial Report.pdf"
+
+# ---- Prices (Directors' report, "Key results", PDF p10 / printed p8) ----
+prices:
+  gold_achieved_aud_oz: {value: 6023, unit: AUD_per_oz, source: "PDF p10 (p8), Key business metrics table, 'Gold price achieved ($/oz) 6,023'"}
+  silver_achieved_aud_oz: {value: 94, unit: AUD_per_oz, source: "PDF p10 (p8), Key business metrics table"}
+  copper_achieved_aud_t: {value: 18051, unit: AUD_per_t, source: "PDF p10 (p8), Key business metrics table, 'Copper price achieved ($/t) 18,051'"}
+  copper_achieved_ernest_henry_aud_t: {value: 17943, unit: AUD_per_t, source: "PDF p8 (p6), Profit overview text"}
+  copper_achieved_northparkes_aud_t: {value: 18187, unit: AUD_per_t, source: "PDF p8 (p6), Profit overview text"}
+  gold_spot_sales_aud_oz: {value: 6236, unit: AUD_per_oz, source: "PDF p14 (p12), Profit and loss text: 530,625 oz at $6,236/oz (Australian spot sales)"}
+
+# ---- Group volumes ----
+group_volumes:
+  gold_produced_oz: {value: 714728, unit: oz, source: "PDF p10 (p8), Key business metrics table"}
+  copper_produced_t: {value: 65636, unit: t, source: "PDF p10 (p8), Key business metrics table"}
+  silver_produced_oz: {value: 765694, unit: oz, source: "PDF p10 (p8), Key business metrics table"}
+  gold_sold_oz: {value: 709541, unit: oz, source: "PDF p14 (p12), Profit and loss text, 'sold ounces for the year to 709,541 oz'"}
+  stream_gold_delivered_oz: {value: 17151, unit: oz, source: "PDF p56 (p54), Note 1(b) text: delivered to Triple Flag at $1,968/oz"}
+  stream_silver_delivered_oz: {value: 245776, unit: oz, source: "PDF p56 (p54), Note 1(b) text"}
+  aisc_aud_oz: {value: 1717, unit: AUD_per_oz, source: "PDF p10 (p8), Key business metrics table; excludes Mt Rawdon (footnote iii)"}
+
+# ---- Mine by mine ----
+# revenue, segment_ebitda, sustaining/major/total capital: Note 1(b) Segment information, PDF p56 (p54).
+#   Segment EBITDA is STATUTORY: the six mines + Exploration + Corporate sum to 3,045,861, which is
+#   reconciled to underlying EBITDA 3,171,344 in Note 1(c), PDF p57 (p55).
+# volumes, AISC, AIC, operating mine cash flow, net mine cash flow, non-operational costs:
+#   Directors' report "Mining operations" key business metrics tables, PDF p11-13 (p9-11).
+#   These are non-IFRS, unaudited (PDF p10 footnote i).
+# Not in the report for any mine: D&A, royalty, site exploration, mill throughput, grade,
+#   gold sold (except Mungari, text only), cash (C1) cost.
+mines:
+  cowal:
+    gold_produced_oz: {value: 297029, source: "PDF p11 (p9), Cowal table"}
+    copper_produced_t: {value: 0, source: "PDF p11 (p9), Cowal table (no copper line)"}
+    aisc_aud_oz: {value: 2253, source: "PDF p11 (p9), Cowal table"}
+    aic_aud_oz: {value: 3366, source: "PDF p11 (p9), Cowal table"}
+    revenue: {value: 1844045, source: "PDF p56 (p54), Note 1(b) segment table"}
+    segment_ebitda: {value: 1235565, source: "PDF p56 (p54), Note 1(b) segment table"}
+    operating_mine_cash_flow: {value: 1220906, source: "PDF p11 (p9), Cowal table"}
+    sustaining_capital: {value: 47129, source: "PDF p56 (p54) Note 1(b); same in PDF p11 (p9)"}
+    major_capital: {value: 322074, source: "PDF p56 (p54) Note 1(b); same in PDF p11 (p9)"}
+    total_capital: {value: 369203, source: "PDF p56 (p54), Note 1(b) segment table"}
+    non_operational_costs: {value: 0, source: "PDF p11 (p9), Cowal table (no line)"}
+    net_mine_cash_flow: {value: 851703, source: "PDF p11 (p9), Cowal table"}
+    d_and_a: NOT_FOUND
+    royalty: NOT_FOUND
+    site_exploration: NOT_FOUND
+  ernest_henry:
+    gold_produced_oz: {value: 55060, source: "PDF p11 (p9), Ernest Henry table"}
+    copper_produced_t: {value: 37751, source: "PDF p11 (p9), Ernest Henry table"}
+    aisc_aud_oz: {value: -2975, source: "PDF p11 (p9), Ernest Henry table, '(2,975)', net of copper credit"}
+    aic_aud_oz: {value: -193, source: "PDF p11 (p9), Ernest Henry table"}
+    revenue: {value: 993547, source: "PDF p56 (p54), Note 1(b) segment table"}
+    segment_ebitda: {value: 523724, source: "PDF p56 (p54), Note 1(b) segment table"}
+    operating_mine_cash_flow: {value: 547057, source: "PDF p11 (p9), Ernest Henry table"}
+    sustaining_capital: {value: 49526, source: "PDF p56 (p54) Note 1(b); same in PDF p11 (p9)"}
+    major_capital: {value: 149749, source: "PDF p56 (p54) Note 1(b); same in PDF p11 (p9)"}
+    total_capital: {value: 199275, source: "PDF p56 (p54), Note 1(b) segment table"}
+    non_operational_costs: {value: 45397, source: "PDF p11 (p9), Ernest Henry table: flood recovery and equipment replacement"}
+    net_mine_cash_flow: {value: 302385, source: "PDF p11 (p9), Ernest Henry table"}
+    d_and_a: NOT_FOUND
+    royalty: NOT_FOUND
+    site_exploration: NOT_FOUND
+  northparkes:
+    gold_produced_oz: {value: 27299, source: "PDF p12 (p10), Northparkes table (80% share)"}
+    copper_produced_t: {value: 27885, source: "PDF p12 (p10), Northparkes table"}
+    aisc_aud_oz: {value: -8314, source: "PDF p12 (p10), Northparkes table, '(8,314)', net of copper credit"}
+    aic_aud_oz: {value: -5513, source: "PDF p12 (p10), Northparkes table"}
+    revenue: {value: 616099, source: "PDF p56 (p54), Note 1(b); includes net stream revenue 27.2m (deferred revenue 38.5m less 11.2m variable consideration)"}
+    segment_ebitda: {value: 297525, source: "PDF p56 (p54), Note 1(b) segment table"}
+    operating_mine_cash_flow: {value: 430769, source: "PDF p12 (p10), Northparkes table"}
+    sustaining_capital: {value: 20722, source: "PDF p56 (p54) Note 1(b); same in PDF p12 (p10)"}
+    major_capital: {value: 67477, source: "PDF p56 (p54) Note 1(b); same in PDF p12 (p10)"}
+    total_capital: {value: 88199, source: "PDF p56 (p54), Note 1(b) segment table"}
+    non_operational_costs: {value: 108099, source: "PDF p12 (p10), Northparkes table, 'Non-operational costs - stream payment (108,099)'"}
+    net_mine_cash_flow: {value: 234471, source: "PDF p12 (p10), Northparkes table"}
+    stream_delivered_fraction_of_gold_produced:
+      value: 0.6283
+      source: "derived: stream_gold_delivered_oz 17,151 / gold_produced_oz 27,299 (PDF p56 and p12)"
+    d_and_a: NOT_FOUND
+    royalty: NOT_FOUND
+    site_exploration: NOT_FOUND
+  mungari:
+    gold_produced_oz: {value: 186115, source: "PDF p12 (p10), Mungari table"}
+    copper_produced_t: {value: 0, source: "PDF p12 (p10), Mungari table (no copper line)"}
+    aisc_aud_oz: {value: 2249, source: "PDF p12 (p10), Mungari table"}
+    aic_aud_oz: {value: 3139, source: "PDF p12 (p10), Mungari table"}
+    revenue: {value: 1017933, source: "PDF p56 (p54), Note 1(b) segment table"}
+    segment_ebitda: {value: 662614, source: "PDF p56 (p54), Note 1(b) segment table"}
+    operating_mine_cash_flow: {value: 651565, source: "PDF p12 (p10), Mungari table"}
+    sustaining_capital: {value: 75835, source: "PDF p56 (p54) Note 1(b); same in PDF p12 (p10)"}
+    major_capital: {value: 138733, source: "PDF p56 (p54) Note 1(b); same in PDF p12 (p10)"}
+    total_capital: {value: 214568, source: "PDF p56 (p54), Note 1(b) segment table"}
+    non_operational_costs: {value: 70522, source: "PDF p12 (p10), Mungari table: mill commissioning and third-party ore purchases"}
+    net_mine_cash_flow: {value: 366475, source: "PDF p12 (p10), Mungari table"}
+    gold_sold_koz_text: {value: 186, unit: koz, source: "PDF p8 (p6), Profit overview text, 'record gold sales ... of 186koz'"}
+    d_and_a: NOT_FOUND
+    royalty: NOT_FOUND
+    site_exploration: NOT_FOUND
+  red_lake:
+    gold_produced_oz: {value: 127159, source: "PDF p13 (p11), Red Lake table"}
+    copper_produced_t: {value: 0, source: "PDF p13 (p11), Red Lake table (no copper line)"}
+    aisc_aud_oz: {value: 2757, source: "PDF p13 (p11), Red Lake table"}
+    aic_aud_oz: {value: 4134, source: "PDF p13 (p11), Red Lake table"}
+    revenue: {value: 805540, source: "PDF p56 (p54), Note 1(b) segment table"}
+    segment_ebitda: {value: 501183, source: "PDF p56 (p54), Note 1(b) segment table"}
+    operating_mine_cash_flow: {value: 500234, source: "PDF p13 (p11), Red Lake table"}
+    sustaining_capital: {value: 41680, source: "PDF p56 (p54) Note 1(b); same in PDF p13 (p11)"}
+    major_capital: {value: 171734, source: "PDF p56 (p54) Note 1(b); same in PDF p13 (p11)"}
+    total_capital: {value: 213414, source: "PDF p56 (p54), Note 1(b) segment table"}
+    non_operational_costs: {value: 730, source: "PDF p13 (p11), Red Lake table"}
+    net_mine_cash_flow: {value: 286090, source: "PDF p13 (p11), Red Lake table"}
+    d_and_a: NOT_FOUND
+    royalty: NOT_FOUND
+    site_exploration: NOT_FOUND
+  mt_rawdon:
+    gold_produced_oz: {value: 22067, source: "PDF p13 (p11), Mt Rawdon table"}
+    copper_produced_t: {value: 0, source: "PDF p13 (p11), Mt Rawdon table (no copper line)"}
+    aisc_aud_oz: {value: 5297, source: "PDF p13 (p11), Mt Rawdon table; includes non-cash stockpile movements (text)"}
+    aic_aud_oz: {value: 5297, source: "PDF p13 (p11), Mt Rawdon table"}
+    revenue: {value: 143302, source: "PDF p56 (p54), Note 1(b) segment table"}
+    segment_ebitda: {value: 44064, source: "PDF p56 (p54), Note 1(b) segment table"}
+    operating_mine_cash_flow: {value: 43768, source: "PDF p13 (p11), Mt Rawdon table"}
+    sustaining_capital: {value: 4469, source: "PDF p56 (p54) Note 1(b); same in PDF p13 (p11)"}
+    major_capital: {value: 0, source: "PDF p56 (p54), Note 1(b) segment table ('—')"}
+    total_capital: {value: 4469, source: "PDF p56 (p54), Note 1(b) segment table"}
+    non_operational_costs: {value: 940, source: "PDF p13 (p11), Mt Rawdon table, 'Restructuring costs (940)'"}
+    net_mine_cash_flow: {value: 38359, source: "PDF p13 (p11), Mt Rawdon table"}
+    d_and_a: NOT_FOUND
+    royalty: NOT_FOUND
+    site_exploration: NOT_FOUND
+
+# ---- Non-mine segments (Note 1(b), PDF p56 / p54) ----
+segments_other:
+  exploration:
+    revenue: {value: 0, source: "PDF p56 (p54), Note 1(b), Exploration column"}
+    segment_ebitda: {value: -13414, source: "PDF p56 (p54), Note 1(b), Exploration column"}
+    total_capital: {value: 0, source: "PDF p56 (p54), Note 1(b), Exploration column ('—')"}
+  corporate:
+    revenue: {value: 138308, source: "PDF p56 (p54), Note 1(b): stream-attributable gold and silver sold at spot"}
+    segment_ebitda: {value: -205400, source: "PDF p56 (p54), Note 1(b); statutory, includes contingent consideration and other non-underlying items"}
+    sustaining_capital: {value: 1059, source: "PDF p56 (p54), Note 1(b); also PDF p10 footnote v"}
+
+# ---- Exploration: treatment and FY26 amounts ----
+exploration:
+  policy: >
+    PDF p70 (p68), Note 7(c)(iii) "Exploration and evaluation": expenditure is CAPITALISED per area
+    of interest while tenure is current and costs are expected to be recouped, or reserves cannot yet
+    be assessed; otherwise expensed. Expensed exploration cash flows are operating; capitalised are
+    investing. On a decision to develop, the asset is tested for impairment and moved to mine
+    development. No amortisation in the exploration phase.
+  segment_placement: >
+    PDF p56 (p54), Note 1(a)-(b): "The Group's operational mine sites and exploration are each treated as
+    individual operating segments." Exploration has its own segment (EBITDA -13,414, capital nil), so
+    site exploration is NOT in any mine's segment EBITDA or mine capital.
+  expensed: {value: 12479, source: "PDF p49 (p47), statement of comprehensive income, 'Exploration and evaluation costs expensed (12,479)'; below cost of sales, not in mine operating costs. Same amount is the E&E write-off in Note 7, PDF p67 (p65)"}
+  capitalised_additions: {value: 59952, source: "PDF p67 (p65), Note 7 PPE movement table, Exploration and evaluation column, 'Additions 59,952'"}
+  transferred_to_mine_properties: {value: -35708, source: "PDF p67 (p65), Note 7, E&E column 'Transfers (35,708)'"}
+  carrying_amount_30_jun_2026: {value: 444496, source: "PDF p67 (p65), Note 7, E&E column"}
+  in_underlying_ebitda_line: {value: 105652, source: "PDF p10 (p8), 'Corporate, admin, exploration and other costs (excluding D&A) (105,652)' = corporate overheads 93,172 (PDF p60) + exploration expensed 12,479 (+1 rounding)"}
+
+# ---- Group P&L lines ----
+group_pnl:
+  revenue: {value: 5558774, source: "PDF p49 (p47) income statement; Note 2(a) PDF p58 (p56)"}
+  mine_operating_costs: {value: 1968647, source: "PDF p60 (p58), Note 2(e) Cost of sales"}
+  cost_of_stream_obligation: {value: 134121, source: "PDF p60 (p58), Note 2(e) Cost of sales"}
+  royalty_and_other_selling_costs: {value: 186390, source: "PDF p60 (p58), Note 2(e) Cost of sales; not split by mine"}
+  royalty_receipts_other_income: {value: 7412, source: "PDF p60 (p58), Note 2(i) Other income"}
+  cost_of_sales_ex_da: {value: 2289157, source: "PDF p10 (p8), Key business metrics table"}
+  corporate_overheads: {value: 93172, source: "PDF p60 (p58), Note 2(f)"}
+  share_based_payments: {value: 37329, source: "PDF p49 (p47) income statement"}
+  d_and_a: {value: 755515, source: "PDF p57 (p55) Note 1(c); PDF p61 (p59) Note 2(j); group only, not by mine"}
+  underlying_ebitda: {value: 3171344, source: "PDF p57 (p55), Note 1(c) reconciliation; PDF p9 (p7)"}
+  statutory_ebitda: {value: 3045861, source: "PDF p57 (p55), Note 1(c)"}
+  non_operational_expenses: {value: 47306, source: "PDF p57 (p55), Note 1(c), mostly 45.4m Ernest Henry flood (PDF p9)"}
+  contingent_consideration_adjustment: {value: 73187, source: "PDF p57 (p55), Note 1(c); Northparkes, copper price"}
+
+# ---- Group cash flow measures (Directors' report, PDF p10 / p8; non-IFRS) ----
+group_cash_flow:
+  operating_mine_cash_flow: {value: 3394298, source: "PDF p10 (p8), Key business metrics table"}
+  sustaining_capital: {value: 239361, source: "PDF p10 (p8); excludes 1.1m corporate capital (footnote v)"}
+  major_capital: {value: 849767, source: "PDF p10 (p8)"}
+  non_operational_cash_costs: {value: 225688, source: "PDF p10 (p8); = the six mines' non-operational lines incl. Northparkes stream payment 108,099"}
+  net_mine_cash_flow: {value: 2079482, source: "PDF p10 (p8)"}
+  group_cash_flow: {value: 1389200, unit: "AUD_000 (stated as $1,389.2 million)", source: "PDF p5 (p3), Key highlights; footnote 2: before dividends, debt repayments, equity raises, acquisitions or divestments"}
+  group_cash_flow_bridge: NOT_FOUND   # net mine cash flow to group cash flow is not tabulated in this report (it is in the June 2026 quarterly, p4)
+  interest_received: {value: 32131, source: "PDF p52 (p50), statement of cash flows, operating"}
+  interest_paid: {value: -73147, source: "PDF p52 (p50), statement of cash flows, operating"}
+  other_income_received: {value: 16999, source: "PDF p52 (p50), statement of cash flows, operating"}
+  payments_for_ppe: {value: 1204466, source: "PDF p52 (p50), statement of cash flows, investing"}
+  ppe_additions_total: {value: 1179116, source: "PDF p67 (p65), Note 7, additions all classes incl. E&E 59,952"}
+
+# ---- Tax ----
+tax:
+  income_taxes_paid: {value: 408556, source: "PDF p52 (p50), statement of cash flows, 'Income taxes paid (408,556)'; also PDF p15 (p13)"}
+  income_tax_expense: {value: 712585, source: "PDF p49 (p47) income statement"}
+  current_tax_expense: {value: 488599, source: "PDF p61 (p59), Note 3(a)"}
+  deferred_tax_expense: {value: 223986, source: "PDF p61 (p59), Note 3(a)"}
+  current_tax_liability_30_jun_2026: {value: 288600, source: "PDF p50 (p48), balance sheet"}
+  canada_tax_losses_utilised: {value: 78097, source: "PDF p79 (p77), Note 15(b), tax losses carried forward (Canada), recognised in P&L"}
+
+# ---- Working capital (Note 6(a), PDF p64 / p62) ----
+working_capital_change:
+  receivables: {value: -115876, source: "PDF p64 (p62), Note 6(a)"}
+  inventories: {value: -10188, source: "PDF p64 (p62), Note 6(a)"}
+  payables: {value: 28661, source: "PDF p64 (p62), Note 6(a)"}
+  other_provisions: {value: -14875, source: "PDF p64 (p62), Note 6(a)"}
+
+# ---- Balance sheet items at 30 June 2026 (for D-100) ----
+rehabilitation_provision_30_jun_2026:
+  current: {value: 6792, source: "PDF p77 (p75), Note 14 Provisions"}
+  non_current: {value: 576864, source: "PDF p77 (p75), Note 14 Provisions"}
+  total: {value: 583656, source: "PDF p77 (p75), Note 14(a) movement table, 'Balance as at the end of the year 583,656'"}
+  unwind_of_discount_fy26: {value: 23350, source: "PDF p77 (p75), Note 14(a); PDF p60 Note 2(h)"}
+  payments_against_provision_fy26: {value: 5898, source: "PDF p77 (p75), Note 14(a)"}
+lease_liabilities_30_jun_2026:
+  current: {value: 15510, source: "PDF p50 (p48), balance sheet, current liabilities"}
+  non_current: {value: 20331, source: "PDF p50 (p48), balance sheet, non-current liabilities"}
+  total: {value: 35841, source: "PDF p65 (p63), Note 6(c) net debt table, 'Lease liabilities (35,841)'; also PDF p82 (p80) Note 17"}
+  principal_payments_fy26: {value: 52282, source: "PDF p52 (p50), statement of cash flows, financing"}
+
+# ---- Hedging ----
+hedging:
+  gold_hedged_oz_delivered_fy26: {value: 50000, unit: oz, source: "PDF p8 (p6) and PDF p14 (p12): delivered into the Australian hedge book"}
+  gold_hedge_price_aud_oz: {value: 3234, unit: AUD_per_oz, source: "PDF p8 (p6) and PDF p14 (p12)"}
+  position_at_30_jun_2026: >
+    Unhedged. PDF p5 (p3): "moved to an unhedged position at the end of FY26 following final delivery of
+    gold hedges". PDF p8 (p6): "There are no further gold or copper hedges in place."
+  fx_debt_hedge: >
+    Cross-currency interest rate swaps on the US$950m USPP notes, designated cash flow hedges
+    (PDF p16 (p14) facility table; Note 17, PDF p83 (p81)). Not a commodity hedge.
