@@ -132,6 +132,16 @@ yet: DNL's market price 3.61 has no reference date (a "Wall St target"); needs a
   WBC stays in cost-of-equity mode (bank); DNL unchanged. Peer betas in the workbench are still the mock set (peer median 0.80
   gives 7.90% until Ben's feed). Test: `tests/test_ui_beta_workbench_wacc.py` (5). Other suite 370; lint 14/14; values unchanged.
 
+- 20 Oct 2026: **CSL thesis rewritten, v3 (Stephen's go-ahead, serious).** `analyses/csl/thesis.md` now stands on the WACC
+  8.12% (D-84), the ten-year explicit period (D-71), the excess-return terminal with the 20-year fade (D-62/D-93), the D-87
+  equity bridge and the D-92 gap treatment. Every figure comes from `design/methodology/csl_thesis_set.yaml`, written by
+  `scripts/size_csl_thesis.py` from the segment engine (it repeats the gap set and the terminal-return set rather than
+  retyping them). `tests/dcf/test_csl_thesis_set.py` (6) asserts the set against a fresh run and the thesis text against the
+  set, so an engine change that moves a number fails until the thesis is restated. Asymmetry 1.91x (v2 said 1.33x; the
+  ten-year period lets margin scenarios compound into the terminal's starting return); terminal 46-55% of EV (v2 about 75%).
+  The v2 reverse-DCF figures (beta 1.64 etc.) were struck at Ke and are withdrawn until rerun under the WACC. No model input
+  changed; values unchanged. DCF 445 passed / 1 skipped; other 370; lint 14/14.
+
 ### Batch 1 progress
 
 - 16 Oct 2026: **CSL decay band 15-25 years, midpoint 20 (D-93, Stephen's ruling, serious).** The six CSL

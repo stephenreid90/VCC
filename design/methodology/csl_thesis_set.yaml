@@ -1,0 +1,268 @@
+set: csl_thesis_current
+decisions:
+- D-44
+- D-62
+- D-67
+- D-71
+- D-82
+- D-84
+- D-86
+- D-87
+- D-89
+- D-92
+- D-93
+valuation:
+  anchor_year: FY25
+  explicit_years: 10
+  shares_m: 482.13
+  restructuring_cash_usdm: 507
+  fx_aud_per_usd: 1.5152
+  wc_change_pct_revenue_change: 0.35
+  capex_pct_revenue: 0.045
+  da_pct_revenue: 0.06
+  terminal_form: excess_return_convergence
+discount_rate:
+  risk_free_rate: 0.045
+  beta: 0.85
+  equity_risk_premium: 0.05
+  cost_of_equity: 0.0875
+  cost_of_debt_pretax: 0.055
+  tax_rate: 0.3
+  cost_of_debt_after_tax: 0.0385
+  net_debt_ebitda: 1.8
+  target_ev_ebitda: 14.0
+  debt_weight: 0.1286
+  wacc: 0.0812
+market:
+  price_aud: 105.53
+  price_date: '2026-06-15'
+  fifty_two_week_high_aud: 269.15
+  broker_target_usd: 96.75
+  broker_target_aud: 146.6
+distribution:
+  upside_aud: 35.32
+  downside_aud: 67.44
+  asymmetry_down_over_up: 1.91
+  closest_to_market: stagflation_persists
+  lowest_in_fade_band_aud: 136.06
+  decay_band_years:
+    low: 15
+    high: 25
+    midpoint: 20
+scenarios:
+- scenario: orderly_convergence
+  usd_per_share: 162.67
+  aud_per_share: 246.47
+  gap_to_market: 1.3355
+  enterprise_value_usdm: 86823
+  pv_explicit_usdm: 39040
+  pv_terminal_usdm: 47784
+  terminal_share_of_ev: 0.5504
+  net_debt_usdm: 7890
+  equity_value_usdm: 78426
+  explicit_window: FY25-FY36
+  revenue_first_usdm: 15558
+  revenue_last_usdm: 28268
+  ebit_margin_first: 0.2747
+  ebit_margin_last: 0.3669
+  terminal_ebit_margin: 0.315
+  terminal_growth: 0.0506
+  tax_rate: 0.19
+  fade_years: 20.0
+  invested_capital_ex_goodwill_usdm: 24275
+  earned_starting_return: 0.3122
+  starting_return_incl_goodwill: 0.2343
+  aud_per_share_incl_goodwill: 244.62
+  fade_band_aud_per_share:
+    fade_15: 223.54
+    fade_20: 246.47
+    fade_25: 266.33
+  behring_growth_first: 0.0002
+  behring_growth_last: 0.0602
+  seqirus_growth_last: 0.0202
+  vifor_growth_last: 0.0802
+  margin_uplift_bps:
+    csl_behring: 250
+    csl_seqirus: 150
+    csl_vifor: 150
+  vs_central: 0.1673
+- scenario: muddle_through
+  usd_per_share: 139.36
+  aud_per_share: 211.15
+  gap_to_market: 1.0009
+  enterprise_value_usdm: 75577
+  pv_explicit_usdm: 35437
+  pv_terminal_usdm: 40140
+  terminal_share_of_ev: 0.5311
+  net_debt_usdm: 7881
+  equity_value_usdm: 67188
+  explicit_window: FY25-FY36
+  revenue_first_usdm: 15558
+  revenue_last_usdm: 25410
+  ebit_margin_first: 0.2747
+  ebit_margin_last: 0.3473
+  terminal_ebit_margin: 0.3
+  terminal_growth: 0.0486
+  tax_rate: 0.19
+  fade_years: 20.0
+  invested_capital_ex_goodwill_usdm: 23494
+  earned_starting_return: 0.2756
+  starting_return_incl_goodwill: 0.2052
+  aud_per_share_incl_goodwill: 209.53
+  fade_band_aud_per_share:
+    fade_15: 193.08
+    fade_20: 211.15
+    fade_25: 226.66
+  behring_growth_first: -0.0076
+  behring_growth_last: 0.0504
+  seqirus_growth_last: 0.0154
+  vifor_growth_last: 0.0654
+  margin_uplift_bps:
+    csl_behring: 150
+    csl_seqirus: 100
+    csl_vifor: 100
+  vs_central: 0.0
+- scenario: ai_productivity_lag
+  usd_per_share: 134.19
+  aud_per_share: 203.32
+  gap_to_market: 0.9267
+  enterprise_value_usdm: 73083
+  pv_explicit_usdm: 34834
+  pv_terminal_usdm: 38249
+  terminal_share_of_ev: 0.5234
+  net_debt_usdm: 7880
+  equity_value_usdm: 64695
+  explicit_window: FY25-FY36
+  revenue_first_usdm: 15558
+  revenue_last_usdm: 24537
+  ebit_margin_first: 0.2747
+  ebit_margin_last: 0.3453
+  terminal_ebit_margin: 0.3025
+  terminal_growth: 0.0455
+  tax_rate: 0.19
+  fade_years: 20.0
+  invested_capital_ex_goodwill_usdm: 23252
+  earned_starting_return: 0.2703
+  starting_return_incl_goodwill: 0.2007
+  aud_per_share_incl_goodwill: 202.01
+  fade_band_aud_per_share:
+    fade_15: 186.76
+    fade_20: 203.32
+    fade_25: 217.32
+  behring_growth_first: -0.008
+  behring_growth_last: 0.047
+  seqirus_growth_last: 0.017
+  vifor_growth_last: 0.062
+  margin_uplift_bps:
+    csl_behring: 175
+    csl_seqirus: 100
+    csl_vifor: 100
+  vs_central: -0.0371
+- scenario: fragmentation
+  usd_per_share: 108.39
+  aud_per_share: 164.23
+  gap_to_market: 0.5562
+  enterprise_value_usdm: 60638
+  pv_explicit_usdm: 30993
+  pv_terminal_usdm: 29645
+  terminal_share_of_ev: 0.4889
+  net_debt_usdm: 7875
+  equity_value_usdm: 52256
+  explicit_window: FY25-FY36
+  revenue_first_usdm: 15558
+  revenue_last_usdm: 22186
+  ebit_margin_first: 0.2747
+  ebit_margin_last: 0.3186
+  terminal_ebit_margin: 0.282
+  terminal_growth: 0.0348
+  tax_rate: 0.2
+  fade_years: 20.0
+  invested_capital_ex_goodwill_usdm: 22604
+  earned_starting_return: 0.2291
+  starting_return_incl_goodwill: 0.1689
+  aud_per_share_incl_goodwill: 163.96
+  fade_band_aud_per_share:
+    fade_15: 153.63
+    fade_20: 164.23
+    fade_25: 172.73
+  behring_growth_first: -0.014
+  behring_growth_last: 0.035
+  seqirus_growth_last: 0.01
+  vifor_growth_last: 0.05
+  margin_uplift_bps:
+    csl_behring: 0
+    csl_seqirus: 0
+    csl_vifor: 0
+  vs_central: -0.2222
+- scenario: disorderly_climate_crystallisation
+  usd_per_share: 114.46
+  aud_per_share: 173.43
+  gap_to_market: 0.6434
+  enterprise_value_usdm: 63570
+  pv_explicit_usdm: 32402
+  pv_terminal_usdm: 31168
+  terminal_share_of_ev: 0.4903
+  net_debt_usdm: 7878
+  equity_value_usdm: 55185
+  explicit_window: FY25-FY36
+  revenue_first_usdm: 15558
+  revenue_last_usdm: 23189
+  ebit_margin_first: 0.2747
+  ebit_margin_last: 0.3204
+  terminal_ebit_margin: 0.28
+  terminal_growth: 0.0349
+  tax_rate: 0.19
+  fade_years: 20.0
+  invested_capital_ex_goodwill_usdm: 22855
+  earned_starting_return: 0.2381
+  starting_return_incl_goodwill: 0.176
+  aud_per_share_incl_goodwill: 173.16
+  fade_band_aud_per_share:
+    fade_15: 162.06
+    fade_20: 173.43
+    fade_25: 182.56
+  behring_growth_first: -0.011
+  behring_growth_last: 0.036
+  seqirus_growth_last: 0.021
+  vifor_growth_last: 0.041
+  margin_uplift_bps:
+    csl_behring: -50
+    csl_seqirus: 50
+    csl_vifor: 0
+  vs_central: -0.1786
+- scenario: stagflation_persists
+  usd_per_share: 94.85
+  aud_per_share: 143.71
+  gap_to_market: 0.3618
+  enterprise_value_usdm: 54110
+  pv_explicit_usdm: 29030
+  pv_terminal_usdm: 25080
+  terminal_share_of_ev: 0.4635
+  net_debt_usdm: 7874
+  equity_value_usdm: 45728
+  explicit_window: FY25-FY36
+  revenue_first_usdm: 15558
+  revenue_last_usdm: 20642
+  ebit_margin_first: 0.2747
+  ebit_margin_last: 0.2963
+  terminal_ebit_margin: 0.265
+  terminal_growth: 0.0269
+  tax_rate: 0.19
+  fade_years: 20.0
+  invested_capital_ex_goodwill_usdm: 22177
+  earned_starting_return: 0.2052
+  starting_return_incl_goodwill: 0.1505
+  aud_per_share_incl_goodwill: 144.15
+  fade_band_aud_per_share:
+    fade_15: 136.06
+    fade_20: 143.71
+    fade_25: 149.62
+  behring_growth_first: -0.008
+  behring_growth_last: 0.029
+  seqirus_growth_last: 0.004
+  vifor_growth_last: 0.034
+  margin_uplift_bps:
+    csl_behring: -150
+    csl_seqirus: -50
+    csl_vifor: -50
+  vs_central: -0.3194

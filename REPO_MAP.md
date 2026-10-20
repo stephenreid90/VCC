@@ -3,10 +3,10 @@
 _Generated 2026-10-20 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `d93cbca Bridge note after batch 2 (16 Oct night)` on `main`
+- HEAD: `c243d3c CSL beta workbench runs in WACC mode (implements D-84 in the prototype)` on `main`
 - Unpushed commits: **0**
-- Tracked files: 387
-- Untracked files: 1
+- Tracked files: 389
+- Untracked files: 3
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -131,6 +131,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `csl_market_gap_set.yaml` (2.3KB)
     - `csl_terminal_return_sensitivity_2026-10-16.md` (4.4KB)
     - `csl_terminal_return_sets.yaml` (8.2KB)
+    - `csl_thesis_set.yaml` (6.6KB)
     - `dnl_working_capital_derivation.md` (12.4KB)
     - `driver_path_translation_proposal.md` (8.2KB)
     - `equity_bridge_and_valuation_mechanics.md` (71.8KB)
@@ -203,7 +204,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 ## Tests
 
   - `__init__.py` (0B)
-  - `conftest.py` (1.3KB)
+  - `conftest.py` (2.6KB)
   - `moat_role_baseline.json` (895B)
   - `ssot_basis_baseline.json` (494B)
   - `ssot_intra_file_baseline.json` (523B)
@@ -228,6 +229,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `test_three_statement.py` (717B)
   - `test_trade_working_capital_intensity.py` (3.3KB)
   - `test_ui_backlog_36_37.py` (3.0KB)
+  - `test_ui_beta_workbench_wacc.py` (2.7KB)
   - `test_ui_integrity_m5_21_22_31.py` (4.8KB)
   - `test_ui_market_gap_35.py` (3.8KB)
   - `test_ui_polish_23_34.py` (5.7KB)
@@ -242,6 +244,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `test_csl_market_gap_set.py` (4.3KB)
     - `test_csl_segment.py` (6.3KB)
     - `test_csl_terminal_return_sets.py` (4.3KB)
+    - `test_csl_thesis_set.py` (7.3KB)
     - `test_csl_volume_price_split.py` (2.3KB)
     - `test_csl_wacc.py` (1.1KB)
     - `test_csl_workbook_tie.py` (3.8KB)
@@ -286,16 +289,16 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 
 ## UI generator
 
-  - `csl_scenario_interface.html` (197.2KB)
-  - `dnl_scenario_interface.html` (236.4KB)
-  - `wbc_scenario_interface.html` (176.6KB)
+  - `csl_scenario_interface.html` (197.7KB)
+  - `dnl_scenario_interface.html` (236.7KB)
+  - `wbc_scenario_interface.html` (176.9KB)
   - **_generator/**
     - `README.md` (893B)
     - `beta_data.py` (10.0KB)
-    - `build_cfgs.py` (107.7KB)
-    - `cfgs_gen.json` (261.6KB)
+    - `build_cfgs.py` (109.7KB)
+    - `cfgs_gen.json` (261.9KB)
     - `engine_workbook.py` (125.3KB)
-    - `gen_ui.py` (99.2KB)
+    - `gen_ui.py` (99.4KB)
 
 ## Analyses (workbooks)
 
@@ -307,7 +310,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **csl/**
     - `csl_discussion_v1_2026-06-25.docx` (17.8KB)
     - `csl_discussion_v1_2026-06-25.pdf` (125.4KB)
-    - `thesis.md` (21.5KB)
+    - `thesis.md` (21.1KB)
     - **valuations/**
       - `csl_muddle_through_valuation_v1.xlsx` (14.2KB)
       - `csl_muddle_through_valuation_v2.xlsx` (16.2KB)
@@ -379,5 +382,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 Not in git. Either commit them or clear them — an untracked file is invisible
 to anyone who clones the repo, and is the most common way work gets lost.
 
-- `tests/test_ui_market_gap_35.py`
+- `design/methodology/csl_thesis_set.yaml`
+- `scripts/size_csl_thesis.py`
+- `tests/dcf/test_csl_thesis_set.py`
 
