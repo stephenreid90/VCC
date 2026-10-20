@@ -34,6 +34,10 @@ prints git state.
 
 ## 🔴 BATCH 3 run — 20 October 2026, 16:00 (parallel lane landed; E22 on branch awaiting a ruling)
 
+E22 implemented (D-103, 20 Oct 2026): A$109m a year out of Northparkes FY27 major project capital; E22 excluded from capital and volume at zero NPV. Levels now OC 4.99, MT 6.57, AI 7.51, Frag 10.21, DCC 7.15, Stag 9.85 (were 4.88, 6.47, 7.40, 10.10, 7.04, 9.74); gold multiple 1.44. EVN goldens re-pinned.
+
+Y1 relabel done: engine Y1 = FY28 (FY27 is the stub). Sizing-set keys renamed `y1_*` to `fy28_*`; review page price-basis headers now show FY years. `evn_engine_vs_company_2026-10-20.md` still cites `y1_fcff` (other lane's file, left alone).
+
 Parallel lane done and committed: (1) engine-vs-company checks, `scripts/check_resource_engine_vs_company.py`
 and `design/methodology/evn_engine_vs_company_2026-10-20.md` (gold +A$100/oz = +A$66m FY27 operating
 cash flow vs company 65-70; backcast at FY26 prices on FY27 guidance explains the gaps, nothing tuned);

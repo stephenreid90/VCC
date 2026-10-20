@@ -6,19 +6,19 @@ sets:
     basis: stated_life
     wacc: 0.095527
     levels:
-      orderly_convergence: 4.8803
-      muddle_through: 6.4673
-      ai_productivity_lag: 7.4045
-      fragmentation: 10.1029
-      disorderly_climate_crystallisation: 7.0445
-      stagflation_persists: 9.7438
+      orderly_convergence: 4.9867
+      muddle_through: 6.5741
+      ai_productivity_lag: 7.5113
+      fragmentation: 10.2105
+      disorderly_climate_crystallisation: 7.1532
+      stagflation_persists: 9.8547
     terminal_shares:
-      orderly_convergence: 0.1825
-      muddle_through: 0.194
-      ai_productivity_lag: 0.1977
-      fragmentation: 0.198
-      disorderly_climate_crystallisation: 0.1851
-      stagflation_persists: 0.1885
+      orderly_convergence: 0.1789
+      muddle_through: 0.191
+      ai_productivity_lag: 0.195
+      fragmentation: 0.196
+      disorderly_climate_crystallisation: 0.1824
+      stagflation_persists: 0.1865
     life_years: 27.6932
     mine_last_period:
       cowal: 15
@@ -30,36 +30,36 @@ sets:
       northparkes:recovery_projects: 27
     baseline_detail:
       scenario: muddle_through
-      enterprise_value: 14128.6
-      pv_explicit: 11388.3
+      enterprise_value: 14346.9
+      pv_explicit: 11606.6
       pv_terminal: 2740.2
       net_debt_at_valuation: 288.0
       adjustments: 572.3
       leases: 45.7
-      y1_fcff: 1169.9
-      y1_ebitda: 3142.1
-      y1_gold_aud_oz: 6130.0
+      fy28_fcff: 1254.1
+      fy28_ebitda: 3142.1
+      fy28_gold_aud_oz: 6130.0
     sensitivities:
       inventory_reserves:
-        orderly_convergence: 4.0733
-        muddle_through: 5.3919
-        ai_productivity_lag: 6.1699
-        fragmentation: 8.4775
-        disorderly_climate_crystallisation: 5.9155
-        stagflation_persists: 8.2404
+        orderly_convergence: 4.1797
+        muddle_through: 5.4986
+        ai_productivity_lag: 6.2767
+        fragmentation: 8.5851
+        disorderly_climate_crystallisation: 6.0243
+        stagflation_persists: 8.3514
       inventory_life_extension:
-        orderly_convergence: 5.7009
-        muddle_through: 7.7019
-        ai_productivity_lag: 8.8437
-        fragmentation: 12.1522
-        disorderly_climate_crystallisation: 8.2753
-        stagflation_persists: 11.6531
-      wacc_minus_1pp: 6.9196
-      wacc_plus_1pp: 6.0581
-      spot_flat_real: 6.5471
-      spot_flat_real_life_extension: 7.7951
+        orderly_convergence: 5.8073
+        muddle_through: 7.8087
+        ai_productivity_lag: 8.9505
+        fragmentation: 12.2599
+        disorderly_climate_crystallisation: 8.384
+        stagflation_persists: 11.7641
+      wacc_minus_1pp: 7.0277
+      wacc_plus_1pp: 6.1636
+      spot_flat_real: 6.6539
+      spot_flat_real_life_extension: 7.9019
     market:
       price: 12.09
-      gap_to_market_baseline: -0.4651
-      implied_gold_scale: 1.4471
-      implied_real_gold_y10_usd: 6029.0
+      gap_to_market_baseline: -0.4562
+      implied_gold_scale: 1.4386
+      implied_real_gold_y10_usd: 5993.0

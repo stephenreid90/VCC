@@ -139,11 +139,13 @@ normalised_baseline:
 
   # ---- Declared project uplifts (method paper §5.3) ----
   # The growth capital is in each host's major_project_capex; these credit the metal it
-  # buys. Only uplifts the company has quantified are included. Northparkes E22 (block
-  # cave, initial production end FY30, "supports transition to 8Mtpa") is NOT: its volume
-  # is not quantified in the saved documents, so its capital is charged and its uplift is
-  # not credited (a known understatement). Carnaby (Greater Duchess) is excluded: an
-  # acquisition awaiting a scheme vote, valued at zero NPV (D-97 proposed).
+  # buys. Only uplifts the company has quantified are included.
+  # EXCLUDED at zero NPV: Northparkes E22 (block cave; $545M EVN share over ~5 years, half-year
+  # presentation p.14, "HY26 presentation p14"). [judgment] D-103 allocation rule (D-98 ruling 20 Oct 2026): E22 is
+  # excluded from both capital and volume at zero NPV, disclosed as excluded. Its FY27 capital is taken as $109M ($545M / 5), deducted from
+  # Northparkes' $125-135M guidance; the documents give no E22 split, so this is an allocation
+  # rule, not a disclosure. Carnaby (Greater Duchess) is excluded: an acquisition awaiting a
+  # scheme vote, valued at zero NPV (D-97 proposed).
   project_uplifts:
     - name: bert
       host: ernest_henry

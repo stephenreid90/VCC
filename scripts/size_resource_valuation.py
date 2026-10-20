@@ -110,9 +110,9 @@ def size() -> dict:
                 "net_debt_at_valuation": round(base.net_debt_at_valuation, 1),
                 "adjustments": round(base.equity_bridge_adjustments_net, 1),
                 "leases": round(base.lease_liabilities, 1),
-                "y1_fcff": round(base.fcff[1], 1),
-                "y1_ebitda": round(base.ebitda[1], 1),
-                "y1_gold_aud_oz": round(base.gold_aud_oz[1], 1),
+                "fy28_fcff": round(base.fcff[1], 1),
+                "fy28_ebitda": round(base.ebitda[1], 1),
+                "fy28_gold_aud_oz": round(base.gold_aud_oz[1], 1),
             },
             "sensitivities": sens,
             "market": {

@@ -113,7 +113,9 @@ guidance_fy27:
       aisc_aud_oz: {low: -7500.0, high: -7300.0}
       sustaining_capex: {low: 10.0, high: 20.0}
       major_mine_development: {low: 45.0, high: 55.0}
-      major_project_capex: {low: 125.0, high: 135.0}
+      # [judgment] D-103 allocation rule (D-98): guidance $125-135M less E22 at $109M (=$545M EVN share / ~5 yrs,
+      # HY26 presentation p14). The documents give no FY27 E22 split. E22 excluded from capital and volume at zero NPV (D-98/D-103).
+      major_project_capex: {low: 16.0, high: 26.0}
       exploration: {low: 14.0, high: 16.0}
       da_aud_oz: {low: 2500.0, high: 3500.0}
     mungari:
