@@ -10,8 +10,9 @@ Read first: `CLAUDE.md`, then the top of `WORKING_NOTES.md` (the 20 Oct COST-PRI
 
 1. D-104 is implemented and on main. EVN levels (A$/share): OC 5.07, MT 6.57, AI Lag 7.47, Frag 10.02,
    DCC 7.19, Stag 9.72, against A$12.09; gold multiple 1.48.
-2. Five build choices under D-104 are listed in `WORKING_NOTES.md` for Stephen's review (medium). None
-   changes the method; each is a parameter or a reading of the rule.
+2. The five build choices under D-104 (linear form, scenario period-0 reference, unscaled spot for the
+   market-implied path, real A$ price, cash cost and sustaining capital only) were confirmed by Stephen
+   on 20 Oct. Settled; do not reopen.
 3. The review page "EVN Valuation Review" (claude.ai/artifact/4RgKRBZewHUADMjEokSJmV) carries the
    re-pinned row files.
 

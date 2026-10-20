@@ -46,7 +46,7 @@ Levels (A$/share): OC 5.07, MT 6.57, AI 7.47, Frag 10.02, DCC 7.19, Stag 9.72 (w
 now carries a cost response, measured against unscaled spot). Set `evn`, goldens, review data re-pinned;
 JSON schema exports regenerated (they were stale since earlier model changes). DCF 473 passed, rest 384.
 
-Build choices Stephen has not yet seen (medium): (1) linear form, not a power law; (2) reference = the
+Build choices CONFIRMED by Stephen (20 Oct, 16:33, "Happy"); not to be reopened: (1) linear form, not a power law; (2) reference = the
 scenario's own period-0 real price, so Muddle Through is untouched and Orderly Convergence (year 1 at
 US$4,100, below spot) eases from day one; (3) the market-implied path is read against unscaled spot;
 (4) real A$ price, so AUD moves count; (5) mine development, exploration and corporate do not move.
