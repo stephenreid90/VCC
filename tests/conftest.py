@@ -1,5 +1,33 @@
 """Shared fixtures for valuation tests."""
+import os
+import subprocess
+import sys
+from pathlib import Path
+
 import pytest
+
+_ROOT = Path(__file__).resolve().parents[1]
+_GEN = _ROOT / "ui_prototypes" / "_generator"
+_PAGES = [_ROOT / "ui_prototypes" / ("%s_scenario_interface.html" % k) for k in ("dnl", "wbc", "csl")]
+
+
+@pytest.fixture(scope="session", autouse=True)
+def generated_ui_pages():
+    """Build the three prototype pages when they are absent.
+
+    The pages are gitignored build output (reproducible from ui_prototypes/_generator),
+    so a fresh checkout such as the GitHub Actions runner has none. Five UI tests read
+    them; from 16 October 2026 they failed every CI run for that reason alone. Building
+    takes about ten seconds. If the build fails the tests that need the pages fail with
+    the build's own error rather than a missing-file error.
+    """
+    if all(p.exists() for p in _PAGES):
+        return
+    env = dict(os.environ, PYTHONPATH=os.pathsep.join(filter(None, [str(_ROOT / "src"), os.environ.get("PYTHONPATH", "")])))
+    for script in ("build_cfgs.py", "gen_ui.py"):
+        res = subprocess.run([sys.executable, script], cwd=str(_GEN), capture_output=True, text=True, env=env)
+        if res.returncode != 0:
+            raise RuntimeError("%s failed building the prototype pages:\n%s" % (script, res.stderr[-2000:]))
 from models.dcf import DCFAssumptions
 from models.three_statement import ThreeStatementAssumptions
 from models.comps import ComparableCompany

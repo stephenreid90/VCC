@@ -119,6 +119,11 @@ yet: DNL's market price 3.61 has no reference date (a "Wall St target"); needs a
 
 - 20 Oct 2026: **Item 35 done: CSL market-gap panel (batch 2 item 6, Sonnet, mild).** New tab "Market gap to price" on the CSL page. Built in `build_cfgs.py` from `design/methodology/csl_market_gap_set.yaml` (no typed numbers): six scenario values and gaps, the assumptions that differ, the 15/20/25 year band. Discloses the gap, does not reconcile it (D-92). No model input changed. Pinned by `tests/test_ui_market_gap_35.py` (7 tests). Tracker item 35 DONE. Generated pages rebuilt; DNL and WBC pages carry no panel. Verified and committed 20 Oct 2026 (the earlier sitting built it but did not land it): DCF 439 passed / 1 skipped; other 365; lint 14/14; base ties unchanged DNL 2.006 / WBC 33.93 / CSL 211.15. Batch 2 is now complete except item 32 (Ben's feed).
 
+- 20 Oct 2026: **GitHub Actions fixed (mild).** Every CI run since commit 5c5c69d (16 Oct) failed because five UI tests read the
+  generated prototype pages, which are gitignored build output and so absent on the runner. `tests/conftest.py` now builds the
+  three pages (build_cfgs.py then gen_ui.py, about ten seconds) when any is missing. No test logic changed. The "Run failed:
+  Tests" emails from GitHub are this and nothing else; they should stop from this commit.
+
 ### Batch 1 progress
 
 - 16 Oct 2026: **CSL decay band 15-25 years, midpoint 20 (D-93, Stephen's ruling, serious).** The six CSL
