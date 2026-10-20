@@ -86,29 +86,29 @@ scenario:
     - variable: gold_price_usd_real
       units: usd_per_oz_real_2026
       type: time_series
-      # Scenario development, 20 Oct 2026 (EVN, the first resource archetype; D-99 proposed).
+      # Scenario development, 20 Oct 2026; revised 20 Oct 2026 afternoon after Stephen's review (D-99 proposed).
       # Year 0 reference: spot US$4,166/oz, 16 Oct 2026 (pricegold.net).
-      # Basis: As Muddle Through, with deficit-funded AI capex adding fiscal concern: a slightly
-      # higher real floor.
+      # Basis: As Muddle Through, with deficit-funded AI capex adding fiscal concern: about 4%
+      # above spot in real terms from year 5.
       time_series:
-        - {year: 1, value: 4100}
-        - {year: 3, value: 3900}
-        - {year: 5, value: 3700}
-        - {year: 7, value: 3600}
-        - {year: 10, value: 3600}
+        - {year: 1, value: 4166}
+        - {year: 3, value: 4250}
+        - {year: 5, value: 4350}
+        - {year: 7, value: 4350}
+        - {year: 10, value: 4350}
     - variable: copper_price_usd_real
       units: usd_per_t_real_2026
       type: time_series
-      # Scenario development, 20 Oct 2026 (EVN, the first resource archetype; D-99 proposed).
+      # Scenario development, 20 Oct 2026; revised 20 Oct 2026 afternoon after Stephen's review (D-99 proposed).
       # Year 0 reference: EVN September 2026 quarter achieved US$6.69/lb, about US$14,750/t.
-      # Basis: Modest support from AI-infrastructure and electrification capex (scenario
-      # metals_regime).
+      # Basis: As Muddle Through, with AI-infrastructure and electrification demand: slightly
+      # above spot.
       time_series:
-        - {year: 1, value: 13800}
-        - {year: 3, value: 12800}
-        - {year: 5, value: 12300}
-        - {year: 7, value: 12300}
-        - {year: 10, value: 12300}
+        - {year: 1, value: 14750}
+        - {year: 3, value: 15000}
+        - {year: 5, value: 15000}
+        - {year: 7, value: 15000}
+        - {year: 10, value: 15000}
     - variable: aud_usd
       units: usd_per_aud
       type: time_series

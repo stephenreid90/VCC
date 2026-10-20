@@ -55,30 +55,30 @@ scenario:
     - variable: gold_price_usd_real
       units: usd_per_oz_real_2026
       type: time_series
-      # Scenario development, 20 Oct 2026 (EVN, the first resource archetype; D-99 proposed).
+      # Scenario development, 20 Oct 2026; revised 20 Oct 2026 afternoon after Stephen's review (D-99 proposed).
       # Year 0 reference: spot US$4,166/oz, 16 Oct 2026 (pricegold.net).
-      # Basis: Contestation continues without escalation and real rates stay about 1% (scenario
-      # policy_rate_real_advanced). Official-sector buying persists, so the price eases from its
-      # 2026 high to a real level still well above the pre-2024 regime, then holds in real terms.
+      # Basis: Anchor: today's spot held flat in real terms, so the A$ price rises with inflation.
+      # Real rates stay about 1% and official-sector buying persists; nothing in the scenario
+      # moves the real price.
       time_series:
-        - {year: 1, value: 4050}
-        - {year: 3, value: 3800}
-        - {year: 5, value: 3600}
-        - {year: 7, value: 3500}
-        - {year: 10, value: 3500}
+        - {year: 1, value: 4166}
+        - {year: 3, value: 4166}
+        - {year: 5, value: 4166}
+        - {year: 7, value: 4166}
+        - {year: 10, value: 4166}
     - variable: copper_price_usd_real
       units: usd_per_t_real_2026
       type: time_series
-      # Scenario development, 20 Oct 2026 (EVN, the first resource archetype; D-99 proposed).
+      # Scenario development, 20 Oct 2026; revised 20 Oct 2026 afternoon after Stephen's review (D-99 proposed).
       # Year 0 reference: EVN September 2026 quarter achieved US$6.69/lb, about US$14,750/t.
-      # Basis: Transition demand supports copper but subdued advanced-economy manufacturing caps it
-      # (scenario metals_regime); eases from the 2026 record.
+      # Basis: Anchor: today's price held flat in real terms. The world stays short copper;
+      # subdued manufacturing offsets transition demand.
       time_series:
-        - {year: 1, value: 13500}
-        - {year: 3, value: 12500}
-        - {year: 5, value: 12000}
-        - {year: 7, value: 12000}
-        - {year: 10, value: 12000}
+        - {year: 1, value: 14750}
+        - {year: 3, value: 14750}
+        - {year: 5, value: 14750}
+        - {year: 7, value: 14750}
+        - {year: 10, value: 14750}
     - variable: aud_usd
       units: usd_per_aud
       type: time_series

@@ -50,6 +50,13 @@ bridge). The page copy is `ui_prototypes/resource_review/evn_review_page.html`. 
 slider picks from precomputed engine runs. This is a review page, not gap 9 (EVN in the main prototype UI).
 After any change to paths or inputs: rerun the script and re-upload the files to the artifact.
 
+**D-99 paths revised (20 Oct, 15:15, Stephen's review).** Gold and copper re-set in all six scenario
+files: Muddle Through flat real at spot, others as stated moves (paper §2, §8). Levels OC 4.88, MT 6.47,
+AI 7.40, Frag 10.10, DCC 7.04, Stag 9.74 (were 2.58 / 4.18 / 4.97 / 7.74 / 5.03 / 6.54). Market-implied
+gold multiple 1.45. Set `evn`, EVN goldens and the review page re-pinned. DNL, WBC, CSL untouched. Open
+for Stephen: OC flat (5.73) or -10% (4.88); beta (0.90 judgement vs a published 1.62; observed betas
+needed); relabel the run-off for miners. DCF 463 passed / 1 skipped; lint 14/14.
+
 ## 🔴 HANDOVER — sitting of 20 October 2026, afternoon: EVN first build (read this first)
 
 **EVN (Evolution Mining), the first miner, is built end to end and waiting for review.**

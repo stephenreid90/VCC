@@ -82,29 +82,29 @@ scenario:
     - variable: gold_price_usd_real
       units: usd_per_oz_real_2026
       type: time_series
-      # Scenario development, 20 Oct 2026 (EVN, the first resource archetype; D-99 proposed).
+      # Scenario development, 20 Oct 2026; revised 20 Oct 2026 afternoon after Stephen's review (D-99 proposed).
       # Year 0 reference: spot US$4,166/oz, 16 Oct 2026 (pricegold.net).
       # Basis: Crisis demand lifts gold in the crystallisation phase; real rates of 1.5-1.7% in
-      # repricing then cap it, and it settles at the Muddle Through real level.
+      # repricing then bring it back to spot in real terms.
       time_series:
-        - {year: 1, value: 4200}
-        - {year: 3, value: 4000}
-        - {year: 5, value: 3800}
-        - {year: 7, value: 3600}
-        - {year: 10, value: 3500}
+        - {year: 1, value: 4300}
+        - {year: 3, value: 4400}
+        - {year: 5, value: 4300}
+        - {year: 7, value: 4166}
+        - {year: 10, value: 4166}
     - variable: copper_price_usd_real
       units: usd_per_t_real_2026
       type: time_series
-      # Scenario development, 20 Oct 2026 (EVN, the first resource archetype; D-99 proposed).
+      # Scenario development, 20 Oct 2026; revised 20 Oct 2026 afternoon after Stephen's review (D-99 proposed).
       # Year 0 reference: EVN September 2026 quarter achieved US$6.69/lb, about US$14,750/t.
-      # Basis: Transition-mineral structural up-cycle accelerates (scenario metals_regime): copper
-      # is the strongest of the six.
+      # Basis: Transition-mineral up-cycle accelerates (scenario metals_regime): copper is the
+      # strongest of the six, about 15% above spot at the peak, settling about 8% above.
       time_series:
-        - {year: 1, value: 15000}
-        - {year: 3, value: 15500}
-        - {year: 5, value: 15000}
-        - {year: 7, value: 14500}
-        - {year: 10, value: 14000}
+        - {year: 1, value: 15500}
+        - {year: 3, value: 16500}
+        - {year: 5, value: 17000}
+        - {year: 7, value: 16500}
+        - {year: 10, value: 16000}
     - variable: aud_usd
       units: usd_per_aud
       type: time_series

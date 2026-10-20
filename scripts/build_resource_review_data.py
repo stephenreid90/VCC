@@ -215,7 +215,7 @@ def flat_tables(d: dict) -> dict:
     w, b = d["wacc"], d["bridge"]
     inputs = [
         {"item": "market_price", "label": "Market reference price", "value": d["market_price_aud"], "unit": "A$/share", "basis": "D-94"},
-        {"item": "shares", "label": "Shares on issue", "value": d["shares_m"], "unit": "m", "basis": "30 Sep 2026 quarterly (D-100)"},
+        {"item": "shares", "label": "Shares on issue", "value": d["shares_m"], "unit": "m", "basis": "30 Sep 2026 quarterly (D-100)"},  # ssot-allow: decision id
         {"item": "spot_gold", "label": "Spot gold", "value": d["spot"]["gold_usd_oz"], "unit": "US$/oz", "basis": "year 0 reference"},
         {"item": "spot_copper", "label": "Spot copper", "value": d["spot"]["copper_usd_t"], "unit": "US$/t", "basis": "Sep quarter achieved"},
         {"item": "spot_aud_usd", "label": "AUD/USD", "value": d["spot"]["aud_usd"], "unit": "US$ per A$", "basis": "year 0 reference"},
@@ -227,9 +227,9 @@ def flat_tables(d: dict) -> dict:
         {"item": "equity_mv", "label": "Equity, market value", "value": w["equity_mv"], "unit": "A$m", "basis": "spot weights (D-55)"},
         {"item": "debt_mv", "label": "Debt", "value": w["debt_mv"], "unit": "A$m", "basis": "USPP at swapped value"},
         {"item": "wacc", "label": "WACC", "value": w["wacc"], "unit": "pct", "basis": "one rate, all periods (D-01)"},
-        {"item": "net_debt", "label": "Net debt at valuation", "value": b["net_debt"], "unit": "A$m", "basis": "net cash 141 less dividend 429 (D-100)"},
-        {"item": "rehabilitation", "label": "Rehabilitation", "value": b["rehabilitation_and_other"], "unit": "A$m", "basis": "30 Jun 2025 (D-100)"},
-        {"item": "leases", "label": "Leases", "value": b["leases"], "unit": "A$m", "basis": "30 Jun 2025 (D-100)"},
+        {"item": "net_debt", "label": "Net debt at valuation", "value": b["net_debt"], "unit": "A$m", "basis": "net cash at 30 Sep less the final dividend paid 2 Oct (D-100)"},  # ssot-allow: decision id
+        {"item": "rehabilitation", "label": "Rehabilitation", "value": b["rehabilitation_and_other"], "unit": "A$m", "basis": "30 Jun 2025 (D-100)"},  # ssot-allow: decision id
+        {"item": "leases", "label": "Leases", "value": b["leases"], "unit": "A$m", "basis": "30 Jun 2025 (D-100)"},  # ssot-allow: decision id
     ]
     return {"scenarios": sc, "price_paths": paths, "cash_flow": cf, "gold_grid": grid,
             "price_basis": basis, "mines": mines, "model_inputs": inputs}

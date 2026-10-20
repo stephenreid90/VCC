@@ -1,6 +1,6 @@
 # The resource_lifecycle overlay and the mining driver set
 
-**Status: written 20 October 2026, first build for Evolution Mining (EVN). Serious.**
+**Status: written 20 October 2026, first build for Evolution Mining (EVN); D-99 price paths revised the same afternoon after Stephen's review. Serious.**
 D-94 and D-95 are Stephen's rulings of 20 October. D-96 to D-101 are PROPOSED: they are
 built so the result can be reviewed, and each one can be reversed without rewriting the
 engine. Every number below comes from `design/methodology/resource_valuation_sets.yaml`
@@ -107,19 +107,25 @@ exist.
 3. This is scenario development, not a company series, so D-73 ruling 1 is not breached:
    no existing series could proxy a gold price.
 
-The paths, real US$ per ounce at years 1 / 3 / 5 / 7 / 10, from today's spot of US$4,166:
+The paths, real 2026 US$ at years 1 / 3 / 5 / 7 / 10. **Revised 20 October 2026 afternoon after
+Stephen's review** (see §8): Muddle Through holds today's spot flat in real terms (gold US$4,166,
+copper US$14,750), and the other five are stated moves from it. The first draft had gold falling in
+every scenario, which Stephen rejected: gold is a monetary asset, and inflation that has already
+devalued currencies against it is not reversed without very low inflation expectations.
 
-| Scenario | Gold | Copper (US$/t) | AUD/USD |
+| Scenario | Gold (US$/oz) | Copper (US$/t) | AUD/USD |
 |---|---|---|---|
-| Orderly Convergence | 3,900 / 3,400 / 3,100 / 3,000 / 3,000 | 14,000 to 13,000 | 0.71 to 0.74 |
-| Muddle Through | 4,050 / 3,800 / 3,600 / 3,500 / 3,500 | 13,500 to 12,000 | 0.70 flat |
-| AI Productivity Lag | 4,100 / 3,900 / 3,700 / 3,600 / 3,600 | 13,800 to 12,300 | 0.69 to 0.68 |
-| Fragmentation | 4,300 / 4,500 / 4,500 / 4,400 / 4,200 | 13,000 to 12,500 | 0.67 to 0.63-0.64 |
-| Disorderly Climate | 4,200 / 4,000 / 3,800 / 3,600 / 3,500 | 15,000 to 15,500, then 14,000 | 0.69 to 0.71 |
-| Stagflation Persists | 4,400 / 4,500 / 4,300 / 4,000 / 3,700 | 12,500 to 11,000-11,500 | 0.66 to 0.63, then 0.66 |
+| Orderly Convergence | 4,100 / 3,950 / 3,750 / 3,750 / 3,750 | 15,000 / 15,500 flat | 0.71 to 0.74 |
+| Muddle Through | 4,166 flat | 14,750 flat | 0.70 flat |
+| AI Productivity Lag | 4,166 / 4,250 / 4,350 / 4,350 / 4,350 | 14,750 / 15,000 flat | 0.69 to 0.68 |
+| Fragmentation | 4,300 / 4,700 / 5,000 / 5,000 / 5,000 | 14,750 flat | 0.67 to 0.63-0.64 |
+| Disorderly Climate | 4,300 / 4,400 / 4,300 / 4,166 / 4,166 | 15,500 / 16,500 / 17,000 / 16,500 / 16,000 | 0.69 to 0.71 |
+| Stagflation Persists | 4,400 / 4,800 / 5,000 / 4,900 / 4,800 | 13,500 / 13,000 / 13,500 / 14,000 / 14,250 | 0.66 to 0.63, then 0.66 |
 
-These are the paths in the scenario files; the files are the source. They are my
-judgement and the most important input Stephen has not yet seen.
+Orderly Convergence is the one gold path below spot (minus 10%), because positive real rates are the
+one force that has lowered the real gold price while inflation stayed positive (1980 to 2001).
+Flat at spot is the alternative under review: it gives Orderly Convergence A$5.73 instead of A$4.88.
+AUD/USD is unchanged from the first draft. The scenario files are the source.
 
 ### D-100 (proposed). The equity bridge
 
@@ -179,36 +185,29 @@ For each mine and period t (period 0 is the stub, 0.693 of FY27):
    rounded per D-29), and the balance unwinds at closure.
 8. FCFF is discounted at the WACC from the valuation date, mid-period.
 
-## 5. Results (set `evn`)
+## 5. Results (set `evn`, revised price paths)
 
-1. **Values per share:** Orderly Convergence 2.58, Muddle Through 4.18, AI Lag 4.97,
-   Fragmentation 7.74, Disorderly Climate 5.03, Stagflation 6.54.
-2. **The ordering mostly follows gold in AUD, net of costs.** Fragmentation and Stagflation
-   have the highest real gold and the weakest AUD, so the natural hedge works for an
-   Australian producer. Orderly Convergence has the lowest gold and the strongest AUD.
-   Stagflation has the higher AUD gold price in years 1-5 but values below Fragmentation
-   because of its 1.5-point real cost escalator. Disorderly Climate sits above AI Lag
-   because of copper, not gold.
-3. **The run-off after year ten is 14-17% of EV.** That is the reverse of the going
-   concerns, where the terminal is 46-68%. No §11.4.2 warning fires.
+1. **Values per share:** Orderly Convergence 4.88, Muddle Through 6.47, AI Lag 7.40,
+   Fragmentation 10.10, Disorderly Climate 7.04, Stagflation 9.74, against A$12.09.
+   (First draft: 2.58, 4.18, 4.97, 7.74, 5.03, 6.54.)
+2. **The ordering follows gold in AUD, net of costs.** Fragmentation and Stagflation have the
+   highest real gold and the weakest AUD. Stagflation sits below Fragmentation because of its
+   1.5-point real cost escalator.
+3. **The run-off after year ten is 18-20% of EV.** No §11.4.2 warning fires.
 4. **Life:** the last mine (Northparkes) closes 27.7 years out; Mungari is first, in FY38.
-5. **Muddle Through detail:** EV A$9.45bn (explicit 7.86, run-off 1.59), net debt 288,
-   rehabilitation 572, leases 46. Year-1 EBITDA A$2.91bn at A$5,959/oz.
+5. **Muddle Through detail:** EV A$14.13bn (explicit 11.39, run-off 2.74), net debt 288,
+   rehabilitation 572, leases 46. Year-1 EBITDA A$3.14bn at A$6,130/oz.
 
 **Sensitivities (Muddle Through unless stated):**
 
-1. Reserves-only life: 3.54 (the six scenarios fall 12-16%; Stagflation least, Orderly Convergence most).
-2. Five-year life extension per mine: 4.92.
-3. WACC minus / plus one point: 4.45 / 3.93.
-4. Today's spot held flat in real terms: 6.55; with the five-year extension, 7.80.
+1. Reserves-only life: 5.39. Five-year life extension per mine: 7.70.
+2. WACC minus / plus one point: 6.92 / 6.06.
+3. Today's spot held flat (AUD at 0.6968): 6.55; with the five-year extension, 7.80.
 
-**Gap to the market.** Muddle Through is 65% below A$12.09. To reach the market price on
-the Muddle Through shape, the whole gold path would need to be 1.71 times higher: about
-US$5,990 an ounce in real terms at year ten, against today's US$4,166. Even holding today's
-spot flat and adding five years to every mine leaves the value at 7.80. In plain terms, the
-market is paying for some mix of a higher gold price than any scenario carries, much longer
-lives than the company discloses, positive-NPV growth (E22, Carnaby, exploration) and a
-lower discount rate. The gap is disclosed, not reconciled (D-92's principle).
+**Gap to the market.** Muddle Through is 47% below A$12.09. To reach the market price on the
+Muddle Through shape, the gold path would need to be 1.45 times higher: about US$6,030 an ounce
+in real terms, against today's US$4,166. Fragmentation (10.10) and Stagflation (9.74) come
+closest. The gap is disclosed, not reconciled (D-92's principle).
 
 ## 6. Gaps and shortcomings found
 
@@ -264,3 +263,33 @@ lower discount rate. The gap is disclosed, not reconciled (D-92's principle).
 10. **The register lint treats every number in a guidance table as a register value.** It
     flags coincidences with UI pixel widths. Sixteen were baselined. A guidance table is
     observed data and might be better exempt by path.
+
+## 8. Stephen's review, 20 October 2026 afternoon
+
+1. **Gold.** Stephen rejected paths that fall below spot. Gold is a financial asset; inflation
+   has already devalued the major currencies against it, and that is not reversed without very
+   low inflation expectations, which are unlikely in the current political setting. Inflation
+   in AUD revenue and costs goes with a gold price that holds. Producers often model flat real
+   prices. The paths were re-set (§2, D-99): Muddle Through flat real at spot, the others as
+   stated moves from it. Open: whether Orderly Convergence should also be flat (A$5.73) rather
+   than 10% below (A$4.88).
+2. **Copper method.** The first draft was typed judgement from each scenario's metals narrative,
+   starting from EVN's September quarter achieved price, with no anchor. Revised to the gold
+   discipline: Muddle Through flat real at US$14,750, the others as stated moves, on Stephen's
+   view that the world is short copper in every scenario. Only Stagflation dips below spot.
+   Copper matters less than gold: on Muddle Through, 10% off copper costs about A$0.52 a share,
+   against A$1.26 for 10% off gold. (Company sensitivity, FY27: A$100/oz gold or A$1,000/t copper
+   each move cash flow A$65-70m.)
+3. **AUD/USD method.** Typed judgement from each scenario's currency narrative, starting from the
+   19 October close (0.6968): Muddle Through flat, the others move with their USD story. No
+   interest-rate-parity or purchasing-power model. A 10% stronger AUD costs about A$1.62 a share
+   on Muddle Through, more than 10% off gold, because costs are in AUD.
+4. **Beta.** 0.90 is judgement from five named peers whose betas are not observed in the repo
+   (D-02 status). One published measure puts EVN's beta at 1.62 (Simply Wall St; window and
+   index not stated). Stephen suspects it could be high. On the revised paths: beta 1.2 gives a
+   WACC of 10.98% and Muddle Through A$5.90; beta 1.6 gives 12.87% and A$5.25. Observed betas for
+   EVN and the peers are needed before D-101 is ruled.
+5. **Terminal value.** The model already runs every mine to the end of its stated life, mine by
+   mine, to FY54. There is no perpetuity and no growth rate. The "terminal" is only the present
+   value of years 11 to closure, kept separate so the ten-year split of D-71 can be shown. For a
+   miner it would read better labelled "life-of-mine cash flows after year 10" (gap 7).
