@@ -32,7 +32,7 @@ kept getting reopened.
 It regenerates the two maps, runs the suite and the ratchet, checks the base ties and
 prints git state.
 
-## 🔴 REVIEW IN PROGRESS — 20 October 2026, mid-afternoon: EVN decisions
+## 🔴 REVIEW DONE — 20 October 2026: EVN decisions (next: batch 3, see notes/bridge/bridge_note_2026-10-20c_evn_batch3.md)
 
 Recommendations on D-96 to D-101 and the framework gaps are in
 `design/methodology/evn_review_2026-10-20.md`, put to Stephen and awaiting his rulings. In short:
@@ -69,6 +69,11 @@ relabel the run-off for miners.
 (0.90 stays as the working figure). Miners' cash flows after year 10 are labelled "life-of-mine cash
 flows after year 10", not a terminal value. Still awaiting rulings: D-96, D-97, D-98 (E22 out of both
 capital and volume), D-100; the gap order; FY26 annual report; PDF renames.
+
+**Stephen 15:14: "agree with all".** D-96, D-97, D-98 (E22 excluded; not yet implemented) and D-100
+ruled. Gap order agreed. PDF renames agreed (show the plan first). FY26 annual report to come from
+Stephen. **Next: batch 3**, run as parallel and serial lanes; the plan and the UI timing are in
+`notes/bridge/bridge_note_2026-10-20c_evn_batch3.md`.
 
 ## 🔴 HANDOVER — sitting of 20 October 2026, afternoon: EVN first build (read this first)
 
