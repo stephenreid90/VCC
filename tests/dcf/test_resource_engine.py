@@ -110,3 +110,49 @@ def test_tax_is_charged_on_ebitda_less_book_depreciation():
     # EBITDA 110 a full year; D&A 100koz x A$300 = 30; tax 30% x 80 = 24.
     r = ResourceEngine().run(_inputs([_gold_mine(inventory_gold_koz=1000.0, da_aud_oz=300.0)], tax=0.30))
     assert r.tax[1] == pytest.approx(24.0)
+
+
+# --- D-104: the cost-price link (ruled 20 Oct 2026) ----------------------------------
+
+from vcc_valuations.dcf.resource_engine import cost_price_link_path  # noqa: E402
+
+
+def test_cost_price_link_path_by_hand():
+    # Real price 100, 100, 120, 90, 300. Elasticity 0.15, lag 1, cap +20%:
+    # t0 1 (reference), t1 reads t0 -> 1, t2 reads t1 -> 1, t3 reads t2 (+20%) -> 1.03,
+    # t4 reads t3 (-10%) -> 0.985; a sixth period would read +200% -> 1.30, capped 1.20.
+    link = cost_price_link_path([100.0, 100.0, 120.0, 90.0, 300.0, 300.0], 0.15, 1, 0.20)
+    assert link == pytest.approx([1.0, 1.0, 1.0, 1.03, 0.985, 1.20])
+
+
+def test_cost_price_link_is_floored_at_one_when_not_symmetric():
+    link = cost_price_link_path([100.0, 80.0, 80.0], 0.15, 1, 0.20, symmetric=False)
+    assert link == pytest.approx([1.0, 1.0, 1.0])
+    assert cost_price_link_path([100.0, 80.0, 80.0], 0.15, 1, 0.20) == pytest.approx([1.0, 1.0, 0.97])
+
+
+def test_cost_price_link_with_no_lag_and_an_explicit_reference():
+    # Reference 200 while the path sits at 100: every period reads -50% -> 0.925.
+    assert cost_price_link_path([100.0, 100.0], 0.15, 0, 0.20, reference=200.0) == pytest.approx([0.925, 0.925])
+
+
+def test_cost_price_link_moves_cash_cost_and_sustaining_capital_only():
+    # Full year: cash cost (AISC 100 less sustaining 10) = 90 and sustaining 10 move by
+    # 1.10; mine development 5 does not. opex 99; capex 11 + 5 = 16.
+    m = _gold_mine(inventory_gold_koz=1000.0)
+    base = ResourceEngine().run(_inputs([m]))
+    inp = _inputs([_gold_mine(inventory_gold_koz=1000.0)])
+    inp.cost_price_link = [1.0, 1.10]
+    r = ResourceEngine().run(inp)
+    assert base.operating_cost[1] == pytest.approx(90.0)
+    assert r.operating_cost[1] == pytest.approx(99.0)
+    assert r.capex[1] == pytest.approx(16.0)
+    assert r.revenue[1] == pytest.approx(base.revenue[1])
+    assert r.cost_price_link[:2] == pytest.approx([1.0, 1.10])
+
+
+def test_cost_price_link_does_not_touch_the_royalty():
+    inp = _inputs([_gold_mine(inventory_gold_koz=1000.0)], gold=3000.0, royalty=0.05)
+    inp.cost_price_link = [1.0, 1.20]
+    r = ResourceEngine().run(inp)
+    assert r.royalty[1] == pytest.approx(15.0)

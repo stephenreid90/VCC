@@ -58,6 +58,43 @@
       "title": "DemandProfile",
       "type": "object"
     },
+    "DerivedMacroVariable": {
+      "additionalProperties": false,
+      "description": "A base macro series produced from another series in the same scenario (R16-5, 16 Oct 2026).\n\n``variable`` = ``from_series`` + ``offset_pp`` at every year the source series carries.\nThe script ``scripts/derive_macro_driver_paths.py --write`` renders it into\n``macro_variables`` inside a ``BEGIN derived paths (scenario)`` block, and\n``tests/test_macro_driver_paths.py`` asserts the committed block matches. The\noffset is a declared judgement with a written basis, not a typed path.",
+      "properties": {
+        "variable": {
+          "title": "Variable",
+          "type": "string"
+        },
+        "from_series": {
+          "title": "From Series",
+          "type": "string"
+        },
+        "offset_pp": {
+          "description": "Percentage points added to the source series.",
+          "title": "Offset Pp",
+          "type": "number"
+        },
+        "units": {
+          "default": "percent_yoy",
+          "title": "Units",
+          "type": "string"
+        },
+        "basis": {
+          "description": "Who ruled it, when, and why.",
+          "title": "Basis",
+          "type": "string"
+        }
+      },
+      "required": [
+        "variable",
+        "from_series",
+        "offset_pp",
+        "basis"
+      ],
+      "title": "DerivedMacroVariable",
+      "type": "object"
+    },
     "FinancialConditions": {
       "additionalProperties": false,
       "properties": {
@@ -304,6 +341,21 @@
           "minItems": 1,
           "title": "Macro Variables",
           "type": "array"
+        },
+        "derived_macro_variables": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/DerivedMacroVariable"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Derived Macro Variables"
         },
         "geopolitical": {
           "$ref": "#/$defs/Geopolitical"

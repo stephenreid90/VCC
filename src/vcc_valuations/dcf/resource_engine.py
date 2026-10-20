@@ -17,6 +17,9 @@ RENT on the ore with an end date (D-43a), not a barrier that a rival erodes. So:
     - costs are the guidance AISC with the by-product credit added back and the royalty
       stripped out, so copper and royalties move with their own prices, escalated by the
       scenario's CPI plus the archetype's real cost escalator;
+    - non-royalty cash cost and sustaining capital also follow the primary commodity's
+      real price with a lag and a cap (D-104): the ``cost_price_link`` path, built by
+      ``cost_price_link_path`` from the archetype's declared elasticity;
     - the D-71 ten-year explicit period is kept. The terminal is the DEPLETION RUN-OFF:
       the present value of every cash flow after year ten until the last mine closes,
       then nothing -- replacement capital earns the cost of capital (D-97 proposed).
@@ -94,6 +97,9 @@ class ResourceEngineInputs:
     wacc: Union[WaccBuild, float]
     equity_bridge: EquityBridge
     notes: List[str] = field(default_factory=list)
+    # D-104: per-period multiplier on non-royalty cash cost and sustaining capital from
+    # the primary commodity's real price (``cost_price_link_path``). Empty = no link.
+    cost_price_link: List[float] = field(default_factory=list)
 
     @property
     def wacc_scalar(self) -> float:
@@ -125,6 +131,7 @@ class ResourceDcfResult:
     wacc: float
     mid_times: List[float]
     discount_factors: List[float]
+    cost_price_link: List[float]       # the D-104 multiplier actually applied, per period
     pv_fcff: List[float]
     pv_explicit: float
     pv_terminal: float
@@ -150,6 +157,35 @@ def _at(path: List[float], t: int) -> float:
     return path[t] if t < len(path) else path[-1]
 
 
+def cost_price_link_path(real_price: List[float], elasticity: float, lag_periods: int,
+                         cap_above_base: float, reference: Optional[float] = None,
+                         symmetric: bool = True) -> List[float]:
+    """The D-104 cost-price link, one multiplier per period on non-royalty cash cost and
+    sustaining capital.
+
+    Period t reads the primary commodity's real price ``lag_periods`` earlier and moves the
+    cost by ``elasticity`` x the price's proportional move from ``reference`` (the period-0
+    real price unless given): 1 + e x (P[t-lag] / P_ref - 1). Linear in the move, as the
+    rule is stated ("1.5% for each 10%"), capped at ``1 + cap_above_base``, and symmetric
+    (costs ease below 1.0 when the price falls) unless ``symmetric`` is False, when the
+    multiplier never drops below 1.0 (costs sticky downward). Periods before the lag can read anything carry 1.0, as does the reference period
+    itself: guidance costs are already struck at the reference price.
+    """
+    if not real_price:
+        return []
+    ref = real_price[0] if reference is None else reference
+    if ref <= 0:
+        raise ValueError("cost-price link: the reference real price must be positive")
+    lag = max(int(lag_periods), 0)
+    out: List[float] = []
+    for t in range(len(real_price)):
+        s = t - lag
+        p = real_price[s] if s >= 0 else ref
+        m = min(1.0 + elasticity * (p / ref - 1.0), 1.0 + cap_above_base)
+        out.append(m if symmetric else max(m, 1.0))
+    return out
+
+
 class ResourceEngine:
     """Mine-by-mine depletion DCF. ``run(inputs) -> ResourceDcfResult``."""
 
@@ -165,7 +201,7 @@ class ResourceEngine:
 
         cols = {k: [] for k in ("gold", "cu", "rev", "roy", "opex", "expl", "ebitda",
                                 "da", "tax", "capex", "dwc", "fcff")}
-        gold_px, cu_px = [], []
+        gold_px, cu_px, link_applied = [], [], []
         prev_rev_annual: Optional[float] = None
         t = 0
         while True:
@@ -173,6 +209,7 @@ class ResourceEngine:
             ci = _at(inp.cost_index, t)
             pg = _at(inp.gold_aud_oz, t)
             pc = _at(inp.copper_aud_t, t)
+            link = _at(inp.cost_price_link, t) if inp.cost_price_link else 1.0
             gold = cu = rev = opex = expl = da = capex = 0.0
             producing = False
             for m in inp.mines:
@@ -202,9 +239,12 @@ class ResourceEngine:
                 guidance_royalty = inp.royalty_rate * (
                     m.gold_koz_pa * inp.guidance_gold_aud_oz + m.copper_kt_pa * inp.guidance_copper_aud_t
                 ) / _THOUSANDS_PER_MILLION
-                opex += (gross - guidance_royalty - m.sustaining_capex) * scale * ci
+                # D-104: the non-royalty cash cost and sustaining capital follow the
+                # primary commodity's lagged real price; mine development, exploration
+                # and corporate do not.
+                opex += (gross - guidance_royalty - m.sustaining_capex) * scale * ci * link
                 expl += m.exploration * scale * ci
-                capex += (m.sustaining_capex + m.mine_development) * scale * ci
+                capex += (m.sustaining_capex * link + m.mine_development) * scale * ci
                 capex += _at(m.project_capex, t) * frac * ci if t < len(m.project_capex) else 0.0
                 da += m.da_aud_oz * g / _THOUSANDS_PER_MILLION
             if not producing and all(t >= m.start_period for m in inp.mines):
@@ -224,6 +264,7 @@ class ResourceEngine:
                 cols[k].append(v)
             gold_px.append(pg)
             cu_px.append(pc)
+            link_applied.append(link)
             t += 1
             if t >= _MAX_PERIODS:
                 raise ValueError(f"{inp.company_id}: inventory not exhausted in {_MAX_PERIODS} periods.")
@@ -275,7 +316,7 @@ class ResourceEngine:
             exploration_and_corporate=cols["expl"], ebitda=cols["ebitda"], da=cols["da"],
             tax=cols["tax"], capex=cols["capex"], delta_wc=cols["dwc"], fcff=cols["fcff"],
             mine_last_period=last_period, wacc=r, mid_times=mid_times, discount_factors=dfs,
-            pv_fcff=pv, pv_explicit=pv_explicit, pv_terminal=pv_terminal,
+            cost_price_link=link_applied, pv_fcff=pv, pv_explicit=pv_explicit, pv_terminal=pv_terminal,
             terminal_value=terminal_value, terminal_end_time=terminal_end_time,
             terminal_form=TERMINAL_FORM_DEPLETION, enterprise_value=ev,
             net_debt_at_valuation=eb.net_debt_at_valuation,

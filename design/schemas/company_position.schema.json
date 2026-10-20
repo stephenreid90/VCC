@@ -23,6 +23,80 @@
         "liquidity": {
           "title": "Liquidity",
           "type": "string"
+        },
+        "cet1_ratio": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cet1 Ratio"
+        },
+        "cet1_ratio_level_1": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cet1 Ratio Level 1"
+        },
+        "tier_1_ratio": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tier 1 Ratio"
+        },
+        "total_capital_ratio": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Total Capital Ratio"
+        },
+        "apra_leverage_ratio": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Apra Leverage Ratio"
+        },
+        "archetype_specific": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Opaque home for any further archetype-specific balance-sheet metrics.",
+          "title": "Archetype Specific"
         }
       },
       "required": [
@@ -161,6 +235,186 @@
           },
           "title": "Corporate Actions",
           "type": "array"
+        },
+        "industry_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Industry Type"
+        },
+        "industry_archetype": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Industry Archetype"
+        },
+        "five_forces_company_position": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Five Forces Company Position"
+        },
+        "net_company_position_offset_summary": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Net Company Position Offset Summary"
+        },
+        "share_statistics": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Share Statistics"
+        },
+        "industry_archetype_consolidated": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Industry Archetype Consolidated"
+        },
+        "industry_archetype_by_segment": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Industry Archetype By Segment"
+        },
+        "segment_level_valuation": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Segment Level Valuation"
+        },
+        "segment_level_valuation_rationale": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Segment Level Valuation Rationale"
+        },
+        "peer_gap_closure_overlay": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Peer Gap Closure Overlay"
+        },
+        "patent_exposure_overlay": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Patent Exposure Overlay"
+        },
+        "bank_specifics": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Bank Specifics"
+        },
+        "archetype_specific": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Archetype Specific"
+        },
+        "capital_actions": {
+          "anyOf": [
+            {
+              "items": {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Capital Actions"
         }
       },
       "required": [
@@ -532,11 +786,12 @@
       "type": "object"
     },
     "LeveragePosture": {
-      "description": "Company-level capital-structure stance (section 8.2).",
+      "description": "Company-level capital-structure stance (section 8.2).\n\n``prudentially_strong`` is the bank-archetype posture: banks are not scored on\nnet-debt/EBITDA leverage (that field is null for banks \u2014 see BalanceSheet); their\ncapital-structure stance is a regulatory capital-adequacy judgement (CET1 vs the\nAPRA \"unquestionably strong\" floor), captured here rather than the generic scale.",
       "enum": [
         "low",
         "moderate",
-        "high"
+        "high",
+        "prudentially_strong"
       ],
       "title": "LeveragePosture",
       "type": "string"
@@ -614,19 +869,33 @@
           "type": "string"
         },
         "delta_5yr_bps": {
-          "description": "Quantified change in share, basis points.",
-          "title": "Delta 5Yr Bps",
-          "type": "integer"
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Quantified change in share, basis points (optional where not disclosed).",
+          "title": "Delta 5Yr Bps"
         },
         "narrative": {
-          "title": "Narrative",
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Narrative"
         }
       },
       "required": [
-        "direction",
-        "delta_5yr_bps",
-        "narrative"
+        "direction"
       ],
       "title": "MarketTrend",
       "type": "object"
@@ -642,6 +911,27 @@
           },
           "title": "Sources",
           "type": "array"
+        },
+        "source_roles": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "enum": [
+                  "rent",
+                  "barrier",
+                  "both"
+                ],
+                "type": "string"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "D-43a. What each source actually does: 'rent' confers a cash advantage with an end date, 'barrier' is what stops a rival taking the business, 'both' is both. A contractual or statutory expiry dates a rent and is carried in the explicit period; the terminal decay horizon comes from the longest-lived barrier. Keys must match 'sources' exactly where declared.",
+          "title": "Source Roles"
         },
         "durability": {
           "$ref": "#/$defs/Durability"
@@ -753,8 +1043,16 @@
           "type": "string"
         },
         "functional_currency_rationale": {
-          "title": "Functional Currency Rationale",
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Functional Currency Rationale"
         },
         "revenue_share": {
           "maximum": 1.0,
@@ -763,8 +1061,28 @@
           "type": "number"
         },
         "ebit_share": {
-          "title": "Ebit Share",
-          "type": "number"
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ebit Share"
+        },
+        "operating_result_share": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Operating Result Share"
         },
         "notes": {
           "anyOf": [
@@ -779,17 +1097,41 @@
           "title": "Notes"
         },
         "market_positions": {
-          "items": {
-            "$ref": "#/$defs/MarketPosition"
-          },
-          "title": "Market Positions",
-          "type": "array"
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/MarketPosition"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Market Positions"
         },
         "moat": {
-          "$ref": "#/$defs/Moat"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Moat"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         },
         "competitive_position": {
-          "$ref": "#/$defs/CompetitivePosition"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompetitivePosition"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         },
         "innovation_position": {
           "anyOf": [
@@ -814,10 +1156,86 @@
           "default": null
         },
         "capability_profile": {
-          "$ref": "#/$defs/CapabilityProfile"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CapabilityProfile"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         },
         "risk_exposures": {
-          "$ref": "#/$defs/RiskExposures"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RiskExposures"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "five_forces_company_position": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Five Forces Company Position"
+        },
+        "net_company_position_offset_summary": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Net Company Position Offset Summary"
+        },
+        "acquired": {
+          "anyOf": [
+            {},
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Acquired"
+        },
+        "demerger_status": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Demerger Status"
+        },
+        "demerger_notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Demerger Notes"
         },
         "archetype_specific": {
           "anyOf": [
@@ -849,14 +1267,7 @@
         "segment",
         "industry_archetype",
         "functional_currency",
-        "functional_currency_rationale",
-        "revenue_share",
-        "ebit_share",
-        "market_positions",
-        "moat",
-        "competitive_position",
-        "capability_profile",
-        "risk_exposures"
+        "revenue_share"
       ],
       "title": "Segment",
       "type": "object"
@@ -867,6 +1278,19 @@
   "properties": {
     "company_position": {
       "$ref": "#/$defs/CompanyPosition"
+    },
+    "normalised_baseline": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Normalised Baseline"
     }
   },
   "required": [

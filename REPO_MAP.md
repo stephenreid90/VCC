@@ -3,10 +3,10 @@
 _Generated 2026-10-20 by `scripts/repo_inventory.py`. **Regenerate at the start of
 a session, before reasoning about what data exists.** Do not hand-edit._
 
-- HEAD: `13ea630 Bridge note: start Evolution Mining (EVN), the first miner` on `main`
+- HEAD: `4574d70 Bridge note for the cost-price link sitting (D-104)` on `main`
 - Unpushed commits: **0**
-- Tracked files: 393
-- Untracked files: 15
+- Tracked files: 439
+- Untracked files: 2
 
 > **The rule this file exists to enforce:** a curated `*.yaml` in `data/` is a
 > SUMMARY, not the source. Before concluding that data does not exist, check the
@@ -59,8 +59,8 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `dnl.md` (13.7KB)
     - `dnl.yaml` (45.3KB)
     - `dnl_documents.yaml` (8.7KB)
-    - `evn.yaml` (11.1KB)
-    - `evn_documents.yaml` (2.3KB)
+    - `evn.yaml` (11.3KB)
+    - `evn_documents.yaml` (2.4KB)
     - `wbc.md` (7.7KB)
     - `wbc.yaml` (39.1KB)
     - `wbc_documents.yaml` (20.3KB)
@@ -70,11 +70,13 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `csl.yaml` (10.1KB)
     - `csl_eodhd_fundamentals_2026-06-15.csv` (157.7KB)
     - `dnl.yaml` (12.3KB)
-    - `evn.yaml` (9.1KB)
+    - `evn.yaml` (9.7KB)
     - `mqg_eodhd_fundamentals_2026-06-15.csv` (152.0KB)
     - `nab_eodhd_fundamentals_2026-06-15.csv` (179.0KB)
     - `wbc.yaml` (1.9KB)
     - `wbc_eodhd_fundamentals_2026-06-15.csv` (182.5KB)
+    - **actuals/**
+      - `evn_fy26_actuals.yaml` (18.1KB)
     - **historical/**
   - **impact_matrix/**
     - **by_industry/**
@@ -88,7 +90,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - **industries/**
     - `australian_major_banks.md` (7.4KB)
     - `australian_major_banks.yaml` (22.2KB)
-    - `gold_producers.yaml` (9.2KB)
+    - `gold_producers.yaml` (10.6KB)
     - `industrial_explosives.md` (14.6KB)
     - `industrial_explosives.yaml` (15.9KB)
     - `plasma_derived_therapies.yaml` (9.1KB)
@@ -98,7 +100,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `rba_cash_rate.yaml` (1.4KB)
   - **scenarios/**
     - `ai_productivity_lag.md` (8.9KB)
-    - `ai_productivity_lag.yaml` (16.0KB)
+    - `ai_productivity_lag.yaml` (16.1KB)
     - `disorderly_climate_crystallisation.md` (8.6KB)
     - `disorderly_climate_crystallisation.yaml` (16.8KB)
     - `fragmentation.md` (7.9KB)
@@ -106,9 +108,9 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `muddle_through.md` (8.2KB)
     - `muddle_through.yaml` (14.4KB)
     - `orderly_convergence.md` (7.0KB)
-    - `orderly_convergence.yaml` (14.8KB)
+    - `orderly_convergence.yaml` (15.0KB)
     - `stagflation_persists.md` (6.9KB)
-    - `stagflation_persists.yaml` (15.8KB)
+    - `stagflation_persists.yaml` (16.0KB)
 
 ## Design and methodology
 
@@ -128,7 +130,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `five_forces_questions.md` (47.8KB)
     - `payor_and_regulator.md` (17.3KB)
   - **methodology/**
-    - `adding_a_company.md` (8.9KB)
+    - `adding_a_company.md` (11.2KB)
     - `bank_nim_pass_through_set.yaml` (2.0KB)
     - `csl_cost_of_debt_and_target_structure.md` (13.4KB)
     - `csl_discount_rate_fork.md` (11.0KB)
@@ -140,10 +142,13 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `dnl_working_capital_derivation.md` (12.4KB)
     - `driver_path_translation_proposal.md` (8.2KB)
     - `equity_bridge_and_valuation_mechanics.md` (71.8KB)
+    - `evn_cost_vs_gold_evidence_2026-10-20.md` (14.6KB)
+    - `evn_engine_vs_company_2026-10-20.md` (20.4KB)
+    - `evn_review_2026-10-20.md` (8.1KB)
     - `horizon_and_terminal_convergence.md` (47.2KB)
     - `horizon_variant_sets.yaml` (12.0KB)
-    - `resource_lifecycle_and_mining_drivers.md` (16.2KB)
-    - `resource_valuation_sets.yaml` (1.9KB)
+    - `resource_lifecycle_and_mining_drivers.md` (24.9KB)
+    - `resource_valuation_sets.yaml` (2.9KB)
     - `terminal_disclosure_set.yaml` (17.5KB)
     - `terminal_growth_sets.yaml` (6.0KB)
     - `terminal_moat_fade_evidence.md` (6.9KB)
@@ -165,21 +170,21 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `triage_full_project_review_2026-08-13_opus.md` (31.6KB)
     - `vcc_valuations_rev1_response_2026-05-16.md` (12.1KB)
   - **schemas/**
-    - `assumption_set.schema.json` (12.0KB)
-    - `company_override.schema.json` (7.9KB)
-    - `company_position.schema.json` (22.2KB)
-    - `driver_catalogue.schema.json` (5.7KB)
-    - `driver_movement_set.schema.json` (13.2KB)
-    - `impact_matrix.schema.json` (6.7KB)
-    - `industry_archetype.schema.json` (26.2KB)
-    - `scenario.schema.json` (11.9KB)
+    - `assumption_set.schema.json` (11.5KB)
+    - `company_override.schema.json` (7.6KB)
+    - `company_position.schema.json` (31.3KB)
+    - `driver_catalogue.schema.json` (5.5KB)
+    - `driver_movement_set.schema.json` (12.7KB)
+    - `impact_matrix.schema.json` (11.0KB)
+    - `industry_archetype.schema.json` (56.0KB)
+    - `scenario.schema.json` (13.2KB)
 
 ## Source code
 
   - **vcc_valuations/**
     - `__init__.py` (667B)
     - `derivation.py` (4.4KB)
-    - `resource_translator.py` (15.2KB)
+    - `resource_translator.py` (18.2KB)
     - `translator.py` (97.3KB)
     - **assumptions/**
       - `__init__.py` (775B)
@@ -191,7 +196,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `bank_engine.py` (23.3KB)
       - `fcf_engine.py` (31.9KB)
       - `fcf_stub.py` (10.1KB)
-      - `resource_engine.py` (13.1KB)
+      - `resource_engine.py` (15.5KB)
       - `segment_engine.py` (13.6KB)
       - `terminal_return.py` (19.1KB)
       - `terminal_value.py` (12.8KB)
@@ -205,7 +210,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
       - `common.py` (5.1KB)
       - `company.py` (13.4KB)
       - `driver.py` (4.1KB)
-      - `frameworks.py` (7.7KB)
+      - `frameworks.py` (9.3KB)
       - `industry.py` (30.5KB)
       - `linkage.py` (12.4KB)
       - `scenario.py` (5.7KB)
@@ -216,8 +221,8 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `conftest.py` (2.6KB)
   - `moat_role_baseline.json` (895B)
   - `ssot_basis_baseline.json` (494B)
-  - `ssot_intra_file_baseline.json` (729B)
-  - `ssot_lint_baseline.json` (6.7KB)
+  - `ssot_intra_file_baseline.json` (695B)
+  - `ssot_lint_baseline.json` (4.5KB)
   - `ssot_macro_driver_baseline.json` (3B)
   - `terminal_defence_baseline.json` (3.4KB)
   - `terminal_form_baseline.json` (2.1KB)
@@ -235,7 +240,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
   - `test_macro_driver_paths.py` (18.3KB)
   - `test_moat_source_roles.py` (4.5KB)
   - `test_resource_lifecycle_schema.py` (921B)
-  - `test_ssot_lint.py` (31.6KB)
+  - `test_ssot_lint.py` (33.0KB)
   - `test_three_statement.py` (717B)
   - `test_trade_working_capital_intensity.py` (3.3KB)
   - `test_ui_backlog_36_37.py` (3.0KB)
@@ -251,6 +256,7 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `__init__.py` (0B)
     - `test_bank_nim_pass_through.py` (1.9KB)
     - `test_chain_term_glide.py` (9.3KB)
+    - `test_cost_price_link.py` (3.9KB)
     - `test_csl_market_gap_set.py` (4.3KB)
     - `test_csl_segment.py` (6.3KB)
     - `test_csl_terminal_return_sets.py` (4.3KB)
@@ -272,9 +278,9 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `test_horizon_variant_sets.py` (5.1KB)
     - `test_per_year_derivations.py` (3.8KB)
     - `test_replica_ties_engine.py` (6.6KB)
-    - `test_resource_engine.py` (5.8KB)
+    - `test_resource_engine.py` (7.9KB)
     - `test_resource_valuation_sets.py` (1.2KB)
-    - `test_scenario_goldens.py` (30.3KB)
+    - `test_scenario_goldens.py` (30.6KB)
     - `test_terminal_defence.py` (7.0KB)
     - `test_terminal_form.py` (8.9KB)
     - `test_terminal_form_bank_segment.py` (6.9KB)
@@ -311,6 +317,17 @@ a session, before reasoning about what data exists.** Do not hand-edit._
     - `cfgs_gen.json` (261.9KB)
     - `engine_workbook.py` (125.3KB)
     - `gen_ui.py` (99.4KB)
+  - **resource_review/**
+    - `evn_review_data.json` (76.9KB)
+    - `evn_review_page.html` (39.6KB)
+    - **evn/**
+      - `cash_flow.json` (56.3KB)
+      - `gold_grid.json` (51.7KB)
+      - `mines.json` (1.2KB)
+      - `model_inputs.json` (1.8KB)
+      - `price_basis.json` (6.7KB)
+      - `price_paths.json` (34.7KB)
+      - `scenarios.json` (3.2KB)
 
 ## Analyses (workbooks)
 
@@ -394,19 +411,6 @@ a session, before reasoning about what data exists.** Do not hand-edit._
 Not in git. Either commit them or clear them — an untracked file is invisible
 to anyone who clones the repo, and is the most common way work gets lost.
 
-- `data/companies/evn.yaml`
-- `data/companies/evn_documents.yaml`
-- `data/financials/evn.yaml`
-- `data/financials/historical/evn/`
-- `data/impact_matrix/by_industry/gold_producers.yaml`
-- `data/industries/gold_producers.yaml`
-- `design/methodology/resource_lifecycle_and_mining_drivers.md`
-- `design/methodology/resource_valuation_sets.yaml`
-- `notes/bridge/bridge_note_2026-10-20b_evn_review.md`
-- `scripts/size_resource_valuation.py`
-- `src/vcc_valuations/dcf/resource_engine.py`
-- `src/vcc_valuations/resource_translator.py`
-- `tests/dcf/test_resource_engine.py`
-- `tests/dcf/test_resource_valuation_sets.py`
-- `tests/test_resource_lifecycle_schema.py`
+- `notes/bridge/bridge_note_2026-10-20e_gap9_ui.md`
+- `tests/dcf/test_cost_price_link.py`
 

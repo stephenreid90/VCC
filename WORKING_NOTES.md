@@ -32,6 +32,28 @@ kept getting reopened.
 It regenerates the two maps, runs the suite and the ratchet, checks the base ties and
 prints git state.
 
+## 🔴 COST-PRICE LINK BUILT — 20 October 2026, evening (D-104 implemented; next: gap 9, EVN in the main UI)
+
+D-104 built as `cost_price_link` on the `gold_producers` archetype (`resource_lifecycle` block: elasticity
+1.5% per 10%, lag 1y, cap +20%, symmetric, range 0.5-3.0), overridable per company in
+`normalised_baseline.cost_price_link` (EVN overrides nothing). Engine: `cost_price_link_path()` in
+`resource_engine.py` (pure, names no commodity); multiplier on gross cash cost and sustaining capital only.
+Translator reads the `primary` series' real A$ price against the scenario's period-0 level. Method: paper §2
+D-104 and §4 step 3. Tests: `tests/dcf/test_cost_price_link.py` (5) and five engine cases.
+
+Levels (A$/share): OC 5.07, MT 6.57, AI 7.47, Frag 10.02, DCC 7.19, Stag 9.72 (were 4.99, 6.57, 7.51,
+10.21, 7.15, 9.85); link off reproduces the old six exactly. Gold multiple 1.44 -> 1.48 (the scaled path
+now carries a cost response, measured against unscaled spot). Set `evn`, goldens, review data re-pinned;
+JSON schema exports regenerated (they were stale since earlier model changes). DCF 473 passed, rest 384.
+
+Build choices Stephen has not yet seen (medium): (1) linear form, not a power law; (2) reference = the
+scenario's own period-0 real price, so Muddle Through is untouched and Orderly Convergence (year 1 at
+US$4,100, below spot) eases from day one; (3) the market-implied path is read against unscaled spot;
+(4) real A$ price, so AUD moves count; (5) mine development, exploration and corporate do not move.
+
+**Next:** gap 9 (EVN in the main prototype UI, serious, its own chat). Still awaiting: D-101 observed
+betas (Ben); PDF renames in `notes/evn_pdf_rename_plan_2026-10-20.md`.
+
 ## 🔴 BATCH 3 run — 20 October 2026, 16:00 (parallel lane landed; E22 on branch awaiting a ruling)
 
 E22 implemented (D-103, 20 Oct 2026): A$109m a year out of Northparkes FY27 major project capital; E22 excluded from capital and volume at zero NPV. Levels now OC 4.99, MT 6.57, AI 7.51, Frag 10.21, DCC 7.15, Stag 9.85 (were 4.88, 6.47, 7.40, 10.10, 7.04, 9.74); gold multiple 1.44. EVN goldens re-pinned.

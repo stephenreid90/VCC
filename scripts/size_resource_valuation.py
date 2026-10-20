@@ -3,7 +3,8 @@
 Writes ``design/methodology/resource_valuation_sets.yaml``: for each resource company,
 the six scenario levels on the declared inventory basis, the sized alternatives the
 method paper cites (reserves-only life, a declared life extension, WACC +/- 1pp, spot
-prices held flat in real terms) and the market-implied gold price. Every figure in
+prices held flat in real terms, the D-104 cost-price link off and at the ends of its
+declared range) and the market-implied gold price. Every figure in
 ``design/methodology/resource_lifecycle_and_mining_drivers.md`` cites a set from this
 file; ``tests/dcf/test_resource_valuation_sets.py`` regenerates and asserts it.
 
@@ -23,7 +24,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from vcc_valuations.dcf.resource_engine import ResourceEngine  # noqa: E402
-from vcc_valuations.resource_translator import build_resource_inputs_from_data  # noqa: E402
+from vcc_valuations.resource_translator import build_resource_inputs_from_data, cost_price_link_params  # noqa: E402
 from vcc_valuations.translator import load_inputs  # noqa: E402
 
 OUT = ROOT / "design" / "methodology" / "resource_valuation_sets.yaml"
@@ -89,6 +90,16 @@ def size() -> dict:
         sens["spot_flat_real"] = round(run(cid, arch, BASELINE_SCENARIO, flat_real=flat)[0].value_per_share, 4)
         sens["spot_flat_real_life_extension"] = round(
             run(cid, arch, BASELINE_SCENARIO, flat_real=flat, basis="life_extension")[0].value_per_share, 4)
+        # D-104: the link off, and at each end of the archetype's declared sensitivity range
+        link = cost_price_link_params(inp)
+        if link is not None:
+            lo, hi = link["sensitivity_range_per_10pct"]
+            for label, e in (("off", 0.0), ("low", lo), ("high", hi)):
+                sens[f"cost_price_link_{label}"] = {
+                    "elasticity_per_10pct": e,
+                    "levels": {s: round(run(cid, arch, s, cost_link_override={"elasticity_per_10pct": e})[0].value_per_share, 4)
+                               for s in SCENARIOS},
+                }
         price = fin["market_data"]["price_aud"]
         k = market_implied_gold_scale(cid, arch, BASELINE_SCENARIO, price)
         ref = inp["scenario"]
@@ -97,6 +108,8 @@ def size() -> dict:
         sets[cid] = {
             "status": "current",
             "basis": nb["inventory"]["basis"],
+            "cost_price_link": None if link is None else {k: link[k] for k in
+                                                           ("elasticity_per_10pct", "lag_years", "cap_above_base_pct", "symmetric")},
             "wacc": round(w, 6),
             "levels": levels,
             "terminal_shares": shares,

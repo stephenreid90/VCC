@@ -105,6 +105,24 @@ industry_archetype:
         price path, which is a scenario input. An industry cost-curve anchor (average and
         90th-percentile AISC) is NOT yet sourced to a primary document; see the method
         paper's gap list.
+      # D-104 (ruled 20 Oct 2026). Non-royalty unit costs (cash cost plus sustaining
+      # capital) follow the primary commodity's real price, measured in the functional
+      # currency against the scenario's valuation-date level, one year late, capped, and
+      # symmetric. Royalties stay fully price-linked (the engine already does this);
+      # mine development, exploration and corporate cost do not move. Evidence:
+      # design/methodology/evn_cost_vs_gold_evidence_2026-10-20.md (EVN FY22-FY26,
+      # non-royalty AISC elasticity about 0.19 nominal, 0.08-0.12 from FY23).
+      cost_price_link:
+        elasticity_per_10pct: 1.5          # [judgment] central; nominal evidence 0.8-2.7 per 10%, CPI still inside it
+        lag_years: 1                       # [judgment] FY23-24 showed no response; the rise came the next year
+        cap_above_base_pct: 20.0           # [judgment] safety limit; binds only after a real rise of about 130%
+        symmetric: true                    # [judgment] no year of falling gold in the evidence
+        sensitivity_range_per_10pct: [0.5, 3.0]
+        rationale: >
+          Higher prices let miners run lower grades, pay more for labour and contractors,
+          and accept higher-cost ounces; the industry's cost base therefore drifts up with
+          the price, less than one for one. The link is applied to every miner on this
+          archetype; a company can override the parameters, not the method.
       inventory_basis: stated_life
       inventory_basis_rationale: >
         The company's disclosed life-of-mine end year at its current guidance rate. Ore

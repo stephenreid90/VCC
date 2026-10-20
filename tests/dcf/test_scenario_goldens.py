@@ -296,28 +296,31 @@ CSL_GOLDEN = {
 
 
 # --- EVN: resource depletion FCFF / WACC (D-96 proposed), AUD per share -----------
+# Re-pinned 20 Oct 2026 for D-104 (cost-price link: Muddle Through unchanged, since its
+# real gold path is flat; link off reproduces the D-103 levels 4.9860 / 6.5733 / 7.5105 /
+# 10.2098 / 7.1525 / 9.8540, see resource_valuation_sets.yaml cost_price_link_off).
 # Re-pinned 20 Oct 2026 for D-103 (E22 out of capital and volume). Originally pinned at first build (valuation date 20 Oct 2026, D-94). Inventory on
 # the stated mine lives (D-98 proposed), depletion run-off terminal with replacement at
 # zero NPV (D-97 proposed), WACC 9.55% (D-101 proposed). Market reference A$12.09: every
 # scenario sits well below it; the gap is disclosed, not reconciled (D-92's principle),
 # see design/methodology/resource_valuation_sets.yaml for the market-implied gold price.
 EVN_GOLDEN = {
-    "orderly_convergence": 4.9860,
+    "orderly_convergence": 5.0732,
     "muddle_through": 6.5733,
-    "ai_productivity_lag": 7.5105,
-    "fragmentation": 10.2098,
-    "disorderly_climate_crystallisation": 7.1525,
-    "stagflation_persists": 9.8540,
+    "ai_productivity_lag": 7.4652,
+    "fragmentation": 10.0223,
+    "disorderly_climate_crystallisation": 7.1871,
+    "stagflation_persists": 9.7242,
 }
 # The run-off after year 10 is 18-20% of EV: a finite life puts most of the value in
 # the explicit period, the reverse of the three going-concern companies.
 EVN_TERMINAL_SHARES = {
-    "orderly_convergence": 0.1789,
+    "orderly_convergence": 0.1807,
     "muddle_through": 0.1910,
-    "ai_productivity_lag": 0.1950,
-    "fragmentation": 0.1960,
-    "disorderly_climate_crystallisation": 0.1824,
-    "stagflation_persists": 0.1865,
+    "ai_productivity_lag": 0.1944,
+    "fragmentation": 0.1944,
+    "disorderly_climate_crystallisation": 0.1835,
+    "stagflation_persists": 0.1864,
 }
 
 

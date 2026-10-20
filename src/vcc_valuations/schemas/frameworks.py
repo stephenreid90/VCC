@@ -187,6 +187,31 @@ class ReplacementTreatment(str, Enum):
     ZERO_NPV = "zero_npv"              # replacement capital earns the cost of capital
 
 
+class CostPriceLink(BaseModel):
+    """How non-royalty unit costs follow the primary commodity's real price (D-104, ruled
+    20 Oct 2026). Archetype-level; a company may override any field in its
+    ``normalised_baseline.cost_price_link``."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    elasticity_per_10pct: float = Field(
+        ..., ge=0.0, le=10.0,
+        description="Percent move in non-royalty cash cost and sustaining capital for each 10% real move in the primary commodity price (1.5 = elasticity 0.15).",  # ssot-allow: worked example in a description
+    )
+    lag_years: int = Field(..., ge=0, le=3, description="Years between the price move and the cost response.")
+    cap_above_base_pct: float = Field(..., ge=0.0, description="Costs rise no more than this percent above the CPI-plus-escalator cost path.")
+    symmetric: bool = Field(..., description="Costs ease when the price falls (True) or only rise (False).")
+    sensitivity_range_per_10pct: List[float] = Field(..., min_length=2, max_length=2, description="[low, high] elasticity_per_10pct sized as sensitivities.")
+    rationale: str
+
+    @model_validator(mode="after")
+    def _range_brackets_central(self) -> "CostPriceLink":
+        lo, hi = self.sensitivity_range_per_10pct
+        if not (lo <= self.elasticity_per_10pct <= hi):
+            raise ValueError("cost_price_link: the central elasticity must sit inside its sensitivity range.")
+        return self
+
+
 class JurisdictionRisk(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -206,6 +231,8 @@ class ResourceLifecycle(BaseModel):
     fx_series: Optional[str] = Field(None, description="Scenario series: USD per unit of the functional currency.")
     cost_metric: str = Field(..., description="The archetype's unit-cost measure, e.g. AISC.")
     cost_curve_note: str
+    cost_price_link: Optional[CostPriceLink] = Field(
+        None, description="D-104: non-royalty costs follow the primary commodity's real price. None = no link.")
     inventory_basis: InventoryBasis
     inventory_basis_rationale: str
     replacement: ReplacementTreatment

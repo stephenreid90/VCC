@@ -18,7 +18,7 @@ from typing import Dict, List, Optional
 
 from vcc_valuations.assumptions.wacc import WaccBuild
 from vcc_valuations.dcf.fcf_engine import EquityBridge
-from vcc_valuations.dcf.resource_engine import MineInputs, ResourceEngineInputs
+from vcc_valuations.dcf.resource_engine import MineInputs, ResourceEngineInputs, cost_price_link_path
 from vcc_valuations.translator import (
     scenario_equilibrium_year,
     working_capital_intensity_from_data,
@@ -112,7 +112,42 @@ def price_and_cost_paths(inputs: dict, scenario_id: str, periods: int,
         gold.append(level(gold_s, "gold_usd_oz", y) * cpi_idx[t] / aud_usd)
         cu.append(level(cu_s, "copper_usd_t", y) * cpi_idx[t] / aud_usd)
     return {"gold_aud_oz": gold, "copper_aud_t": cu, "cost_index": cost_idx,
-            "cpi_index": cpi_idx, "aud_usd": fx, "real_escalation": esc}
+            "cpi_index": cpi_idx, "aud_usd": fx, "real_escalation": esc,
+            "primary_aud": gold}
+
+
+def cost_price_link_params(inputs: dict, override: Optional[Dict[str, float]] = None) -> Optional[dict]:
+    """The D-104 parameters: the archetype's ``cost_price_link`` block, with any fields the
+    company's ``normalised_baseline.cost_price_link`` overrides, then any caller override
+    (the sized sensitivities). None when the archetype declares no link."""
+    d = _framework(inputs)
+    if d.cost_price_link is None:
+        return None
+    params = d.cost_price_link.model_dump()
+    nb = inputs["company_raw"]["normalised_baseline"]
+    for src in (nb.get("cost_price_link") or {}, override or {}):
+        for k, v in src.items():
+            if k not in params:
+                raise KeyError(f"cost_price_link override names an unknown field {k!r}")
+            params[k] = v
+    return params
+
+
+def cost_price_link_from_paths(inputs: dict, paths: Dict[str, List[float]],
+                               override: Optional[Dict[str, float]] = None,
+                               reference: Optional[float] = None) -> List[float]:
+    """Per-period D-104 multiplier from the primary commodity's REAL price in the
+    functional currency (nominal path over the CPI index), against the period-0 level
+    unless ``reference`` is given. Empty when the archetype declares no link."""
+    params = cost_price_link_params(inputs, override)
+    if params is None:
+        return []
+    real = [p / c for p, c in zip(paths["primary_aud"], paths["cpi_index"])]
+    return cost_price_link_path(
+        real, elasticity=params["elasticity_per_10pct"] / 10.0,  # ssot-allow: per-10% to per-unit
+        lag_periods=params["lag_years"], cap_above_base=params["cap_above_base_pct"] / 100.0,  # ssot-allow: percent to decimal
+        reference=reference, symmetric=bool(params["symmetric"]),
+    )
 
 
 def royalty_rate_from_data(fin: dict) -> float:
@@ -250,14 +285,26 @@ def resource_equity_bridge_from_data(inputs: dict) -> EquityBridge:
     )
 
 
+def _link_note(params: Optional[dict]) -> List[str]:
+    if params is None:
+        return []
+    return [f"Cost-price link (D-104): {params['elasticity_per_10pct']}% per 10% real move in the "
+            f"primary commodity, lag {params['lag_years']}y, cap +{params['cap_above_base_pct']}%, "
+            f"{'symmetric' if params['symmetric'] else 'upward only'}."]
+
+
 def build_resource_inputs_from_data(
     inputs: dict, scenario_id: str, basis: Optional[str] = None,
     wacc_override: Optional[float] = None, gold_scale: float = 1.0,
     flat_real: Optional[Dict[str, float]] = None,
+    cost_link_override: Optional[Dict[str, float]] = None,
 ) -> ResourceEngineInputs:
     """Assemble one company x scenario. ``basis`` defaults to the declared inventory
     basis; the alternatives exist for the sized sensitivities. ``gold_scale`` multiplies
-    the whole gold path and exists only for the market-implied disclosure."""
+    the whole gold path and exists only for the market-implied disclosure; the D-104 cost
+    link reads the scaled path against the UNscaled period-0 price, so a path held above
+    today's price carries the cost response to it. ``cost_link_override`` replaces D-104
+    fields (``elasticity_per_10pct`` and so on) for the sized sensitivities."""
     fin = inputs["financials"]
     company_raw = inputs["company_raw"]
     nb = company_raw["normalised_baseline"]
@@ -294,6 +341,11 @@ def build_resource_inputs_from_data(
     )
     periods = max(periods, int(longest) + 2)
     paths = price_and_cost_paths(inputs, scenario_id, periods, flat_real)
+    # The link reads the (possibly scaled) path against the UNscaled period-0 real price:
+    # the cost base is struck at today's price, so a path held above it carries a response.
+    scaled = dict(paths, primary_aud=[p * gold_scale for p in paths["primary_aud"]])
+    link = cost_price_link_from_paths(inputs, scaled, cost_link_override,
+                                      reference=paths["primary_aud"][0] / paths["cpi_index"][0])
     wacc = wacc_override if wacc_override is not None else resource_wacc_from_data(inputs)
     wci = working_capital_intensity_from_data(inputs).result
     return ResourceEngineInputs(
@@ -309,5 +361,6 @@ def build_resource_inputs_from_data(
         greenfields_exploration=_mid(g["greenfields_exploration"]),
         working_capital_intensity=wci, wacc=wacc,
         equity_bridge=resource_equity_bridge_from_data(inputs),
-        notes=[f"Inventory basis: {basis}."],
+        notes=[f"Inventory basis: {basis}."] + _link_note(cost_price_link_params(inputs, cost_link_override)),
+        cost_price_link=link,
     )

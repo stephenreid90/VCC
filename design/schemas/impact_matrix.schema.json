@@ -10,6 +10,50 @@
       "title": "Confidence",
       "type": "string"
     },
+    "DecayHorizon": {
+      "additionalProperties": false,
+      "description": "How long an excess return is assumed to last, as a value rather than a sentence.\n\nD-58's implementation. Before this the horizon lived as prose inside\n``DriverMovement.rationale`` \u2014 \"decay horizon = 10-15 years\" is a sentence, so\nthere was nothing for a validator to read and nothing a test could hold to the\nrule, on a quantity \u00a712 puts at 15-20% of terminal value. Dated horizons carry\na band because that is how the evidence arrives; ``indefinite`` is admissible\nfor a barrier of any kind under D-58, but never by omission.",
+      "properties": {
+        "years_low": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Years Low"
+        },
+        "years_high": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Years High"
+        },
+        "indefinite": {
+          "default": false,
+          "title": "Indefinite",
+          "type": "boolean"
+        },
+        "basis": {
+          "title": "Basis",
+          "type": "string"
+        }
+      },
+      "required": [
+        "basis"
+      ],
+      "title": "DecayHorizon",
+      "type": "object"
+    },
     "Direction": {
       "description": "Matrix entry direction. Separate from magnitude (section 10.2).",
       "enum": [
@@ -72,6 +116,17 @@
             }
           ],
           "default": null
+        },
+        "excess_return_defence": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ExcessReturnDefence"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -120,6 +175,75 @@
         "source_id"
       ],
       "title": "EvidenceRef",
+      "type": "object"
+    },
+    "ExcessReturnDefence": {
+      "additionalProperties": false,
+      "description": "The \u00a710.6 rule 2 defended exception, structured (D-42).\n\nD-42 requires that where a terminal return exceeds the cost of capital, the\nvaluation names four things: the moat source, the decay horizon, the threat,\nand a sensitivity test. All four were expressible in prose and one of them \u2014\nthe horizon \u2014 is a number, which is why the prose form could never be checked.\n\n``moat_sources`` must name barrier-bearing sources. D-43a separated a RENT (a\ncash advantage with an end date, carried in the explicit period) from a BARRIER\n(what stops a rival taking the business, which is what the decay horizon\nmeasures), so defending a terminal excess return on a rent-bearing source is\nthe confusion that ruling exists to prevent. The tie to ``Moat.source_roles``\nis not enforced here because the moat lives on the company file and this on the\narchetype matrix; the ratchet test is where the two are compared.",
+      "properties": {
+        "moat_sources": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Moat Sources",
+          "type": "array"
+        },
+        "decay_horizon": {
+          "$ref": "#/$defs/DecayHorizon"
+        },
+        "named_threat": {
+          "title": "Named Threat",
+          "type": "string"
+        },
+        "sensitivity": {
+          "title": "Sensitivity",
+          "type": "string"
+        },
+        "finite_horizon_sensitivity": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Finite Horizon Sensitivity"
+        },
+        "declared_terminal_return": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Declared Terminal Return"
+        },
+        "declared_terminal_return_basis": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Declared Terminal Return Basis"
+        }
+      },
+      "required": [
+        "moat_sources",
+        "decay_horizon",
+        "named_threat",
+        "sensitivity"
+      ],
+      "title": "ExcessReturnDefence",
       "type": "object"
     },
     "Governance": {
@@ -260,6 +384,30 @@
       "minItems": 1,
       "title": "Matrix",
       "type": "array"
+    },
+    "archetype_class": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Archetype Class"
+    },
+    "version": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Version"
     }
   },
   "required": [

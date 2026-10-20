@@ -1,6 +1,6 @@
 # The resource_lifecycle overlay and the mining driver set
 
-**Status: written 20 October 2026, first build for Evolution Mining (EVN); D-99 price paths revised the same afternoon after Stephen's review. Serious.**
+**Status: written 20 October 2026, first build for Evolution Mining (EVN); D-99 price paths revised the same afternoon after Stephen's review; D-104 cost-price link built the same evening. Serious.**
 D-94 and D-95 are Stephen's rulings of 20 October. D-96 to D-101 are PROPOSED: they are
 built so the result can be reviewed, and each one can be reversed without rewriting the
 engine. Every number below comes from `design/methodology/resource_valuation_sets.yaml`
@@ -184,6 +184,49 @@ them. It does not replace the scenario paths without a further decision.
 4. Spot weights (D-55): equity A$24.7bn at A$12.09, debt A$1.33bn.
 5. WACC 9.55%. One rate for every period (D-01).
 
+### D-104 (ruled 20 Oct 2026, built the same evening). Costs follow the price
+
+D-102 named the gap: costs moved with CPI plus the scenario escalator but not with the gold
+price, so a high-gold scenario kept FY27 costs for thirty years. The evidence note
+(`evn_cost_vs_gold_evidence_2026-10-20.md`, EVN FY22-FY26) put the non-royalty AISC
+response at about 0.19 nominal (0.08-0.12 from FY23). The rule, as ruled:
+
+1. **What moves.** Non-royalty cash cost and sustaining capital: in the engine, the gross
+   cost (AISC with the copper credit added back and the guidance royalty taken out) and the
+   sustaining capital line. Royalties already follow revenue. Mine development, project
+   capital, exploration and corporate cost do not move: the first two are a mine plan, the
+   last two are not in the evidence.
+2. **How much.** 1.5% for each 10% real move in the primary commodity's price, linear in the
+   move as the rule is stated (not a power law), so a 50% real rise adds 7.5% to the linked
+   costs and a 10% fall takes 1.5% off (symmetric).
+3. **Measured how.** The real price in the functional currency (the nominal A$ path over the
+   scenario's CPI index, which is the USD real series over AUD/USD), against the scenario's
+   own valuation-date level (period 0). Guidance costs are struck at today's price, so
+   Muddle Through, flat real at spot, carries no response at all; the link only separates
+   the scenarios that move away from spot. A stronger or weaker AUD counts, because the
+   costs are in AUD.
+4. **When.** One year late: period t reads the real price of period t-1. The stub and
+   FY28 both read the valuation-date price, so the first response lands in FY29.
+5. **How far.** Capped at 20% above the CPI-plus-escalator cost path. At 1.5% per 10% the cap
+   binds after a real rise of about 130%; no scenario reaches it (the largest multiplier is
+   Fragmentation's 1.035 in FY31).
+6. **Where it lives.** `cost_price_link` on the archetype's `resource_lifecycle` block
+   (`data/industries/gold_producers.yaml`): elasticity, lag, cap, symmetry and the
+   sensitivity range, each with its tag. A company may override any field in
+   `normalised_baseline.cost_price_link`; EVN overrides none. The engine
+   (`cost_price_link_path`) takes a real price path and returns a multiplier per period;
+   it names no commodity. The translator builds the path from whichever series the
+   archetype declares as `primary`, so the same rule serves an oil, iron-ore or coal
+   archetype unchanged.
+7. **The market-implied multiple.** The gold path scaled by the multiple is read against the
+   UNscaled spot, because the cost base is struck at the actual price: a path held 48% above
+   spot carries the cost response to it (about +7% on linked costs from FY29). The multiple
+   therefore rose from 1.44 to 1.48 when the link was built. The spot-held-flat disclosure
+   is unchanged by construction.
+8. **Sensitivities.** The declared range 0.5% to 3.0% per 10%, and the link switched off,
+   are sized for every scenario in set `evn` (`cost_price_link_low`, `_high`, `_off`). Off
+   reproduces the D-103 levels exactly, which is the reconciliation.
+
 ## 3. The mining driver set and where each driver lives
 
 1. **Volume:** FY27 guidance by mine (layer 1, `data/financials/evn.yaml`), held to the stated
@@ -208,7 +251,9 @@ For each mine and period t (period 0 is the stub, 0.693 of FY27):
    metal; the mine stops when the first metal runs out.
 2. Revenue = gold x AUD gold price x (1 - stream share x 0.9) + copper x AUD copper price.
 3. Operating cost = (AISC x oz + copper x guidance copper price - guidance royalty -
-   sustaining capital) x scale x cost index.
+   sustaining capital) x scale x cost index x cost-price link (D-104: 1 + 0.15 x the real
+   primary-price move at t-1 from period 0, capped at 1.20). Sustaining capital inside
+   capex carries the same link; mine development does not.
 4. Royalty = 3.1% x revenue. Exploration and corporate (A$180/oz) are expensed.
 5. Tax = 30% x (EBITDA - book D&A per ounce x ounces).
 6. Capex = sustaining + mine development (per ounce, to closure) + project capital (run-off).
@@ -216,11 +261,14 @@ For each mine and period t (period 0 is the stub, 0.693 of FY27):
    rounded per D-29), and the balance unwinds at closure.
 8. FCFF is discounted at the WACC from the valuation date, mid-period.
 
-## 5. Results (set `evn`, revised price paths)
+## 5. Results (set `evn`, with the D-104 cost-price link)
 
-1. **Values per share:** Orderly Convergence 4.88, Muddle Through 6.47, AI Lag 7.40,
-   Fragmentation 10.10, Disorderly Climate 7.04, Stagflation 9.74, against A$12.09.
-   (First draft: 2.58, 4.18, 4.97, 7.74, 5.03, 6.54.)
+1. **Values per share:** Orderly Convergence 5.07, Muddle Through 6.57, AI Lag 7.47,
+   Fragmentation 10.02, Disorderly Climate 7.19, Stagflation 9.72, against A$12.09.
+   (Before the link, after D-103: 4.99, 6.57, 7.51, 10.21, 7.15, 9.85. Revised price paths
+   before D-103: 4.88, 6.47, 7.40, 10.10, 7.04, 9.74. First draft: 2.58, 4.18, 4.97, 7.74,
+   5.03, 6.54.) The link moves the two gold-rich scenarios down by about A$0.19 and A$0.13,
+   Orderly Convergence up by A$0.09, Muddle Through not at all.
 2. **The ordering follows gold in AUD, net of costs.** Fragmentation and Stagflation have the
    highest real gold and the weakest AUD. Stagflation sits below Fragmentation because of its
    1.5-point real cost escalator.
@@ -231,13 +279,19 @@ For each mine and period t (period 0 is the stub, 0.693 of FY27):
 
 **Sensitivities (Muddle Through unless stated):**
 
-1. Reserves-only life: 5.39. Five-year life extension per mine: 7.70.
-2. WACC minus / plus one point: 6.92 / 6.06.
-3. Today's spot held flat (AUD at 0.6968): 6.55; with the five-year extension, 7.80.
+1. Reserves-only life: 5.50. Five-year life extension per mine: 7.81.
+2. WACC minus / plus one point: 7.03 / 6.16.
+3. Today's spot held flat (AUD at 0.6968): 6.65; with the five-year extension, 7.90.
+4. Cost-price link (D-104), all six scenarios, OC / MT / AI / Frag / DCC / Stag:
+   off 4.99 / 6.57 / 7.51 / 10.21 / 7.15 / 9.85; 0.5% per 10% 5.02 / 6.57 / 7.50 / 10.15 /
+   7.16 / 9.81; 1.5% (ruled) 5.07 / 6.57 / 7.47 / 10.02 / 7.19 / 9.72; 3.0% 5.16 / 6.57 /
+   7.42 / 9.83 / 7.22 / 9.59. The whole range moves Fragmentation by A$0.38 and nothing else
+   by more than A$0.17: the link is second-order next to the price path itself.
 
-**Gap to the market.** Muddle Through is 47% below A$12.09. To reach the market price on the
-Muddle Through shape, the gold path would need to be 1.45 times higher: about US$6,030 an ounce
-in real terms, against today's US$4,166. Fragmentation (10.10) and Stagflation (9.74) come
+**Gap to the market.** Muddle Through is 46% below A$12.09. To reach the market price on the
+Muddle Through shape, the gold path would need to be 1.48 times higher: about US$6,170 an ounce
+in real terms, against today's US$4,166 (1.44 before the cost-price link; the scaled path now
+carries a cost response, §2 D-104 item 7). Fragmentation (10.10) and Stagflation (9.74) come
 closest. The gap is disclosed, not reconciled (D-92's principle).
 
 ## 6. Gaps and shortcomings found

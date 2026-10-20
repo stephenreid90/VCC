@@ -1,5 +1,192 @@
 {
   "$defs": {
+    "AnchorTerm": {
+      "additionalProperties": false,
+      "description": "One addend of a level anchor, in its own units.\n\nExactly one source (R16-6, 16 Oct 2026):\n\n* ``by_scenario`` -- a value per world scenario, typed in the ARCHETYPE file. This is\n  where level anchors live.\n* ``value`` -- one value for every scenario, typed in the archetype file.\n* ``path`` -- a dotted path into a company file (``{scenario}`` substituted,\n  ``name[-1]`` indexes a list). Kept only where the number is the company's own\n  typed input that its engine also reads (CSL's segment steady states).",
+      "properties": {
+        "path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Dotted path into the company file; ``{scenario}`` substituted; ``name[-1]`` indexes a list.",
+          "title": "Path"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "One value for every scenario, in ``units``.",
+          "title": "Value"
+        },
+        "by_scenario": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "number"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Scenario id to value, in ``units``.",
+          "title": "By Scenario"
+        },
+        "units": {
+          "default": "decimal",
+          "description": "'decimal' (0.0123), 'percent' (1.23) or 'bps' (123).",
+          "title": "Units",
+          "type": "string"
+        }
+      },
+      "title": "AnchorTerm",
+      "type": "object"
+    },
+    "ArchetypeRating": {
+      "description": "Finer ordinal used in industry-archetype assessments (\u00a77.4 v2 spec).\n\nA superset of the three-point ``Rating`` with the ``x_to_y`` gradations and\n``very_low`` that the newer archetype files (bank, biopharma) use for force\nratings, disruption severity and supply risk. Kept separate from ``Rating`` so\ncompany-positioning fields stay on the strict three-point scale.",
+      "enum": [
+        "very_low",
+        "low",
+        "low_to_moderate",
+        "moderate",
+        "moderate_to_high",
+        "high"
+      ],
+      "title": "ArchetypeRating",
+      "type": "string"
+    },
+    "BankArchetype": {
+      "additionalProperties": false,
+      "description": "\u00a77.4-v2 bank-specific archetype block.",
+      "properties": {
+        "regulator": {
+          "title": "Regulator",
+          "type": "string"
+        },
+        "secondary_regulators": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Secondary Regulators",
+          "type": "array"
+        },
+        "cet1_floor": {
+          "$ref": "#/$defs/Cet1Floor"
+        },
+        "cet1_operating_target": {
+          "$ref": "#/$defs/Cet1OperatingTarget"
+        },
+        "credit_cycle_anchor": {
+          "$ref": "#/$defs/CreditCycleAnchor"
+        },
+        "rwa_density_anchor": {
+          "$ref": "#/$defs/RwaDensityAnchor"
+        },
+        "cost_of_equity_anchor": {
+          "$ref": "#/$defs/BankCostOfEquityAnchor"
+        }
+      },
+      "required": [
+        "regulator",
+        "cet1_floor",
+        "cet1_operating_target",
+        "credit_cycle_anchor",
+        "rwa_density_anchor",
+        "cost_of_equity_anchor"
+      ],
+      "title": "BankArchetype",
+      "type": "object"
+    },
+    "BankCostOfEquityAnchor": {
+      "additionalProperties": false,
+      "description": "The archetype-level Ke anchor and the peer evidence behind it.\n\nRanges are ``[low, high]`` and are validated as such: a reversed pair would\notherwise read as a range nobody could see was backwards.",
+      "properties": {
+        "risk_free_rate": {
+          "title": "Risk Free Rate",
+          "type": "number"
+        },
+        "equity_risk_premium": {
+          "title": "Equity Risk Premium",
+          "type": "number"
+        },
+        "beta_range_measured": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Beta Range Measured",
+          "type": "array"
+        },
+        "beta_range_comparable_cluster": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Beta Range Comparable Cluster",
+          "type": "array"
+        },
+        "beta_anchor_selected": {
+          "title": "Beta Anchor Selected",
+          "type": "number"
+        },
+        "cost_of_equity_range_measured": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Cost Of Equity Range Measured",
+          "type": "array"
+        },
+        "cost_of_equity_range_comparable": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Cost Of Equity Range Comparable",
+          "type": "array"
+        },
+        "cost_of_equity_anchor_selected": {
+          "title": "Cost Of Equity Anchor Selected",
+          "type": "number"
+        },
+        "peer_beta_dataset_2026_06_15": {
+          "items": {
+            "$ref": "#/$defs/PeerBeta"
+          },
+          "title": "Peer Beta Dataset 2026 06 15",
+          "type": "array"
+        },
+        "rationale": {
+          "title": "Rationale",
+          "type": "string"
+        }
+      },
+      "required": [
+        "risk_free_rate",
+        "equity_risk_premium",
+        "beta_range_measured",
+        "beta_range_comparable_cluster",
+        "beta_anchor_selected",
+        "cost_of_equity_range_measured",
+        "cost_of_equity_range_comparable",
+        "cost_of_equity_anchor_selected",
+        "peer_beta_dataset_2026_06_15",
+        "rationale"
+      ],
+      "title": "BankCostOfEquityAnchor",
+      "type": "object"
+    },
     "BindingConstraint": {
       "additionalProperties": false,
       "properties": {
@@ -27,6 +214,131 @@
       ],
       "title": "BindingConstraint",
       "type": "object"
+    },
+    "Cet1Floor": {
+      "additionalProperties": false,
+      "description": "Regulatory CET1 floor, built from its named components.\n\n``components_in_total`` must name exactly which components the stated floor\ncomprises, and the total is checked against those. It exists because a total\nthat silently disagrees with its own components is unreadable either way:\nnaming them turns \"these do not add up\" into \"here is what adds up, and here\nis what is deliberately outside it\".\n\nD-59, 16 September 2026. The declaration was originally used to carve the\ncountercyclical buffer OUT of the major-bank floor, which reconciled the\narithmetic and was wrong about APRA: APS 110 sets the CCyB by \"extending the\nrange of the capital conservation buffer\", so it sits inside the requirement.\nThe carve-out was papering over a larger error. ``regulatory_minimum`` held\nthe TOTAL capital minimum \u2014 Tier 1 plus Tier 2 \u2014 in a field measured on\nCET1, where APRA's figure is the much lower CET1 PCR; and the conservation\nbuffer held the standardised figure where all four majors are on the IRB\napproach and carry the higher one. Every component now shares the CET1\nbasis, and the stated floor is the sum of all four. What the file used to\ncall a floor was an OPERATING target wearing a floor's name, which is why\nit looked plausible \u2014 see :class:`Cet1OperatingTarget`. The figures live in\nthe archetype YAML, sourced to APS 110 and APRA's own explainer.\n\nThe carve-out stays legal, because a buffer genuinely outside a headline\nrequirement is a real configuration in other jurisdictions. It is now a\nthing a file has to mean rather than a thing it can drift into.",
+      "properties": {
+        "regulatory_minimum": {
+          "title": "Regulatory Minimum",
+          "type": "number"
+        },
+        "capital_conservation_buffer": {
+          "title": "Capital Conservation Buffer",
+          "type": "number"
+        },
+        "countercyclical_buffer": {
+          "title": "Countercyclical Buffer",
+          "type": "number"
+        },
+        "d_sib_surcharge": {
+          "default": 0.0,
+          "title": "D Sib Surcharge",
+          "type": "number"
+        },
+        "total_floor": {
+          "title": "Total Floor",
+          "type": "number"
+        },
+        "components_in_total": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Components In Total",
+          "type": "array"
+        },
+        "rationale": {
+          "title": "Rationale",
+          "type": "string"
+        }
+      },
+      "required": [
+        "regulatory_minimum",
+        "capital_conservation_buffer",
+        "countercyclical_buffer",
+        "total_floor",
+        "components_in_total",
+        "rationale"
+      ],
+      "title": "Cet1Floor",
+      "type": "object"
+    },
+    "Cet1OperatingTarget": {
+      "additionalProperties": false,
+      "description": "The CET1 level a bank actually manages to, which is not the floor.\n\nD-59. A payout rule does not bind at the regulatory floor. A bank manages to\na board-approved operating target and defends THAT \u2014 cutting distributions,\nstopping a buyback \u2014 well before the floor is in sight, so the quantity that\ngoverns behaviour in a dividend rule is the target, not the requirement. The\ntwo were previously one field: an operating level stated as a floor, with a\nseparate ``cet1_management_buffer_typical`` to be added on top of it.\nAnything reading both would have bound well above what APRA requires, and\nabove where any major has actually run.\n\n``level`` is the absolute target, management buffer already inside it, not a\nspread over the floor. The buffer is then *observed* as the gap to the floor\n(:attr:`BankArchetype.implied_management_buffer`) rather than asserted\nbeside it \u2014 the same reason D-48 strikes capex and depreciation as a pair\nand reads the gap.",
+      "properties": {
+        "level": {
+          "title": "Level",
+          "type": "number"
+        },
+        "basis": {
+          "title": "Basis",
+          "type": "string"
+        },
+        "rationale": {
+          "title": "Rationale",
+          "type": "string"
+        }
+      },
+      "required": [
+        "level",
+        "basis",
+        "rationale"
+      ],
+      "title": "Cet1OperatingTarget",
+      "type": "object"
+    },
+    "ChainTermRole": {
+      "description": "D-78: whether a growth-chain term survives into the scenario's equilibrium.\n\nCURRENT_CYCLE terms are switched off for the equilibrium reading of the chain\n(the reading that sets terminal growth, D-72) -- they take their declared\n``equilibrium_value`` from the end of the explicit period. EQUILIBRIUM terms\nstay at their typed value forever.",
+      "enum": [
+        "current_cycle",
+        "equilibrium"
+      ],
+      "title": "ChainTermRole",
+      "type": "string"
+    },
+    "Commodity": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/$defs/CommodityRole"
+        },
+        "price_series": {
+          "description": "Scenario macro variable carrying the price path.",
+          "title": "Price Series",
+          "type": "string"
+        },
+        "price_units": {
+          "description": "Units of the scenario series, e.g. 'usd_per_oz_real_2026'.",
+          "title": "Price Units",
+          "type": "string"
+        },
+        "rationale": {
+          "title": "Rationale",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "role",
+        "price_series",
+        "price_units",
+        "rationale"
+      ],
+      "title": "Commodity",
+      "type": "object"
+    },
+    "CommodityRole": {
+      "enum": [
+        "primary",
+        "by_product"
+      ],
+      "title": "CommodityRole",
+      "type": "string"
     },
     "CompetitiveEnvelope": {
       "additionalProperties": false,
@@ -63,6 +375,9 @@
               "$ref": "#/$defs/PayorAndRegulator"
             },
             {
+              "$ref": "#/$defs/ResourceLifecycle"
+            },
+            {
               "additionalProperties": true,
               "type": "object"
             },
@@ -71,7 +386,7 @@
             }
           ],
           "default": null,
-          "description": "Shape determined by type. For 'payor_and_regulator' use PayorAndRegulator. For 'network_effect' and 'resource_lifecycle' the details schemas are TBD; free-form Dict is permitted in v0.1 with a tightening planned per architecture spec section 7.7 review item 9.",
+          "description": "Shape determined by type. For 'payor_and_regulator' use PayorAndRegulator; for 'resource_lifecycle' use ResourceLifecycle (20 Oct 2026). For 'network_effect' the details schema is TBD; free-form Dict is permitted in v0.1 with a tightening planned per architecture spec section 7.7 review item 9.",
           "title": "Details"
         }
       },
@@ -130,6 +445,61 @@
       "title": "ConcentrationStructure",
       "type": "string"
     },
+    "CostPriceLink": {
+      "additionalProperties": false,
+      "description": "How non-royalty unit costs follow the primary commodity's real price (D-104, ruled\n20 Oct 2026). Archetype-level; a company may override any field in its\n``normalised_baseline.cost_price_link``.",
+      "properties": {
+        "elasticity_per_10pct": {
+          "description": "Percent move in non-royalty cash cost and sustaining capital for each 10% real move in the primary commodity price (1.5 = elasticity 0.15).",
+          "maximum": 10.0,
+          "minimum": 0.0,
+          "title": "Elasticity Per 10Pct",
+          "type": "number"
+        },
+        "lag_years": {
+          "description": "Years between the price move and the cost response.",
+          "maximum": 3,
+          "minimum": 0,
+          "title": "Lag Years",
+          "type": "integer"
+        },
+        "cap_above_base_pct": {
+          "description": "Costs rise no more than this percent above the CPI-plus-escalator cost path.",
+          "minimum": 0.0,
+          "title": "Cap Above Base Pct",
+          "type": "number"
+        },
+        "symmetric": {
+          "description": "Costs ease when the price falls (True) or only rise (False).",
+          "title": "Symmetric",
+          "type": "boolean"
+        },
+        "sensitivity_range_per_10pct": {
+          "description": "[low, high] elasticity_per_10pct sized as sensitivities.",
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "title": "Sensitivity Range Per 10Pct",
+          "type": "array"
+        },
+        "rationale": {
+          "title": "Rationale",
+          "type": "string"
+        }
+      },
+      "required": [
+        "elasticity_per_10pct",
+        "lag_years",
+        "cap_above_base_pct",
+        "symmetric",
+        "sensitivity_range_per_10pct",
+        "rationale"
+      ],
+      "title": "CostPriceLink",
+      "type": "object"
+    },
     "CostStructure": {
       "additionalProperties": false,
       "description": "Static cost-economics picture (section 7.4).",
@@ -178,6 +548,36 @@
       "title": "CostStructure",
       "type": "object"
     },
+    "CreditCycleAnchor": {
+      "additionalProperties": false,
+      "description": "Through-cycle, peak and benign credit-loss anchors, in basis points.",
+      "properties": {
+        "through_cycle_loss_rate_bps": {
+          "title": "Through Cycle Loss Rate Bps",
+          "type": "number"
+        },
+        "peak_cycle_loss_rate_bps": {
+          "title": "Peak Cycle Loss Rate Bps",
+          "type": "number"
+        },
+        "benign_cycle_loss_rate_bps": {
+          "title": "Benign Cycle Loss Rate Bps",
+          "type": "number"
+        },
+        "rationale": {
+          "title": "Rationale",
+          "type": "string"
+        }
+      },
+      "required": [
+        "through_cycle_loss_rate_bps",
+        "peak_cycle_loss_rate_bps",
+        "benign_cycle_loss_rate_bps",
+        "rationale"
+      ],
+      "title": "CreditCycleAnchor",
+      "type": "object"
+    },
     "CycleAmplitude": {
       "description": "Industry cyclicality amplitude (section 7.4).",
       "enum": [
@@ -194,6 +594,7 @@
         "trough",
         "early",
         "mid",
+        "late_mid",
         "late",
         "peak"
       ],
@@ -220,6 +621,18 @@
         },
         "amplitude": {
           "$ref": "#/$defs/CycleAmplitude"
+        },
+        "rationale": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rationale"
         }
       },
       "required": [
@@ -247,6 +660,16 @@
       "title": "DemographicSensitivity",
       "type": "object"
     },
+    "DerivationMethod": {
+      "description": "How a required macro driver's year-anchored path is obtained from a world scenario.\n\nOne entry per way the model has so far needed. Adding a method means adding\nit here, in ``scripts/derive_macro_driver_paths.py`` (``METHODS``) and a test\nin ``tests/test_macro_driver_paths.py`` -- nowhere else.",
+      "enum": [
+        "scenario_series",
+        "spread",
+        "transition_then_baseline"
+      ],
+      "title": "DerivationMethod",
+      "type": "string"
+    },
     "DisruptionVector": {
       "additionalProperties": false,
       "description": "One disruption vector. Multiple per archetype (section 7.4).",
@@ -271,10 +694,10 @@
           "type": "string"
         },
         "severity": {
-          "$ref": "#/$defs/Rating"
+          "$ref": "#/$defs/ArchetypeRating"
         },
         "certainty": {
-          "$ref": "#/$defs/Rating"
+          "$ref": "#/$defs/ArchetypeRating"
         },
         "description": {
           "title": "Description",
@@ -316,7 +739,7 @@
     },
     "FiveForces": {
       "additionalProperties": false,
-      "description": "Porter's Five Forces, populated using the question bank in\ndesign/frameworks/five_forces_questions.md.",
+      "description": "Porter's Five Forces, populated using the question bank in\ndesign/frameworks/five_forces_questions.md.\n\nTwo naming generations coexist: the original ``new_entrants`` / ``substitutes``\n(industrial archetypes) and the \u00a77.4-v2 ``threat_of_new_entrants`` /\n``threat_of_substitutes`` (+ optional ``rivalry_subforces``) used by the newer\nbank and biopharma archetypes. Both are accepted; at least one form of each\nforce is expected.",
       "properties": {
         "buyer_power": {
           "$ref": "#/$defs/Force"
@@ -325,20 +748,71 @@
           "$ref": "#/$defs/Force"
         },
         "new_entrants": {
-          "$ref": "#/$defs/Force"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Force"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         },
         "substitutes": {
-          "$ref": "#/$defs/Force"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Force"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "threat_of_new_entrants": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Force"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "threat_of_substitutes": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Force"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         },
         "rivalry": {
           "$ref": "#/$defs/Force"
+        },
+        "rivalry_subforces": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/RivalrySubforce"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rivalry Subforces"
         }
       },
       "required": [
         "buyer_power",
         "supplier_power",
-        "new_entrants",
-        "substitutes",
         "rivalry"
       ],
       "title": "FiveForces",
@@ -349,7 +823,7 @@
       "description": "One of Porter's five forces (section 7.4).",
       "properties": {
         "rating": {
-          "$ref": "#/$defs/Rating"
+          "$ref": "#/$defs/ArchetypeRating"
         },
         "rationale": {
           "description": "Short paragraph; sub-determinants per Porter 2008.",
@@ -370,10 +844,66 @@
         "global",
         "regional",
         "national",
-        "multi_geographic"
+        "multi_geographic",
+        "domestic_au_nz"
       ],
       "title": "GeographyScope",
       "type": "string"
+    },
+    "GrowthChainTerm": {
+      "additionalProperties": false,
+      "description": "One coefficient of a company's growth chain and its role in equilibrium (D-78).\n\n``path`` is the dotted path of the term under the company chain's ``shared``\nblock (e.g. ``industry_structure.volume_coefficient_a``). A current-cycle term\nmust say what value it takes once off (1.0 for a multiplier, 0.0 for an\nadditive term) and why; an equilibrium term carries neither.",
+      "properties": {
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/$defs/ChainTermRole"
+        },
+        "equilibrium_value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Equilibrium Value"
+        },
+        "basis": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Basis"
+        },
+        "expires_by_year": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expires By Year"
+        }
+      },
+      "required": [
+        "path",
+        "role"
+      ],
+      "title": "GrowthChainTerm",
+      "type": "object"
     },
     "IndustryArchetype": {
       "additionalProperties": false,
@@ -424,20 +954,60 @@
           "default": null
         },
         "lifecycle_stage": {
-          "$ref": "#/$defs/LifecycleStage"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LifecycleStage"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         },
         "lifecycle_rationale": {
-          "title": "Lifecycle Rationale",
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lifecycle Rationale"
         },
         "concentration": {
-          "$ref": "#/$defs/Concentration"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Concentration"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         },
         "cost_structure": {
-          "$ref": "#/$defs/CostStructure"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CostStructure"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         },
         "scenario_sensitivity": {
-          "$ref": "#/$defs/ScenarioSensitivity"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ScenarioSensitivity"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         },
         "disruption_vectors": {
           "default": [],
@@ -448,13 +1018,78 @@
           "type": "array"
         },
         "regulatory_regime": {
-          "$ref": "#/$defs/RegulatoryRegime"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RegulatoryRegime"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         },
         "cyclicality": {
           "$ref": "#/$defs/Cyclicality"
         },
         "input_dependencies": {
           "$ref": "#/$defs/InputDependencies"
+        },
+        "archetype_class": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Archetype Class"
+        },
+        "bank_archetype": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BankArchetype"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "required_macro_drivers": {
+          "items": {
+            "$ref": "#/$defs/RequiredMacroDriver"
+          },
+          "title": "Required Macro Drivers",
+          "type": "array"
+        },
+        "segment_price_series": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Segment Price Series"
+        },
+        "growth_chain_terms": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/GrowthChainTerm"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Growth Chain Terms"
         }
       },
       "required": [
@@ -463,12 +1098,6 @@
         "version",
         "geography",
         "five_forces",
-        "lifecycle_stage",
-        "lifecycle_rationale",
-        "concentration",
-        "cost_structure",
-        "scenario_sensitivity",
-        "regulatory_regime",
         "cyclicality",
         "input_dependencies"
       ],
@@ -486,7 +1115,19 @@
           "type": "array"
         },
         "supply_risk": {
-          "$ref": "#/$defs/Rating"
+          "$ref": "#/$defs/ArchetypeRating"
+        },
+        "rationale": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rationale"
         }
       },
       "required": [
@@ -494,6 +1135,38 @@
         "supply_risk"
       ],
       "title": "InputDependencies",
+      "type": "object"
+    },
+    "InventoryBasis": {
+      "description": "How the producing inventory that sets mine life is counted (D-98 proposed).",
+      "enum": [
+        "stated_life",
+        "reserves"
+      ],
+      "title": "InventoryBasis",
+      "type": "string"
+    },
+    "JurisdictionRisk": {
+      "additionalProperties": false,
+      "properties": {
+        "jurisdiction": {
+          "title": "Jurisdiction",
+          "type": "string"
+        },
+        "rating": {
+          "$ref": "#/$defs/Rating"
+        },
+        "rationale": {
+          "title": "Rationale",
+          "type": "string"
+        }
+      },
+      "required": [
+        "jurisdiction",
+        "rating",
+        "rationale"
+      ],
+      "title": "JurisdictionRisk",
       "type": "object"
     },
     "LabourSensitivity": {
@@ -521,6 +1194,54 @@
       "title": "LabourSensitivity",
       "type": "object"
     },
+    "LevelAnchor": {
+      "additionalProperties": false,
+      "description": "The level a derivation's path is calibrated to: one or more terms, summed.\n\nR16-6 (16 Oct 2026): the anchors live in the ARCHETYPE file, as ``by_scenario`` /\n``value`` terms. ``company`` and ``path`` remain for the one case where the level is\nthe company's own typed input that its engine also reads (CSL's three segment\nsteady states); ``company`` is then required, and only then. ``path`` alone is\nshorthand for a single decimal company term. The company OFFSET is never part of\nthe anchor: the derived path is the industry's, and the offset stays in the\ncompany layer (standing rule 1).",
+      "properties": {
+        "company": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Company id for ``path`` terms; ``data/companies/<company>.yaml``.",
+          "title": "Company"
+        },
+        "path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Path"
+        },
+        "terms": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/AnchorTerm"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Terms"
+        }
+      },
+      "title": "LevelAnchor",
+      "type": "object"
+    },
     "LifecycleStage": {
       "description": "Industry lifecycle stage (section 7.3).",
       "enum": [
@@ -531,6 +1252,69 @@
       ],
       "title": "LifecycleStage",
       "type": "string"
+    },
+    "MacroDriverDerivation": {
+      "additionalProperties": false,
+      "description": "The declared recipe for one required macro driver (D-72).",
+      "properties": {
+        "method": {
+          "$ref": "#/$defs/DerivationMethod"
+        },
+        "series": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "SPREAD: the scenario series the gap is added to; a list is summed (e.g. real GDP + CPI = nominal GDP).",
+          "title": "Series"
+        },
+        "anchor": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LevelAnchor"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "baseline_scenario": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "TRANSITION_THEN_BASELINE: the scenario whose anchor is 'normal'.",
+          "title": "Baseline Scenario"
+        },
+        "units": {
+          "default": "percent_yoy",
+          "description": "Units written on the derived scenario series ('percent_yoy' or 'percent' for a level).",
+          "title": "Units",
+          "type": "string"
+        }
+      },
+      "required": [
+        "method"
+      ],
+      "title": "MacroDriverDerivation",
+      "type": "object"
     },
     "Payor": {
       "additionalProperties": false,
@@ -672,6 +1456,36 @@
         "narrative"
       ],
       "title": "PayorMixEvolution",
+      "type": "object"
+    },
+    "PeerBeta": {
+      "additionalProperties": false,
+      "description": "One peer in the archetype's beta dataset (\u00a73.5.3 triangulation).",
+      "properties": {
+        "bank": {
+          "title": "Bank",
+          "type": "string"
+        },
+        "beta_measured": {
+          "title": "Beta Measured",
+          "type": "number"
+        },
+        "inclusion": {
+          "title": "Inclusion",
+          "type": "string"
+        },
+        "notes": {
+          "title": "Notes",
+          "type": "string"
+        }
+      },
+      "required": [
+        "bank",
+        "beta_measured",
+        "inclusion",
+        "notes"
+      ],
+      "title": "PeerBeta",
       "type": "object"
     },
     "PhysicalClimateSensitivity": {
@@ -877,6 +1691,199 @@
         "narrative"
       ],
       "title": "RegulatoryRegimeDetail",
+      "type": "object"
+    },
+    "ReplacementTreatment": {
+      "description": "What the valuation assumes once the declared inventory is mined (D-97 proposed).",
+      "enum": [
+        "zero_npv"
+      ],
+      "title": "ReplacementTreatment",
+      "type": "string"
+    },
+    "RequiredMacroDriver": {
+      "additionalProperties": false,
+      "description": "A macro variable an archetype's revenue chain reads, and how each scenario gets its path.\n\nA bare string in the YAML (``- cpi_inflation_advanced``) is accepted and\nmeans ``scenario_series`` -- the scenario file carries it natively.",
+      "properties": {
+        "variable": {
+          "title": "Variable",
+          "type": "string"
+        },
+        "derivation": {
+          "$ref": "#/$defs/MacroDriverDerivation"
+        }
+      },
+      "required": [
+        "variable"
+      ],
+      "title": "RequiredMacroDriver",
+      "type": "object"
+    },
+    "ResourceLifecycle": {
+      "additionalProperties": false,
+      "description": "Details block when type == resource_lifecycle (architecture.md \u00a77.5.1).",
+      "properties": {
+        "commodities": {
+          "items": {
+            "$ref": "#/$defs/Commodity"
+          },
+          "minItems": 1,
+          "title": "Commodities",
+          "type": "array"
+        },
+        "price_basis": {
+          "description": "How a real price series becomes nominal.",
+          "title": "Price Basis",
+          "type": "string"
+        },
+        "inflation_series": {
+          "description": "Scenario series that inflates real prices and costs.",
+          "title": "Inflation Series",
+          "type": "string"
+        },
+        "fx_series": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Scenario series: USD per unit of the functional currency.",
+          "title": "Fx Series"
+        },
+        "cost_metric": {
+          "description": "The archetype's unit-cost measure, e.g. AISC.",
+          "title": "Cost Metric",
+          "type": "string"
+        },
+        "cost_curve_note": {
+          "title": "Cost Curve Note",
+          "type": "string"
+        },
+        "cost_price_link": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CostPriceLink"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "D-104: non-royalty costs follow the primary commodity's real price. None = no link."
+        },
+        "inventory_basis": {
+          "$ref": "#/$defs/InventoryBasis"
+        },
+        "inventory_basis_rationale": {
+          "title": "Inventory Basis Rationale",
+          "type": "string"
+        },
+        "replacement": {
+          "$ref": "#/$defs/ReplacementTreatment"
+        },
+        "replacement_rationale": {
+          "title": "Replacement Rationale",
+          "type": "string"
+        },
+        "reserve_life_note": {
+          "title": "Reserve Life Note",
+          "type": "string"
+        },
+        "jurisdictions": {
+          "items": {
+            "$ref": "#/$defs/JurisdictionRisk"
+          },
+          "minItems": 1,
+          "title": "Jurisdictions",
+          "type": "array"
+        },
+        "stranded_asset_trajectory": {
+          "$ref": "#/$defs/Rating"
+        },
+        "stranded_asset_rationale": {
+          "title": "Stranded Asset Rationale",
+          "type": "string"
+        }
+      },
+      "required": [
+        "commodities",
+        "price_basis",
+        "inflation_series",
+        "cost_metric",
+        "cost_curve_note",
+        "inventory_basis",
+        "inventory_basis_rationale",
+        "replacement",
+        "replacement_rationale",
+        "reserve_life_note",
+        "jurisdictions",
+        "stranded_asset_trajectory",
+        "stranded_asset_rationale"
+      ],
+      "title": "ResourceLifecycle",
+      "type": "object"
+    },
+    "RivalrySubforce": {
+      "additionalProperties": false,
+      "description": "One named dimension of rivalry, where a single rating is too blunt.\n\nTyped 23 Aug 2026 (batch 3, item 19). It was ``Dict[str, Any]``, so a\nsub-force with no rating \u2014 or with the rating under a misspelt key \u2014\nvalidated cleanly and then read as absent downstream.",
+      "properties": {
+        "sub_dimension": {
+          "title": "Sub Dimension",
+          "type": "string"
+        },
+        "rating": {
+          "$ref": "#/$defs/ArchetypeRating"
+        },
+        "rationale": {
+          "title": "Rationale",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sub_dimension",
+        "rating",
+        "rationale"
+      ],
+      "title": "RivalrySubforce",
+      "type": "object"
+    },
+    "RwaDensityAnchor": {
+      "additionalProperties": false,
+      "description": "Indicative risk-weighted-asset density by exposure class.",
+      "properties": {
+        "housing_mortgages": {
+          "title": "Housing Mortgages",
+          "type": "number"
+        },
+        "business_lending": {
+          "title": "Business Lending",
+          "type": "number"
+        },
+        "institutional": {
+          "title": "Institutional",
+          "type": "number"
+        },
+        "sovereign_and_high_grade": {
+          "title": "Sovereign And High Grade",
+          "type": "number"
+        },
+        "rationale": {
+          "title": "Rationale",
+          "type": "string"
+        }
+      },
+      "required": [
+        "housing_mortgages",
+        "business_lending",
+        "institutional",
+        "sovereign_and_high_grade",
+        "rationale"
+      ],
+      "title": "RwaDensityAnchor",
       "type": "object"
     },
     "ScenarioSensitivity": {
