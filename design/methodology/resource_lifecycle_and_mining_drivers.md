@@ -127,6 +127,37 @@ one force that has lowered the real gold price while inflation stayed positive (
 Flat at spot is the alternative under review: it gives Orderly Convergence A$5.73 instead of A$4.88.
 AUD/USD is unchanged from the first draft. The scenario files are the source.
 
+### D-102 (ruled 20 Oct 2026). Principles for commodity price paths
+
+Pending better source data, every commodity path follows these rules.
+
+1. **Start from the observed price.** Spot on the valuation date, in real terms.
+2. **The central case holds it flat after inflation.** Muddle Through keeps spot constant in real
+   terms, so the A$ price rises with inflation. The company is a price taker; the model takes no
+   view on price without a reason.
+3. **Any other path needs a stated reason.** The other scenarios move from Muddle Through only for
+   a mechanism in their own narrative (real rates, inflation, official buying, supply and demand),
+   written in the scenario file beside the numbers.
+4. **Gold is a monetary asset.** Its real price holds with inflation and falls only for a named
+   force, such as real rates well above zero or very low inflation expectations. Never because it
+   looks high against history. Orderly Convergence keeps its 10% real decline on this basis.
+5. **Industrial metals follow supply and demand.** For copper the current view is a world short of
+   supply; a path below spot needs a reason such as demand destruction.
+6. **AUD/USD is set with the commodity paths** so each scenario's story holds. Muddle Through holds
+   today's rate.
+7. **Outside forecasts are reference only.** Government, World Bank and bank forecasts may be shown
+   beside the model, not adopted. Government and World Bank forecasts are judged low quality for
+   prices: commodities are one input to their economic forecasts.
+8. **Always show what the market needs.** Each miner discloses the value at spot held flat and the
+   multiple of the primary commodity path that gives the market price.
+9. **Same rules for every commodity** (oil, iron ore, coal).
+
+**Consensus, when available.** When a specialist consensus forecast is available (commodity-analyst
+or broker consensus), it will be shown as one of the scenarios or as a selectable option beside
+them. It does not replace the scenario paths without a further decision.
+
+**Known gap.** Costs move with CPI plus the scenario's real escalator, not with the commodity price.
+
 ### D-100 (proposed). The equity bridge
 
 1. **Anchor: 30 September 2026.** The September quarterly reports cash (1,470), net cash

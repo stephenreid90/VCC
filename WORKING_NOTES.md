@@ -57,6 +57,14 @@ gold multiple 1.45. Set `evn`, EVN goldens and the review page re-pinned. DNL, W
 for Stephen: OC flat (5.73) or -10% (4.88); beta (0.90 judgement vs a published 1.62; observed betas
 needed); relabel the run-off for miners. DCF 463 passed / 1 skipped; lint 14/14.
 
+**D-102 ruled (20 Oct, 15:10): commodity price principles.** Spot anchor; Muddle Through flat real;
+other scenarios move only for a named mechanism; gold a monetary asset (falls only for a named force,
+so OC keeps -10%); copper follows supply and demand; AUD/USD set with the paths; outside forecasts
+reference only (government and World Bank judged low quality for prices). **When a specialist consensus
+forecast is available, show it as one of the scenarios or as a selectable option.** Full text: DECISIONS
+D-102, paper §2. The six scenario files already comply. Still open: beta (D-101), copper paths sign-off,
+relabel the run-off for miners.
+
 ## 🔴 HANDOVER — sitting of 20 October 2026, afternoon: EVN first build (read this first)
 
 **EVN (Evolution Mining), the first miner, is built end to end and waiting for review.**
