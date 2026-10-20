@@ -3,10 +3,11 @@
 Self-contained, offline interactive HTML prototypes of the VCC scenario-valuation
 interface (for sharing / iteration). One file per company in `ui_prototypes/`.
 
-- `build_cfgs.py` — real-data configs (per company) → `/tmp/cfgs.json`.
+- `build_cfgs.py` — real-data configs (per company) → `cfgs_gen.json`.
+- `resource_cfg.py` — config for every resource-engine company (EVN), engine-run at build time.
 - `gen_ui.py` — common HTML/JS scaffold; injects each config → `*_scenario_interface.html`.
 
-Regenerate DNL + WBC:
+Regenerate DNL, WBC, CSL and EVN:
     python3 ui_prototypes/_generator/build_cfgs.py
     python3 ui_prototypes/_generator/gen_ui.py
 

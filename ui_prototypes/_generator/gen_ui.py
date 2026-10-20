@@ -55,7 +55,7 @@ div[style*="height:19px; width:"]{background:#e6e6e6 !important;}
   <div class="metric"><div style="font-size:13px; color:var(--text2);">Discount rate</div><div style="font-size:24px; font-weight:600;"><span id="wacchip"></span></div><div style="font-size:12px; color:var(--text3);" id="waccsub"></div></div>
 </div>
 <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1.5rem; margin-bottom:1.5rem;">
-  <div class="noprint"><div class="hd">Top 5 value drivers <span style="font-weight:400; color:var(--text3); font-size:12px;">— flex to see impact</span></div>
+  <div class="noprint"><div class="hd">Top value drivers <span style="font-weight:400; color:var(--text3); font-size:12px;">— flex to see impact</span></div>
     <div class="sub" style="margin-bottom:6px;">illustrative reduced-form approximation of the engine · full set under Assumptions</div>
     <div id="sliders"></div>
     <div style="display:flex; gap:8px; margin-top:8px;"><button id="reset">↻ reset</button><button id="resetall" title="Clear your saved scenarios and edits in this browser">reset all</button><span class="sub" id="resetnote" style="align-self:center;"></span><button id="allassum">all assumptions &amp; rationale</button></div>
@@ -64,7 +64,7 @@ div[style*="height:19px; width:"]{background:#e6e6e6 !important;}
     <div class="sub" style="margin-bottom:6px;">click a scenario to explore its build-up</div>
     <div id="bars"></div>
     <div style="display:flex; align-items:center; gap:10px; margin-top:8px; flex-wrap:wrap;"><button id="addscen" style="font-size:12px;">+ add your scenario</button><button id="cmpbtn" type="button" aria-controls="cmp" aria-pressed="false" style="font-size:12px;">Compare scenarios</button><span class="sub" id="editing"></span></div>
-    <div class="sub" style="margin-top:6px;"><span style="color:var(--info-tx);">▮</span> Muddle Through · <span style="color:var(--user-tx);">▮</span> your scenarios · <span style="color:var(--warning-tx);">▮</span> average broker · dashed = market</div>
+    <div class="sub" style="margin-top:6px;"><span style="color:var(--info-tx);">▮</span> Muddle Through · <span style="color:var(--user-tx);">▮</span> your scenarios · <span style="color:var(--warning-tx);">▮</span> __REFLABEL__ · dashed = market</div>
     <div id="barnarr" aria-live="polite" style="margin-top:10px; font-size:13px; line-height:1.55;"></div><div id="cmp" hidden style="margin-top:12px; max-width:100%;"></div></div>
 </div>
 <div style="border-top:0.5px solid var(--bd); padding-top:1rem;">
@@ -109,11 +109,22 @@ function vccDownload(){ try{
   function defaultVals(){ var o={}; CFG.sliders.forEach(function(s){ o[s.k]=s.def; }); return o; }
   function sliderByKey(k){ for(var i=0;i<CFG.sliders.length;i++){ if(CFG.sliders[i].k===k) return CFG.sliders[i]; } return null; }
   function activeScen(){ return CFG.scenarios[CFG.activeIdx]; }
-  function fmt(s,v){ return v.toFixed(s.dec)+s.suf; }
+  function fmt(s,v){ if(s.labels){ var li=Math.round(v); return s.labels[li]!==undefined? s.labels[li] : String(v); } return v.toFixed(s.dec)+s.suf; }
   function computeVals(vals){ var p=CFG.cp, Re=vals.re/100, g=vals.g/100, m=vals.m, tax=vals.tax/100, x=vals[p.xKey];
     var term=Math.pow((p.re0-p.g0)/(Re-g), p.wTerm);
     return p.base*term*(m/p.m0)*((1-tax)/(1-p.tax0))*(1+(x-p.x0)*p.xk); }
-  function ratio(vals){ return computeVals(vals)/CFG.cp.base; }
+  // Engine-grid form (resource companies): the page interpolates between values the production
+  // engine computed at generation time for each scenario (gold-path multiple x inventory basis,
+  // WACC steps, cost-price-link elasticities). Nothing is re-modelled in the browser (D-23); the
+  // three factors are combined multiplicatively, which is the approximation.
+  function _interp(xs, ys, x){ var n=xs.length; if(n===0) return 1; if(x<=xs[0]) return ys[0]; if(x>=xs[n-1]) return ys[n-1];
+    for(var i=1;i<n;i++){ if(x<=xs[i]){ var t=(x-xs[i-1])/(xs[i]-xs[i-1]); return ys[i-1]+t*(ys[i]-ys[i-1]); } } return ys[n-1]; }
+  function gridVal(sc, vals){ var G=CFG.cp.grid; var key=(sc&&G.byScen[sc.n])? sc.n : G.live; var g=G.byScen[key];
+    var basis=G.bases[Math.round(vals.basis)]||G.bases[G.basisDefault];
+    var gold=_interp(G.goldScales, g.gold[basis], vals.gold);
+    var w=_interp(g.wacc.x, g.wacc.y, vals.re), l=_interp(g.link.x, g.link.y, vals.link);
+    return gold*w*l; }
+  function ratio(vals, sc){ if(CFG.cp.form==='engine_grid'){ return gridVal(sc, vals)/gridVal(sc, defaultVals()); } return computeVals(vals)/CFG.cp.base; }
   function _pvAvg(path, reFrac){ var num=0, den=0; for(var i=0;i<path.length;i++){ var df=Math.pow(1+reFrac,-(i+0.5)); num+=path[i]*df; den+=df; } return den? num/den : 0; }
   function _effBps(imp, reFrac){ if(!imp) return 0; if(imp.path) return _pvAvg(imp.path, reFrac); return imp.bps||0; }
   function _parseBps(v, fb){ if(v===undefined||v===null||v==='') return fb; if(Array.isArray(v)) return null; var f=parseFloat(String(v).replace(/\u2212/g,'-').replace(/[^0-9.+-]/g,'')); return isNaN(f)? fb : f; }
@@ -128,7 +139,7 @@ function vccDownload(){ try{
     return out; }
   function valsWithForces(sc){ var off=forcesOffsets(sc); var v={}; for(var k in sc.vals){ v[k]=sc.vals[k]; }
     for(var key in off){ v[key]=(v[key]!=null?v[key]:0)+off[key]; } return v; }
-  function scVal(sc){ return (sc.kind==='broker')? sc.v : sc.anchor*ratio(valsWithForces(sc)); }
+  function scVal(sc){ return (sc.kind==='broker')? sc.v : sc.anchor*ratio(valsWithForces(sc), sc); }
   function editableScens(){ return CFG.scenarios.filter(function(sc){ return sc.kind!=='broker'; }); }
   function isOverridden(sc){ if(sc.kind==='broker') return false; var d=defaultVals(); for(var i=0;i<CFG.sliders.length;i++){ var k=CFG.sliders[i].k; if(sc.vals[k]!==d[k]) return true; } for(var f in (sc.forces||{})){ if(sc.forces.hasOwnProperty(f)) return true; } return false; }
 
@@ -289,7 +300,10 @@ function vccDownload(){ try{
 
   function esc(t){ return (''+t).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
   function editableInputsTable(){ var h='<table style="width:100%; font-size:13px;">';
-    CFG.sliders.forEach(function(s){ h+='<tr><td style="padding:4px 8px 4px 0; color:var(--text2);">'+s.label+'</td><td style="padding:4px 0; text-align:right; white-space:nowrap;"><input class="assumInp" data-k="'+s.k+'" type="number" min="'+s.min+'" max="'+s.max+'" step="'+s.step+'" value="'+st[s.k]+'" style="width:82px; text-align:right; font:inherit; padding:2px 6px; border:0.5px solid var(--bd2); border-radius:6px; background:var(--primary); color:var(--text);"> <span class="sub">'+(s.suf.trim()||'')+'</span></td></tr>'; });
+    CFG.sliders.forEach(function(s){
+      if(s.labels){ var opts=''; s.labels.forEach(function(lb,li){ opts+='<option value="'+li+'"'+(Math.round(st[s.k])===li?' selected':'')+'>'+esc(lb)+'</option>'; });
+        h+='<tr><td style="padding:4px 8px 4px 0; color:var(--text2);">'+s.label+'</td><td style="padding:4px 0; text-align:right; white-space:nowrap;"><select class="assumInp" data-k="'+s.k+'" style="font:inherit; padding:2px 6px; border:0.5px solid var(--bd2); border-radius:6px; background:var(--primary); color:var(--text);">'+opts+'</select></td></tr>'; return; }
+      h+='<tr><td style="padding:4px 8px 4px 0; color:var(--text2);">'+s.label+'</td><td style="padding:4px 0; text-align:right; white-space:nowrap;"><input class="assumInp" data-k="'+s.k+'" type="number" min="'+s.min+'" max="'+s.max+'" step="'+s.step+'" value="'+st[s.k]+'" style="width:82px; text-align:right; font:inherit; padding:2px 6px; border:0.5px solid var(--bd2); border-radius:6px; background:var(--primary); color:var(--text);"> <span class="sub">'+(s.suf.trim()||'')+'</span></td></tr>'; });
     return h+'</table>'; }
   function forcesMatrix(){ var fd=CFG.forcesData; var imp=fd.impacts||[]; var es=editableScens(); var act=activeScen();
     var reFrac=((act&&act.vals&&act.vals.re!=null)?act.vals.re:singleWacc)/100;
@@ -328,7 +342,7 @@ function vccDownload(){ try{
     w.rows.forEach(function(r){
       h+='<tr style="border-top:0.5px solid var(--bd2);"><td style="padding:4px 8px 4px 0; position:sticky; left:0; background:var(--primary);">'+r.label+'</td>'+r.vals.map(function(v){return '<td style="padding:4px 8px; text-align:right;">'+(r.pct?(v*100).toFixed(1)+'%':Math.round(v).toLocaleString())+'</td>';}).join('')+'</tr>';
     });
-    h+='</table></div><div class="sub" style="margin-top:6px;">The engine&#39;s central case (does not move with the sliders); the same per-year build behind the downloadable workbook.</div></div>';
+    h+='</table></div><div class="sub" style="margin-top:6px;">'+(w.foot||'The engine&#39;s central case (does not move with the sliders); the same per-year build behind the downloadable workbook.')+'</div></div>';
     return h;
   }
   function detailHTML(k){
@@ -340,7 +354,7 @@ function vccDownload(){ try{
     if(k==='assum'){ var lab=activeScen().n; var head='';
       if(activeScen().kind!=='broker'){ head='<div style="border:0.5px solid var(--bd); border-left:2.5px solid var(--user-tx); border-radius:8px; padding:11px 13px; margin-bottom:12px;"><div style="font-weight:600; margin-bottom:2px;">Your inputs — '+lab+'</div><div class="sub" style="margin-bottom:8px;">the value-material inputs; type to override (syncs with the sliders and the live value). The full assumption set is below.</div>'+editableInputsTable()+'</div>'; }
       return head+CFG.detail.assum; }
-    if(k==='dcf'){ var _dlcap=CFG.xlsxB64?'full audited formula workbook · all six scenarios, DCF build, WACC, tax &amp; equity bridges, comparables/β, Porter&#39;s · engine-sourced, links to one Assumptions sheet':'formula workbook · DCF to equity, discount build, comparables/β &amp; charts ('+CFG.companyShort+') · includes your edits';var _dllab=CFG.xlsxB64?'⤓ download full valuation workbook (Excel)':'⤓ download all scenarios to Excel';var _dl='<button style="margin-top:12px; font-size:13px; padding:6px 12px;" id="dlbtn">'+_dllab+'</button><div style="font-size:11px; color:var(--text3); margin-top:4px;">'+_dlcap+'</div>';
+    if(k==='dcf'){ var _dlcap=CFG.xlsxB64?'full audited formula workbook · all six scenarios, DCF build, WACC, tax &amp; equity bridges, comparables/β, Porter&#39;s · engine-sourced, links to one Assumptions sheet':'formula workbook · DCF to equity, discount build, comparables/β &amp; charts ('+CFG.companyShort+') · includes your edits';var _dllab=CFG.xlsxB64?'⤓ download full valuation workbook (Excel)':'⤓ download all scenarios to Excel';var _dl=(!CFG.xlsxB64&&CFG.workbookNote)? '<div class="sub" style="margin-top:12px; line-height:1.5;">'+CFG.workbookNote+'</div>' : '<button style="margin-top:12px; font-size:13px; padding:6px 12px;" id="dlbtn">'+_dllab+'</button><div style="font-size:11px; color:var(--text3); margin-top:4px;">'+_dlcap+'</div>';
       var _nar='<p>'+CFG.dcfIntro+'</p>'; CFG.dcfRows.forEach(function(r){ if(r[2]){ _nar+='<details class="thy"><summary style="display:flex; justify-content:space-between; align-items:center;"><span>'+r[0]+'</span><span style="font-weight:600; margin-left:auto;">'+r[1]+'</span></summary><div class="thybody">'+r[2]+'</div></details>'; } else { _nar+='<div style="display:flex; justify-content:space-between; padding:8px 10px; margin-top:5px; font-weight:600; border-top:1px solid var(--bd2);"><span>'+r[0]+'</span><span>'+r[1]+'</span></div>'; } });
       if(!CFG.richbook){ return _nar+workingsHTML()+_dl; }
       var _sc=activeScen(); if(_sc.kind==='broker'){ _sc=muScenByKind('live')||_sc; }
@@ -355,7 +369,7 @@ function vccDownload(){ try{
       Array.prototype.forEach.call(d.querySelectorAll('.fm'),function(inp){ inp.addEventListener('change',function(){ var sc=es[+inp.getAttribute('data-si')]; if(!sc) return; sc.forces=sc.forces||{}; var i=+inp.getAttribute('data-i'); var f=parseFloat(inp.value); if(isNaN(f)) delete sc.forces[i]; else sc.forces[i]=f; sc.v=scVal(sc); saveLS(); drawBars(); updateCards(activeScen().v); }); });
       Array.prototype.forEach.call(d.querySelectorAll('.fy'),function(inp){ inp.addEventListener('change',function(){ var a=activeScen(); if(a.kind==='broker') return; var i=+inp.getAttribute('data-i'), y=+inp.getAttribute('data-y'); a.forces=a.forces||{}; var base=(CFG.forcesData.impacts[i]&&CFG.forcesData.impacts[i].path)||[]; var arr=Array.isArray(a.forces[i])?a.forces[i].slice():base.slice(); var f=parseFloat(inp.value); arr[y]=isNaN(f)?0:f; a.forces[i]=arr; a.v=scVal(a); saveLS(); drawBars(); updateCards(a.v); openDetail('forces', true); }); });
     }
-    if(k==='discount'){ bwInit(); var _bwr=d.querySelector('#bwrap'); if(_bwr) bwRender(_bwr); var ob=d.querySelector('#openbw'); if(ob) ob.style.display='none'; }
+    if(k==='discount' && BW){ bwInit(); var _bwr=d.querySelector('#bwrap'); if(_bwr) bwRender(_bwr); var ob=d.querySelector('#openbw'); if(ob) ob.style.display='none'; }
     if(k==='multiples'){ var mw=d.querySelector('#mwrap'); if(mw){ muInit(); mwRender(mw); } }
     if(k==='dcf'){ Array.prototype.forEach.call(d.querySelectorAll('.dcf_view'),function(b){ b.addEventListener('click',function(){ dcfView=b.getAttribute('data-v'); openDetail('dcf', true); }); }); }
   }
@@ -761,7 +775,7 @@ for key,cfg in CFGS.items():
     if '_financials' in cfg: cfg['detail']['financials']=financials_html(cfg['_financials'])
     if '_gap' in cfg: cfg['detail']['gap']=cfg['_gap']
     for kk in ['_forces','_position','_discount','_assum','_drtheory','_financials','_gap']: cfg.pop(kk, None)
-    html=SCAFFOLD.replace('__CFG__', json.dumps(cfg)).replace('__COMPANY__', cfg['company']).replace('__CCYNOTE__', cfg['ccynote']).replace('__CCY__', cfg['ccy'])
+    html=SCAFFOLD.replace('__CFG__', json.dumps(cfg)).replace('__COMPANY__', cfg['company']).replace('__CCYNOTE__', cfg['ccynote']).replace('__CCY__', cfg['ccy']).replace('__REFLABEL__', cfg.get('refLabel', 'average broker'))
     out=os.path.join(OUTDIR, '%s_scenario_interface.html'%key)
     open(out,'w',encoding='utf-8').write(html)
     print('wrote',out,len(html),'bytes')

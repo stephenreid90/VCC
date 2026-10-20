@@ -344,7 +344,10 @@ closest. The gap is disclosed, not reconciled (D-92's principle).
    EVN). The cross-company comparison in the UI should say so until one date is set.
 9. **The UI, workbook and session-start base tie do not include EVN yet.** The generator is
    built around the three existing engines (D-23: no JS port, so the page must read engine
-   output). This is its own sitting.
+   output). This is its own sitting. *UI and base tie built 20 Oct 2026 evening
+   (`ui_prototypes/_generator/resource_cfg.py`, `evn_scenario_interface.html`,
+   `tests/test_ui_evn_gap9.py`); the page carries the gap 7 disclosures and the gap 8 note.
+   The formula workbook is still open.*
 10. **The register lint treats every number in a guidance table as a register value.** It
     flags coincidences with UI pixel widths. Sixteen were baselined. A guidance table is
     observed data and might be better exempt by path.

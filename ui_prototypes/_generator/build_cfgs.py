@@ -886,14 +886,57 @@ def _data_date(company):
     except Exception:
         return None
 
+# ===== Resource-engine companies (gap 9, 20 Oct 2026): config built by resource_cfg.py from the engine =====
+from resource_cfg import build_resource_cfg as _brc
+from size_resource_valuation import resource_companies as _rcos
+_RES = {}
+for _rc, _ra in _rcos():
+    _RES[_rc] = _brc(_rc, _ra, WORLD_DESC, dtable, bridge, _BUILDUP_NOTE)
+    _align_reduced_form_rate(_RES[_rc], _RES[_rc]["_pack"]["wacc"])
+    _point_active_at_live(_RES[_rc])
+
+# ----- Risk-free dates (paper §6 gap 8): the companies are not on one risk-free date; every page says so -----
+import re as _re
+_ARCH = {"dnl": "industrial_explosives", "wbc": "australian_major_banks", "csl": "biopharmaceuticals"}
+def _rf_info(company):
+    """Risk-free rate and its date for a company, from the data files (financials first, then layer 2)."""
+    _f = _data("data/financials/%s.yaml" % company)
+    _blk = _f.get("wacc_observed_inputs") or {}
+    _txt = ""
+    if "risk_free_rate" not in _blk:
+        _inp = _li(_ROOT, "muddle_through", _ARCH[company], company)
+        _blk = _rnb(_inp).get("cost_of_equity_build") or {}
+    _rate = _blk.get("risk_free_rate")
+    _date = _blk.get("risk_free_rate_date")
+    if _date:
+        _date = _dt.date.fromisoformat(str(_date)).strftime("%d %b %Y").lstrip("0")
+    else:
+        _txt = " ".join(str(_blk.get(k, "")) for k in ("risk_free_rate_rationale", "risk_free_rate_source"))
+        _mm = _re.search(r"(January|February|March|April|May|June|July|August|September|October|November|December) (20\d\d)", _txt)
+        _date = ("%s %s" % _mm.groups()) if _mm else "date not recorded"
+    return _rate, _date
+
+_RF_ALL = [(_c.upper(), _rf_info(_c)) for _c in ["dnl", "wbc", "csl"] + sorted(_RES)]
+_RF_DATES = sorted(set(d for _, (_, d) in _RF_ALL))
+_RF_NOTE = ('<div id="rfdates" class="sub" style="margin-top:10px; line-height:1.5;"><b>Risk-free dates across companies:</b> '
+            + "; ".join("%s %.2f%% (%s)" % (c, r * 100.0, d) for c, (r, d) in _RF_ALL if r is not None)
+            + ". The companies are on %d different risk-free dates, so a cross-company comparison of values is not on one rate basis until one date is set (paper \u00a76 gap 8).</div>" % len(_RF_DATES))
+
 _COMMIT = _git_commit()
 _BUILT = _dt.date.today().isoformat()
 for _cfg, _co, _pack in ((dnl, "dnl", _pk), (wbc, "wbc", _wp), (csl, "csl", _sp)):
     _gap = _gap_sentence(_cfg)
     _cfg["pvsub"] = (_cfg["pvsub"] + " · " + _gap) if _cfg.get("pvsub") else _gap
-    _cfg["_discount"] = _cfg["_discount"] + _term_block(_pack["terminal_share"], _pack["terminal_denom"])
+    _cfg["_discount"] = _cfg["_discount"] + _term_block(_pack["terminal_share"], _pack["terminal_denom"]) + _RF_NOTE
     _cfg["xlsxSheets"] = len(_lwb(_io.BytesIO(_b64.b64decode(_cfg["xlsxB64"])), read_only=True).sheetnames)
     _cfg["prov"] = {"commit": _COMMIT, "buildDate": _BUILT, "dataDate": _data_date(_co) if _co != "dnl" else None}
+for _co, _cfg in _RES.items():
+    # A depleting asset carries the run-off disclosures (paper §6 gap 7), not the §11.4.2 terminal-share block.
+    _gap = _gap_sentence(_cfg)
+    _cfg["pvsub"] = (_cfg["pvsub"] + " · " + _gap) if _cfg.get("pvsub") else _gap
+    _cfg["_discount"] = _cfg["_discount"] + _cfg.pop("_runoffBlock") + _RF_NOTE
+    _cfg["prov"] = {"commit": _COMMIT, "buildDate": _BUILT, "dataDate": _cfg.pop("_prov")["dataDate"]}
+    _cfg.pop("_pack", None); _cfg.pop("asymNote", None)
 
 # ----- typed gap claims -> engine-formatted (follow-up, 16 Oct 2026) -----
 _cdm = abs(_sp["discount_to_market"]) * 100.0          # CSL value vs market, %
@@ -973,5 +1016,5 @@ _gap_parts.append('<p class="sub" style="margin-top:8px;">The gap is an output o
 csl["titles"]["gap"] = "Market gap to price"
 csl["_gap"] = "".join(_gap_parts)
 
-json.dump({"dnl":dnl,"wbc":wbc,"csl":csl}, open(_CFGP,'w',encoding='utf-8'), ensure_ascii=False)  # encoding is not optional: ensure_ascii False plus a platform default codec dies on Windows
+json.dump(dict({"dnl":dnl,"wbc":wbc,"csl":csl}, **_RES), open(_CFGP,'w',encoding='utf-8'), ensure_ascii=False)  # encoding is not optional: ensure_ascii False plus a platform default codec dies on Windows
 print("cfgs_gen.json written")

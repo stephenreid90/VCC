@@ -8,12 +8,12 @@ import pytest
 
 _ROOT = Path(__file__).resolve().parents[1]
 _GEN = _ROOT / "ui_prototypes" / "_generator"
-_PAGES = [_ROOT / "ui_prototypes" / ("%s_scenario_interface.html" % k) for k in ("dnl", "wbc", "csl")]
+_PAGES = [_ROOT / "ui_prototypes" / ("%s_scenario_interface.html" % k) for k in ("dnl", "wbc", "csl", "evn")]
 
 
 @pytest.fixture(scope="session", autouse=True)
 def generated_ui_pages():
-    """Build the three prototype pages when they are absent.
+    """Build the prototype pages when any is absent.
 
     The pages are gitignored build output (reproducible from ui_prototypes/_generator),
     so a fresh checkout such as the GitHub Actions runner has none. Five UI tests read

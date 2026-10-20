@@ -32,6 +32,38 @@ kept getting reopened.
 It regenerates the two maps, runs the suite and the ratchet, checks the base ties and
 prints git state.
 
+## 🔴 GAP 9 BUILT — 20 October 2026, late evening (EVN in the main prototype UI; awaiting Stephen's confirmation of five build choices)
+
+`ui_prototypes/evn_scenario_interface.html` now exists, generated like the other three (`build_cfgs.py` then
+`gen_ui.py`). New module `ui_prototypes/_generator/resource_cfg.py` builds the config for every company whose
+engine is `resource` by running the production engine at generation time (D-23: nothing is modelled in the
+browser). Headline levels tie to set `evn` (OC 5.07, MT 6.57, AI 7.47, DCC 7.19, Frag 10.02, Stag 9.72 vs A$12.09).
+Tests: `tests/test_ui_evn_gap9.py` (9). `session_start.py` base tie now includes EVN 6.57; `conftest.py` builds
+four pages. Suite: DCF 473 passed, rest 396. Build takes about 45 s longer (324 engine runs for the grids).
+
+Build choices made in the sitting, to CONFIRM (medium, none changes a number):
+1. **Sliders are engine dimensions, interpolated.** WACC (engine rate +/-2 points, five engine points), gold path
+   multiple (0.7-2.0x the scenario's path, 14 engine points per inventory basis), inventory basis (reserves /
+   stated life / +5 years, each an engine run), cost response to gold (0-3% per 10%, seven engine points). At the
+   defaults every bar is the engine value exactly; off the defaults the page multiplies the three factors, which is
+   the labelled approximation. No terminal-growth, margin or tax sliders: a miner has none of them.
+2. **No beta workbench on the EVN page.** D-101 is held until observed betas arrive; the page says the peer betas
+   are not observed rather than carrying mock scatter data (`beta_data.py` was not extended).
+3. **No embedded formula workbook.** The page says so in the build-up panel. A mine-by-mine run-off workbook on the
+   Assumptions-sheet discipline (standing rule 1) is its own sitting (serious); `engine_workbook.py` was not touched.
+4. **Reference bar and metric 3 are "spot held flat (real)" (6.65), not a broker target.** No consensus target is in
+   the register for EVN. Metric 4 is the gold multiple the market needs (1.48x) per D-102 item 8.
+5. **Risk-free dates note on all four pages** (gap 8), read from the data: DNL and WBC 4.30% (May 2026), CSL 4.50%
+   (June 2026), EVN 5.31% (14 Oct 2026). The data give three dates, not the paper's two; the note says three.
+
+Also done: the D-62 disclosures are replaced on the EVN discount panel by the run-off share (19%), life (27.7
+years, Northparkes FY54) and value per share by inventory basis (5.50 / 6.57 / 7.81) (gap 7). `gen_ui.py` gained
+small generic hooks (labelled sliders render as a select, optional reference-bar legend label, workbench and
+workbook optional, engine-grid form); DNL, WBC and CSL pages are unchanged in content apart from the risk-free note.
+
+**Next:** Stephen confirms or amends choices 1-5 (medium). Then the EVN workbook sitting (serious). Still awaiting:
+D-101 observed betas (Ben); PDF renames in `notes/evn_pdf_rename_plan_2026-10-20.md`.
+
 ## 🔴 COST-PRICE LINK BUILT — 20 October 2026, evening (D-104 implemented; next: gap 9, EVN in the main UI)
 
 D-104 built as `cost_price_link` on the `gold_producers` archetype (`resource_lifecycle` block: elasticity
@@ -51,8 +83,7 @@ scenario's own period-0 real price, so Muddle Through is untouched and Orderly C
 US$4,100, below spot) eases from day one; (3) the market-implied path is read against unscaled spot;
 (4) real A$ price, so AUD moves count; (5) mine development, exploration and corporate do not move.
 
-**Next:** gap 9 (EVN in the main prototype UI, serious, its own chat). Still awaiting: D-101 observed
-betas (Ben); PDF renames in `notes/evn_pdf_rename_plan_2026-10-20.md`.
+**Next (superseded by the GAP 9 block above):** gap 9 was built the same evening.
 
 ## 🔴 BATCH 3 run — 20 October 2026, 16:00 (parallel lane landed; E22 on branch awaiting a ruling)
 
